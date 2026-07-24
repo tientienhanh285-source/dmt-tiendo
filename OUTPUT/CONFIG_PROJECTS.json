@@ -1,0 +1,75 @@
+{
+    "projects_by_category": {
+        "BĐS & KDC": [
+            "KDC Bàu Mạc",
+            "KDC Nam Bàu Mạc",
+            "KĐT Phước Lý & Phước Lý MR",
+            "TĐC Phước Lý 2 & Hoà Liên 5",
+            "Dự án Phong Nam",
+            "Khu BT ST Hoà Ninh"
+        ],
+        "HẠ TẦNG & GIAO THÔNG": [
+            "Tuyến đường Lê Trọng Tấn",
+            "Tuyến đường Lê Trọng Tấn - Hoà Nhơn",
+            "Tuyến đường Trần Hưng Đạo (BT)",
+            "Trục I Tây Bắc",
+            "Khu TĐC Hoà Vang"
+        ],
+        "THƯƠNG MẠI & KHÁCH SẠN": [
+            "Khách sạn DMT-Group",
+            "Du thuyền Happy Yacht (DMT Marina)"
+        ]
+    },
+    "departments": [
+        "Ban Lãnh đạo",
+        "Ban Hành chính Nhân sự",
+        "Ban Tài chính Kế toán",
+        "Ban Kế hoạch Đầu tư",
+        "Ban Chuẩn bị Đầu tư",
+        "Ban Kỹ thuật",
+        "Ban Đền bù Giải tỏa",
+        "Tổ KPI"
+    ],
+    "personnel_by_department": {
+        "Ban Lãnh đạo": [
+            "Trần Quốc Thể",
+            "Thái Văn Thành",
+            "Trần Cường"
+        ],
+        "Ban Hành chính Nhân sự": [
+            "Nguyễn Băng Trinh",
+            "Nguyễn Thị Mỹ Phương",
+            "Nguyễn Thị Hạnh Tiên"
+        ],
+        "Ban Tài chính Kế toán": [
+            "Đồng Thị Nguyệt Nga",
+            "Nguyễn Thị Ngọc Hà",
+            "Lê Thị Hải"
+        ],
+        "Ban Kế hoạch Đầu tư": [
+            "Nguyễn Trần Thức",
+            "Trần Văn Trọng",
+            "Trần Cường"
+        ],
+        "Ban Chuẩn bị Đầu tư": [
+            "Hồ Văn Khoa",
+            "Phạm Quang Nghĩa",
+            "Lê Thị Hải"
+        ],
+        "Ban Kỹ thuật": [
+            "Trần Văn Trọng",
+            "Nguyễn Văn Sang",
+            "Trương Ngọc Sỹ"
+        ],
+        "Ban Đền bù Giải tỏa": [
+            "Nguyễn Ngọc Tôn",
+            "Mai Văn Châu",
+            "Thái Hữu Quý"
+        ],
+        "Tổ KPI": [
+            "Nguyễn Băng Trinh",
+            "Nguyễn Thị Mỹ Phương",
+            "Lê Thị Hải"
+        ]
+    }
+}
