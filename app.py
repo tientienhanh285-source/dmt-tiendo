@@ -727,14 +727,6 @@ menu = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-work_mode = st.sidebar.radio(
-    "👥 CHẾ ĐỘ GIAO DIỆN",
-    [
-        "👁️ Chế độ Xem (Lãnh đạo)",
-        "✏️ Chế độ Cập nhật (Ban/Bộ phận)"
-    ],
-    index=0
-)
 
 # Reference date (2026-07-23)
 df = read_db()
@@ -1140,10 +1132,6 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
 elif menu == "➕ Thêm / Cập Nhật Công Việc":
     st.markdown("### ✏️ Phân hệ Thêm / Cập Nhật Công Việc")
     
-    if work_mode == "👁️ Chế độ Xem (Lãnh đạo)":
-        st.warning("🔒 **Chế độ Xem (Dành cho Lãnh đạo) đang kích hoạt.** Phân hệ này yêu cầu quyền cập nhật. Vui lòng chuyển sang **'Chế độ Cập nhật (Ban/Bộ phận)'** ở thanh Sidebar để chỉnh sửa/thêm dữ liệu.")
-        st.stop()
-        
     tab_new, tab_update = st.tabs(["➕ Khởi tạo công việc mới", "✏️ Cập nhật tiến độ công việc"])
     
     # Form: Add New
@@ -1736,10 +1724,6 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             
         st.markdown("---")
         st.markdown("### ✏️ Quản lý Công việc Gantt")
-        if work_mode == "👁️ Chế độ Xem (Lãnh đạo)":
-            st.warning("🔒 **Chỉnh sửa công việc Gantt đang bị khóa.** Vui lòng chuyển sang **'Chế độ Cập nhật (Ban/Bộ phận)'** trong thanh Sidebar để thêm/sửa/xóa công việc.")
-            st.stop()
-            
         g_tab_new, g_tab_edit = st.tabs(["➕ Thêm công việc Gantt mới", "✏️ Sửa / Xóa công việc Gantt"])
         
         with g_tab_new:
@@ -1951,10 +1935,6 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
 else:
     st.markdown("### ⚙️ Phân hệ Quản Lý Cấu Hình (Admin)")
     
-    if work_mode == "👁️ Chế độ Xem (Lãnh đạo)":
-        st.warning("🔒 **Chế độ Xem (Dành cho Lãnh đạo) đang kích hoạt.** Tính năng cấu hình danh mục dự án, phòng ban và Google Sheets yêu cầu quyền cập nhật. Vui lòng chuyển sang **'Chế độ Cập nhật (Ban/Bộ phận)'** ở thanh Sidebar để chỉnh sửa.")
-        st.stop()
-        
     tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
     
     with tab_proj:
