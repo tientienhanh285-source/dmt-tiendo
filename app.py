@@ -468,8 +468,8 @@ def init_db():
 def calculate_time_progress(start_d, end_d, is_comp):
     if is_comp:
         return 100
-    # Reference date (2026-07-23)
-    today = datetime.date(2026, 7, 23)
+    # Current date
+    today = datetime.date.today()
     
     if not isinstance(start_d, (datetime.date, datetime.datetime)) or not isinstance(end_d, (datetime.date, datetime.datetime)):
         return 0
@@ -728,9 +728,9 @@ menu = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 
-# Reference date (2026-07-23)
+# Current date
 df = read_db()
-today = datetime.date(2026, 7, 23)
+today = datetime.date.today()
 
 # Filter display dataframe based on sidebar selected company
 if selected_company != "Tất cả đơn vị":
@@ -1047,9 +1047,12 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
             # prog < 100
             days_left = (row['Deadline'] - today).days
             if days_left < 0:
-                return f"⚠️ {date_str} (Trễ hạn)"
-            elif 0 <= days_left <= 5:
-                return f"⚠️ {date_str} (Sắp hạn)"
+                days_late = abs(days_left)
+                return f"🔴 {date_str} (Trễ hạn {days_late} ngày)"
+            elif days_left == 0:
+                return f"🟠 {date_str} (Hạn hôm nay)"
+            elif 1 <= days_left <= 3:
+                return f"🟡 {date_str} (Sắp hạn - Còn {days_left} ngày)"
             else:
                 return date_str
         df_display['Hạn chót'] = table_df.apply(format_dl, axis=1)
@@ -1070,10 +1073,6 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
                 
             if is_issue:
                 return "🔴 Vướng mắc"
-                
-            days_left = (row['Deadline'] - today).days
-            if 0 <= days_left <= 5:
-                return "⏳ Đang thực hiện"
                 
             if prog == 0 and row['NgayBatDau'] > today:
                 return "❌ Chưa bắt đầu"
@@ -1526,7 +1525,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
         project_tasks_df = gantt_df[gantt_df['TenDuAn'] == gantt_project_name]
         
         # Overdue alerts scanning for Gantt tasks
-        ref_today = datetime.date(2026, 7, 23)
+        ref_today = datetime.date.today()
         overdue_gantt = project_tasks_df[(project_tasks_df['NgayKetThuc'] < ref_today) & (project_tasks_df['PhanTramHoanThanh'] < 100)]
         if not overdue_gantt.empty:
             st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(overdue_gantt)} CÔNG VIỆC BỊ TRỄ TIẾN ĐỘ / HẠN CHÓT**")
@@ -1598,8 +1597,8 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 legend_title_text="Giai đoạn"
             )
             
-            # Add vertical Today line (2026-07-23 is reference)
-            ref_today = datetime.date(2026, 7, 23)
+            # Add vertical Today line (dynamic today)
+            ref_today = datetime.date.today()
             fig.add_vline(x=ref_today.strftime("%Y-%m-%d"), line_width=2, line_dash="dash", line_color="red", annotation_text="Hôm nay", annotation_position="top right")
             
             # Add Milestones lines
@@ -1626,7 +1625,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 date_range = pd.date_range(start=min_date, end=max_date, freq='D').date
                 s_curve_data = []
                 
-                ref_today = datetime.date(2026, 7, 23)
+                ref_today = datetime.date.today()
                 
                 for d in date_range:
                     total_planned_p = 0
@@ -1766,7 +1765,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 g_task_name = st.text_input("Tên công việc", value=g_task_name_val, key="g_task_name_new")
                 g_progress = st.slider("Tiến độ %", 0, 100, 0, key="g_progress_new")
             with g_col2:
-                today_ref = datetime.date(2026, 7, 23)
+                today_ref = datetime.date.today()
                 g_start = st.date_input("Ngày bắt đầu", value=today_ref, key="g_start_new", format="DD/MM/YYYY")
                 g_end = st.date_input("Ngày kết thúc", value=today_ref + datetime.timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
                 g_milestone = st.text_input("Cột mốc quan trọng (Nếu có)", placeholder="ví dụ: Mốc 1: Phê duyệt Pháp lý & GPXD, Mốc 2: Cất nóc công trình...", key="g_milestone_new")
