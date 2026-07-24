@@ -806,10 +806,15 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             entry_company = st.selectbox("Đơn vị / Công ty thành viên", company_list, index=default_company_idx)
             
             # 2. Project selection (Categorized dropdown or custom)
-            proj_options_with_custom = ALL_PROJECTS + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
+            is_marina_co = "CTY CP DMT - MARINA" in entry_company or "Du thuyền Happy Yacht" in entry_company
+            if is_marina_co:
+                proj_options_with_custom = ["➕ Tạo / Nhập Dự án mới..."]
+            else:
+                proj_options_with_custom = ALL_PROJECTS + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
+                
             default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)
             
-            if default_proj_opt == "✍️ Tự nhập Dự án / Hạng mục khác...":
+            if is_marina_co or default_proj_opt in ["✍️ Tự nhập Dự án / Hạng mục khác...", "➕ Tạo / Nhập Dự án mới..."]:
                 project_name = st.text_input("Nhập tên Dự án / Hạng mục mới", value="")
             else:
                 project_name = clean_proj_name(default_proj_opt)
@@ -1130,29 +1135,34 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
     gantt_df = read_gantt_db()
     
     # 1. Select project (alphabetical order A-Z with default projects)
-    default_projects = [
-        "KDC Bàu Mạc",
-        "KDC Nam Bàu Mạc",
-        "KĐT Phước Lý & Phước Lý MR",
-        "TĐC Phước Lý 2 & Hoà Liên 5",
-        "Dự án Phong Nam",
-        "Khu BT ST Hoà Ninh",
-        "Tuyến đường Lê Trọng Tấn",
-        "Tuyến đường Lê Trọng Tấn - Hoà Nhơn",
-        "Tuyến đường Trần Hưng Đạo (BT)",
-        "Trục I Tây Bắc",
-        "Khu TĐC Hoà Vang",
-        "Khách sạn DMT Group",
-        "Khách sạn DMT Măng Đen"
-    ]
-    existing_db_projects = list(gantt_df['TenDuAn'].unique())
-    merged_projects = list(set(default_projects + existing_db_projects))
-    existing_projects = sorted(merged_projects)
-    gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
+    is_marina_gantt = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
+    
+    if is_marina_gantt:
+        gantt_project_options = ["➕ Tạo / Nhập Dự án mới..."]
+    else:
+        default_projects = [
+            "KDC Bàu Mạc",
+            "KDC Nam Bàu Mạc",
+            "KĐT Phước Lý & Phước Lý MR",
+            "TĐC Phước Lý 2 & Hoà Liên 5",
+            "Dự án Phong Nam",
+            "Khu BT ST Hoà Ninh",
+            "Tuyến đường Lê Trọng Tấn",
+            "Tuyến đường Lê Trọng Tấn - Hoà Nhơn",
+            "Tuyến đường Trần Hưng Đạo (BT)",
+            "Trục I Tây Bắc",
+            "Khu TĐC Hoà Vang",
+            "Khách sạn DMT Group",
+            "Khách sạn DMT Măng Đen"
+        ]
+        existing_db_projects = list(gantt_df['TenDuAn'].unique())
+        merged_projects = list(set(default_projects + existing_db_projects))
+        existing_projects = sorted(merged_projects)
+        gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
     
     selected_gantt_project = st.selectbox("Chọn Dự án KHĐT", gantt_project_options)
     
-    if selected_gantt_project == "➕ Tạo Dự án KHĐT mới...":
+    if selected_gantt_project in ["➕ Tạo / Nhập Dự án mới...", "➕ Tạo Dự án KHĐT mới..."]:
         gantt_project_name = st.text_input("Tên Dự án KHĐT mới", value="")
     else:
         gantt_project_name = selected_gantt_project
