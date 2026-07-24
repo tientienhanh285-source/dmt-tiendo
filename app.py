@@ -668,6 +668,16 @@ menu = st.sidebar.radio(
     index=0
 )
 
+st.sidebar.markdown("---")
+work_mode = st.sidebar.radio(
+    "👥 CHẾ ĐỘ GIAO DIỆN",
+    [
+        "👁️ Chế độ Xem (Lãnh đạo)",
+        "✏️ Chế độ Cập nhật (Ban/Bộ phận)"
+    ],
+    index=0
+)
+
 # Reference date (2026-07-23)
 df = read_db()
 today = datetime.date(2026, 7, 23)
@@ -799,6 +809,23 @@ def clean_proj_name(name):
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
 if menu == "📊 Dashboard Tổng Quan":
     st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
+    
+    # Overdue alerts scanning
+    overdue_tasks = display_df[(display_df['Deadline'] < today) & (display_df['TrangThai'] != 'Hoàn thành')]
+    if not overdue_tasks.empty:
+        st.error("🚨 **CẢNH BÁO: PHÁT HIỆN CÔNG VIỆC TRỄ TIẾN ĐỘ / HẠN CHÓT**")
+        alert_data = []
+        for _, row in overdue_tasks.iterrows():
+            days_late = (today - row['Deadline']).days
+            alert_data.append({
+                "Tên công việc": row['TenCongViec'],
+                "Dự án / Hạng mục": row['TenDuAn'],
+                "Ban phụ trách": row['PhongBan'],
+                "Người phụ trách": row['NguoiChuTri'],
+                "Số ngày trễ": f"{days_late} ngày"
+            })
+        st.dataframe(pd.DataFrame(alert_data), use_container_width=True, hide_index=True)
+        st.markdown("---")
     
     # 4 metrics cards
     m_col1, m_col2, m_col3, m_col4 = st.columns(4)
@@ -972,6 +999,10 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
 elif menu == "➕ Thêm / Cập Nhật Công Việc":
     st.markdown("### ✏️ Phân hệ Thêm / Cập Nhật Công Việc")
     
+    if work_mode == "👁️ Chế độ Xem (Lãnh đạo)":
+        st.warning("🔒 **Chế độ Xem (Dành cho Lãnh đạo) đang kích hoạt.** Phân hệ này yêu cầu quyền cập nhật. Vui lòng chuyển sang **'Chế độ Cập nhật (Ban/Bộ phận)'** ở thanh Sidebar để chỉnh sửa/thêm dữ liệu.")
+        st.stop()
+        
     tab_new, tab_update = st.tabs(["➕ Khởi tạo công việc mới", "✏️ Cập nhật tiến độ công việc"])
     
     # Form: Add New
@@ -1354,6 +1385,23 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
         # Filter data for this project
         project_tasks_df = gantt_df[gantt_df['TenDuAn'] == gantt_project_name]
         
+        # Overdue alerts scanning for Gantt tasks
+        ref_today = datetime.date(2026, 7, 23)
+        overdue_gantt = project_tasks_df[(project_tasks_df['NgayKetThuc'] < ref_today) & (project_tasks_df['PhanTramHoanThanh'] < 100)]
+        if not overdue_gantt.empty:
+            st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(overdue_gantt)} CÔNG VIỆC BỊ TRỄ TIẾN ĐỘ / HẠN CHÓT**")
+            g_alert_data = []
+            for _, row in overdue_gantt.iterrows():
+                days_late = (ref_today - row['NgayKetThuc']).days
+                g_alert_data.append({
+                    "Tên công việc": row['TenCongViec'],
+                    "Giai đoạn": row['GiaiDoan'],
+                    "Tiến độ hiện tại": f"{row['PhanTramHoanThanh']}%",
+                    "Số ngày trễ": f"{days_late} ngày"
+                })
+            st.dataframe(pd.DataFrame(g_alert_data), use_container_width=True, hide_index=True)
+            st.markdown("---")
+        
         # Sort and render Gantt chart if there is data
         if not project_tasks_df.empty:
             # Summary metric cards
@@ -1430,6 +1478,89 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             
             st.plotly_chart(fig, use_container_width=True)
             
+            # --- Biểu đồ Tiến độ Lũy kế S-Curve ---
+            min_date = project_tasks_df['NgayBatDau'].min()
+            max_date = project_tasks_df['NgayKetThuc'].max()
+            
+            if pd.notnull(min_date) and pd.notnull(max_date):
+                date_range = pd.date_range(start=min_date, end=max_date, freq='D').date
+                s_curve_data = []
+                
+                ref_today = datetime.date(2026, 7, 23)
+                
+                for d in date_range:
+                    total_planned_p = 0
+                    total_actual_p = 0
+                    count = len(project_tasks_df)
+                    
+                    for _, row in project_tasks_df.iterrows():
+                        start_d = row['NgayBatDau']
+                        end_d = row['NgayKetThuc']
+                        final_act = row['PhanTramHoanThanh']
+                        
+                        # Planned
+                        if d < start_d:
+                            planned_p = 0
+                        elif d >= end_d:
+                            planned_p = 100
+                        else:
+                            total_d = (end_d - start_d).days
+                            elapsed_d = (d - start_d).days
+                            planned_p = (elapsed_d / total_d * 100) if total_d > 0 else 100
+                            
+                        # Actual
+                        if d < start_d:
+                            actual_p = 0
+                        else:
+                            end_ref = min(end_d, ref_today)
+                            if d >= end_ref:
+                                actual_p = final_act
+                            else:
+                                total_act_days = (end_ref - start_d).days
+                                elapsed_act_days = (d - start_d).days
+                                actual_p = (elapsed_act_days / total_act_days * final_act) if total_act_days > 0 else final_act
+                                
+                        total_planned_p += planned_p
+                        total_actual_p += actual_p
+                        
+                    avg_planned = total_planned_p / count if count > 0 else 0
+                    avg_actual = total_actual_p / count if count > 0 else 0
+                    
+                    s_curve_data.append({
+                        "Ngày": d,
+                        "Tiến độ Kế hoạch (%)": round(avg_planned, 1),
+                        "Tiến độ Thực tế (%)": round(avg_actual, 1)
+                    })
+                    
+                s_curve_df = pd.DataFrame(s_curve_data)
+                
+                # Import Plotly Graph Objects
+                import plotly.graph_objects as go
+                fig_s = go.Figure()
+                fig_s.add_trace(go.Scatter(
+                    x=s_curve_df['Ngày'], 
+                    y=s_curve_df['Tiến độ Kế hoạch (%)'], 
+                    name='Tiến độ Kế hoạch (%)', 
+                    line=dict(color='#1e3a8a', width=3)
+                ))
+                fig_s.add_trace(go.Scatter(
+                    x=s_curve_df['Ngày'], 
+                    y=s_curve_df['Tiến độ Thực tế (%)'], 
+                    name='Tiến độ Thực tế (%)', 
+                    line=dict(color='#f97316', width=3)
+                ))
+                
+                fig_s.update_layout(
+                    title="📈 Đường cong Tiến độ Lũy kế S-Curve",
+                    xaxis_title="Thời gian",
+                    yaxis_title="Tiến độ lũy kế (%)",
+                    yaxis=dict(range=[0, 105]),
+                    height=350,
+                    margin=dict(l=20, r=20, t=40, b=20),
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                )
+                st.plotly_chart(fig_s, use_container_width=True)
+            
             # Task Table
             st.markdown("#### 📋 Bảng tiến độ chi tiết dự án")
             disp_table = project_tasks_df.copy()
@@ -1454,6 +1585,10 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             
         st.markdown("---")
         st.markdown("### ✏️ Quản lý Công việc Gantt")
+        if work_mode == "👁️ Chế độ Xem (Lãnh đạo)":
+            st.warning("🔒 **Chỉnh sửa công việc Gantt đang bị khóa.** Vui lòng chuyển sang **'Chế độ Cập nhật (Ban/Bộ phận)'** trong thanh Sidebar để thêm/sửa/xóa công việc.")
+            st.stop()
+            
         g_tab_new, g_tab_edit = st.tabs(["➕ Thêm công việc Gantt mới", "✏️ Sửa / Xóa công việc Gantt"])
         
         with g_tab_new:
@@ -1665,6 +1800,10 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
 else:
     st.markdown("### ⚙️ Phân hệ Quản Lý Cấu Hình (Admin)")
     
+    if work_mode == "👁️ Chế độ Xem (Lãnh đạo)":
+        st.warning("🔒 **Chế độ Xem (Dành cho Lãnh đạo) đang kích hoạt.** Tính năng cấu hình danh mục dự án, phòng ban và Google Sheets yêu cầu quyền cập nhật. Vui lòng chuyển sang **'Chế độ Cập nhật (Ban/Bộ phận)'** ở thanh Sidebar để chỉnh sửa.")
+        st.stop()
+        
     tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
     
     with tab_proj:
