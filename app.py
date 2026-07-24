@@ -540,9 +540,9 @@ st.markdown("""
         font-family: 'Be Vietnam Pro', sans-serif !important;
     }
     .main-title {
-        font-size: 26px;
+        font-size: 28px;
         font-weight: 800;
-        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #f59e0b 100%);
+        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #f97316 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 25px;
@@ -554,7 +554,8 @@ st.markdown("""
         color: white !important;
         border: none !important;
         border-radius: 6px !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
         transition: all 0.3s ease !important;
     }
     div.stButton > button:first-child:hover {
@@ -563,14 +564,54 @@ st.markdown("""
     }
     /* Style metrics cards to feel premium with Navy Blue border */
     div[data-testid="stMetric"] {
-        background-color: #f0f4f8;
-        border: 1.5px solid #1e3a8a;
-        border-radius: 8px;
-        padding: 12px 16px;
+        background-color: #f8fafc;
+        border: 1.8px solid #1e3a8a;
+        border-radius: 10px;
+        padding: 14px 18px;
+        box-shadow: 0 2px 5px rgba(30, 58, 138, 0.05);
     }
-    /* Style sidebar with Navy theme styling */
+    div[data-testid="stMetric"] div[data-testid="stMetricLabel"] p {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #1e3a8a !important;
+    }
+    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+        font-size: 26px !important;
+        font-weight: 800 !important;
+        color: #f97316 !important;
+    }
+    
+    /* Input field labels - bold and larger font */
+    div[data-testid="stWidgetLabel"] p {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+    
+    /* Headers styling */
+    h1, h2, h3, h4 {
+        font-weight: 700 !important;
+        color: #1e3a8a !important;
+    }
+    
+    /* Style sidebar with Navy theme styling & high contrast text */
     section[data-testid="stSidebar"] {
         background-color: #0f172a !important;
+    }
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p, 
+    section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+    section[data-testid="stSidebar"] span[data-baseweb="select"] div,
+    section[data-testid="stSidebar"] div[role="radiogroup"] label p {
+        color: #ffffff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+    }
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 {
+        color: #ffd700 !important;
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        border-bottom: 2px solid #f97316;
+        padding-bottom: 5px;
     }
 </style>
 """, unsafe_allow_html=True)
