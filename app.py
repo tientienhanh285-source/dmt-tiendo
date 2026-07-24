@@ -530,7 +530,7 @@ def save_db(df):
         st.error(f"Lỗi ghi DB: {e}")
         return False
 
-# CSS Base.vn Light Theme
+# CSS DMT GROUP Branding Theme (Navy Blue & Orange Gold Accent)
 st.markdown("""
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -541,18 +541,50 @@ st.markdown("""
     }
     .main-title {
         font-size: 26px;
-        font-weight: 700;
-        color: #0f172a;
+        font-weight: 800;
+        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #f59e0b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin-bottom: 25px;
+        letter-spacing: -0.5px;
+    }
+    /* Style Streamlit primary button to have brand orange-to-gold gradient */
+    div.stButton > button:first-child {
+        background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }
+    div.stButton > button:first-child:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important;
+    }
+    /* Style metrics cards to feel premium with Navy Blue border */
+    div[data-testid="stMetric"] {
+        background-color: #f0f4f8;
+        border: 1.5px solid #1e3a8a;
+        border-radius: 8px;
+        padding: 12px 16px;
+    }
+    /* Style sidebar with Navy theme styling */
+    section[data-testid="stSidebar"] {
+        background-color: #0f172a !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Main Header Title without subtitle
-st.markdown('<div class="main-title">⚓ THEO DÕI TIẾN ĐỘ CÔNG VIỆC</div>', unsafe_allow_html=True)
+# Main Header Title with DMT branding
+st.markdown('<div class="main-title">⚓ DMT GROUP — QUẢN LÝ TIẾN ĐỘ</div>', unsafe_allow_html=True)
 
-# Sidebar layout
-st.sidebar.markdown("### ⚓ HỆ THỐNG QUẢN TRỊ")
+# Sidebar layout with logo image and fallback
+logo_path = "logo.png" if os.path.exists("logo.png") else ("INPUT/logo.png" if os.path.exists("INPUT/logo.png") else None)
+if logo_path:
+    st.sidebar.image(logo_path, use_column_width=True)
+else:
+    st.sidebar.warning("💡 Vui lòng đặt file logo.png vào thư mục gốc của dự án để hiển thị logo.")
+    st.sidebar.markdown("### ⚓ DMT GROUP")
 st.sidebar.markdown("---")
 
 company_options = ["Tất cả đơn vị"] + list(COMPANIES.keys())
@@ -1240,7 +1272,7 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
                         x=m_date.strftime("%Y-%m-%d"), 
                         line_width=1.5, 
                         line_dash="dot", 
-                        line_color="#1e3a8a", 
+                        line_color="#f97316", 
                         annotation_text=f"📌 {m_label}", 
                         annotation_position="bottom right"
                     )
