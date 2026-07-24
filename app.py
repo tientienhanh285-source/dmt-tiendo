@@ -256,14 +256,83 @@ def init_gantt_db():
         if os.path.exists(GANTT_DB_FILE):
             xls = pd.ExcelFile(GANTT_DB_FILE)
             if "GANTT_KHDT" in xls.sheet_names:
-                return
-        df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
+                df = pd.read_excel(GANTT_DB_FILE, sheet_name="GANTT_KHDT")
+                if not df.empty:
+                    return
+        
+        # Populate dummy data
+        dummy_data = [
+            {
+                "ID": "GNT-001",
+                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
+                "TenCongViec": "Khảo sát thị trường & Khả thi",
+                "GiaiDoan": "Concept Dev",
+                "NgayBatDau": "2026-01-01",
+                "NgayKetThuc": "2026-01-31",
+                "PhanTramHoanThanh": 100,
+                "Milestone": "",
+                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            },
+            {
+                "ID": "GNT-002",
+                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
+                "TenCongViec": "Thiết kế quy hoạch & Kiến trúc",
+                "GiaiDoan": "System Design",
+                "NgayBatDau": "2026-02-01",
+                "NgayKetThuc": "2026-03-15",
+                "PhanTramHoanThanh": 80,
+                "Milestone": "",
+                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            },
+            {
+                "ID": "GNT-003",
+                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
+                "TenCongViec": "Phê duyệt Pháp lý & Báo cáo KHĐT",
+                "GiaiDoan": "Legal / Regulatory",
+                "NgayBatDau": "2026-02-01",
+                "NgayKetThuc": "2026-03-02",
+                "PhanTramHoanThanh": 100,
+                "Milestone": "Milestone 1",
+                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            },
+            {
+                "ID": "GNT-004",
+                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
+                "TenCongViec": "Báo cáo Nghiên cứu Tiền khả thi",
+                "GiaiDoan": "Detail Design",
+                "NgayBatDau": "2026-03-15",
+                "NgayKetThuc": "2026-04-15",
+                "PhanTramHoanThanh": 40,
+                "Milestone": "",
+                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            },
+            {
+                "ID": "GNT-005",
+                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
+                "TenCongViec": "Trình duyệt Thẩm định Đầu tư",
+                "GiaiDoan": "Legal / Regulatory",
+                "NgayBatDau": "2026-04-01",
+                "NgayKetThuc": "2026-05-01",
+                "PhanTramHoanThanh": 10,
+                "Milestone": "Milestone 2",
+                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        ]
+        df_dummy = pd.DataFrame(dummy_data)
         if os.path.exists(GANTT_DB_FILE):
             with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
-                df.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
+                df_dummy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
         else:
             with pd.ExcelWriter(GANTT_DB_FILE, engine="openpyxl") as writer:
-                df.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
+                df_dummy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
+                
+        # Sync GSheets if configured
+        conn = get_gsheets_conn()
+        if conn is not None:
+            try:
+                conn.update(worksheet="GANTT_KHDT", data=df_dummy)
+            except Exception:
+                pass
     except Exception as e:
         st.error(f"Lỗi khởi tạo Gantt DB: {e}")
 
@@ -1059,7 +1128,7 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
         # Sort and render Gantt chart if there is data
         if not project_tasks_df.empty:
             # Sort phases systematically
-            phase_order = ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Khác']
+            phase_order = ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác']
             project_tasks_df['GiaiDoan'] = pd.Categorical(project_tasks_df['GiaiDoan'], categories=phase_order, ordered=True)
             project_tasks_df = project_tasks_df.sort_values(by=["GiaiDoan", "NgayBatDau"])
             
@@ -1134,7 +1203,7 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
             g_col1, g_col2 = st.columns(2)
             with g_col1:
                 g_task_name = st.text_input("Tên công việc", key="g_task_name_new")
-                g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Khác'], key="g_phase_new")
+                g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác'], key="g_phase_new")
                 g_progress = st.slider("Tiến độ hoàn thành (% Progress)", 0, 100, 0, key="g_progress_new")
             with g_col2:
                 # today reference (2026-07-23)
@@ -1192,7 +1261,7 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
                 g_col_u1, g_col_u2 = st.columns(2)
                 with g_col_u1:
                     u_g_task_name = st.text_input("Tên công việc", value=g_task_data['TenCongViec'], key="u_g_task_name")
-                    u_g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Khác'], index=['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Khác'].index(g_task_data['GiaiDoan']), key="u_g_phase")
+                    u_g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác'], index=['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác'].index(g_task_data['GiaiDoan']), key="u_g_phase")
                     u_g_progress = st.slider("Tiến độ hoàn thành (% Progress)", 0, 100, int(g_task_data['PhanTramHoanThanh']), key="u_g_progress")
                 with g_col_u2:
                     u_g_start = st.date_input("Ngày bắt đầu thực hiện", value=g_task_data['NgayBatDau'], key="u_g_start", format="DD/MM/YYYY")
