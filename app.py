@@ -446,6 +446,83 @@ def save_sqlite_table(df, table_name):
     except Exception:
         return False
 
+def init_incoming_docs_db():
+    if not os.path.exists("OUTPUT"):
+        os.makedirs("OUTPUT", exist_ok=True)
+    required_cols = [
+        "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
+        "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
+        "TrangThai", "NgayCapNhat"
+    ]
+    # Initialize SQLite table if not exists
+    sqlite_df = read_sqlite_table("incoming_docs")
+    if sqlite_df is None:
+        df_init = pd.DataFrame(columns=required_cols)
+        save_sqlite_table(df_init, "incoming_docs")
+        
+    if os.path.exists(GANTT_DB_FILE):
+        try:
+            xls = pd.ExcelFile(GANTT_DB_FILE)
+            if "VAN_BAN_DEN" not in xls.sheet_names:
+                df_init = pd.DataFrame(columns=required_cols)
+                with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="overlay") as writer:
+                    df_init.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
+        except Exception:
+            pass
+
+def read_incoming_docs_db():
+    init_incoming_docs_db()
+    df = read_sqlite_table("incoming_docs")
+    if df is None or df.empty:
+        try:
+            df = pd.read_excel(GANTT_DB_FILE, sheet_name="VAN_BAN_DEN")
+        except Exception:
+            df = pd.DataFrame(columns=[
+                "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
+                "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
+                "TrangThai", "NgayCapNhat"
+            ])
+            
+    df.columns = [str(c).strip() for c in df.columns]
+    
+    # Clean data formats
+    df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh']).dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline']).dt.date
+    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'])
+    df['ID'] = df['ID'].astype(str)
+    
+    # Auto-adjust status to "⚠️ Trễ hạn" if Deadline < today and status != "✅ Đã xong"
+    today_dt = datetime.date.today()
+    for idx, row in df.iterrows():
+        deadline_val = row['Deadline']
+        status_val = str(row['TrangThai']).strip()
+        if isinstance(deadline_val, (datetime.date, datetime.datetime)):
+            if isinstance(deadline_val, datetime.datetime):
+                deadline_val = deadline_val.date()
+            if deadline_val < today_dt and status_val != "✅ Đã xong":
+                df.at[idx, 'TrangThai'] = "⚠️ Trễ hạn"
+                
+    return df
+
+def save_incoming_docs_db(df):
+    try:
+        df_save = df.copy()
+        df_save['NgayBanHanh'] = df_save['NgayBanHanh'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        
+        # Save to SQLite
+        save_sqlite_table(df_save, "incoming_docs")
+        
+        # Save to local Excel
+        if os.path.exists(GANTT_DB_FILE):
+            with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
+                df_save.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
+        return True
+    except Exception as e:
+        st.error(f"Lỗi ghi dữ liệu văn bản đến: {e}")
+        return False
+
 def init_db():
     if not os.path.exists("OUTPUT"):
         os.makedirs("OUTPUT", exist_ok=True)
@@ -725,7 +802,8 @@ menu = st.sidebar.radio(
         "📋 Bảng Tiến Độ Chi Tiết",
         "➕ Thêm / Cập Nhật Công Việc",
         "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
-        "⚙️ Quản Lý Cấu Hình"
+        "📩 Quản Lý Văn Bản Đến",
+        "⚙️ Quản Lý Cấu HÌnh"
     ],
     index=0
 )
@@ -814,6 +892,34 @@ def generate_styled_excel(tasks_df, gantt_df):
             gantt_df_copy['NgayCapNhat'] = gantt_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         gantt_df_copy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
         
+        # Write VAN_BAN_DEN (Drop ID column if exists)
+        try:
+            docs_df = read_incoming_docs_db()
+            docs_df_copy = docs_df.copy()
+            if 'ID' in docs_df_copy.columns:
+                docs_df_copy = docs_df_copy.drop(columns=['ID'])
+            if 'NgayCapNhat' in docs_df_copy.columns:
+                docs_df_copy['NgayCapNhat'] = docs_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+            for col_name in ['NgayBanHanh', 'Deadline']:
+                if col_name in docs_df_copy.columns:
+                    docs_df_copy[col_name] = docs_df_copy[col_name].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+            docs_df_copy = docs_df_copy.rename(columns={
+                'SoKyHieu': 'Số / Ký hiệu văn bản',
+                'NgayBanHanh': 'Ngày ban hành',
+                'CoQuanGui': 'Cơ quan / Đơn vị gửi',
+                'TrichYeu': 'Trích yếu nội dung',
+                'TenDuAn': 'Dự án liên quan',
+                'GanttTaskId': 'Mã CV Gantt liên kết',
+                'BanChuTri': 'Bộ phận chủ trì xử lý',
+                'Deadline': 'Hạn xử lý / Phản hồi',
+                'LinkFile': 'Đính kèm Link / File',
+                'TrangThai': 'Trạng thái xử lý',
+                'NgayCapNhat': 'Thời gian cập nhật'
+            })
+            docs_df_copy.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
+        except Exception:
+            pass
+            
         workbook = writer.book
         
         # Helper to style each worksheet
@@ -865,6 +971,8 @@ def generate_styled_excel(tasks_df, gantt_df):
                 
         style_worksheet(workbook["Sheet1"])
         style_worksheet(workbook["GANTT_KHDT"])
+        if "VAN_BAN_DEN" in workbook.sheetnames:
+            style_worksheet(workbook["VAN_BAN_DEN"])
         
     return output.getvalue()
 
@@ -996,6 +1104,63 @@ if menu == "📊 Dashboard Tổng Quan":
         )
     else:
         st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc gặp vướng mắc!")
+        
+    st.markdown("---")
+
+    # Dashboard incoming docs section
+    docs_df = read_incoming_docs_db()
+    if selected_company != "Tất cả đơn vị":
+        dash_docs = docs_df[docs_df['DonVi'] == selected_company]
+    else:
+        dash_docs = docs_df
+        
+    total_docs = len(dash_docs)
+    pending_docs = len(dash_docs[dash_docs['TrangThai'] == '⏳ Đang xử lý'])
+    late_docs = len(dash_docs[dash_docs['TrangThai'] == '⚠️ Trễ hạn'])
+    done_docs = len(dash_docs[dash_docs['TrangThai'] == '✅ Đã xong'])
+    
+    st.markdown("### 📩 Thống kê Văn bản đến")
+    
+    # Red warnings for late docs
+    late_docs_list = dash_docs[dash_docs['TrangThai'] == '⚠️ Trễ hạn']
+    if not late_docs_list.empty:
+        st.error("🚨 **CẢNH BÁO: CÓ VĂN BẢN ĐẾN TRỄ HẠN XỬ LÝ / PHẢN HỒI**")
+        alert_docs_data = []
+        for _, row in late_docs_list.iterrows():
+            deadline_val = row['Deadline']
+            if isinstance(deadline_val, str):
+                try:
+                    deadline_val = datetime.datetime.strptime(deadline_val, '%Y-%m-%d').date()
+                except Exception:
+                    pass
+            ref_today = today
+            if isinstance(ref_today, datetime.datetime):
+                ref_today = ref_today.date()
+            if isinstance(deadline_val, datetime.datetime):
+                deadline_val = deadline_val.date()
+                
+            days_late = 0
+            if isinstance(deadline_val, datetime.date):
+                days_late = (ref_today - deadline_val).days
+            
+            alert_docs_data.append({
+                "Số / Ký hiệu": row['SoKyHieu'],
+                "Đơn vị gửi": row['CoQuanGui'],
+                "Trích yếu nội dung": row['TrichYeu'],
+                "Hạn xử lý": row['Deadline'].strftime('%d/%m/%Y') if isinstance(row['Deadline'], (datetime.date, datetime.datetime)) else str(row['Deadline']),
+                "Số ngày trễ": f"{days_late} ngày"
+            })
+        st.dataframe(pd.DataFrame(alert_docs_data), use_container_width=True, hide_index=True)
+        
+    doc_m1, doc_m2, doc_m3, doc_m4 = st.columns(4)
+    with doc_m1:
+        st.metric("Tổng số VB đến", total_docs)
+    with doc_m2:
+        st.metric("VB Đang xử lý", pending_docs)
+    with doc_m3:
+        st.metric("VB Trễ hạn", late_docs)
+    with doc_m4:
+        st.metric("VB Đã hoàn thành", done_docs)
         
     st.markdown("---")
     
@@ -2050,6 +2215,324 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                     gantt_df_after_del = gantt_df[gantt_df['ID'] != selected_g_id]
                     if save_gantt_db(gantt_df_after_del):
                         st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_g_id}!")
+                        st.rerun()
+
+# ----------------- 5. QUẢN LÝ VĂN BẢN ĐẾN -----------------
+elif menu == "📩 Quản Lý Văn Bản Đến":
+    st.markdown("### 📩 Phân hệ Quản Lý Văn Bản Đến")
+    
+    docs_df = read_incoming_docs_db()
+    # Filter by selected company
+    if selected_company != "Tất cả đơn vị":
+        display_docs_df = docs_df[docs_df['DonVi'] == selected_company]
+    else:
+        display_docs_df = docs_df
+        
+    st.markdown("#### 📋 Danh sách Văn bản đến")
+    if display_docs_df.empty:
+        st.info("Chưa có văn bản đến nào được ghi nhận.")
+    else:
+        df_docs_show = pd.DataFrame()
+        df_docs_show['Mã VB'] = display_docs_df['ID']
+        df_docs_show['Số / Ký hiệu'] = display_docs_df['SoKyHieu']
+        df_docs_show['Ngày ban hành'] = display_docs_df['NgayBanHanh'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_docs_show['Cơ quan gửi'] = display_docs_df['CoQuanGui']
+        df_docs_show['Trích yếu'] = display_docs_df['TrichYeu']
+        df_docs_show['Dự án'] = display_docs_df['TenDuAn']
+        
+        # Format Gantt task link column
+        gantt_df = read_gantt_db()
+        def format_gantt_link(row):
+            gid = row.get('GanttTaskId')
+            if gid and str(gid).strip():
+                match_task = gantt_df[gantt_df['ID'] == str(gid).strip()]
+                if not match_task.empty:
+                    return f"{gid} - {match_task.iloc[0]['TenCongViec']}"
+                return str(gid)
+            return "--"
+        df_docs_show['CV Gantt liên kết'] = display_docs_df.apply(format_gantt_link, axis=1)
+        
+        df_docs_show['Bộ phận chủ trì'] = display_docs_df['BanChuTri']
+        df_docs_show['Hạn xử lý'] = display_docs_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        
+        # Format Link file or attachment
+        def format_doc_file(row):
+            val = row['LinkFile']
+            if not val or pd.isna(val):
+                return "--"
+            if isinstance(val, str) and val.startswith("OUTPUT"):
+                display_name = os.path.basename(val)
+                if "_" in display_name:
+                    display_name = display_name.split("_", 1)[1]
+                return f"📁 {display_name}"
+            return str(val)
+        df_docs_show['Đính kèm'] = display_docs_df.apply(format_doc_file, axis=1)
+        df_docs_show['Trạng thái'] = display_docs_df['TrangThai']
+        
+        st.dataframe(
+            df_docs_show,
+            column_config={
+                "Mã VB": st.column_config.TextColumn("Mã VB", width="small"),
+                "Số / Ký hiệu": st.column_config.TextColumn("Số / Ký hiệu", width="medium"),
+                "Ngày ban hành": st.column_config.TextColumn("Ngày ban hành", width="small"),
+                "Cơ quan gửi": st.column_config.TextColumn("Cơ quan gửi", width="medium"),
+                "Trích yếu": st.column_config.TextColumn("Trích yếu", width="large"),
+                "Dự án": st.column_config.TextColumn("Dự án", width="medium"),
+                "CV Gantt liên kết": st.column_config.TextColumn("CV Gantt liên kết", width="medium"),
+                "Bộ phận chủ trì": st.column_config.TextColumn("Bộ phận chủ trì", width="medium"),
+                "Hạn xử lý": st.column_config.TextColumn("Hạn xử lý", width="small"),
+                "Đính kèm": st.column_config.LinkColumn("Đính kèm", max_chars=300),
+                "Trạng thái": st.column_config.TextColumn("Trạng thái", width="small")
+            },
+            use_container_width=True,
+            hide_index=True
+        )
+        
+    st.markdown("---")
+    
+    # Form tabs
+    tab_new_doc, tab_update_doc = st.tabs(["➕ Đăng ký Văn bản đến mới", "✏️ Cập nhật thông tin Văn bản"])
+    
+    # Tab 1: New Document
+    with tab_new_doc:
+        st.markdown("#### Khởi tạo thông tin Văn bản đến")
+        col_d1, col_d2 = st.columns(2)
+        
+        with col_d1:
+            doc_company = st.selectbox("Đơn vị / Công ty nhận", list(COMPANIES.keys()), key="doc_co_new")
+            doc_number = st.text_input("Số / Ký hiệu văn bản", placeholder="Ví dụ: 102/CV-DMT", key="doc_num_new")
+            doc_date = st.date_input("Ngày ban hành", today, key="doc_date_new")
+            doc_sender = st.text_input("Tên cơ quan / Đơn vị gửi", placeholder="Ví dụ: Sở Xây dựng TP. Đà Nẵng", key="doc_sender_new")
+            doc_summary = st.text_area("Trích yếu nội dung văn bản", placeholder="Mô tả tóm tắt nội dung văn bản...", key="doc_sum_new")
+            
+        with col_d2:
+            doc_project = st.selectbox("Dự án liên quan", ["Không liên kết"] + ALL_PROJECTS, key="doc_proj_new")
+            
+            # Gantt task dropdown filterable
+            gantt_df = read_gantt_db()
+            gantt_opts = ["Không liên kết GANTT"]
+            for _, row in gantt_df.iterrows():
+                if doc_project == "Không liên kết" or clean_proj_name(row['TenDuAn']) == clean_proj_name(doc_project):
+                    gantt_opts.append(f"{row['ID']} - {row['TenDuAn']} - {row['TenCongViec']}")
+            
+            selected_gantt_opt = st.selectbox("Gắn vào công việc trong Sơ đồ Gantt", gantt_opts, key="doc_gantt_new")
+            
+            allowed_depts = get_departments_for_company(doc_company, OFFICIAL_DEPARTMENTS)
+            doc_dept = st.selectbox("Ban / Bộ phận chủ trì xử lý", allowed_depts, key="doc_dept_new")
+            doc_deadline = st.date_input("Hạn chót phải xử lý / Phản hồi", today + datetime.timedelta(days=7), key="doc_dl_new")
+            
+            st.markdown("**Đính kèm văn bản**")
+            doc_file_mode = st.radio("Hình thức nộp", ["✍️ Nhập Link văn bản (Dạng text/Drive)", "📁 Tải file đính kèm (PDF, Ảnh...)"], horizontal=True, key="doc_file_mode_new")
+            if doc_file_mode == "✍️ Nhập Link văn bản (Dạng text/Drive)":
+                doc_link = st.text_input("Nhập Link văn bản", placeholder="https://drive.google.com/...", key="doc_link_new")
+                doc_file = None
+            else:
+                doc_file = st.file_uploader("Tải file đính kèm", key="doc_file_upload_new")
+                doc_link = ""
+                
+            doc_status = st.selectbox("Trạng thái xử lý", ["⏳ Đang xử lý", "✅ Đã xong", "⚠️ Trễ hạn"], index=0, key="doc_status_new")
+            
+        submit_doc = st.button("💾 ĐĂNG KÝ VĂN BẢN ĐẾN", type="primary", key="btn_doc_submit_new")
+        if submit_doc:
+            if not doc_number.strip():
+                st.error("⚠️ Vui lòng nhập Số / Ký hiệu văn bản!")
+            elif not doc_sender.strip():
+                st.error("⚠️ Vui lòng nhập Tên cơ quan / Đơn vị gửi!")
+            elif not doc_summary.strip():
+                st.error("⚠️ Vui lòng nhập Trích yếu nội dung!")
+            else:
+                calc_status = doc_status
+                if doc_deadline < today and doc_status != "✅ Đã xong":
+                    calc_status = "⚠️ Trễ hạn"
+                    
+                # Auto ID generator
+                next_id = 1
+                if not docs_df.empty:
+                    ids = docs_df['ID'].tolist()
+                    nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                    if nums:
+                        next_id = max(nums) + 1
+                doc_id = f"DOC-{next_id:03d}"
+                
+                # Attachment file saving
+                saved_attachment = ""
+                if doc_file_mode == "✍️ Nhập Link văn bản (Dạng text/Drive)":
+                    saved_attachment = doc_link.strip()
+                elif doc_file is not None:
+                    upload_dir = os.path.join("OUTPUT", "UPLOADED_DOCUMENTS")
+                    if not os.path.exists(upload_dir):
+                        os.makedirs(upload_dir, exist_ok=True)
+                    safe_name = re.sub(r'[^\w\-_.]', '_', doc_file.name)
+                    file_name = f"{doc_id}_{safe_name}"
+                    file_path = os.path.join(upload_dir, file_name)
+                    with open(file_path, "wb") as f:
+                        f.write(doc_file.getbuffer())
+                    saved_attachment = file_path
+                
+                gantt_id = ""
+                if selected_gantt_opt != "Không liên kết GANTT":
+                    gantt_id = selected_gantt_opt.split(" - ")[0]
+                    
+                new_doc_row = {
+                    "ID": doc_id,
+                    "DonVi": doc_company,
+                    "SoKyHieu": doc_number.strip(),
+                    "NgayBanHanh": doc_date,
+                    "CoQuanGui": doc_sender.strip(),
+                    "TrichYeu": doc_summary.strip(),
+                    "TenDuAn": doc_project if doc_project != "Không liên kết" else "",
+                    "GanttTaskId": gantt_id,
+                    "BanChuTri": doc_dept,
+                    "Deadline": doc_deadline,
+                    "LinkFile": saved_attachment,
+                    "TrangThai": calc_status,
+                    "NgayCapNhat": datetime.datetime.now()
+                }
+                
+                docs_df_updated = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
+                if save_incoming_docs_db(docs_df_updated):
+                    st.success(f"🎉 Đăng ký thành công văn bản đến mã: {doc_id}!")
+                    st.rerun()
+
+    # Tab 2: Update Document
+    with tab_update_doc:
+        st.markdown("#### Cập nhật thông tin Văn bản đến")
+        if display_docs_df.empty:
+            st.info("Chưa có văn bản đến nào khả dụng để cập nhật.")
+        else:
+            doc_options_list = [f"{row['ID']} - {row['SoKyHieu']} ({row['CoQuanGui']})" for _, row in display_docs_df.iterrows()]
+            selected_update_doc_opt = st.selectbox("Chọn văn bản cần cập nhật", doc_options_list, key="sel_doc_to_update")
+            selected_doc_id = selected_update_doc_opt.split(" - ")[0]
+            doc_data = docs_df[docs_df['ID'] == selected_doc_id].iloc[0]
+            
+            with st.container():
+                col_du1, col_du2 = st.columns(2)
+                
+                with col_du1:
+                    u_doc_company = st.selectbox("Đơn vị / Công ty nhận", list(COMPANIES.keys()), index=list(COMPANIES.keys()).index(doc_data['DonVi']) if doc_data['DonVi'] in COMPANIES else 0, key="doc_co_up")
+                    u_doc_number = st.text_input("Số / Ký hiệu văn bản", value=doc_data['SoKyHieu'], key="doc_num_up")
+                    u_doc_date = st.date_input("Ngày ban hành", value=doc_data['NgayBanHanh'], key="doc_date_up")
+                    u_doc_sender = st.text_input("Tên cơ quan / Đơn vị gửi", value=doc_data['CoQuanGui'], key="doc_sender_up")
+                    u_doc_summary = st.text_area("Trích yếu nội dung văn bản", value=doc_data['TrichYeu'], key="doc_sum_up")
+                    
+                with col_du2:
+                    current_proj = doc_data['TenDuAn'] if doc_data['TenDuAn'] else "Không liên kết"
+                    proj_list = ["Không liên kết"] + ALL_PROJECTS
+                    default_proj_idx = proj_list.index(current_proj) if current_proj in proj_list else 0
+                    u_doc_project = st.selectbox("Dự án liên quan", proj_list, index=default_proj_idx, key="doc_proj_up")
+                    
+                    gantt_df = read_gantt_db()
+                    gantt_opts_up = ["Không liên kết GANTT"]
+                    for _, row in gantt_df.iterrows():
+                        if u_doc_project == "Không liên kết" or clean_proj_name(row['TenDuAn']) == clean_proj_name(u_doc_project):
+                            gantt_opts_up.append(f"{row['ID']} - {row['TenDuAn']} - {row['TenCongViec']}")
+                            
+                    current_gantt_id = doc_data.get('GanttTaskId', '')
+                    default_gantt_idx = 0
+                    if current_gantt_id and str(current_gantt_id).strip():
+                        for idx, opt in enumerate(gantt_opts_up):
+                            if opt.startswith(str(current_gantt_id).strip() + " - "):
+                                default_gantt_idx = idx
+                                break
+                    u_selected_gantt_opt = st.selectbox("Gắn vào công việc trong Sơ đồ Gantt", gantt_opts_up, index=default_gantt_idx, key="doc_gantt_up")
+                    
+                    u_allowed_depts = get_departments_for_company(u_doc_company, OFFICIAL_DEPARTMENTS)
+                    default_dept_idx = u_allowed_depts.index(doc_data['BanChuTri']) if doc_data['BanChuTri'] in u_allowed_depts else 0
+                    u_doc_dept = st.selectbox("Ban / Bộ phận chủ trì xử lý", u_allowed_depts, index=default_dept_idx, key="doc_dept_up")
+                    u_doc_deadline = st.date_input("Hạn chót phải xử lý / Phản hồi", value=doc_data['Deadline'], key="doc_dl_up")
+                    
+                    st.markdown("**Đính kèm văn bản hiện tại**")
+                    curr_file = doc_data['LinkFile']
+                    if curr_file:
+                        if isinstance(curr_file, str) and curr_file.startswith("OUTPUT") and os.path.exists(curr_file):
+                            display_file_name = os.path.basename(curr_file)
+                            if "_" in display_file_name:
+                                display_file_name = display_file_name.split("_", 1)[1]
+                            st.write(f"📁 **File:** `{display_file_name}`")
+                            with open(curr_file, "rb") as f:
+                                st.download_button(
+                                    label="📥 Tải file văn bản hiện tại",
+                                    data=f.read(),
+                                    file_name=display_file_name,
+                                    mime="application/octet-stream",
+                                    key="btn_download_doc_file"
+                                )
+                        else:
+                            st.write(f"✍️ **Link:** `{curr_file}`")
+                    else:
+                        st.write("*(Chưa có tài liệu đính kèm)*")
+                        
+                    st.markdown("---")
+                    st.markdown("**Cập nhật Đính kèm**")
+                    u_doc_file_mode = st.radio("Cập nhật hình thức nộp", ["Giữ nguyên hiện tại", "✍️ Nhập Link văn bản mới", "📁 Tải file đính kèm mới"], horizontal=True, key="doc_file_mode_up")
+                    u_doc_link = ""
+                    u_doc_file = None
+                    if u_doc_file_mode == "✍️ Nhập Link văn bản mới":
+                        u_doc_link = st.text_input("Nhập Link văn bản mới", key="doc_link_up")
+                    elif u_doc_file_mode == "📁 Tải file đính kèm mới":
+                        u_doc_file = st.file_uploader("Tải file đính kèm mới", key="doc_file_upload_up")
+                        
+                    status_list = ["⏳ Đang xử lý", "✅ Đã xong", "⚠️ Trễ hạn"]
+                    default_status_idx = status_list.index(doc_data['TrangThai']) if doc_data['TrangThai'] in status_list else 0
+                    u_doc_status = st.selectbox("Trạng thái xử lý", status_list, index=default_status_idx, key="doc_status_up")
+                    
+                btn_doc_save, btn_doc_del = st.columns([4, 1])
+                with btn_doc_save:
+                    save_doc_click = st.button("💾 LƯU CẬP NHẬT VĂN BẢN", type="primary", key="btn_doc_save_up")
+                with btn_doc_del:
+                    del_doc_click = st.button("🗑️ XÓA VĂN BẢN NÀY", type="secondary", key="btn_doc_del_up")
+                    
+                if save_doc_click:
+                    if not u_doc_number.strip():
+                        st.error("⚠️ Vui lòng nhập Số / Ký hiệu văn bản!")
+                    elif not u_doc_sender.strip():
+                        st.error("⚠️ Vui lòng nhập Tên cơ quan / Đơn vị gửi!")
+                    elif not u_doc_summary.strip():
+                        st.error("⚠️ Vui lòng nhập Trích yếu nội dung!")
+                    else:
+                        calc_doc_status = u_doc_status
+                        if u_doc_deadline < today and u_doc_status != "✅ Đã xong":
+                            calc_doc_status = "⚠️ Trễ hạn"
+                            
+                        final_attachment = curr_file
+                        if u_doc_file_mode == "✍️ Nhập Link văn bản mới":
+                            final_attachment = u_doc_link.strip()
+                        elif u_doc_file_mode == "📁 Tải file đính kèm mới" and u_doc_file is not None:
+                            upload_dir = os.path.join("OUTPUT", "UPLOADED_DOCUMENTS")
+                            if not os.path.exists(upload_dir):
+                                os.makedirs(upload_dir, exist_ok=True)
+                            safe_name = re.sub(r'[^\w\-_.]', '_', u_doc_file.name)
+                            file_name = f"{selected_doc_id}_{safe_name}"
+                            file_path = os.path.join(upload_dir, file_name)
+                            with open(file_path, "wb") as f:
+                                f.write(u_doc_file.getbuffer())
+                            final_attachment = file_path
+                            
+                        u_gantt_id = ""
+                        if u_selected_gantt_opt != "Không liên kết GANTT":
+                            u_gantt_id = u_selected_gantt_opt.split(" - ")[0]
+                            
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'DonVi'] = u_doc_company
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'SoKyHieu'] = u_doc_number.strip()
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'NgayBanHanh'] = u_doc_date
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'CoQuanGui'] = u_doc_sender.strip()
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'TrichYeu'] = u_doc_summary.strip()
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'TenDuAn'] = u_doc_project if u_doc_project != "Không liên kết" else ""
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'GanttTaskId'] = u_gantt_id
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'BanChuTri'] = u_doc_dept
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'Deadline'] = u_doc_deadline
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'LinkFile'] = final_attachment
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'TrangThai'] = calc_doc_status
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'NgayCapNhat'] = datetime.datetime.now()
+                        
+                        if save_incoming_docs_db(docs_df):
+                            st.success(f"🎉 Đã lưu cập nhật văn bản mã: {selected_doc_id}!")
+                            st.rerun()
+                            
+                if del_doc_click:
+                    docs_df_after_del = docs_df[docs_df['ID'] != selected_doc_id]
+                    if save_incoming_docs_db(docs_df_after_del):
+                        st.success(f"🗑️ Đã xóa thành công văn bản mã: {selected_doc_id}!")
                         st.rerun()
 
 # ----------------- 5. QUẢN LÝ CẤU HÌNH (ADMIN) -----------------
