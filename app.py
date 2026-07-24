@@ -1123,8 +1123,25 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
     
     gantt_df = read_gantt_db()
     
-    # 1. Select project (alphabetical order A-Z)
-    existing_projects = sorted(list(gantt_df['TenDuAn'].unique()))
+    # 1. Select project (alphabetical order A-Z with default projects)
+    default_projects = [
+        "KDC Bàu Mạc",
+        "KDC Nam Bàu Mạc",
+        "KĐT Phước Lý & Phước Lý MR",
+        "TĐC Phước Lý 2 & Hoà Liên 5",
+        "Dự án Phong Nam",
+        "Khu BT ST Hoà Ninh",
+        "Tuyến đường Lê Trọng Tấn",
+        "Tuyến đường Lê Trọng Tấn - Hoà Nhơn",
+        "Tuyến đường Trần Hưng Đạo (BT)",
+        "Trục I Tây Bắc",
+        "Khu TĐC Hoà Vang",
+        "Khách sạn DMT Group",
+        "Khách sạn DMT Măng Đen"
+    ]
+    existing_db_projects = list(gantt_df['TenDuAn'].unique())
+    merged_projects = list(set(default_projects + existing_db_projects))
+    existing_projects = sorted(merged_projects)
     gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
     
     selected_gantt_project = st.selectbox("Chọn Dự án KHĐT", gantt_project_options)
