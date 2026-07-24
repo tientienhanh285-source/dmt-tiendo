@@ -705,14 +705,18 @@ from openpyxl.utils import get_column_letter
 def generate_styled_excel(tasks_df, gantt_df):
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        # Write Sheet1
+        # Write Sheet1 (Drop ID column if exists)
         tasks_df_copy = tasks_df.copy()
+        if 'ID' in tasks_df_copy.columns:
+            tasks_df_copy = tasks_df_copy.drop(columns=['ID'])
         if 'NgayCapNhat' in tasks_df_copy.columns:
             tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         tasks_df_copy.to_excel(writer, sheet_name="Sheet1", index=False)
         
-        # Write GANTT_KHDT
+        # Write GANTT_KHDT (Drop ID column if exists)
         gantt_df_copy = gantt_df.copy()
+        if 'ID' in gantt_df_copy.columns:
+            gantt_df_copy = gantt_df_copy.drop(columns=['ID'])
         if 'NgayCapNhat' in gantt_df_copy.columns:
             gantt_df_copy['NgayCapNhat'] = gantt_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         gantt_df_copy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
@@ -852,14 +856,13 @@ if menu == "📊 Dashboard Tổng Quan":
     
     if not critical_df.empty:
         crit_display = pd.DataFrame()
-        crit_display['Mã việc'] = critical_df['ID']
         crit_display['Dự án / Hạng mục'] = critical_df['TenDuAn']
         crit_display['Tên công việc'] = critical_df['TenCongViec']
         crit_display['Phòng ban'] = critical_df['PhongBan']
         crit_display['Người thực hiện'] = critical_df['NguoiChuTri']
         crit_display['Hạn chót'] = critical_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y'))
         crit_display['Trạng thái thực tế'] = critical_df.apply(
-            lambda r: "🛑 Trễ hạn" if (r['Deadline'] < today and r['TrangThai'] != 'Hoàn thành') else "🔴 Vướng mắc", 
+            lambda r: "⚠️ Trễ hạn" if (r['Deadline'] < today and r['TrangThai'] != 'Hoàn thành') else "🔴 Vướng mắc", 
             axis=1
         )
         crit_display['Ghi chú / Giải trình vướng mắc'] = critical_df['GiaiTrinhDeXuat']
@@ -867,7 +870,6 @@ if menu == "📊 Dashboard Tổng Quan":
         st.dataframe(
             crit_display,
             column_config={
-                "Mã việc": st.column_config.TextColumn("Mã việc", width="small"),
                 "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width="medium"),
                 "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                 "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
@@ -911,7 +913,6 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         st.info("Không có công việc nào phù hợp với bộ lọc.")
     else:
         df_display = pd.DataFrame()
-        df_display['Mã việc'] = table_df['ID']
         df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
         df_display['Tên công việc'] = table_df['TenCongViec']
         df_display['Phòng ban'] = table_df['PhongBan']
@@ -926,7 +927,7 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
             if is_comp:
                 return date_str
             elif days_left < 0:
-                return f"🛑 {date_str} (Trễ hạn)"
+                return f"⚠️ {date_str} (Trễ hạn)"
             elif 0 <= days_left <= 2:
                 return f"⚠️ {date_str} (Sắp hạn)"
             else:
@@ -942,13 +943,15 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
             is_issue = row['TrangThai'] == 'Có vướng mắc'
             
             if is_comp:
-                return "🟢 Đã Xong"
+                return "✅ Đã xong"
             elif is_issue:
-                return "🔴 Vướng Mắc"
+                return "🔴 Vướng mắc"
             elif is_ovd:
-                return "🛑 Trễ Hạn"
+                return "⚠️ Trễ hạn"
+            elif row['TrangThai'] == 'Đang thực hiện':
+                return "⏳ Đang thực hiện"
             else:
-                return "🔵 Đang Làm"
+                return "❌ Chưa bắt đầu"
         df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
         
         # Format Kết quả / File đính kèm
@@ -972,7 +975,6 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         st.dataframe(
             df_display,
             column_config={
-                "Mã việc": st.column_config.TextColumn("Mã việc", width="small"),
                 "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width="medium"),
                 "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                 "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
@@ -1567,9 +1569,8 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             disp_table['NgayBatDau'] = disp_table['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y'))
             disp_table['NgayKetThuc'] = disp_table['NgayKetThuc'].apply(lambda x: x.strftime('%d/%m/%Y'))
             st.dataframe(
-                disp_table[["ID", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone"]],
+                disp_table[["TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone"]],
                 column_config={
-                    "ID": st.column_config.TextColumn("Mã"),
                     "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
                     "GiaiDoan": st.column_config.TextColumn("Giai đoạn"),
                     "NgayBatDau": st.column_config.TextColumn("Ngày bắt đầu"),
