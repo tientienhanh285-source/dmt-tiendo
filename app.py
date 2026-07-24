@@ -496,11 +496,21 @@ def read_incoming_docs_db():
     for idx, row in df.iterrows():
         deadline_val = row['Deadline']
         status_val = str(row['TrangThai']).strip()
-        if isinstance(deadline_val, (datetime.date, datetime.datetime)):
-            if isinstance(deadline_val, datetime.datetime):
-                deadline_val = deadline_val.date()
-            if deadline_val < today_dt and status_val != "✅ Đã xong":
-                df.at[idx, 'TrangThai'] = "⚠️ Trễ hạn"
+        
+        # If it's a string, try parsing it
+        if isinstance(deadline_val, str):
+            try:
+                deadline_val = datetime.datetime.strptime(deadline_val, '%Y-%m-%d').date()
+            except Exception:
+                pass
+                
+        if isinstance(deadline_val, datetime.datetime):
+            deadline_val = deadline_val.date()
+            
+        if isinstance(deadline_val, datetime.date):
+            if deadline_val < today_dt and "✅ Đã xong" not in status_val and "Đã xong" not in status_val:
+                days_late = (today_dt - deadline_val).days
+                df.at[idx, 'TrangThai'] = f"⚠️ Trễ hạn xử lý CV (Trễ {days_late} ngày)"
                 
     return df
 
@@ -1116,13 +1126,13 @@ if menu == "📊 Dashboard Tổng Quan":
         
     total_docs = len(dash_docs)
     pending_docs = len(dash_docs[dash_docs['TrangThai'] == '⏳ Đang xử lý'])
-    late_docs = len(dash_docs[dash_docs['TrangThai'] == '⚠️ Trễ hạn'])
+    late_docs = len(dash_docs[dash_docs['TrangThai'].astype(str).str.contains('Trễ hạn', na=False)])
     done_docs = len(dash_docs[dash_docs['TrangThai'] == '✅ Đã xong'])
     
     st.markdown("### 📩 Thống kê Văn bản đến")
     
     # Red warnings for late docs
-    late_docs_list = dash_docs[dash_docs['TrangThai'] == '⚠️ Trễ hạn']
+    late_docs_list = dash_docs[dash_docs['TrangThai'].astype(str).str.contains('Trễ hạn', na=False)]
     if not late_docs_list.empty:
         st.error("🚨 **CẢNH BÁO: CÓ VĂN BẢN ĐẾN TRỄ HẠN XỬ LÝ / PHẢN HỒI**")
         alert_docs_data = []
@@ -2269,8 +2279,16 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         df_docs_show['Đính kèm'] = display_docs_df.apply(format_doc_file, axis=1)
         df_docs_show['Trạng thái'] = display_docs_df['TrangThai']
         
+        # Highlight late document status in red
+        def highlight_overdue_docs(val):
+            if "Trễ hạn" in str(val):
+                return 'background-color: #FEE2E2; color: #DC2626; font-weight: bold;'
+            return ''
+            
+        styled_df = df_docs_show.style.applymap(highlight_overdue_docs, subset=['Trạng thái']) if hasattr(df_docs_show.style, 'applymap') else df_docs_show.style.map(highlight_overdue_docs, subset=['Trạng thái'])
+        
         st.dataframe(
-            df_docs_show,
+            styled_df,
             column_config={
                 "Mã VB": st.column_config.TextColumn("Mã VB", width="small"),
                 "Số / Ký hiệu": st.column_config.TextColumn("Số / Ký hiệu", width="medium"),
@@ -2282,12 +2300,143 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
                 "Bộ phận chủ trì": st.column_config.TextColumn("Bộ phận chủ trì", width="medium"),
                 "Hạn xử lý": st.column_config.TextColumn("Hạn xử lý", width="small"),
                 "Đính kèm": st.column_config.LinkColumn("Đính kèm", max_chars=300),
-                "Trạng thái": st.column_config.TextColumn("Trạng thái", width="small")
+                "Trạng thái": st.column_config.TextColumn("Trạng thái", width="medium")
             },
             use_container_width=True,
             hide_index=True
         )
         
+    st.markdown("---")
+    
+    # Excel Import Section
+    with st.expander("📥 Nhập dữ liệu Công văn từ file Excel"):
+        st.markdown("Tải lên file Excel Công văn đến để tự động thêm vào hệ thống và tạo công việc tương ứng.")
+        uploaded_excel = st.file_uploader("Chọn file Excel Công văn đến (.xlsx, .xls)", type=["xlsx", "xls"], key="upload_cv_excel")
+        if uploaded_excel is not None:
+            try:
+                import_df = pd.read_excel(uploaded_excel)
+                import_df.columns = [str(c).strip() for c in import_df.columns]
+                
+                required_cols_excel = ["NGÀY", "ĐƠN VỊ", "NỘI DUNG", "Số ký hiệu", "Thời hạn hoàn thành", "Trạng thái", "Người/ Ban thực hiện"]
+                missing_cols = [col for col in required_cols_excel if col not in import_df.columns]
+                
+                if missing_cols:
+                    st.error(f"⚠️ File Excel thiếu các cột bắt buộc: {', '.join(missing_cols)}")
+                else:
+                    # Filter rows where "Thời hạn hoàn thành" is NOT empty
+                    valid_rows = import_df[import_df["Thời hạn hoàn thành"].notna() & (import_df["Thời hạn hoàn thành"].astype(str).str.strip() != "")]
+                    
+                    if valid_rows.empty:
+                        st.warning("⚠️ Không tìm thấy dòng nào có nhập 'Thời hạn hoàn thành' trong file Excel.")
+                    else:
+                        tasks_df = read_db()
+                        success_count = 0
+                        
+                        for _, row in valid_rows.iterrows():
+                            # Parse dates
+                            try:
+                                ngay_ban_hanh = pd.to_datetime(row["NGÀY"]).date()
+                            except Exception:
+                                ngay_ban_hanh = today
+                                
+                            try:
+                                deadline_val = pd.to_datetime(row["Thời hạn hoàn thành"]).date()
+                            except Exception:
+                                deadline_val = today
+                                
+                            so_ky_hieu = str(row["Số ký hiệu"]).strip()
+                            co_quan_gui = str(row["ĐƠN VỊ"]).strip()
+                            trich_yeu = str(row["NỘI DUNG"]).strip()
+                            ban_chu_tri = str(row["Người/ Ban thực hiện"]).strip()
+                            trang_thai_raw = str(row["Trạng thái"]).strip()
+                            
+                            # Map Status
+                            trang_thai = "⏳ Đang xử lý"
+                            if trang_thai_raw in ["Đã xong", "Hoàn thành", "Đã hoàn thành", "✅ Đã xong"]:
+                                trang_thai = "✅ Đã xong"
+                            elif deadline_val < today:
+                                trang_thai = "⚠️ Trễ hạn"
+                                
+                            # Check duplicate in docs_df
+                            duplicate_doc = docs_df[docs_df['SoKyHieu'] == so_ky_hieu]
+                            if duplicate_doc.empty:
+                                # Auto ID generator for docs
+                                next_doc_id = 1
+                                if not docs_df.empty:
+                                    ids = docs_df['ID'].tolist()
+                                    nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                                    if nums:
+                                        next_doc_id = max(nums) + 1
+                                doc_id = f"DOC-{next_doc_id:03d}"
+                                
+                                new_doc_row = {
+                                    "ID": doc_id,
+                                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                                    "SoKyHieu": so_ky_hieu,
+                                    "NgayBanHanh": ngay_ban_hanh,
+                                    "CoQuanGui": co_quan_gui,
+                                    "TrichYeu": trich_yeu,
+                                    "TenDuAn": "",
+                                    "GanttTaskId": "",
+                                    "BanChuTri": ban_chu_tri if ban_chu_tri in OFFICIAL_DEPARTMENTS else "Ban Lãnh đạo",
+                                    "Deadline": deadline_val,
+                                    "LinkFile": "",
+                                    "TrangThai": trang_thai,
+                                    "NgayCapNhat": datetime.datetime.now()
+                                }
+                                docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
+                                
+                                # Also automatically create a Task in general progression
+                                duplicate_task = tasks_df[tasks_df['TenCongViec'].str.contains(so_ky_hieu, na=False)]
+                                if duplicate_task.empty:
+                                    next_tsk_id = 1
+                                    if not tasks_df.empty:
+                                        t_ids = tasks_df['ID'].tolist()
+                                        t_nums = [int(m[0]) for idx in t_ids for m in [re.findall(r'\d+', str(idx))] if m]
+                                        if t_nums:
+                                            next_tsk_id = max(t_nums) + 1
+                                    task_id = f"TSK-{next_tsk_id:03d}"
+                                    
+                                    task_status = "Đang thực hiện"
+                                    if trang_thai == "✅ Đã xong":
+                                        task_status = "Hoàn thành"
+                                    elif deadline_val < today:
+                                        task_status = "Quá hạn"
+                                        
+                                    new_task_row = {
+                                        "ID": task_id,
+                                        "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                                        "PhongBan": ban_chu_tri if ban_chu_tri in OFFICIAL_DEPARTMENTS else "Ban Lãnh đạo",
+                                        "NguoiChuTri": "Trần Cường",
+                                        "TenDuAn": "Quản lý Công văn đến",
+                                        "MocTienDo": "Tự do",
+                                        "SanPhamBanGiao": "Xem chi tiết văn bản",
+                                        "TenCongViec": f"📩 [Công văn đến] {trich_yeu} (Số: {so_ky_hieu})",
+                                        "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+                                        "NgayBatDau": ngay_ban_hanh,
+                                        "Deadline": deadline_val,
+                                        "DoUuTien": "Trung bình",
+                                        "PhanTramHoanThanh": 100 if task_status == "Hoàn thành" else 99,
+                                        "TrangThai": task_status,
+                                        "LinkKetQua": "",
+                                        "GiaiTrinhDeXuat": "",
+                                        "NgayCapNhat": datetime.datetime.now(),
+                                        "ChuKyTheoDoi": "Theo dự án / Tự do",
+                                        "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
+                                    }
+                                    tasks_df = pd.concat([tasks_df, pd.DataFrame([new_task_row])], ignore_index=True)
+                                    
+                                success_count += 1
+                                
+                        if success_count > 0:
+                            if save_incoming_docs_db(docs_df) and save_db(tasks_df):
+                                st.success(f"🎉 Tải lên thành công! Đã thêm {success_count} công văn mới có thời hạn và tạo công việc tương ứng.")
+                                st.rerun()
+                        else:
+                            st.info("ℹ️ Không có công văn mới nào được thêm (các công văn đều đã tồn tại).")
+            except Exception as e:
+                st.error(f"❌ Lỗi xử lý file Excel: {e}")
+                
     st.markdown("---")
     
     # Form tabs
