@@ -452,7 +452,7 @@ def init_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
     ]
     
     # Initialize SQLite table if not exists
@@ -500,7 +500,7 @@ def read_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
     ]
     
     if conn is not None:
@@ -535,6 +535,8 @@ def read_db():
     # Check and initialize missing columns dynamically
     if "ChuKyTheoDoi" not in df.columns:
         df["ChuKyTheoDoi"] = "Theo dự án / Tự do"
+    if "PhanLoaiTreHan" not in df.columns:
+        df["PhanLoaiTreHan"] = "🟢 Không trễ hạn / Đúng tiến độ"
     for col in required_cols:
         if col not in df.columns:
             df[col] = ""
@@ -550,6 +552,7 @@ def read_db():
     df['LinkKetQua'] = df['LinkKetQua'].fillna('')
     df['GiaiTrinhDeXuat'] = df['GiaiTrinhDeXuat'].fillna('')
     df['ChuKyTheoDoi'] = df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+    df['PhanLoaiTreHan'] = df['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
     df['ID'] = df['ID'].astype(str)
     
     # Calculate progress dynamically based on time and status
@@ -568,6 +571,7 @@ def save_db(df):
         df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+        df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
         
         # Save to local SQLite
         save_sqlite_table(df_save, "tasks")
@@ -757,6 +761,45 @@ def generate_styled_excel(tasks_df, gantt_df):
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         # Write Sheet1 (Drop ID column if exists)
         tasks_df_copy = tasks_df.copy()
+        
+        # Format the PhanLoaiTreHan column for Excel
+        formatted_causes = []
+        for _, row in tasks_df_copy.iterrows():
+            is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+            deadline = row.get('Deadline')
+            if isinstance(deadline, str):
+                try:
+                    deadline = datetime.datetime.strptime(deadline, '%Y-%m-%d').date()
+                except Exception:
+                    pass
+            ref_today = today
+            if isinstance(ref_today, datetime.datetime):
+                ref_today = ref_today.date()
+            if isinstance(deadline, datetime.datetime):
+                deadline = deadline.date()
+                
+            is_late = False
+            if isinstance(deadline, datetime.date):
+                is_late = (deadline < ref_today) and not is_comp
+                
+            if not is_late:
+                formatted_causes.append("")
+            else:
+                val = row.get('PhanLoaiTreHan', '')
+                if "chủ quan" in str(val).lower():
+                    formatted_causes.append("[Do chủ quan]")
+                elif "khách quan" in str(val).lower():
+                    explain = row.get('GiaiTrinhDeXuat', '')
+                    if explain and explain != "--" and str(explain).strip():
+                        formatted_causes.append(f"[Do khách quan] - {str(explain).strip()}")
+                    else:
+                        formatted_causes.append("[Do khách quan]")
+                else:
+                    formatted_causes.append("")
+                    
+        tasks_df_copy['PhanLoaiTreHan'] = formatted_causes
+        tasks_df_copy = tasks_df_copy.rename(columns={'PhanLoaiTreHan': 'Nguyên nhân trễ hạn'})
+        
         if 'ID' in tasks_df_copy.columns:
             tasks_df_copy = tasks_df_copy.drop(columns=['ID'])
         if 'NgayCapNhat' in tasks_df_copy.columns:
@@ -966,6 +1009,16 @@ if menu == "📊 Dashboard Tổng Quan":
         # Ensure ChuKyTheoDoi has valid values
         perf_df['ChuKyTheoDoi'] = perf_df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         
+        # Adjust progress for objective delay / on track so it doesn't deduct points
+        # Only tasks with PhanLoaiTreHan == "👤 Do chủ quan" will keep their real (deducted) progress.
+        # Other tasks (objective or on time) that are late will be treated as 100% to avoid deduction.
+        for idx, row in perf_df.iterrows():
+            is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+            is_late = (row['Deadline'] < today) and not is_comp
+            if is_late:
+                if row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
+                    perf_df.at[idx, 'PhanTramHoanThanh'] = 100
+        
         # Calculate pivot table
         try:
             perf_pivot = perf_df.pivot_table(
@@ -1084,6 +1137,25 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
                 return "❌ Chưa bắt đầu"
         df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
         
+        # Format Nguyên nhân trễ hạn
+        def format_late_cause(row):
+            is_comp = (row['TrangThai'] == 'Hoàn thành')
+            is_late = (row['Deadline'] < today) and not is_comp
+            if not is_late:
+                return "--"
+            
+            val = row.get('PhanLoaiTreHan', '')
+            if "chủ quan" in str(val).lower():
+                return "🔴 [Do chủ quan]"
+            elif "khách quan" in str(val).lower():
+                explain = row.get('GiaiTrinhDeXuat', '')
+                if explain and explain.strip():
+                    return f"🟠 [Do khách quan] - {explain.strip()}"
+                return "🟠 [Do khách quan]"
+            else:
+                return "--"
+        df_display['Nguyên nhân trễ hạn'] = table_df.apply(format_late_cause, axis=1)
+        
         # Format Kết quả / File đính kèm
         def format_notes(row):
             is_comp = (row['TrangThai'] == 'Hoàn thành')
@@ -1118,6 +1190,7 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
                     max_value=100
                 ),
                 "Trạng thái": st.column_config.TextColumn("Trạng thái", width="small"),
+                "Nguyên nhân trễ hạn": st.column_config.TextColumn("Nguyên nhân trễ hạn", width="medium"),
                 "Kết quả / File đính kèm": st.column_config.LinkColumn(
                     "Kết quả / File đính kèm",
                     max_chars=300
@@ -1206,7 +1279,24 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 task_link_text = ""
             
             # 10. Ghi chú vướng mắc
-            task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Nếu trễ hạn hoặc gặp vướng mắc)", placeholder="Mô tả chi tiết khó khăn...")
+            is_late = (task_deadline < today) and not task_is_completed
+            task_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
+            if is_late:
+                task_late_cause = st.selectbox(
+                    "Phân loại nguyên nhân trễ hạn",
+                    ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"],
+                    index=0,
+                    key="new_task_late_cause"
+                )
+                if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+                    task_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", placeholder="Mô tả chi tiết khó khăn, nguyên nhân khách quan và phương án xử lý...", key="new_task_explain")
+                else:
+                    task_explain = ""
+            else:
+                if task_has_issue:
+                    task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", key="new_task_explain")
+                else:
+                    task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", placeholder="Mô tả chi tiết khó khăn...", key="new_task_explain")
             
             # 11. Chu kỳ theo dõi
             task_cycle = st.selectbox("Chu kỳ theo dõi", ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"], index=3)
@@ -1243,8 +1333,13 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         st.error("⚠️ Bắt buộc tải file đính kèm!")
                         has_error = True
                         
-                if calc_status in ["Có vướng mắc", "Quá hạn"]:
-                     if not task_explain.strip() or len(task_explain.strip()) < 5:
+                if is_late:
+                    if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+                        if not task_explain.strip() or len(task_explain.strip()) < 5:
+                            st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+                            has_error = True
+                elif calc_status == "Có vướng mắc":
+                    if not task_explain.strip() or len(task_explain.strip()) < 5:
                         st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
                         has_error = True
                         
@@ -1289,9 +1384,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "PhanTramHoanThanh": task_progress,
                         "TrangThai": calc_status,
                         "LinkKetQua": saved_result,
-                        "GiaiTrinhDeXuat": task_explain.strip() if (calc_status in ["Có vướng mắc", "Quá hạn"]) else "",
+                        "GiaiTrinhDeXuat": task_explain.strip() if ((is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not is_late and calc_status == "Có vướng mắc")) else "",
                         "NgayCapNhat": datetime.datetime.now(),
-                        "ChuKyTheoDoi": task_cycle
+                        "ChuKyTheoDoi": task_cycle,
+                        "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ"
                     }
                     
                     df_updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -1399,7 +1495,27 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         u_file = st.file_uploader("Tải file đính kèm mới", key="u_result_file")
                         
                 with col_ub2:
-                    u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc nếu trễ hoặc gặp vướng mắc)", value=task_data['GiaiTrinhDeXuat'])
+                    u_is_late = (u_deadline < today) and not u_is_completed
+                    u_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
+                    if u_is_late:
+                        u_options = ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"]
+                        u_current_val = task_data.get('PhanLoaiTreHan', "🟢 Không trễ hạn / Đúng tiến độ")
+                        u_default_idx = u_options.index(u_current_val) if u_current_val in u_options else 0
+                        u_late_cause = st.selectbox(
+                            "Phân loại nguyên nhân trễ hạn",
+                            u_options,
+                            index=u_default_idx,
+                            key="u_late_cause_sel"
+                        )
+                        if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+                            u_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key="u_explain_txt")
+                        else:
+                            u_explain = ""
+                    else:
+                        if u_has_issue:
+                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key="u_explain_txt")
+                        else:
+                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key="u_explain_txt")
                     
                 btn_save, btn_del = st.columns([4, 1])
                 with btn_save:
@@ -1435,7 +1551,12 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             st.error("⚠️ Bắt buộc tải file đính kèm để hoàn thành công việc!")
                             has_error = True
                             
-                    if u_status in ["Có vướng mắc", "Quá hạn"]:
+                    if u_is_late:
+                        if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+                            if not u_explain.strip() or len(u_explain.strip()) < 5:
+                                st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+                                has_error = True
+                    elif u_status == "Có vướng mắc":
                         if not u_explain.strip() or len(u_explain.strip()) < 5:
                             st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
                             has_error = True
@@ -1467,9 +1588,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
                         df.loc[df['ID'] == selected_id, 'TrangThai'] = u_status
                         df.loc[df['ID'] == selected_id, 'LinkKetQua'] = final_link
-                        df.loc[df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if (u_status in ["Có vướng mắc", "Quá hạn"]) else ""
+                        df.loc[df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if ((u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not u_is_late and u_status == "Có vướng mắc")) else ""
                         df.loc[df['ID'] == selected_id, 'NgayCapNhat'] = datetime.datetime.now()
                         df.loc[df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
+                        df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
                         
                         if save_db(df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
