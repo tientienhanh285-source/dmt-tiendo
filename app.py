@@ -5,6 +5,7 @@ import os
 import re
 import json
 import plotly.express as px
+import sqlite3
 
 # Page config - Light Theme is handled natively by Streamlit's default settings
 st.set_page_config(
@@ -253,11 +254,17 @@ def init_gantt_db():
     if not os.path.exists("OUTPUT"):
         os.makedirs("OUTPUT", exist_ok=True)
     try:
+        # Check SQLite first
+        sqlite_df = read_sqlite_table("gantt_tasks")
+        if sqlite_df is not None and not sqlite_df.empty:
+            return
+            
         if os.path.exists(GANTT_DB_FILE):
             xls = pd.ExcelFile(GANTT_DB_FILE)
             if "GANTT_KHDT" in xls.sheet_names:
                 df = pd.read_excel(GANTT_DB_FILE, sheet_name="GANTT_KHDT")
                 if not df.empty:
+                    save_sqlite_table(df, "gantt_tasks")
                     return
         
         # Populate dummy data with localized Phase 1 - 8 names
@@ -319,6 +326,10 @@ def init_gantt_db():
             }
         ]
         df_dummy = pd.DataFrame(dummy_data)
+        
+        # Save to local SQLite
+        save_sqlite_table(df_dummy, "gantt_tasks")
+        
         if os.path.exists(GANTT_DB_FILE):
             with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
                 df_dummy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
@@ -348,10 +359,14 @@ def read_gantt_db():
                 conn.update(worksheet="GANTT_KHDT", data=df)
             else:
                 df.columns = [str(c).strip() for c in df.columns]
+                save_sqlite_table(df, "gantt_tasks")
                 with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
                     df.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
         except Exception as e:
             st.warning(f"Không thể đồng bộ Gantt từ Google Sheets (đang dùng cục bộ): {e}")
+
+    if df is None:
+        df = read_sqlite_table("gantt_tasks")
 
     if df is None:
         try:
@@ -396,6 +411,9 @@ def save_gantt_db(df):
         df_save['NgayKetThuc'] = df_save['NgayKetThuc'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         
+        # Save to local SQLite
+        save_sqlite_table(df_save, "gantt_tasks")
+        
         with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
             df_save.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
             
@@ -410,15 +428,41 @@ def save_gantt_db(df):
         st.error(f"Lỗi ghi dữ liệu Gantt: {e}")
         return False
 
+def read_sqlite_table(table_name):
+    try:
+        conn = sqlite3.connect("database.db")
+        df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
+        conn.close()
+        return df
+    except Exception:
+        return None
+
+def save_sqlite_table(df, table_name):
+    try:
+        conn = sqlite3.connect("database.db")
+        df.to_sql(table_name, conn, if_exists="replace", index=False)
+        conn.close()
+        return True
+    except Exception:
+        return False
+
 def init_db():
     if not os.path.exists("OUTPUT"):
         os.makedirs("OUTPUT", exist_ok=True)
+    required_cols = [
+        "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
+        "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi"
+    ]
+    
+    # Initialize SQLite table if not exists
+    sqlite_df = read_sqlite_table("tasks")
+    if sqlite_df is None:
+        df_init = pd.DataFrame(columns=required_cols)
+        save_sqlite_table(df_init, "tasks")
+        
     if not os.path.exists(DB_FILE):
-        df = pd.DataFrame(columns=[
-            "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
-            "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-            "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat"
-        ])
+        df = pd.DataFrame(columns=required_cols)
         df.to_excel(DB_FILE, index=False)
 
 def calculate_time_progress(start_d, end_d, is_comp):
@@ -453,38 +497,47 @@ def read_db():
     # Try to sync from Google Sheets first if configured
     conn = get_gsheets_conn()
     df = None
+    required_cols = [
+        "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
+        "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi"
+    ]
+    
     if conn is not None:
         try:
-            # Disable caching by setting ttl to 0 so we always get the fresh data on reload
             df = conn.read(worksheet="Sheet1", ttl="0")
-            
-            # Auto-initialize headers if Sheet1 is new/empty
-            required_cols = [
-                "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
-                "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-                "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat"
-            ]
             if df is None or df.empty or len(df.columns) < 2:
                 df = pd.DataFrame(columns=required_cols)
                 conn.update(worksheet="Sheet1", data=df)
             else:
-                # Normalize column headers
                 df.columns = [str(c).strip() for c in df.columns]
-                # Sync back to local Excel
+                # Sync back to local SQLite and Excel
+                save_sqlite_table(df, "tasks")
                 df.to_excel(DB_FILE, index=False)
         except Exception as e:
             st.warning(f"Không thể đồng bộ từ Google Sheets (đang dùng dữ liệu cục bộ): {e}")
 
+    # Fallback to SQLite
+    if df is None:
+        df = read_sqlite_table("tasks")
+        
+    # Fallback to Excel
     if df is None:
         try:
             df = pd.read_excel(DB_FILE)
         except Exception as e:
             st.error(f"Lỗi đọc DB cục bộ: {e}")
-            df = pd.DataFrame(columns=[
-                "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
-                "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-                "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat"
-            ])
+            df = pd.DataFrame(columns=required_cols)
+
+    # Clean column headers
+    df.columns = [str(c).strip() for c in df.columns]
+    
+    # Check and initialize missing columns dynamically
+    if "ChuKyTheoDoi" not in df.columns:
+        df["ChuKyTheoDoi"] = "Theo dự án / Tự do"
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = ""
 
     # Clean data formats
     df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau']).dt.date
@@ -496,6 +549,7 @@ def read_db():
     df['SanPhamBanGiao'] = df['SanPhamBanGiao'].fillna('Xem chi tiết')
     df['LinkKetQua'] = df['LinkKetQua'].fillna('')
     df['GiaiTrinhDeXuat'] = df['GiaiTrinhDeXuat'].fillna('')
+    df['ChuKyTheoDoi'] = df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
     df['ID'] = df['ID'].astype(str)
     
     # Calculate progress dynamically based on time and status
@@ -513,6 +567,10 @@ def save_db(df):
         df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+        
+        # Save to local SQLite
+        save_sqlite_table(df_save, "tasks")
         
         # Save local Excel first
         df_save.to_excel(DB_FILE, index=False)
@@ -814,8 +872,19 @@ def clean_proj_name(name):
 if menu == "📊 Dashboard Tổng Quan":
     st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
     
+    # 1. Filter cycle dropdown
+    cycle_filter = st.selectbox(
+        "📅 Lọc theo Chu kỳ theo dõi",
+        ["Tất cả chu kỳ", "Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"],
+        index=0
+    )
+    
+    dash_df = display_df.copy()
+    if cycle_filter != "Tất cả chu kỳ":
+        dash_df = dash_df[dash_df['ChuKyTheoDoi'] == cycle_filter]
+        
     # Overdue alerts scanning
-    overdue_tasks = display_df[(display_df['Deadline'] < today) & (display_df['TrangThai'] != 'Hoàn thành')]
+    overdue_tasks = dash_df[(dash_df['Deadline'] < today) & (dash_df['TrangThai'] != 'Hoàn thành')]
     if not overdue_tasks.empty:
         st.error("🚨 **CẢNH BÁO: PHÁT HIỆN CÔNG VIỆC TRỄ TIẾN ĐỘ / HẠN CHÓT**")
         alert_data = []
@@ -831,27 +900,36 @@ if menu == "📊 Dashboard Tổng Quan":
         st.dataframe(pd.DataFrame(alert_data), use_container_width=True, hide_index=True)
         st.markdown("---")
     
+    # Calculate stats based on filtered dash_df
+    total_dash = len(dash_df)
+    done_dash = len(dash_df[dash_df['TrangThai'] == 'Hoàn thành'])
+    issue_dash = len(dash_df[dash_df['TrangThai'] == 'Có vướng mắc'])
+    overdue_dash = len(dash_df[(dash_df['Deadline'] < today) & (dash_df['TrangThai'] != 'Hoàn thành')])
+    doing_dash = total_dash - done_dash - issue_dash - overdue_dash
+    if doing_dash < 0:
+        doing_dash = 0
+        
     # 4 metrics cards
     m_col1, m_col2, m_col3, m_col4 = st.columns(4)
     with m_col1:
-        st.metric("Tổng số việc", total_v)
+        st.metric("Tổng số việc", total_dash)
     with m_col2:
-        st.metric("Đã xong", done_v)
+        st.metric("Đã xong", done_dash)
     with m_col3:
-        st.metric("Đang làm", doing_v)
+        st.metric("Đang làm", doing_dash)
     with m_col4:
-        st.metric("🔴 Trễ hạn / Vướng mắc", issue_v + overdue_v)
+        st.metric("🔴 Trễ hạn / Vướng mắc", issue_dash + overdue_dash)
         
     st.markdown("---")
     
     # Critical alert panel
     st.markdown("### ⚠️ Hạng mục cần lưu ý (Trễ hạn hoặc Có vướng mắc)")
     
-    display_df['IsRealOverdue'] = (display_df['Deadline'] < today) & (display_df['TrangThai'] != 'Hoàn thành')
-    critical_df = display_df[
-        (display_df['TrangThai'] == 'Có vướng mắc') | 
-        (display_df['TrangThai'] == 'Quá hạn') | 
-        (display_df['IsRealOverdue'] == True)
+    dash_df['IsRealOverdue'] = (dash_df['Deadline'] < today) & (dash_df['TrangThai'] != 'Hoàn thành')
+    critical_df = dash_df[
+        (dash_df['TrangThai'] == 'Có vướng mắc') | 
+        (dash_df['TrangThai'] == 'Quá hạn') | 
+        (dash_df['IsRealOverdue'] == True)
     ]
     
     if not critical_df.empty:
@@ -883,6 +961,53 @@ if menu == "📊 Dashboard Tổng Quan":
         )
     else:
         st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc gặp vướng mắc!")
+        
+    st.markdown("---")
+    
+    # Performance Review Section
+    st.markdown("### 📈 Bảng Đánh giá Hiệu suất (Performance Review)")
+    st.markdown("*Hiệu suất trung bình (%) hoàn thành công việc theo từng Phòng ban & Chu kỳ:*")
+    
+    if not display_df.empty:
+        perf_df = display_df.copy()
+        
+        # Ensure ChuKyTheoDoi has valid values
+        perf_df['ChuKyTheoDoi'] = perf_df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+        
+        # Calculate pivot table
+        try:
+            perf_pivot = perf_df.pivot_table(
+                index="PhongBan",
+                columns="ChuKyTheoDoi",
+                values="PhanTramHoanThanh",
+                aggfunc="mean"
+            ).fillna(0).astype(int)
+            
+            # Ensure all cycles are present
+            for col in ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"]:
+                if col not in perf_pivot.columns:
+                    perf_pivot[col] = 0
+            
+            perf_pivot = perf_pivot[["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"]]
+            perf_pivot = perf_pivot.reset_index()
+            perf_pivot.columns = ["Phòng ban", "Chu kỳ Tuần (%)", "Chu kỳ Tháng (%)", "Chu kỳ Quý (%)", "Dự án / Tự do (%)"]
+            
+            st.dataframe(
+                perf_pivot,
+                column_config={
+                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
+                    "Chu kỳ Tuần (%)": st.column_config.ProgressColumn("Chu kỳ Tuần", format="%d%%", min_value=0, max_value=100),
+                    "Chu kỳ Tháng (%)": st.column_config.ProgressColumn("Chu kỳ Tháng", format="%d%%", min_value=0, max_value=100),
+                    "Chu kỳ Quý (%)": st.column_config.ProgressColumn("Chu kỳ Quý", format="%d%%", min_value=0, max_value=100),
+                    "Dự án / Tự do (%)": st.column_config.ProgressColumn("Dự án / Tự do", format="%d%%", min_value=0, max_value=100)
+                },
+                use_container_width=True,
+                hide_index=True
+            )
+        except Exception as pe:
+            st.info(f"Không thể hiển thị bảng hiệu suất: {pe}")
+    else:
+        st.info("Chưa có dữ liệu để đánh giá hiệu suất.")
 
 # ----------------- 2. BẢNG TIẾN ĐỘ CHI TIẾT -----------------
 elif menu == "📋 Bảng Tiến Độ Chi Tiết":
@@ -1096,6 +1221,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             # 10. Ghi chú vướng mắc
             task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Nếu trễ hạn hoặc gặp vướng mắc)", placeholder="Mô tả chi tiết khó khăn...")
             
+            # 11. Chu kỳ theo dõi
+            task_cycle = st.selectbox("Chu kỳ theo dõi", ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"], index=3)
+            
         submit_new = st.button("💾 THÊM CÔNG VIỆC MỚI", type="primary")
         
         if submit_new:
@@ -1175,7 +1303,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "TrangThai": calc_status,
                         "LinkKetQua": saved_result,
                         "GiaiTrinhDeXuat": task_explain.strip() if (calc_status in ["Có vướng mắc", "Quá hạn"]) else "",
-                        "NgayCapNhat": datetime.datetime.now()
+                        "NgayCapNhat": datetime.datetime.now(),
+                        "ChuKyTheoDoi": task_cycle
                     }
                     
                     df_updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -1239,6 +1368,12 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     default_has_issue = task_data['TrangThai'] == 'Có vướng mắc'
                     u_has_issue = st.checkbox("Công việc gặp vướng mắc, cần hỗ trợ", value=default_has_issue)
+                    
+                    # 11. Chu kỳ theo dõi
+                    current_cycle = task_data.get('ChuKyTheoDoi', 'Theo dự án / Tự do')
+                    cycle_list = ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"]
+                    default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
+                    u_cycle = st.selectbox("Chu kỳ theo dõi", cycle_list, index=default_cycle_idx, key="u_cycle_sel")
                     
                 st.markdown("#### ⚓ THÔNG TIN RÀNG BUỘC KẾT QUẢ & GIẢI TRÌNH")
                 col_ub1, col_ub2 = st.columns(2)
@@ -1347,6 +1482,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'LinkKetQua'] = final_link
                         df.loc[df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if (u_status in ["Có vướng mắc", "Quá hạn"]) else ""
                         df.loc[df['ID'] == selected_id, 'NgayCapNhat'] = datetime.datetime.now()
+                        df.loc[df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
                         
                         if save_db(df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
