@@ -292,7 +292,7 @@ def init_gantt_db():
                 "NgayBatDau": "2026-02-01",
                 "NgayKetThuc": "2026-03-02",
                 "PhanTramHoanThanh": 100,
-                "Milestone": "Milestone 1",
+                "Milestone": "Mốc 1: Phê duyệt Pháp lý & GPXD",
                 "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             },
             {
@@ -314,7 +314,7 @@ def init_gantt_db():
                 "NgayBatDau": "2026-04-01",
                 "NgayKetThuc": "2026-05-01",
                 "PhanTramHoanThanh": 10,
-                "Milestone": "Milestone 2",
+                "Milestone": "Mốc 2: Cất nóc công trình",
                 "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
         ]
@@ -562,6 +562,23 @@ st.markdown("""
         transform: translateY(-1px) !important;
         box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important;
     }
+    
+    /* Style Streamlit download button to have brand Navy-Blue gradient and White text */
+    div.stDownloadButton > button:first-child {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        width: 100% !important;
+        transition: all 0.3s ease !important;
+    }
+    div.stDownloadButton > button:first-child:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3) !important;
+    }
+    
     /* Style metrics cards to feel premium with Navy Blue border */
     div[data-testid="stMetric"] {
         background-color: #f8fafc;
@@ -613,6 +630,14 @@ st.markdown("""
         border-bottom: 2px solid #f97316;
         padding-bottom: 5px;
     }
+    
+    /* Pull logo up to the very top of Sidebar */
+    [data-testid="stSidebarContent"] {
+        padding-top: 10px !important;
+    }
+    [data-testid="stSidebarContent"] img {
+        margin-top: -30px !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -637,7 +662,7 @@ menu = st.sidebar.radio(
         "📊 Dashboard Tổng Quan",
         "📋 Bảng Tiến Độ Chi Tiết",
         "➕ Thêm / Cập Nhật Công Việc",
-        "📊 Sơ đồ Gantt Dự án KHĐT",
+        "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
         "⚙️ Quản Lý Cấu Hình"
     ],
     index=0
@@ -663,16 +688,101 @@ if doing_v < 0:
     doing_v = 0
 
 # Sidebar Excel Download
+import io
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+
+def generate_styled_excel(tasks_df, gantt_df):
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        # Write Sheet1
+        tasks_df_copy = tasks_df.copy()
+        if 'NgayCapNhat' in tasks_df_copy.columns:
+            tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        tasks_df_copy.to_excel(writer, sheet_name="Sheet1", index=False)
+        
+        # Write GANTT_KHDT
+        gantt_df_copy = gantt_df.copy()
+        if 'NgayCapNhat' in gantt_df_copy.columns:
+            gantt_df_copy['NgayCapNhat'] = gantt_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        gantt_df_copy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
+        
+        workbook = writer.book
+        
+        # Helper to style each worksheet
+        def style_worksheet(ws):
+            navy_fill = PatternFill(start_color="1E3A8A", end_color="1E3A8A", fill_type="solid")
+            white_bold_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+            normal_font = Font(name="Calibri", size=11)
+            
+            center_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
+            left_align = Alignment(horizontal="left", vertical="center", wrap_text=True)
+            
+            thin_border_side = Side(border_style="thin", color="CCCCCC")
+            thin_border = Border(left=thin_border_side, right=thin_border_side, top=thin_border_side, bottom=thin_border_side)
+            
+            headers = [str(cell.value or '') for cell in ws[1]]
+            
+            ws.row_dimensions[1].height = 28
+            for col_idx, cell in enumerate(ws[1], 1):
+                cell.fill = navy_fill
+                cell.font = white_bold_font
+                cell.alignment = center_align
+                cell.border = thin_border
+                
+            for row in range(2, ws.max_row + 1):
+                ws.row_dimensions[row].height = 22
+                for col in range(1, ws.max_column + 1):
+                    cell = ws.cell(row=row, column=col)
+                    cell.font = normal_font
+                    cell.border = thin_border
+                    
+                    col_name = headers[col - 1]
+                    if col_name in ["ID", "STT", "NgayBatDau", "NgayKetThuc", "Deadline", "PhanTramHoanThanh", "TrangThai", "NgayCapNhat"]:
+                        cell.alignment = center_align
+                    else:
+                        cell.alignment = left_align
+                        
+                    if col_name == "PhanTramHoanThanh":
+                        cell.number_format = '0"%"'
+                        
+            # Autofit columns
+            for col in ws.columns:
+                max_len = 0
+                col_letter = get_column_letter(col[0].column)
+                for cell in col:
+                    val_str = str(cell.value or '').replace('\n', ' ')
+                    if len(val_str) > max_len:
+                        max_len = len(val_str)
+                ws.column_dimensions[col_letter].width = min(max(max_len + 4, 10), 45)
+                
+        style_worksheet(workbook["Sheet1"])
+        style_worksheet(workbook["GANTT_KHDT"])
+        
+    return output.getvalue()
+
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📥 XUẤT DỮ LIỆU EXCEL")
-if os.path.exists(DB_FILE):
-    with open(DB_FILE, "rb") as f:
-        st.sidebar.download_button(
-            label="Tải xuống tệp Excel",
-            data=f.read(),
-            file_name="DATA_TIEN_DO_KPI.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+try:
+    gantt_df_for_excel = read_gantt_db()
+    styled_excel_data = generate_styled_excel(df, gantt_df_for_excel)
+    st.sidebar.download_button(
+        label="Tải xuống tệp Excel",
+        data=styled_excel_data,
+        file_name="DATA_TIEN_DO_KPI.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        key="btn_sidebar_excel_dl"
+    )
+except Exception as e:
+    if os.path.exists(DB_FILE):
+        with open(DB_FILE, "rb") as f:
+            st.sidebar.download_button(
+                label="Tải xuống tệp Excel (Dự phòng)",
+                data=f.read(),
+                file_name="DATA_TIEN_DO_KPI.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key="btn_sidebar_excel_dl_fallback"
+            )
 
 # Sidebar Cloud Sync Status
 st.sidebar.markdown("---")
@@ -1202,8 +1312,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         st.rerun()
 
 # ----------------- 4. SƠ ĐỒ GANTT DỰ ÁN KHĐT -----------------
-elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
-    st.markdown("### 📊 Phân hệ Sơ đồ Gantt Dự án KHĐT")
+elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
+    st.markdown("### 📊 Phân hệ Sơ đồ Gantt Dự án DMT")
     
     gantt_df = read_gantt_db()
     
@@ -1389,7 +1499,7 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
                 today_ref = datetime.date(2026, 7, 23)
                 g_start = st.date_input("Ngày bắt đầu", value=today_ref, key="g_start_new", format="DD/MM/YYYY")
                 g_end = st.date_input("Ngày kết thúc", value=today_ref + datetime.timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
-                g_milestone = st.text_input("Cột mốc quan trọng (Nếu có)", placeholder="ví dụ: Milestone 1, Demo...", key="g_milestone_new")
+                g_milestone = st.text_input("Cột mốc quan trọng (Nếu có)", placeholder="ví dụ: Mốc 1: Phê duyệt Pháp lý & GPXD, Mốc 2: Cất nóc công trình...", key="g_milestone_new")
                 
                 # Sequential template loader button
                 if g_phase == "6. Thi công Xây lắp & Lắp đặt Thiết bị":
