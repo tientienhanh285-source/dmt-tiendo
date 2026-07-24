@@ -437,15 +437,15 @@ def calculate_time_progress(start_d, end_d, is_comp):
     if today < start_d:
         return 0
     if today > end_d:
-        return 100
+        return 99
     
     total_days = (end_d - start_d).days
     if total_days <= 0:
-        return 100
+        return 99
     
     elapsed_days = (today - start_d).days
     prog = int((elapsed_days / total_days) * 100)
-    return min(max(prog, 0), 100)
+    return min(max(prog, 0), 99)
 
 def read_db():
     init_db()
@@ -921,14 +921,17 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         
         # Format Hạn chót
         def format_dl(row):
-            is_comp = (row['TrangThai'] == 'Hoàn thành')
-            days_left = (row['Deadline'] - today).days
+            prog = int(row['PhanTramHoanThanh'])
             date_str = row['Deadline'].strftime('%d/%m/%Y')
-            if is_comp:
+            
+            if prog >= 100:
                 return date_str
-            elif days_left < 0:
+            
+            # prog < 100
+            days_left = (row['Deadline'] - today).days
+            if days_left < 0:
                 return f"⚠️ {date_str} (Trễ hạn)"
-            elif 0 <= days_left <= 2:
+            elif 0 <= days_left <= 5:
                 return f"⚠️ {date_str} (Sắp hạn)"
             else:
                 return date_str
@@ -938,17 +941,28 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         
         # Format Trạng thái
         def format_status(row):
-            is_comp = (row['TrangThai'] == 'Hoàn thành')
-            is_ovd = (row['Deadline'] < today) and not is_comp
+            prog = int(row['PhanTramHoanThanh'])
             is_issue = row['TrangThai'] == 'Có vướng mắc'
             
-            if is_comp:
+            if prog >= 100:
                 return "✅ Đã xong"
-            elif is_issue:
-                return "🔴 Vướng mắc"
-            elif is_ovd:
+                
+            # prog < 100
+            if row['Deadline'] < today:
                 return "⚠️ Trễ hạn"
-            elif row['TrangThai'] == 'Đang thực hiện':
+                
+            if is_issue:
+                return "🔴 Vướng mắc"
+                
+            days_left = (row['Deadline'] - today).days
+            if 0 <= days_left <= 5:
+                return "⏳ Đang thực hiện"
+                
+            if prog == 0 and row['NgayBatDau'] > today:
+                return "❌ Chưa bắt đầu"
+                
+            # Default state based on start date
+            if today >= row['NgayBatDau']:
                 return "⏳ Đang thực hiện"
             else:
                 return "❌ Chưa bắt đầu"
