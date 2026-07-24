@@ -260,13 +260,13 @@ def init_gantt_db():
                 if not df.empty:
                     return
         
-        # Populate dummy data
+        # Populate dummy data with localized Phase 1 - 8 names
         dummy_data = [
             {
                 "ID": "GNT-001",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Khảo sát thị trường & Khả thi",
-                "GiaiDoan": "1. Phát triển Ý tưởng & Khảo sát",
+                "GiaiDoan": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
                 "NgayBatDau": "2026-01-01",
                 "NgayKetThuc": "2026-01-31",
                 "PhanTramHoanThanh": 100,
@@ -277,7 +277,7 @@ def init_gantt_db():
                 "ID": "GNT-002",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Thiết kế quy hoạch & Kiến trúc",
-                "GiaiDoan": "2. Thiết kế Cơ sở & Quy hoạch",
+                "GiaiDoan": "2. Pháp lý Dự án & Quy hoạch 1/500",
                 "NgayBatDau": "2026-02-01",
                 "NgayKetThuc": "2026-03-15",
                 "PhanTramHoanThanh": 80,
@@ -288,7 +288,7 @@ def init_gantt_db():
                 "ID": "GNT-003",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Phê duyệt Pháp lý & Báo cáo KHĐT",
-                "GiaiDoan": "4. Phê duyệt Pháp lý & Thẩm định",
+                "GiaiDoan": "2. Pháp lý Dự án & Quy hoạch 1/500",
                 "NgayBatDau": "2026-02-01",
                 "NgayKetThuc": "2026-03-02",
                 "PhanTramHoanThanh": 100,
@@ -299,7 +299,7 @@ def init_gantt_db():
                 "ID": "GNT-004",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Báo cáo Nghiên cứu Tiền khả thi",
-                "GiaiDoan": "3. Thiết kế Chi tiết & Lập Báo cáo",
+                "GiaiDoan": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
                 "NgayBatDau": "2026-03-15",
                 "NgayKetThuc": "2026-04-15",
                 "PhanTramHoanThanh": 40,
@@ -310,7 +310,7 @@ def init_gantt_db():
                 "ID": "GNT-005",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Trình duyệt Thẩm định Đầu tư",
-                "GiaiDoan": "4. Phê duyệt Pháp lý & Thẩm định",
+                "GiaiDoan": "4. Thiết kế Bản vẽ Thi công & Thẩm định",
                 "NgayBatDau": "2026-04-01",
                 "NgayKetThuc": "2026-05-01",
                 "PhanTramHoanThanh": 10,
@@ -369,15 +369,21 @@ def read_gantt_db():
     df['Milestone'] = df['Milestone'].fillna('')
     df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0).astype(int)
     
-    # Map old English names to Vietnamese if they exist
+    # Map old English/Vietnamese names to new standardized Phase 1 - 8 names if they exist
     phase_mapping = {
-        "Concept Dev": "1. Phát triển Ý tưởng & Khảo sát",
-        "System Design": "2. Thiết kế Cơ sở & Quy hoạch",
-        "Detail Design": "3. Thiết kế Chi tiết & Lập Báo cáo",
-        "Legal / Regulatory": "4. Phê duyệt Pháp lý & Thẩm định",
-        "Test & Refine": "5. Thử nghiệm & Chỉnh sửa",
-        "Produce": "6. Triển khai & Thực thi",
-        "Produce / Execute": "6. Triển khai & Thực thi"
+        "Concept Dev": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+        "1. Phát triển Ý tưởng & Khảo sát": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+        "System Design": "2. Pháp lý Dự án & Quy hoạch 1/500",
+        "2. Thiết kế Cơ sở & Quy hoạch": "2. Pháp lý Dự án & Quy hoạch 1/500",
+        "Detail Design": "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+        "3. Thiết kế Chi tiết & Lập Báo cáo": "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+        "Legal / Regulatory": "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+        "4. Phê duyệt Pháp lý & Thẩm định": "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+        "Test & Refine": "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+        "5. Thử nghiệm & Chỉnh sửa": "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+        "Produce": "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+        "Produce / Execute": "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+        "6. Triển khai & Thực thi": "6. Thi công Xây lắp & Lắp đặt Thiết bị"
     }
     df['GiaiDoan'] = df['GiaiDoan'].replace(phase_mapping)
     
@@ -1171,8 +1177,20 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
             with col_m3:
                 st.metric("Tiến độ trung bình", f"{avg_progress}%")
             
-            # Sort tasks on Y-axis by start date (from earliest to latest)
-            project_tasks_df = project_tasks_df.sort_values(by="NgayBatDau", ascending=True)
+            # Sort tasks on Y-axis by Giai Doan (1 -> 8) and then by start date
+            phase_order = [
+                "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                "2. Pháp lý Dự án & Quy hoạch 1/500",
+                "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                "Khác"
+            ]
+            project_tasks_df['GiaiDoan'] = pd.Categorical(project_tasks_df['GiaiDoan'], categories=phase_order, ordered=True)
+            project_tasks_df = project_tasks_df.sort_values(by=["GiaiDoan", "NgayBatDau"], ascending=[True, True])
             
             # Form progress label text for Gantt bars
             project_tasks_df['Tiến độ %'] = project_tasks_df['PhanTramHoanThanh'].apply(lambda x: f"{x}%")
@@ -1194,7 +1212,7 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
             fig.update_layout(
                 xaxis_title="Thời gian",
                 yaxis_title="Tên công việc",
-                height=min(400 + len(project_tasks_df) * 30, 650),
+                height=min(400 + len(project_tasks_df) * 35, 750),
                 margin=dict(l=20, r=20, t=40, b=20),
                 legend_title_text="Giai đoạn"
             )
@@ -1248,24 +1266,81 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
         with g_tab_new:
             st.markdown("#### Thêm công việc mới vào dự án KHĐT")
             g_col1, g_col2 = st.columns(2)
+            
+            g_phase_suggestions = {
+                "6. Thi công Xây lắp & Lắp đặt Thiết bị": [
+                    "Bàn giao mặt bằng, dựng lán trại & Đấu nối điện nước thi công",
+                    "Định vị tim mốc & Đào đất hố móng",
+                    "Thi công Cọc & Kết cấu Móng / Bể ngầm",
+                    "Thi công Kết cấu Khung Thân (Cột, Dầm, Sàn các tầng)",
+                    "Xây tường bao & Tường ngăn",
+                    "Thi công lắp đặt Đường ống MEP (Điện - Nước - PCCC) âm tường/sàn",
+                    "Thi công Kết cấu Mái & Chống thấm"
+                ]
+            }
+            
             with g_col1:
-                g_task_name = st.text_input("Tên công việc", key="g_task_name_new")
                 g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", [
-                    '1. Phát triển Ý tưởng & Khảo sát',
-                    '2. Thiết kế Cơ sở & Quy hoạch',
-                    '3. Thiết kế Chi tiết & Lập Báo cáo',
-                    '4. Phê duyệt Pháp lý & Thẩm định',
-                    '5. Thử nghiệm & Chỉnh sửa',
-                    '6. Triển khai & Thực thi',
-                    'Khác'
+                    "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                    "2. Pháp lý Dự án & Quy hoạch 1/500",
+                    "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                    "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                    "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                    "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                    "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                    "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                    "Khác"
                 ], key="g_phase_new")
+                
+                # Check for suggestions
+                suggested_tasks = g_phase_suggestions.get(g_phase, [])
+                g_task_name_val = ""
+                if suggested_tasks:
+                    selected_suggestion = st.selectbox("💡 Gợi ý công việc mẫu:", ["-- Tự nhập tên công việc --"] + suggested_tasks, key="g_suggest_new")
+                    if selected_suggestion != "-- Tự nhập tên công việc --":
+                        g_task_name_val = selected_suggestion
+                        
+                g_task_name = st.text_input("Tên công việc", value=g_task_name_val, key="g_task_name_new")
                 g_progress = st.slider("Tiến độ %", 0, 100, 0, key="g_progress_new")
             with g_col2:
-                # today reference (2026-07-23)
                 today_ref = datetime.date(2026, 7, 23)
                 g_start = st.date_input("Ngày bắt đầu", value=today_ref, key="g_start_new", format="DD/MM/YYYY")
                 g_end = st.date_input("Ngày kết thúc", value=today_ref + datetime.timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
                 g_milestone = st.text_input("Cột mốc quan trọng (Nếu có)", placeholder="ví dụ: Milestone 1, Demo...", key="g_milestone_new")
+                
+                # Sequential template loader button
+                if g_phase == "6. Thi công Xây lắp & Lắp đặt Thiết bị":
+                    st.markdown("💡 *Hoặc bạn có thể nạp nhanh toàn bộ 7 bước thi công mẫu bên dưới:*")
+                    if st.button("⚡ NẠP NHANH 7 BƯỚC THI CÔNG MẪU", key="btn_g_load_template_phase6"):
+                        new_rows = []
+                        start_date = today_ref
+                        for idx, task_name in enumerate(g_phase_suggestions["6. Thi công Xây lắp & Lắp đặt Thiết bị"]):
+                            next_id = 1
+                            if not gantt_df.empty:
+                                g_ids = gantt_df['ID'].tolist() + [r['ID'] for r in new_rows]
+                                nums = [int(m[0]) for idx_id in g_ids for m in [re.findall(r'\d+', str(idx_id))] if m]
+                                if nums:
+                                    next_id = max(nums) + 1
+                            g_task_id = f"GNT-{next_id:03d}"
+                            
+                            end_date = start_date + datetime.timedelta(days=7)
+                            new_rows.append({
+                                "ID": g_task_id,
+                                "TenDuAn": gantt_project_name.strip(),
+                                "TenCongViec": task_name,
+                                "GiaiDoan": g_phase,
+                                "NgayBatDau": start_date,
+                                "NgayKetThuc": end_date,
+                                "PhanTramHoanThanh": 0,
+                                "Milestone": "",
+                                "NgayCapNhat": datetime.datetime.now()
+                            })
+                            start_date = end_date # Sequential
+                            
+                        gantt_df_updated = pd.concat([gantt_df, pd.DataFrame(new_rows)], ignore_index=True)
+                        if save_gantt_db(gantt_df_updated):
+                            st.success("🎉 Đã tự động nạp thành công 7 bước thi công mẫu tuần tự vào dự án!")
+                            st.rerun()
                 
             g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
             if g_submit:
@@ -1317,37 +1392,45 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
                 with g_col_u1:
                     u_g_task_name = st.text_input("Tên công việc", value=g_task_data['TenCongViec'], key="u_g_task_name")
                     u_g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", [
-                        '1. Phát triển Ý tưởng & Khảo sát',
-                        '2. Thiết kế Cơ sở & Quy hoạch',
-                        '3. Thiết kế Chi tiết & Lập Báo cáo',
-                        '4. Phê duyệt Pháp lý & Thẩm định',
-                        '5. Thử nghiệm & Chỉnh sửa',
-                        '6. Triển khai & Thực thi',
-                        'Khác'
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
                     ], index=[
-                        '1. Phát triển Ý tưởng & Khảo sát',
-                        '2. Thiết kế Cơ sở & Quy hoạch',
-                        '3. Thiết kế Chi tiết & Lập Báo cáo',
-                        '4. Phê duyệt Pháp lý & Thẩm định',
-                        '5. Thử nghiệm & Chỉnh sửa',
-                        '6. Triển khai & Thực thi',
-                        'Khác'
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
                     ].index(g_task_data['GiaiDoan']) if g_task_data['GiaiDoan'] in [
-                        '1. Phát triển Ý tưởng & Khảo sát',
-                        '2. Thiết kế Cơ sở & Quy hoạch',
-                        '3. Thiết kế Chi tiết & Lập Báo cáo',
-                        '4. Phê duyệt Pháp lý & Thẩm định',
-                        '5. Thử nghiệm & Chỉnh sửa',
-                        '6. Triển khai & Thực thi',
-                        'Khác'
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
                     ] else [
-                        '1. Phát triển Ý tưởng & Khảo sát',
-                        '2. Thiết kế Cơ sở & Quy hoạch',
-                        '3. Thiết kế Chi tiết & Lập Báo cáo',
-                        '4. Phê duyệt Pháp lý & Thẩm định',
-                        '5. Thử nghiệm & Chỉnh sửa',
-                        '6. Triển khai & Thực thi',
-                        'Khác'
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
                     ].index('Khác'), key="u_g_phase")
                     u_g_progress = st.slider("Tiến độ %", 0, 100, int(g_task_data['PhanTramHoanThanh']), key="u_g_progress")
                 with g_col_u2:
