@@ -266,7 +266,7 @@ def init_gantt_db():
                 "ID": "GNT-001",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Khảo sát thị trường & Khả thi",
-                "GiaiDoan": "Concept Dev",
+                "GiaiDoan": "1. Phát triển Ý tưởng & Khảo sát",
                 "NgayBatDau": "2026-01-01",
                 "NgayKetThuc": "2026-01-31",
                 "PhanTramHoanThanh": 100,
@@ -277,7 +277,7 @@ def init_gantt_db():
                 "ID": "GNT-002",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Thiết kế quy hoạch & Kiến trúc",
-                "GiaiDoan": "System Design",
+                "GiaiDoan": "2. Thiết kế Cơ sở & Quy hoạch",
                 "NgayBatDau": "2026-02-01",
                 "NgayKetThuc": "2026-03-15",
                 "PhanTramHoanThanh": 80,
@@ -288,7 +288,7 @@ def init_gantt_db():
                 "ID": "GNT-003",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Phê duyệt Pháp lý & Báo cáo KHĐT",
-                "GiaiDoan": "Legal / Regulatory",
+                "GiaiDoan": "4. Phê duyệt Pháp lý & Thẩm định",
                 "NgayBatDau": "2026-02-01",
                 "NgayKetThuc": "2026-03-02",
                 "PhanTramHoanThanh": 100,
@@ -299,7 +299,7 @@ def init_gantt_db():
                 "ID": "GNT-004",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Báo cáo Nghiên cứu Tiền khả thi",
-                "GiaiDoan": "Detail Design",
+                "GiaiDoan": "3. Thiết kế Chi tiết & Lập Báo cáo",
                 "NgayBatDau": "2026-03-15",
                 "NgayKetThuc": "2026-04-15",
                 "PhanTramHoanThanh": 40,
@@ -310,7 +310,7 @@ def init_gantt_db():
                 "ID": "GNT-005",
                 "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
                 "TenCongViec": "Trình duyệt Thẩm định Đầu tư",
-                "GiaiDoan": "Legal / Regulatory",
+                "GiaiDoan": "4. Phê duyệt Pháp lý & Thẩm định",
                 "NgayBatDau": "2026-04-01",
                 "NgayKetThuc": "2026-05-01",
                 "PhanTramHoanThanh": 10,
@@ -368,6 +368,19 @@ def read_gantt_db():
     df['GiaiDoan'] = df['GiaiDoan'].fillna('Khác')
     df['Milestone'] = df['Milestone'].fillna('')
     df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0).astype(int)
+    
+    # Map old English names to Vietnamese if they exist
+    phase_mapping = {
+        "Concept Dev": "1. Phát triển Ý tưởng & Khảo sát",
+        "System Design": "2. Thiết kế Cơ sở & Quy hoạch",
+        "Detail Design": "3. Thiết kế Chi tiết & Lập Báo cáo",
+        "Legal / Regulatory": "4. Phê duyệt Pháp lý & Thẩm định",
+        "Test & Refine": "5. Thử nghiệm & Chỉnh sửa",
+        "Produce": "6. Triển khai & Thực thi",
+        "Produce / Execute": "6. Triển khai & Thực thi"
+    }
+    df['GiaiDoan'] = df['GiaiDoan'].replace(phase_mapping)
+    
     return df
 
 def save_gantt_db(df):
@@ -1110,13 +1123,13 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
     
     gantt_df = read_gantt_db()
     
-    # 1. Select project
-    existing_projects = list(gantt_df['TenDuAn'].unique())
-    gantt_project_options = existing_projects + ["✍️ Tạo Dự án KHĐT mới..."]
+    # 1. Select project (alphabetical order A-Z)
+    existing_projects = sorted(list(gantt_df['TenDuAn'].unique()))
+    gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
     
     selected_gantt_project = st.selectbox("Chọn Dự án KHĐT", gantt_project_options)
     
-    if selected_gantt_project == "✍️ Tạo Dự án KHĐT mới...":
+    if selected_gantt_project == "➕ Tạo Dự án KHĐT mới...":
         gantt_project_name = st.text_input("Tên Dự án KHĐT mới", value="")
     else:
         gantt_project_name = selected_gantt_project
@@ -1127,10 +1140,25 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
         
         # Sort and render Gantt chart if there is data
         if not project_tasks_df.empty:
-            # Sort phases systematically
-            phase_order = ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác']
-            project_tasks_df['GiaiDoan'] = pd.Categorical(project_tasks_df['GiaiDoan'], categories=phase_order, ordered=True)
-            project_tasks_df = project_tasks_df.sort_values(by=["GiaiDoan", "NgayBatDau"])
+            # Summary metric cards
+            total_tasks = len(project_tasks_df)
+            milestones_count = len(project_tasks_df[project_tasks_df['Milestone'].astype(str).str.strip() != ""])
+            avg_progress = int(project_tasks_df['PhanTramHoanThanh'].mean()) if total_tasks > 0 else 0
+            
+            st.markdown("#### 📊 Tóm tắt chỉ số dự án")
+            col_m1, col_m2, col_m3 = st.columns(3)
+            with col_m1:
+                st.metric("Tổng số công việc", f"{total_tasks} việc")
+            with col_m2:
+                st.metric("Cột mốc quan trọng", f"{milestones_count} mốc")
+            with col_m3:
+                st.metric("Tiến độ trung bình", f"{avg_progress}%")
+            
+            # Sort tasks on Y-axis by start date (from earliest to latest)
+            project_tasks_df = project_tasks_df.sort_values(by="NgayBatDau", ascending=True)
+            
+            # Form progress label text for Gantt bars
+            project_tasks_df['Tiến độ %'] = project_tasks_df['PhanTramHoanThanh'].apply(lambda x: f"{x}%")
             
             # Draw Gantt Timeline using Plotly
             fig = px.timeline(
@@ -1139,15 +1167,17 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
                 x_end="NgayKetThuc",
                 y="TenCongViec",
                 color="GiaiDoan",
+                text="Tiến độ %",
                 hover_data=["PhanTramHoanThanh", "Milestone"]
             )
             
             # Format Chart Layout
             fig.update_yaxes(autorange="reversed")
+            fig.update_traces(textposition='inside', textfont=dict(color='white', weight='bold'))
             fig.update_layout(
                 xaxis_title="Thời gian",
                 yaxis_title="Tên công việc",
-                height=min(400 + len(project_tasks_df) * 20, 600),
+                height=min(400 + len(project_tasks_df) * 30, 650),
                 margin=dict(l=20, r=20, t=40, b=20),
                 legend_title_text="Giai đoạn"
             )
@@ -1185,8 +1215,8 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
                     "GiaiDoan": st.column_config.TextColumn("Giai đoạn"),
                     "NgayBatDau": st.column_config.TextColumn("Ngày bắt đầu"),
                     "NgayKetThuc": st.column_config.TextColumn("Ngày kết thúc"),
-                    "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100),
-                    "Milestone": st.column_config.TextColumn("Cột mốc")
+                    "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ %", format="%d%%", min_value=0, max_value=100),
+                    "Milestone": st.column_config.TextColumn("Cột mốc quan trọng")
                 },
                 use_container_width=True,
                 hide_index=True
@@ -1203,14 +1233,22 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
             g_col1, g_col2 = st.columns(2)
             with g_col1:
                 g_task_name = st.text_input("Tên công việc", key="g_task_name_new")
-                g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác'], key="g_phase_new")
-                g_progress = st.slider("Tiến độ hoàn thành (% Progress)", 0, 100, 0, key="g_progress_new")
+                g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", [
+                    '1. Phát triển Ý tưởng & Khảo sát',
+                    '2. Thiết kế Cơ sở & Quy hoạch',
+                    '3. Thiết kế Chi tiết & Lập Báo cáo',
+                    '4. Phê duyệt Pháp lý & Thẩm định',
+                    '5. Thử nghiệm & Chỉnh sửa',
+                    '6. Triển khai & Thực thi',
+                    'Khác'
+                ], key="g_phase_new")
+                g_progress = st.slider("Tiến độ %", 0, 100, 0, key="g_progress_new")
             with g_col2:
                 # today reference (2026-07-23)
                 today_ref = datetime.date(2026, 7, 23)
-                g_start = st.date_input("Ngày bắt đầu thực hiện", value=today_ref, key="g_start_new", format="DD/MM/YYYY")
-                g_end = st.date_input("Ngày kết thúc thực hiện", value=today_ref + datetime.timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
-                g_milestone = st.text_input("Cột mốc Milestone (Nếu có)", placeholder="ví dụ: Milestone 1, Demo...", key="g_milestone_new")
+                g_start = st.date_input("Ngày bắt đầu", value=today_ref, key="g_start_new", format="DD/MM/YYYY")
+                g_end = st.date_input("Ngày kết thúc", value=today_ref + datetime.timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
+                g_milestone = st.text_input("Cột mốc quan trọng (Nếu có)", placeholder="ví dụ: Milestone 1, Demo...", key="g_milestone_new")
                 
             g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
             if g_submit:
@@ -1261,12 +1299,44 @@ elif menu == "📊 Sơ đồ Gantt Dự án KHĐT":
                 g_col_u1, g_col_u2 = st.columns(2)
                 with g_col_u1:
                     u_g_task_name = st.text_input("Tên công việc", value=g_task_data['TenCongViec'], key="u_g_task_name")
-                    u_g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", ['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác'], index=['Concept Dev', 'System Design', 'Detail Design', 'Test & Refine', 'Produce', 'Legal / Regulatory', 'Khác'].index(g_task_data['GiaiDoan']), key="u_g_phase")
-                    u_g_progress = st.slider("Tiến độ hoàn thành (% Progress)", 0, 100, int(g_task_data['PhanTramHoanThanh']), key="u_g_progress")
+                    u_g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", [
+                        '1. Phát triển Ý tưởng & Khảo sát',
+                        '2. Thiết kế Cơ sở & Quy hoạch',
+                        '3. Thiết kế Chi tiết & Lập Báo cáo',
+                        '4. Phê duyệt Pháp lý & Thẩm định',
+                        '5. Thử nghiệm & Chỉnh sửa',
+                        '6. Triển khai & Thực thi',
+                        'Khác'
+                    ], index=[
+                        '1. Phát triển Ý tưởng & Khảo sát',
+                        '2. Thiết kế Cơ sở & Quy hoạch',
+                        '3. Thiết kế Chi tiết & Lập Báo cáo',
+                        '4. Phê duyệt Pháp lý & Thẩm định',
+                        '5. Thử nghiệm & Chỉnh sửa',
+                        '6. Triển khai & Thực thi',
+                        'Khác'
+                    ].index(g_task_data['GiaiDoan']) if g_task_data['GiaiDoan'] in [
+                        '1. Phát triển Ý tưởng & Khảo sát',
+                        '2. Thiết kế Cơ sở & Quy hoạch',
+                        '3. Thiết kế Chi tiết & Lập Báo cáo',
+                        '4. Phê duyệt Pháp lý & Thẩm định',
+                        '5. Thử nghiệm & Chỉnh sửa',
+                        '6. Triển khai & Thực thi',
+                        'Khác'
+                    ] else [
+                        '1. Phát triển Ý tưởng & Khảo sát',
+                        '2. Thiết kế Cơ sở & Quy hoạch',
+                        '3. Thiết kế Chi tiết & Lập Báo cáo',
+                        '4. Phê duyệt Pháp lý & Thẩm định',
+                        '5. Thử nghiệm & Chỉnh sửa',
+                        '6. Triển khai & Thực thi',
+                        'Khác'
+                    ].index('Khác'), key="u_g_phase")
+                    u_g_progress = st.slider("Tiến độ %", 0, 100, int(g_task_data['PhanTramHoanThanh']), key="u_g_progress")
                 with g_col_u2:
-                    u_g_start = st.date_input("Ngày bắt đầu thực hiện", value=g_task_data['NgayBatDau'], key="u_g_start", format="DD/MM/YYYY")
-                    u_g_end = st.date_input("Ngày kết thúc thực hiện", value=g_task_data['NgayKetThuc'], key="u_g_end", format="DD/MM/YYYY")
-                    u_g_milestone = st.text_input("Cột mốc Milestone", value=g_task_data['Milestone'], key="u_g_milestone")
+                    u_g_start = st.date_input("Ngày bắt đầu", value=g_task_data['NgayBatDau'], key="u_g_start", format="DD/MM/YYYY")
+                    u_g_end = st.date_input("Ngày kết thúc", value=g_task_data['NgayKetThuc'], key="u_g_end", format="DD/MM/YYYY")
+                    u_g_milestone = st.text_input("Cột mốc quan trọng", value=g_task_data['Milestone'], key="u_g_milestone")
                     
                 btn_g_save, btn_g_del = st.columns([4, 1])
                 with btn_g_save:
