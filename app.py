@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import datetime
 import os
 import re
 import json
@@ -12,7 +11,7 @@ try:
 except ImportError:
     st.error("Thư viện google-generativeai chưa được cài đặt. Vui lòng kiểm tra file requirements.txt.")
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 def calculate_time_progress(start_date, deadline_date, is_completed=False):
     """Tính % thời gian đã trôi qua giữa Ngày bắt đầu và Hạn chót"""
@@ -294,7 +293,7 @@ def read_gantt_db():
                     "NgayKetThuc": "2026-01-31",
                     "PhanTramHoanThanh": 100,
                     "Milestone": "",
-                    "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 }
             ]
             df = pd.DataFrame(dummy_data)
@@ -347,9 +346,9 @@ def save_gantt_db(df):
         return False
     try:
         df_save = df.copy()
-        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_save['NgayKetThuc'] = df_save['NgayKetThuc'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayKetThuc'] = df_save['NgayKetThuc'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
         
         safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df_save)
         return True
@@ -444,8 +443,8 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
     success_count = 0
     update_count = 0
     
-    # Convert today to datetime.date if it is datetime.datetime
-    if isinstance(today, datetime.datetime):
+    # Convert today to date if it is datetime
+    if isinstance(today, datetime):
         today = today.date()
         
     for _, row in valid_df.iterrows():
@@ -464,7 +463,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
         except Exception:
             continue
             
-        so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetime.datetime.now().strftime('%M%S')}"
+        so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetime.now().strftime('%M%S')}"
         co_quan_gui = str(row[mapping["ĐƠN VỊ"]]).strip() if mapping["ĐƠN VỊ"] and not pd.isna(row[mapping["ĐƠN VỊ"]]) else ""
         trich_yeu = str(row[content_col]).strip()
         
@@ -515,7 +514,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                 "Deadline": deadline_val,
                 "LinkFile": "",
                 "TrangThai": trang_thai,
-                "NgayCapNhat": datetime.datetime.now(),
+                "NgayCapNhat": datetime.now(),
                 "GhiChu": ghi_chu
             }
             docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
@@ -531,7 +530,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             docs_df.at[idx, "BanChuTri"] = ban_chu_tri
             docs_df.at[idx, "Deadline"] = deadline_val
             docs_df.at[idx, "TrangThai"] = trang_thai
-            docs_df.at[idx, "NgayCapNhat"] = datetime.datetime.now()
+            docs_df.at[idx, "NgayCapNhat"] = datetime.now()
             docs_df.at[idx, "GhiChu"] = ghi_chu
             update_count += 1
             
@@ -571,7 +570,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                 "TrangThai": task_status,
                 "LinkKetQua": "",
                 "GiaiTrinhDeXuat": "",
-                "NgayCapNhat": datetime.datetime.now(),
+                "NgayCapNhat": datetime.now(),
                 "ChuKyTheoDoi": "Theo dự án / Tự do",
                 "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ" if task_status != "Quá hạn" else "👤 Do chủ quan"
             }
@@ -585,7 +584,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             tasks_df.at[t_idx, "Deadline"] = deadline_val
             tasks_df.at[t_idx, "TrangThai"] = task_status
             tasks_df.at[t_idx, "PhanTramHoanThanh"] = 100 if task_status == "Hoàn thành" else 99
-            tasks_df.at[t_idx, "NgayCapNhat"] = datetime.datetime.now()
+            tasks_df.at[t_idx, "NgayCapNhat"] = datetime.now()
             
     if save_incoming_docs_db(docs_df) and save_db(tasks_df):
         return True, f"Đồng bộ thành công! Đã thêm mới {success_count} văn bản và cập nhật {update_count} văn bản."
@@ -624,21 +623,21 @@ def read_incoming_docs_db():
     df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
     df['ID'] = df['ID'].astype(str)
     
-    today_dt = datetime.date.today()
+    today_dt = date.today()
     for idx, row in df.iterrows():
         deadline_val = row['Deadline']
         status_val = str(row['TrangThai']).strip()
         
         if isinstance(deadline_val, str):
             try:
-                deadline_val = datetime.datetime.strptime(deadline_val, '%Y-%m-%d').date()
+                deadline_val = datetime.strptime(deadline_val, '%Y-%m-%d').date()
             except Exception:
                 pass
                 
-        if isinstance(deadline_val, datetime.datetime):
+        if isinstance(deadline_val, datetime):
             deadline_val = deadline_val.date()
             
-        if isinstance(deadline_val, datetime.date):
+        if isinstance(deadline_val, date):
             if deadline_val < today_dt and "✅ Đã xong" not in status_val and "Đã xong" not in status_val:
                 days_late = (today_dt - deadline_val).days
                 df.at[idx, 'TrangThai'] = f"⚠️ Trễ hạn xử lý CV (Trễ {days_late} ngày)"
@@ -652,9 +651,9 @@ def save_incoming_docs_db(df):
         return False
     try:
         df_save = df.copy()
-        df_save['NgayBanHanh'] = df_save['NgayBanHanh'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_save['NgayBanHanh'] = df_save['NgayBanHanh'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
         
         safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df_save)
         return True
@@ -727,9 +726,9 @@ def save_db(df):
         return False
     try:
         df_save = df.copy()
-        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
         df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
         
@@ -899,7 +898,7 @@ st.sidebar.markdown("---")
 
 # Current date
 df = read_db()
-today = datetime.date.today()
+today = date.today()
 
 # Filter display dataframe based on sidebar selected company
 if selected_company != "Tất cả đơn vị":
@@ -934,17 +933,17 @@ def generate_styled_excel(tasks_df, gantt_df):
             deadline = row.get('Deadline')
             if isinstance(deadline, str):
                 try:
-                    deadline = datetime.datetime.strptime(deadline, '%Y-%m-%d').date()
+                    deadline = datetime.strptime(deadline, '%Y-%m-%d').date()
                 except Exception:
                     pass
             ref_today = today
-            if isinstance(ref_today, datetime.datetime):
+            if isinstance(ref_today, datetime):
                 ref_today = ref_today.date()
-            if isinstance(deadline, datetime.datetime):
+            if isinstance(deadline, datetime):
                 deadline = deadline.date()
                 
             is_late = False
-            if isinstance(deadline, datetime.date):
+            if isinstance(deadline, date):
                 is_late = (deadline < ref_today) and not is_comp
                 
             if not is_late:
@@ -968,7 +967,7 @@ def generate_styled_excel(tasks_df, gantt_df):
         if 'ID' in tasks_df_copy.columns:
             tasks_df_copy = tasks_df_copy.drop(columns=['ID'])
         if 'NgayCapNhat' in tasks_df_copy.columns:
-            tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+            tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
         tasks_df_copy.to_excel(writer, sheet_name="Sheet1", index=False)
         
         # Write GANTT_KHDT (Drop ID column if exists)
@@ -976,7 +975,7 @@ def generate_styled_excel(tasks_df, gantt_df):
         if 'ID' in gantt_df_copy.columns:
             gantt_df_copy = gantt_df_copy.drop(columns=['ID'])
         if 'NgayCapNhat' in gantt_df_copy.columns:
-            gantt_df_copy['NgayCapNhat'] = gantt_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+            gantt_df_copy['NgayCapNhat'] = gantt_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
         gantt_df_copy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
         
         # Write VAN_BAN_DEN (Drop ID column if exists)
@@ -986,10 +985,10 @@ def generate_styled_excel(tasks_df, gantt_df):
             if 'ID' in docs_df_copy.columns:
                 docs_df_copy = docs_df_copy.drop(columns=['ID'])
             if 'NgayCapNhat' in docs_df_copy.columns:
-                docs_df_copy['NgayCapNhat'] = docs_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+                docs_df_copy['NgayCapNhat'] = docs_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
             for col_name in ['NgayBanHanh', 'Deadline']:
                 if col_name in docs_df_copy.columns:
-                    docs_df_copy[col_name] = docs_df_copy[col_name].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+                    docs_df_copy[col_name] = docs_df_copy[col_name].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
             docs_df_copy = docs_df_copy.rename(columns={
                 'SoKyHieu': 'Số / Ký hiệu văn bản',
                 'NgayBanHanh': 'Ngày ban hành',
@@ -1115,8 +1114,8 @@ if menu == "📊 Dashboard Tổng Quan":
         
     # Overdue and due today/tomorrow alerts scanning (Group 1 & 2)
     def get_badge_and_urgency(deadline_val, today_dt):
-        if not isinstance(deadline_val, datetime.date):
-            if isinstance(deadline_val, datetime.datetime):
+        if not isinstance(deadline_val, date):
+            if isinstance(deadline_val, datetime):
                 deadline_val = deadline_val.date()
             else:
                 return None, None
@@ -1125,7 +1124,7 @@ if menu == "📊 Dashboard Tổng Quan":
             return f"🔴 [⚠️ Trễ {days_late} ngày]", 1
         elif deadline_val == today_dt:
             return "🟠 [⏳ Hạn hôm nay]", 2
-        elif deadline_val == today_dt + datetime.timedelta(days=1):
+        elif deadline_val == today_dt + timedelta(days=1):
             return "🟠 [⏳ Hạn ngày mai]", 3
         return None, None
 
@@ -1185,7 +1184,7 @@ if menu == "📊 Dashboard Tổng Quan":
         crit_display['Tên công việc'] = alert_df_show['TenCongViec']
         crit_display['Phòng ban'] = alert_df_show['PhongBan']
         crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
-        crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
         crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
         crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
         
@@ -1231,24 +1230,24 @@ if menu == "📊 Dashboard Tổng Quan":
             deadline_val = row['Deadline']
             if isinstance(deadline_val, str):
                 try:
-                    deadline_val = datetime.datetime.strptime(deadline_val, '%Y-%m-%d').date()
+                    deadline_val = datetime.strptime(deadline_val, '%Y-%m-%d').date()
                 except Exception:
                     pass
             ref_today = today
-            if isinstance(ref_today, datetime.datetime):
+            if isinstance(ref_today, datetime):
                 ref_today = ref_today.date()
-            if isinstance(deadline_val, datetime.datetime):
+            if isinstance(deadline_val, datetime):
                 deadline_val = deadline_val.date()
                 
             days_late = 0
-            if isinstance(deadline_val, datetime.date):
+            if isinstance(deadline_val, date):
                 days_late = (ref_today - deadline_val).days
             
             alert_docs_data.append({
                 "Số / Ký hiệu": row['SoKyHieu'],
                 "Đơn vị gửi": row['CoQuanGui'],
                 "Trích yếu nội dung": row['TrichYeu'],
-                "Hạn xử lý": row['Deadline'].strftime('%d/%m/%Y') if isinstance(row['Deadline'], (datetime.date, datetime.datetime)) else str(row['Deadline']),
+                "Hạn xử lý": row['Deadline'].strftime('%d/%m/%Y') if isinstance(row['Deadline'], (date, datetime)) else str(row['Deadline']),
                 "Số ngày trễ": f"{days_late} ngày"
             })
         st.dataframe(pd.DataFrame(alert_docs_data), use_container_width=True, hide_index=True)
@@ -1353,7 +1352,7 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         df_display['Tên công việc'] = table_df['TenCongViec']
         df_display['Phòng ban'] = table_df['PhongBan']
         df_display['Người thực hiện'] = table_df['NguoiChuTri']
-        df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
         
         # Format Hạn chót
         def format_dl(row):
@@ -1526,7 +1525,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         with col2:
             # 6. Dates
             task_start = st.date_input("Ngày bắt đầu thực hiện", today, format="DD/MM/YYYY")
-            task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today + datetime.timedelta(days=7), format="DD/MM/YYYY")
+            task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today + timedelta(days=7), format="DD/MM/YYYY")
             
             # 7. Completed flag instead of manual progress slider
             task_is_completed = st.checkbox("Đã hoàn thành công việc", value=False)
@@ -1651,7 +1650,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "TrangThai": calc_status,
                         "LinkKetQua": saved_result,
                         "GiaiTrinhDeXuat": task_explain.strip() if ((is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not is_late and calc_status == "Có vướng mắc")) else "",
-                        "NgayCapNhat": datetime.datetime.now(),
+                        "NgayCapNhat": datetime.now(),
                         "ChuKyTheoDoi": task_cycle,
                         "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ"
                     }
@@ -1855,7 +1854,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'TrangThai'] = u_status
                         df.loc[df['ID'] == selected_id, 'LinkKetQua'] = final_link
                         df.loc[df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if ((u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not u_is_late and u_status == "Có vướng mắc")) else ""
-                        df.loc[df['ID'] == selected_id, 'NgayCapNhat'] = datetime.datetime.now()
+                        df.loc[df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now()
                         df.loc[df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
                         df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
                         
@@ -1913,11 +1912,11 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
         project_tasks_df = gantt_df[gantt_df['TenDuAn'] == gantt_project_name]
         
         # Overdue and due today/tomorrow alerts scanning for Gantt tasks (Group 1 & 2)
-        ref_today = datetime.date.today()
+        ref_today = date.today()
         gantt_warn_list = []
         for _, row in project_tasks_df[project_tasks_df['PhanTramHoanThanh'] < 100].iterrows():
             deadline_val = row['NgayKetThuc']
-            if isinstance(deadline_val, datetime.datetime):
+            if isinstance(deadline_val, datetime):
                 deadline_val = deadline_val.date()
                 
             if deadline_val < ref_today:
@@ -1927,7 +1926,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             elif deadline_val == ref_today:
                 badge = "🟠 [⏳ Hạn hôm nay]"
                 urgency = 2
-            elif deadline_val == ref_today + datetime.timedelta(days=1):
+            elif deadline_val == ref_today + timedelta(days=1):
                 badge = "🟠 [⏳ Hạn ngày mai]"
                 urgency = 3
             else:
@@ -1948,7 +1947,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                     "Tên công việc": row['TenCongViec'],
                     "Giai đoạn": row['GiaiDoan'],
                     "Tiến độ hiện tại": f"{row['PhanTramHoanThanh']}%",
-                    "Hạn chót": row['NgayKetThuc'].strftime('%d/%m/%Y') if isinstance(row['NgayKetThuc'], (datetime.date, datetime.datetime)) else str(row['NgayKetThuc']),
+                    "Hạn chót": row['NgayKetThuc'].strftime('%d/%m/%Y') if isinstance(row['NgayKetThuc'], (date, datetime)) else str(row['NgayKetThuc']),
                     "Trạng thái thực tế": row['Badge']
                 })
             st.dataframe(pd.DataFrame(g_alert_data), use_container_width=True, hide_index=True)
@@ -2011,7 +2010,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             )
             
             # Add vertical Today line (dynamic today)
-            ref_today = datetime.date.today()
+            ref_today = date.today()
             fig.add_vline(x=ref_today.strftime("%Y-%m-%d"), line_width=2, line_dash="dash", line_color="red", annotation_text="Hôm nay", annotation_position="top right")
             
             # Add Milestones lines
@@ -2038,7 +2037,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 date_range = pd.date_range(start=min_date, end=max_date, freq='D').date
                 s_curve_data = []
                 
-                ref_today = datetime.date.today()
+                ref_today = date.today()
                 
                 for d in date_range:
                     total_planned_p = 0
@@ -2178,9 +2177,9 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 g_task_name = st.text_input("Tên công việc", value=g_task_name_val, key="g_task_name_new")
                 g_progress = st.slider("Tiến độ %", 0, 100, 0, key="g_progress_new")
             with g_col2:
-                today_ref = datetime.date.today()
+                today_ref = date.today()
                 g_start = st.date_input("Ngày bắt đầu", value=today_ref, key="g_start_new", format="DD/MM/YYYY")
-                g_end = st.date_input("Ngày kết thúc", value=today_ref + datetime.timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
+                g_end = st.date_input("Ngày kết thúc", value=today_ref + timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
                 g_milestone = st.text_input("Cột mốc quan trọng (Nếu có)", placeholder="ví dụ: Mốc 1: Phê duyệt Pháp lý & GPXD, Mốc 2: Cất nóc công trình...", key="g_milestone_new")
                 
                 # Sequential template loader button
@@ -2198,7 +2197,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                                     next_id = max(nums) + 1
                             g_task_id = f"GNT-{next_id:03d}"
                             
-                            end_date = start_date + datetime.timedelta(days=7)
+                            end_date = start_date + timedelta(days=7)
                             new_rows.append({
                                 "ID": g_task_id,
                                 "TenDuAn": gantt_project_name.strip(),
@@ -2208,7 +2207,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                                 "NgayKetThuc": end_date,
                                 "PhanTramHoanThanh": 0,
                                 "Milestone": "",
-                                "NgayCapNhat": datetime.datetime.now()
+                                "NgayCapNhat": datetime.now()
                             })
                             start_date = end_date # Sequential
                             
@@ -2242,7 +2241,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                         "NgayKetThuc": g_end,
                         "PhanTramHoanThanh": g_progress,
                         "Milestone": g_milestone.strip(),
-                        "NgayCapNhat": datetime.datetime.now()
+                        "NgayCapNhat": datetime.now()
                     }
                     
                     gantt_df_updated = pd.concat([gantt_df, pd.DataFrame([new_g_row])], ignore_index=True)
@@ -2331,7 +2330,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                         gantt_df.loc[gantt_df['ID'] == selected_g_id, 'NgayKetThuc'] = u_g_end
                         gantt_df.loc[gantt_df['ID'] == selected_g_id, 'PhanTramHoanThanh'] = u_g_progress
                         gantt_df.loc[gantt_df['ID'] == selected_g_id, 'Milestone'] = u_g_milestone.strip()
-                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'NgayCapNhat'] = datetime.datetime.now()
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'NgayCapNhat'] = datetime.now()
                         
                         if save_gantt_db(gantt_df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_g_id}!")
@@ -2362,9 +2361,9 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         
         # 1. Ngày
         if 'NgayBanHanh' in display_docs_df.columns:
-            df_docs_show['Ngày'] = display_docs_df['NgayBanHanh'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+            df_docs_show['Ngày'] = display_docs_df['NgayBanHanh'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
         elif 'Ngay' in display_docs_df.columns:
-            df_docs_show['Ngày'] = display_docs_df['Ngay'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+            df_docs_show['Ngày'] = display_docs_df['Ngay'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
         else:
             df_docs_show['Ngày'] = ''
             
@@ -2386,7 +2385,7 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
             
         # 4. Thời hạn hoàn thành
         if 'Deadline' in display_docs_df.columns:
-            df_docs_show['Thời hạn hoàn thành'] = display_docs_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+            df_docs_show['Thời hạn hoàn thành'] = display_docs_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
         else:
             df_docs_show['Thời hạn hoàn thành'] = ''
             
@@ -2511,7 +2510,7 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
             
             allowed_depts = get_departments_for_company(doc_company, OFFICIAL_DEPARTMENTS)
             doc_dept = st.selectbox("Ban / Bộ phận chủ trì xử lý", allowed_depts, key="doc_dept_new")
-            doc_deadline = st.date_input("Hạn chót phải xử lý / Phản hồi", today + datetime.timedelta(days=7), key="doc_dl_new")
+            doc_deadline = st.date_input("Hạn chót phải xử lý / Phản hồi", today + timedelta(days=7), key="doc_dl_new")
             
             st.markdown("**Đính kèm văn bản**")
             doc_file_mode = st.radio("Hình thức nộp", ["✍️ Nhập Link văn bản (Dạng text/Drive)", "📁 Tải file đính kèm (PDF, Ảnh...)"], horizontal=True, key="doc_file_mode_new")
@@ -2578,7 +2577,7 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
                     "Deadline": doc_deadline,
                     "LinkFile": saved_attachment,
                     "TrangThai": calc_status,
-                    "NgayCapNhat": datetime.datetime.now()
+                    "NgayCapNhat": datetime.now()
                 }
                 
                 docs_df_updated = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
@@ -2715,7 +2714,7 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
                         docs_df.loc[docs_df['ID'] == selected_doc_id, 'Deadline'] = u_doc_deadline
                         docs_df.loc[docs_df['ID'] == selected_doc_id, 'LinkFile'] = final_attachment
                         docs_df.loc[docs_df['ID'] == selected_doc_id, 'TrangThai'] = calc_doc_status
-                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'NgayCapNhat'] = datetime.datetime.now()
+                        docs_df.loc[docs_df['ID'] == selected_doc_id, 'NgayCapNhat'] = datetime.now()
                         
                         if save_incoming_docs_db(docs_df):
                             st.success(f"🎉 Đã lưu cập nhật văn bản mã: {selected_doc_id}!")
@@ -2883,19 +2882,19 @@ Chỉ trả về định dạng chuỗi JSON hợp lệ bắt đầu bằng [ v�
                 "TenCongViec": "Hoàn thành Báo cáo nghiên cứu khả thi Dự án KDC Bàu Mạc",
                 "TenDuAn": "KDC Bàu Mạc",
                 "PhongBan": "Ban Kế hoạch Đầu tư",
-                "Deadline": (today + datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+                "Deadline": (today + timedelta(days=10)).strftime("%Y-%m-%d")
             },
             {
                 "TenCongViec": "Chuẩn bị hồ sơ xin cấp phép xây dựng tuyến đường Lê Trọng Tấn",
                 "TenDuAn": "Tuyến đường Lê Trọng Tấn",
                 "PhongBan": "Ban Kỹ thuật",
-                "Deadline": (today + datetime.timedelta(days=15)).strftime("%Y-%m-%d")
+                "Deadline": (today + timedelta(days=15)).strftime("%Y-%m-%d")
             },
             {
                 "TenCongViec": "Tuyển dụng bổ sung nhân sự chuyên trách cho Tổ KPI",
                 "TenDuAn": "",
                 "PhongBan": "Ban Hành chính Nhân sự",
-                "Deadline": (today + datetime.timedelta(days=5)).strftime("%Y-%m-%d")
+                "Deadline": (today + timedelta(days=5)).strftime("%Y-%m-%d")
             }
         ]
         st.session_state["tbgb_tasks"] = demo_data
@@ -2916,7 +2915,7 @@ Chỉ trả về định dạng chuỗi JSON hợp lệ bắt đầu bằng [ v�
         if "PhongBan" not in editor_df.columns:
             editor_df["PhongBan"] = "Ban Lãnh đạo"
         if "Deadline" not in editor_df.columns:
-            editor_df["Deadline"] = (today + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+            editor_df["Deadline"] = (today + timedelta(days=7)).strftime("%Y-%m-%d")
             
         edited_df = st.data_editor(
             editor_df,
@@ -2957,7 +2956,7 @@ Chỉ trả về định dạng chuỗi JSON hợp lệ bắt đầu bằng [ v�
                         try:
                             deadline_val = pd.to_datetime(row.get("Deadline")).date()
                         except Exception:
-                            deadline_val = today + datetime.timedelta(days=7)
+                            deadline_val = today + timedelta(days=7)
                             
                         next_tsk_id = 1
                         if not tasks_df.empty:
@@ -2984,7 +2983,7 @@ Chỉ trả về định dạng chuỗi JSON hợp lệ bắt đầu bằng [ v�
                             "TrangThai": "Đang thực hiện",
                             "LinkKetQua": "",
                             "GiaiTrinhDeXuat": "",
-                            "NgayCapNhat": datetime.datetime.now(),
+                            "NgayCapNhat": datetime.now(),
                             "ChuKyTheoDoi": "Theo dự án / Tự do",
                             "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
                         }
