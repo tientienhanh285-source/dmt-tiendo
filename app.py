@@ -2540,13 +2540,62 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         st.info("Chưa có văn bản đến nào được ghi nhận.")
     else:
         df_docs_show = pd.DataFrame()
-        df_docs_show['Ngày'] = display_docs_df['NgayBanHanh'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_docs_show['Đơn vị'] = display_docs_df['CoQuanGui']
-        df_docs_show['Nội dung'] = display_docs_df['TrichYeu']
-        df_docs_show['Thời hạn hoàn thành'] = display_docs_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_docs_show['Trạng thái'] = display_docs_df['TrangThai']
-        df_docs_show['Người/Ban thực hiện'] = display_docs_df['BanChuTri']
-        df_docs_show['Ghi chú'] = display_docs_df.get('GhiChu', '').fillna('')
+        
+        # 1. Ngày
+        if 'NgayBanHanh' in display_docs_df.columns:
+            df_docs_show['Ngày'] = display_docs_df['NgayBanHanh'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        elif 'Ngay' in display_docs_df.columns:
+            df_docs_show['Ngày'] = display_docs_df['Ngay'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        else:
+            df_docs_show['Ngày'] = ''
+            
+        # 2. Đơn vị
+        if 'CoQuanGui' in display_docs_df.columns:
+            df_docs_show['Đơn vị'] = display_docs_df['CoQuanGui'].fillna('')
+        elif 'DonVi' in display_docs_df.columns:
+            df_docs_show['Đơn vị'] = display_docs_df['DonVi'].fillna('')
+        else:
+            df_docs_show['Đơn vị'] = ''
+            
+        # 3. Nội dung
+        if 'TrichYeu' in display_docs_df.columns:
+            df_docs_show['Nội dung'] = display_docs_df['TrichYeu'].fillna('')
+        elif 'NoiDung' in display_docs_df.columns:
+            df_docs_show['Nội dung'] = display_docs_df['NoiDung'].fillna('')
+        else:
+            df_docs_show['Nội dung'] = ''
+            
+        # 4. Thời hạn hoàn thành
+        if 'Deadline' in display_docs_df.columns:
+            df_docs_show['Thời hạn hoàn thành'] = display_docs_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        else:
+            df_docs_show['Thời hạn hoàn thành'] = ''
+            
+        # 5. Trạng thái
+        if 'TrangThai' in display_docs_df.columns:
+            df_docs_show['Trạng thái'] = display_docs_df['TrangThai'].fillna('')
+        elif 'Trangthai' in display_docs_df.columns:
+            df_docs_show['Trạng thái'] = display_docs_df['Trangthai'].fillna('')
+        else:
+            df_docs_show['Trạng thái'] = '⏳ Đang xử lý'
+            
+        # 6. Người/Ban thực hiện
+        if 'BanChuTri' in display_docs_df.columns:
+            df_docs_show['Người/Ban thực hiện'] = display_docs_df['BanChuTri'].fillna('')
+        elif 'PhongBan' in display_docs_df.columns:
+            df_docs_show['Người/Ban thực hiện'] = display_docs_df['PhongBan'].fillna('')
+        else:
+            df_docs_show['Người/Ban thực hiện'] = ''
+            
+        # 7. Ghi chú
+        if 'Ghi chú' in display_docs_df.columns:
+            df_docs_show['Ghi chú'] = display_docs_df['Ghi chú'].fillna('')
+        elif 'GhiChu' in display_docs_df.columns:
+            df_docs_show['Ghi chú'] = display_docs_df['GhiChu'].fillna('')
+        elif 'ghi chú' in display_docs_df.columns:
+            df_docs_show['Ghi chú'] = display_docs_df['ghi chú'].fillna('')
+        else:
+            df_docs_show['Ghi chú'] = ''
         
         # Báo đỏ toàn dòng cảnh báo trễ hạn
         def highlight_overdue_rows(row):
