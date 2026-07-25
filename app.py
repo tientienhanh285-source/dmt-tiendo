@@ -2966,8 +2966,17 @@ elif menu == "📄 Trích Xuất Việc Từ TBGB":
                 try:
                     import google.generativeai as genai
                     genai.configure(api_key=gemini_key.strip())
-                    model = genai.GenerativeModel("gemini-1.5-flash")
                     
+                    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash']
+                    model = None
+                    for m in models_to_try:
+                        try:
+                            model = genai.GenerativeModel(m)
+                            break
+                        except Exception:
+                            continue
+                            
+
                     extracted_text = ""
                     # 1. If docx, extract text first
                     if file_ext == ".docx":
