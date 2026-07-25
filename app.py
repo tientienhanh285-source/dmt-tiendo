@@ -1814,8 +1814,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     st.markdown(f"**Đơn vị:** {task_data['DonVi']}")
                     st.markdown(f"**Phòng ban phụ trách:** {task_data['PhongBan']}")
                     
-                    u_proj = st.text_input("Dự án / Hạng mục", value=task_data['TenDuAn'])
-                    u_name = st.text_input("Tên công việc", value=task_data['TenCongViec'])
+                    u_proj = st.text_input("Dự án / Hạng mục", value=task_data['TenDuAn'], key=f"u_proj_{task_data['ID']}")
+                    u_name = st.text_input("Tên công việc", value=task_data['TenCongViec'], key=f"u_name_{task_data['ID']}")
                     
                     # Owner selection based on configuration
                     u_dept = task_data['PhongBan']
@@ -1825,31 +1825,31 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     current_owner = task_data['NguoiChuTri']
                     if current_owner in u_dept_personnel:
                         u_default_index = u_dept_personnel.index(current_owner)
-                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key="u_owner_sel")
+                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
                         if u_sel_owner_opt == "✍️ Nhập tên người khác...":
-                            u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="", key="u_owner_custom")
+                            u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="", key=f"u_owner_custom_{task_data['ID']}")
                         else:
                             u_owner = u_sel_owner_opt
                     else:
                         u_default_index = len(u_owner_options) - 1
-                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key="u_owner_sel")
-                        u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key="u_owner_custom")
+                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
+                        u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
-                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=task_data['NgayBatDau'], format="DD/MM/YYYY")
-                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=task_data['Deadline'], format="DD/MM/YYYY")
+                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=task_data['NgayBatDau'], format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
+                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=task_data['Deadline'], format="DD/MM/YYYY", key=f"u_deadline_{task_data['ID']}")
                     
                     default_is_completed = task_data['TrangThai'] == 'Hoàn thành'
-                    u_is_completed = st.checkbox("Đã hoàn thành công việc", value=default_is_completed, key="u_is_completed")
+                    u_is_completed = st.checkbox("Đã hoàn thành công việc", value=default_is_completed, key=f"u_is_completed_{task_data['ID']}")
                     
                     default_has_issue = task_data['TrangThai'] == 'Có vướng mắc'
-                    u_has_issue = st.checkbox("Công việc gặp vướng mắc, cần hỗ trợ", value=default_has_issue)
+                    u_has_issue = st.checkbox("Công việc gặp vướng mắc, cần hỗ trợ", value=default_has_issue, key=f"u_has_issue_{task_data['ID']}")
                     
                     # 11. Chu kỳ theo dõi
                     current_cycle = task_data.get('ChuKyTheoDoi', 'Theo dự án / Tự do')
                     cycle_list = ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"]
                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
-                    u_cycle = st.selectbox("Chu kỳ theo dõi", cycle_list, index=default_cycle_idx, key="u_cycle_sel")
+                    u_cycle = st.selectbox("Chu kỳ theo dõi", cycle_list, index=default_cycle_idx, key=f"u_cycle_sel_{task_data['ID']}")
                     
                 st.markdown("#### ⚓ THÔNG TIN RÀNG BUỘC KẾT QUẢ & GIẢI TRÌNH")
                 col_ub1, col_ub2 = st.columns(2)
@@ -1869,7 +1869,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                     data=f.read(),
                                     file_name=display_name,
                                     mime="application/octet-stream",
-                                    key="btn_download_file"
+                                    key=f"btn_download_file_{task_data['ID']}"
                                 )
                         else:
                             st.write(f"✍️ **Nội dung:** `{current_link}`")
@@ -1878,14 +1878,14 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     st.markdown("---")
                     st.markdown("**Cập nhật Kết quả / File đính kèm**")
-                    u_result_mode = st.radio("Hình thức nộp", ["Giữ nguyên hiện tại", "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key="u_result_mode")
+                    u_result_mode = st.radio("Hình thức nộp", ["Giữ nguyên hiện tại", "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
                     
                     u_link_text = ""
                     u_file = None
                     if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                        u_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", key="u_result_text")
+                        u_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", key=f"u_result_text_{task_data['ID']}")
                     elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)":
-                        u_file = st.file_uploader("Tải file đính kèm mới", key="u_result_file")
+                        u_file = st.file_uploader("Tải file đính kèm mới", key=f"u_result_file_{task_data['ID']}")
                         
                 with col_ub2:
                     u_is_late = (u_deadline < today) and not u_is_completed
@@ -1898,23 +1898,23 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             "Phân loại nguyên nhân trễ hạn",
                             u_options,
                             index=u_default_idx,
-                            key="u_late_cause_sel"
+                            key=f"u_late_cause_sel_{task_data['ID']}"
                         )
                         if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                            u_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key="u_explain_txt")
+                            u_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
                         else:
                             u_explain = ""
                     else:
                         if u_has_issue:
-                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key="u_explain_txt")
+                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
                         else:
-                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key="u_explain_txt")
+                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
                     
                 btn_save, btn_del = st.columns([4, 1])
                 with btn_save:
-                    save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key="btn_save_update")
+                    save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}")
                 with btn_del:
-                    del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key="btn_del_update")
+                    del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}")
                     
                 if save_click:
                     # Calculate status and progress automatically
