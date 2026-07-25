@@ -304,10 +304,16 @@ def read_gantt_db():
     except Exception as e:
         pass
         df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
+        
+    # Khởi tạo các cột thiếu
+    for col in ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]:
+        if col not in df.columns:
+            df[col] = ""
+
             
-    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau']).dt.date
-    df['NgayKetThuc'] = pd.to_datetime(df['NgayKetThuc']).dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'])
+    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], errors='coerce').dt.date
+    df['NgayKetThuc'] = pd.to_datetime(df['NgayKetThuc'], errors='coerce').dt.date
+    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
     df['ID'] = df['ID'].astype(str)
     df['TenDuAn'] = df['TenDuAn'].fillna('Dự án mặc định')
     df['TenCongViec'] = df['TenCongViec'].fillna('')
@@ -606,10 +612,16 @@ def read_incoming_docs_db():
     except Exception as e:
         pass
         df = pd.DataFrame(columns=required_cols)
+
+    # Khởi tạo các cột thiếu để tránh KeyError
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = ""
+
         
-    df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh']).dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline']).dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'])
+    df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh'], errors='coerce').dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline'], errors='coerce').dt.date
+    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
     df['ID'] = df['ID'].astype(str)
     
     today_dt = datetime.date.today()
@@ -671,6 +683,12 @@ def read_db():
         pass
         df = pd.DataFrame(columns=required_cols)
 
+    # Khởi tạo các cột thiếu để tránh KeyError
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = ""
+
+
     # Check and initialize missing columns dynamically
     if "ChuKyTheoDoi" not in df.columns:
         df["ChuKyTheoDoi"] = "Theo dự án / Tự do"
@@ -681,9 +699,9 @@ def read_db():
             df[col] = ""
 
     # Clean data formats
-    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau']).dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline']).dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'])
+    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], errors='coerce').dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline'], errors='coerce').dt.date
+    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
     df['DonVi'] = df['DonVi'].fillna('CTY CP DMT - MARINA (Du thuyền Happy Yacht)')
     df['TenDuAn'] = df['TenDuAn'].fillna('')
     df['MocTienDo'] = df['MocTienDo'].fillna('Tự do')
@@ -2857,7 +2875,7 @@ Chỉ trả về định dạng chuỗi JSON hợp lệ bắt đầu bằng [ v�
                     st.session_state["tbgb_tasks"] = parsed_tasks
                     st.success("🎉 Đã phân tích và trích xuất dữ liệu thành công bằng AI!")
                 except Exception as e:
-                    st.error(f"❌ Có lỗi xảy ra trong quá trình gọi AI: {e}")
+                    st.warning(f"❌ Có lỗi kết nối AI (Sai Key/Hết Quota): {e}")
                     
     if btn_demo:
         demo_data = [
