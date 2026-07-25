@@ -2967,15 +2967,29 @@ elif menu == "📄 Trích Xuất Việc Từ TBGB":
                     import google.generativeai as genai
                     genai.configure(api_key=gemini_key.strip())
                     
-                    models_to_try = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash']
-                    model = None
-                    for m in models_to_try:
-                        try:
-                            model = genai.GenerativeModel(m)
+                    # Lấy danh sách các model khả dụng có hỗ trợ generateContent
+                    available_models = [
+                        m.name
+                        for m in genai.list_models()
+                        if "generateContent" in m.supported_generation_methods
+                    ]
+
+                    # Chọn model phù hợp nhất (ưu tiên flash -> pro -> bất kỳ model nào có sẵn)
+                    selected_model_name = None
+                    for pref in ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro", "models/gemini-1.5-flash"]:
+                        for m in available_models:
+                            if pref in m:
+                                selected_model_name = m
+                                break
+                        if selected_model_name:
                             break
-                        except Exception:
-                            continue
-                            
+
+                    if not selected_model_name and available_models:
+                        selected_model_name = available_models[0]
+
+                    # Khởi tạo model từ tên chính xác được lấy từ list_models
+                    model = genai.GenerativeModel(selected_model_name)
+
 
                     extracted_text = ""
                     # 1. If docx, extract text first
