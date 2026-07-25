@@ -1254,19 +1254,42 @@ if menu == "📊 Dashboard Tổng Quan":
     if cycle_filter != "Tất cả chu kỳ":
         dash_df = dash_df[dash_df['ChuKyTheoDoi'] == cycle_filter]
         
-    # Overdue alerts scanning
-    overdue_tasks = dash_df[(dash_df['Deadline'] < today) & (dash_df['TrangThai'] != 'Hoàn thành')]
-    if not overdue_tasks.empty:
-        st.error("🚨 **CẢNH BÁO: PHÁT HIỆN CÔNG VIỆC TRỄ TIẾN ĐỘ / HẠN CHÓT**")
+    # Overdue and due today/tomorrow alerts scanning (Group 1 & 2)
+    def get_badge_and_urgency(deadline_val, today_dt):
+        if not isinstance(deadline_val, datetime.date):
+            if isinstance(deadline_val, datetime.datetime):
+                deadline_val = deadline_val.date()
+            else:
+                return None, None
+        if deadline_val < today_dt:
+            days_late = (today_dt - deadline_val).days
+            return f"🔴 [⚠️ Trễ {days_late} ngày]", 1
+        elif deadline_val == today_dt:
+            return "🟠 [⏳ Hạn hôm nay]", 2
+        elif deadline_val == today_dt + datetime.timedelta(days=1):
+            return "🟠 [⏳ Hạn ngày mai]", 3
+        return None, None
+
+    alert_list = []
+    for _, row in dash_df[dash_df['TrangThai'] != 'Hoàn thành'].iterrows():
+        badge, urgency = get_badge_and_urgency(row['Deadline'], today)
+        if badge:
+            row_copy = row.copy()
+            row_copy['Badge'] = badge
+            row_copy['Urgency'] = urgency
+            alert_list.append(row_copy)
+
+    if alert_list:
+        alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+        st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(alert_df_show)} HẠNG MỤC CẦN LƯU Ý (TRỄ HẠN / SẮP ĐẾN HẠN)**")
         alert_data = []
-        for _, row in overdue_tasks.iterrows():
-            days_late = (today - row['Deadline']).days
+        for _, row in alert_df_show.iterrows():
             alert_data.append({
                 "Tên công việc": row['TenCongViec'],
                 "Dự án / Hạng mục": row['TenDuAn'],
                 "Ban phụ trách": row['PhongBan'],
                 "Người phụ trách": row['NguoiChuTri'],
-                "Số ngày trễ": f"{days_late} ngày"
+                "Trạng thái thực tế": row['Badge']
             })
         st.dataframe(pd.DataFrame(alert_data), use_container_width=True, hide_index=True)
         st.markdown("---")
@@ -1294,27 +1317,18 @@ if menu == "📊 Dashboard Tổng Quan":
     st.markdown("---")
     
     # Critical alert panel
-    st.markdown("### ⚠️ Hạng mục cần lưu ý (Trễ hạn hoặc Có vướng mắc)")
+    st.markdown("### ⚠️ Hạng mục cần lưu ý (Trễ hạn hoặc Sắp đến hạn)")
     
-    dash_df['IsRealOverdue'] = (dash_df['Deadline'] < today) & (dash_df['TrangThai'] != 'Hoàn thành')
-    critical_df = dash_df[
-        (dash_df['TrangThai'] == 'Có vướng mắc') | 
-        (dash_df['TrangThai'] == 'Quá hạn') | 
-        (dash_df['IsRealOverdue'] == True)
-    ]
-    
-    if not critical_df.empty:
+    if alert_list:
+        alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
         crit_display = pd.DataFrame()
-        crit_display['Dự án / Hạng mục'] = critical_df['TenDuAn']
-        crit_display['Tên công việc'] = critical_df['TenCongViec']
-        crit_display['Phòng ban'] = critical_df['PhongBan']
-        crit_display['Người thực hiện'] = critical_df['NguoiChuTri']
-        crit_display['Hạn chót'] = critical_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y'))
-        crit_display['Trạng thái thực tế'] = critical_df.apply(
-            lambda r: "⚠️ Trễ hạn" if (r['Deadline'] < today and r['TrangThai'] != 'Hoàn thành') else "🔴 Vướng mắc", 
-            axis=1
-        )
-        crit_display['Ghi chú / Giải trình vướng mắc'] = critical_df['GiaiTrinhDeXuat']
+        crit_display['Dự án / Hạng mục'] = alert_df_show['TenDuAn']
+        crit_display['Tên công việc'] = alert_df_show['TenCongViec']
+        crit_display['Phòng ban'] = alert_df_show['PhongBan']
+        crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
+        crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
+        crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
         
         st.dataframe(
             crit_display,
@@ -1331,7 +1345,7 @@ if menu == "📊 Dashboard Tổng Quan":
             hide_index=True
         )
     else:
-        st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc gặp vướng mắc!")
+        st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc sắp đến hạn cần lưu ý!")
         
     st.markdown("---")
 
@@ -2039,19 +2053,44 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
         # Filter data for this project
         project_tasks_df = gantt_df[gantt_df['TenDuAn'] == gantt_project_name]
         
-        # Overdue alerts scanning for Gantt tasks
+        # Overdue and due today/tomorrow alerts scanning for Gantt tasks (Group 1 & 2)
         ref_today = datetime.date.today()
-        overdue_gantt = project_tasks_df[(project_tasks_df['NgayKetThuc'] < ref_today) & (project_tasks_df['PhanTramHoanThanh'] < 100)]
-        if not overdue_gantt.empty:
-            st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(overdue_gantt)} CÔNG VIỆC BỊ TRỄ TIẾN ĐỘ / HẠN CHÓT**")
+        gantt_warn_list = []
+        for _, row in project_tasks_df[project_tasks_df['PhanTramHoanThanh'] < 100].iterrows():
+            deadline_val = row['NgayKetThuc']
+            if isinstance(deadline_val, datetime.datetime):
+                deadline_val = deadline_val.date()
+                
+            if deadline_val < ref_today:
+                days_late = (ref_today - deadline_val).days
+                badge = f"🔴 [⚠️ Trễ {days_late} ngày]"
+                urgency = 1
+            elif deadline_val == ref_today:
+                badge = "🟠 [⏳ Hạn hôm nay]"
+                urgency = 2
+            elif deadline_val == ref_today + datetime.timedelta(days=1):
+                badge = "🟠 [⏳ Hạn ngày mai]"
+                urgency = 3
+            else:
+                badge = None
+                
+            if badge:
+                row_copy = row.copy()
+                row_copy['Badge'] = badge
+                row_copy['Urgency'] = urgency
+                gantt_warn_list.append(row_copy)
+                
+        if gantt_warn_list:
+            gantt_warn_df = pd.DataFrame(gantt_warn_list).sort_values(by=["Urgency", "NgayKetThuc"])
+            st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(gantt_warn_df)} HẠNG MỤC CẦN LƯU Ý (TRỄ HẠN / SẮP ĐẾN HẠN)**")
             g_alert_data = []
-            for _, row in overdue_gantt.iterrows():
-                days_late = (ref_today - row['NgayKetThuc']).days
+            for _, row in gantt_warn_df.iterrows():
                 g_alert_data.append({
                     "Tên công việc": row['TenCongViec'],
                     "Giai đoạn": row['GiaiDoan'],
                     "Tiến độ hiện tại": f"{row['PhanTramHoanThanh']}%",
-                    "Số ngày trễ": f"{days_late} ngày"
+                    "Hạn chót": row['NgayKetThuc'].strftime('%d/%m/%Y') if isinstance(row['NgayKetThuc'], (datetime.date, datetime.datetime)) else str(row['NgayKetThuc']),
+                    "Trạng thái thực tế": row['Badge']
                 })
             st.dataframe(pd.DataFrame(g_alert_data), use_container_width=True, hide_index=True)
             st.markdown("---")
