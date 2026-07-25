@@ -323,7 +323,6 @@ def read_gantt_db():
             
             # 3. Xử lý dữ liệu rỗng / NaN an toàn
             if 'PhanTramHoanThanh' in df.columns:
-                import pandas as pd
                 df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
             if 'TrangThai' in df.columns:
                 df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
@@ -659,7 +658,6 @@ def read_incoming_docs_db():
             
             # 3. Xử lý dữ liệu rỗng / NaN an toàn
             if 'PhanTramHoanThanh' in df.columns:
-                import pandas as pd
                 df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
             if 'TrangThai' in df.columns:
                 df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
@@ -757,7 +755,6 @@ def read_db():
             
             # 3. Xử lý dữ liệu rỗng / NaN an toàn
             if 'PhanTramHoanThanh' in df.columns:
-                import pandas as pd
                 df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
             if 'TrangThai' in df.columns:
                 df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
