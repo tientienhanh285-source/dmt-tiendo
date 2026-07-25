@@ -101,6 +101,8 @@ def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
         df = conn.read(**kwargs)
         return df if df is not None else fallback_df
     except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi cập nhật GSheets: {e}")
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
             st.session_state["show_gsheet_input"] = True
         return fallback_df
@@ -117,6 +119,8 @@ def safe_gsheets_update(conn, worksheet, data):
         conn.update(**kwargs)
         return True
     except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi cập nhật GSheets: {e}")
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
             st.session_state["show_gsheet_input"] = True
         return False
@@ -131,7 +135,7 @@ def save_config(config_data):
         safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
         return True
     except Exception as e:
-        pass
+        st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
 def load_config():
@@ -381,7 +385,7 @@ def save_gantt_db(df):
         safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df_save)
         return True
     except Exception as e:
-        pass
+        st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 def read_sqlite_table(table_name):
     try:
@@ -713,7 +717,7 @@ def save_incoming_docs_db(df):
         safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df_save)
         return True
     except Exception as e:
-        pass
+        st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
 def read_db():
@@ -814,10 +818,10 @@ def save_db(df):
         df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
         
-        safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
-        return True
+        df_save = df_save.fillna("")
+        return safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
     except Exception as e:
-        pass
+        st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
 # CSS DMT GROUP Branding Theme (Navy Blue & Orange Gold Accent)
