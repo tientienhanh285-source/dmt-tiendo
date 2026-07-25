@@ -7,6 +7,12 @@ import json
 import plotly.express as px
 import sqlite3
 
+try:
+    import google.generativeai as genai
+except ImportError:
+    st.error("Thư viện google-generativeai chưa được cài đặt. Vui lòng kiểm tra file requirements.txt.")
+
+
 # Page config - Light Theme is handled natively by Streamlit's default settings
 st.set_page_config(
     page_title="Hệ thống Quản lý Tiến độ Công việc & KPI - DMT Group",

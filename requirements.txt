@@ -3,3 +3,6 @@ pandas
 openpyxl
 st-gsheets-connection
 plotly
+google-generativeai
+pypdf
+python-docx
