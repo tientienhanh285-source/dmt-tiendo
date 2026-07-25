@@ -72,7 +72,8 @@ def init_config():
                 "Ban Đền bù Giải tỏa",
                 "Tổ KPI"
             ],
-            "personnel_by_department": DEFAULT_PERSONNEL
+            "personnel_by_department": DEFAULT_PERSONNEL,
+            "cv_gsheet_url": ""
         }
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             json.dump(default_config, f, ensure_ascii=False, indent=4)
@@ -95,6 +96,10 @@ def load_config():
         needs_save = False
         if "personnel_by_department" not in data:
             data["personnel_by_department"] = DEFAULT_PERSONNEL.copy()
+            needs_save = True
+            
+        if "cv_gsheet_url" not in data:
+            data["cv_gsheet_url"] = ""
             needs_save = True
         
         # Specific overrides/migration matching user request for default personnel
@@ -445,6 +450,219 @@ def save_sqlite_table(df, table_name):
         return True
     except Exception:
         return False
+
+def convert_gsheet_to_csv_url(url):
+    url = url.strip()
+    if not url:
+        return ""
+    # Look for /spreadsheets/d/{spreadsheetId}
+    match = re.search(r"/spreadsheets/d/([a-zA-Z0-9-_]+)", url)
+    if not match:
+        return url
+    key = match.group(1)
+    
+    # Check if there is a gid parameter (specifying sheet ID)
+    gid_match = re.search(r"gid=(\d+)", url)
+    if gid_match:
+        gid = gid_match.group(1)
+        return f"https://docs.google.com/spreadsheets/d/{key}/export?format=csv&gid={gid}"
+    else:
+        return f"https://docs.google.com/spreadsheets/d/{key}/export?format=csv"
+
+def sync_incoming_docs_from_df(import_df, selected_company, today):
+    # Normalize column names
+    import_df.columns = [str(c).strip() for c in import_df.columns]
+    
+    # Map columns using a case-insensitive check
+    mapping = {}
+    fields = {
+        "NGÀY": ["NGÀY", "Ngày", "Ngay"],
+        "ĐƠN VỊ": ["ĐƠN VỊ", "Đơn vị", "Don vi", "Co quan gui", "Cơ quan gửi"],
+        "NỘI DUNG": ["NỘI DUNG", "Nội dung", "Noi dung", "Trich yeu", "Trích yếu"],
+        "Số ký hiệu": ["Số ký hiệu", "Số / Ký hiệu", "So ky hieu", "SỐ KÝ HIỆU", "SoKyHieu"],
+        "Thời hạn hoàn thành": ["Thời hạn hoàn thành", "THỜI HẠN HOÀN THÀNH", "Ngày hoàn thành", "NGÀY HOÀN THÀNH", "Deadline"],
+        "Trạng thái": ["Trạng thái", "Trang thai", "TRẠNG THÁI", "TrangThai"],
+        "Người/ Ban thực hiện": ["Người/ Ban thực hiện", "Nguoi/ Ban thuc hien", "NGƯỜI/ BAN THỰC HIỆN", "Bộ phận chủ trì", "Ban chủ trì", "BanChuTri"]
+    }
+    
+    for key, possibilities in fields.items():
+        found_col = None
+        for col in import_df.columns:
+            if col.lower() in [p.lower() for p in possibilities]:
+                found_col = col
+                break
+        mapping[key] = found_col
+        
+    # Check if critical columns exist
+    critical_fields = ["NỘI DUNG", "Số ký hiệu", "Thời hạn hoàn thành"]
+    missing_critical = [f for f in critical_fields if mapping[f] is None]
+    if missing_critical:
+        return False, f"Thiếu các cột bắt buộc trong bảng dữ liệu: {', '.join(missing_critical)}"
+        
+    # Keep rows where "Thời hạn hoàn thành" and "NỘI DUNG" are not null / empty
+    deadline_col = mapping["Thời hạn hoàn thành"]
+    content_col = mapping["NỘI DUNG"]
+    so_ky_hieu_col = mapping["Số ký hiệu"]
+    
+    # Drop rows that are completely empty or have null deadline/content
+    valid_df = import_df.dropna(subset=[deadline_col])
+    valid_df = valid_df[valid_df[deadline_col].astype(str).str.strip() != ""]
+    valid_df = valid_df[valid_df[content_col].notna() & (valid_df[content_col].astype(str).str.strip() != "")]
+    
+    if valid_df.empty:
+        return False, "Không tìm thấy dòng hợp lệ nào chứa đầy đủ thông tin 'Thời hạn hoàn thành' và 'Nội dung'."
+        
+    # Load existing docs & tasks database
+    docs_df = read_incoming_docs_db()
+    tasks_df = read_db()
+    
+    success_count = 0
+    update_count = 0
+    
+    # Convert today to datetime.date if it is datetime.datetime
+    if isinstance(today, datetime.datetime):
+        today = today.date()
+        
+    for _, row in valid_df.iterrows():
+        # Parse fields
+        date_col = mapping["NGÀY"]
+        if date_col and not pd.isna(row[date_col]):
+            try:
+                ngay_ban_hanh = pd.to_datetime(row[date_col]).date()
+            except Exception:
+                ngay_ban_hanh = today
+        else:
+            ngay_ban_hanh = today
+            
+        try:
+            deadline_val = pd.to_datetime(row[deadline_col]).date()
+        except Exception:
+            continue
+            
+        so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetime.datetime.now().strftime('%M%S')}"
+        co_quan_gui = str(row[mapping["ĐƠN VỊ"]]).strip() if mapping["ĐƠN VỊ"] and not pd.isna(row[mapping["ĐƠN VỊ"]]) else ""
+        trich_yeu = str(row[content_col]).strip()
+        
+        ban_chu_tri_raw = str(row[mapping["Người/ Ban thực hiện"]]).strip() if mapping["Người/ Ban thực hiện"] and not pd.isna(row[mapping["Người/ Ban thực hiện"]]) else ""
+        if ban_chu_tri_raw in OFFICIAL_DEPARTMENTS:
+            ban_chu_tri = ban_chu_tri_raw
+        else:
+            ban_chu_tri = "Ban Lãnh đạo"
+            
+        trang_thai_raw = str(row[mapping["Trạng thái"]]).strip() if mapping["Trạng thái"] and not pd.isna(row[mapping["Trạng thái"]]) else "⏳ Đang xử lý"
+        
+        is_completed = trang_thai_raw in ["Đã xong", "Hoàn thành", "Đã hoàn thành", "✅ Đã xong"]
+        
+        trang_thai = "⏳ Đang xử lý"
+        if is_completed:
+            trang_thai = "✅ Đã xong"
+        else:
+            if deadline_val < today:
+                days_late = (today - deadline_val).days
+                trang_thai = f"⚠️ Trễ hạn xử lý CV (Trễ {days_late} ngày)"
+            else:
+                trang_thai = "⏳ Đang xử lý"
+                
+        # Check duplicate in docs_df
+        duplicate_doc = docs_df[docs_df['SoKyHieu'] == so_ky_hieu]
+        
+        if duplicate_doc.empty:
+            # Generate next DOC ID
+            next_doc_id = 1
+            if not docs_df.empty:
+                ids = docs_df['ID'].tolist()
+                nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                if nums:
+                    next_doc_id = max(nums) + 1
+            doc_id = f"DOC-{next_doc_id:03d}"
+            
+            new_doc_row = {
+                "ID": doc_id,
+                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                "SoKyHieu": so_ky_hieu,
+                "NgayBanHanh": ngay_ban_hanh,
+                "CoQuanGui": co_quan_gui,
+                "TrichYeu": trich_yeu,
+                "TenDuAn": "Quản lý Công văn đến",
+                "GanttTaskId": "",
+                "BanChuTri": ban_chu_tri,
+                "Deadline": deadline_val,
+                "LinkFile": "",
+                "TrangThai": trang_thai,
+                "NgayCapNhat": datetime.datetime.now()
+            }
+            docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
+            success_count += 1
+        else:
+            # Update existing document
+            doc_id = duplicate_doc.iloc[0]['ID']
+            idx = docs_df[docs_df['ID'] == doc_id].index[0]
+            docs_df.at[idx, "DonVi"] = selected_company if selected_company != "Tất cả đơn vị" else docs_df.at[idx, "DonVi"]
+            docs_df.at[idx, "NgayBanHanh"] = ngay_ban_hanh
+            docs_df.at[idx, "CoQuanGui"] = co_quan_gui
+            docs_df.at[idx, "TrichYeu"] = trich_yeu
+            docs_df.at[idx, "BanChuTri"] = ban_chu_tri
+            docs_df.at[idx, "Deadline"] = deadline_val
+            docs_df.at[idx, "TrangThai"] = trang_thai
+            docs_df.at[idx, "NgayCapNhat"] = datetime.datetime.now()
+            update_count += 1
+            
+        # Update or create the associated Task in tasks_df
+        task_name = f"📩 [Công văn đến] {trich_yeu} (Số: {so_ky_hieu})"
+        duplicate_task = tasks_df[tasks_df['TenCongViec'].str.contains(so_ky_hieu, na=False)]
+        
+        task_status = "Đang thực hiện"
+        if trang_thai == "✅ Đã xong":
+            task_status = "Hoàn thành"
+        elif deadline_val < today:
+            task_status = "Quá hạn"
+            
+        if duplicate_task.empty:
+            next_tsk_id = 1
+            if not tasks_df.empty:
+                t_ids = tasks_df['ID'].tolist()
+                t_nums = [int(m[0]) for idx in t_ids for m in [re.findall(r'\d+', str(idx))] if m]
+                if t_nums:
+                    next_tsk_id = max(t_nums) + 1
+            task_id = f"TSK-{next_tsk_id:03d}"
+            
+            new_task_row = {
+                "ID": task_id,
+                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                "PhongBan": ban_chu_tri,
+                "NguoiChuTri": "Ban Lãnh đạo",
+                "TenDuAn": "Quản lý Công văn đến",
+                "MocTienDo": "Tự do",
+                "SanPhamBanGiao": "Xem chi tiết văn bản",
+                "TenCongViec": task_name,
+                "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+                "NgayBatDau": ngay_ban_hanh,
+                "Deadline": deadline_val,
+                "DoUuTien": "Trung bình",
+                "PhanTramHoanThanh": 100 if task_status == "Hoàn thành" else 99,
+                "TrangThai": task_status,
+                "LinkKetQua": "",
+                "GiaiTrinhDeXuat": "",
+                "NgayCapNhat": datetime.datetime.now(),
+                "ChuKyTheoDoi": "Theo dự án / Tự do",
+                "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ" if task_status != "Quá hạn" else "👤 Do chủ quan"
+            }
+            tasks_df = pd.concat([tasks_df, pd.DataFrame([new_task_row])], ignore_index=True)
+        else:
+            task_id = duplicate_task.iloc[0]['ID']
+            t_idx = tasks_df[tasks_df['ID'] == task_id].index[0]
+            tasks_df.at[t_idx, "PhongBan"] = ban_chu_tri
+            tasks_df.at[t_idx, "TenCongViec"] = task_name
+            tasks_df.at[t_idx, "NgayBatDau"] = ngay_ban_hanh
+            tasks_df.at[t_idx, "Deadline"] = deadline_val
+            tasks_df.at[t_idx, "TrangThai"] = task_status
+            tasks_df.at[t_idx, "PhanTramHoanThanh"] = 100 if task_status == "Hoàn thành" else 99
+            tasks_df.at[t_idx, "NgayCapNhat"] = datetime.datetime.now()
+            
+    if save_incoming_docs_db(docs_df) and save_db(tasks_df):
+        return True, f"Đồng bộ thành công! Đã thêm mới {success_count} văn bản và cập nhật {update_count} văn bản."
+    else:
+        return False, "Không thể lưu dữ liệu vào cơ sở dữ liệu."
 
 def init_incoming_docs_db():
     if not os.path.exists("OUTPUT"):
@@ -2279,13 +2497,13 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         df_docs_show['Đính kèm'] = display_docs_df.apply(format_doc_file, axis=1)
         df_docs_show['Trạng thái'] = display_docs_df['TrangThai']
         
-        # Highlight late document status in red
-        def highlight_overdue_docs(val):
-            if "Trễ hạn" in str(val):
-                return 'background-color: #FEE2E2; color: #DC2626; font-weight: bold;'
-            return ''
+        # Báo đỏ toàn dòng cảnh báo trễ hạn
+        def highlight_overdue_rows(row):
+            if "Trễ hạn" in str(row['Trạng thái']):
+                return ['background-color: #FEE2E2; color: #DC2626; font-weight: bold;'] * len(row)
+            return [''] * len(row)
             
-        styled_df = df_docs_show.style.applymap(highlight_overdue_docs, subset=['Trạng thái']) if hasattr(df_docs_show.style, 'applymap') else df_docs_show.style.map(highlight_overdue_docs, subset=['Trạng thái'])
+        styled_df = df_docs_show.style.apply(highlight_overdue_rows, axis=1)
         
         st.dataframe(
             styled_df,
@@ -2308,134 +2526,61 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         
     st.markdown("---")
     
-    # Excel Import Section
-    with st.expander("📥 Nhập dữ liệu Công văn từ file Excel"):
-        st.markdown("Tải lên file Excel Công văn đến để tự động thêm vào hệ thống và tạo công việc tương ứng.")
-        uploaded_excel = st.file_uploader("Chọn file Excel Công văn đến (.xlsx, .xls)", type=["xlsx", "xls"], key="upload_cv_excel")
-        if uploaded_excel is not None:
-            try:
-                import_df = pd.read_excel(uploaded_excel)
-                import_df.columns = [str(c).strip() for c in import_df.columns]
-                
-                required_cols_excel = ["NGÀY", "ĐƠN VỊ", "NỘI DUNG", "Số ký hiệu", "Thời hạn hoàn thành", "Trạng thái", "Người/ Ban thực hiện"]
-                missing_cols = [col for col in required_cols_excel if col not in import_df.columns]
-                
-                if missing_cols:
-                    st.error(f"⚠️ File Excel thiếu các cột bắt buộc: {', '.join(missing_cols)}")
+    # Kết nối dữ liệu Công văn đến (Cơ chế 1 & 2)
+    with st.expander("🔗 KẾT NỐI DỮ LIỆU CÔNG VĂN ĐẾN (GOOGLE SHEETS / EXCEL)", expanded=True):
+        st.markdown("Chọn một trong hai phương thức sau để kết nối dữ liệu công văn:")
+        
+        saved_gsheet_url = config.get("cv_gsheet_url", "")
+        
+        col_gsheet, col_excel = st.columns(2)
+        
+        with col_gsheet:
+            st.markdown("##### 🟢 Cơ chế 1: Đồng bộ qua Google Sheets")
+            gsheet_input = st.text_input(
+                "🔗 Dán Link Google Sheets Văn bản đến", 
+                value=saved_gsheet_url, 
+                placeholder="https://docs.google.com/spreadsheets/d/...", 
+                key="cv_gsheet_input"
+            )
+            btn_sync = st.button("🔄 Kết nối & Đồng bộ Auto", key="btn_sync_cv_gsheet", use_container_width=True)
+            
+            if btn_sync:
+                if not gsheet_input.strip():
+                    st.warning("⚠️ Vui lòng nhập link Google Sheets trước.")
                 else:
-                    # Filter rows where "Thời hạn hoàn thành" is NOT empty
-                    valid_rows = import_df[import_df["Thời hạn hoàn thành"].notna() & (import_df["Thời hạn hoàn thành"].astype(str).str.strip() != "")]
-                    
-                    if valid_rows.empty:
-                        st.warning("⚠️ Không tìm thấy dòng nào có nhập 'Thời hạn hoàn thành' trong file Excel.")
-                    else:
-                        tasks_df = read_db()
-                        success_count = 0
+                    csv_url = convert_gsheet_to_csv_url(gsheet_input)
+                    try:
+                        import_df = pd.read_csv(csv_url)
                         
-                        for _, row in valid_rows.iterrows():
-                            # Parse dates
-                            try:
-                                ngay_ban_hanh = pd.to_datetime(row["NGÀY"]).date()
-                            except Exception:
-                                ngay_ban_hanh = today
-                                
-                            try:
-                                deadline_val = pd.to_datetime(row["Thời hạn hoàn thành"]).date()
-                            except Exception:
-                                deadline_val = today
-                                
-                            so_ky_hieu = str(row["Số ký hiệu"]).strip()
-                            co_quan_gui = str(row["ĐƠN VỊ"]).strip()
-                            trich_yeu = str(row["NỘI DUNG"]).strip()
-                            ban_chu_tri = str(row["Người/ Ban thực hiện"]).strip()
-                            trang_thai_raw = str(row["Trạng thái"]).strip()
-                            
-                            # Map Status
-                            trang_thai = "⏳ Đang xử lý"
-                            if trang_thai_raw in ["Đã xong", "Hoàn thành", "Đã hoàn thành", "✅ Đã xong"]:
-                                trang_thai = "✅ Đã xong"
-                            elif deadline_val < today:
-                                trang_thai = "⚠️ Trễ hạn"
-                                
-                            # Check duplicate in docs_df
-                            duplicate_doc = docs_df[docs_df['SoKyHieu'] == so_ky_hieu]
-                            if duplicate_doc.empty:
-                                # Auto ID generator for docs
-                                next_doc_id = 1
-                                if not docs_df.empty:
-                                    ids = docs_df['ID'].tolist()
-                                    nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
-                                    if nums:
-                                        next_doc_id = max(nums) + 1
-                                doc_id = f"DOC-{next_doc_id:03d}"
-                                
-                                new_doc_row = {
-                                    "ID": doc_id,
-                                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
-                                    "SoKyHieu": so_ky_hieu,
-                                    "NgayBanHanh": ngay_ban_hanh,
-                                    "CoQuanGui": co_quan_gui,
-                                    "TrichYeu": trich_yeu,
-                                    "TenDuAn": "",
-                                    "GanttTaskId": "",
-                                    "BanChuTri": ban_chu_tri if ban_chu_tri in OFFICIAL_DEPARTMENTS else "Ban Lãnh đạo",
-                                    "Deadline": deadline_val,
-                                    "LinkFile": "",
-                                    "TrangThai": trang_thai,
-                                    "NgayCapNhat": datetime.datetime.now()
-                                }
-                                docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
-                                
-                                # Also automatically create a Task in general progression
-                                duplicate_task = tasks_df[tasks_df['TenCongViec'].str.contains(so_ky_hieu, na=False)]
-                                if duplicate_task.empty:
-                                    next_tsk_id = 1
-                                    if not tasks_df.empty:
-                                        t_ids = tasks_df['ID'].tolist()
-                                        t_nums = [int(m[0]) for idx in t_ids for m in [re.findall(r'\d+', str(idx))] if m]
-                                        if t_nums:
-                                            next_tsk_id = max(t_nums) + 1
-                                    task_id = f"TSK-{next_tsk_id:03d}"
-                                    
-                                    task_status = "Đang thực hiện"
-                                    if trang_thai == "✅ Đã xong":
-                                        task_status = "Hoàn thành"
-                                    elif deadline_val < today:
-                                        task_status = "Quá hạn"
-                                        
-                                    new_task_row = {
-                                        "ID": task_id,
-                                        "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
-                                        "PhongBan": ban_chu_tri if ban_chu_tri in OFFICIAL_DEPARTMENTS else "Ban Lãnh đạo",
-                                        "NguoiChuTri": "Trần Cường",
-                                        "TenDuAn": "Quản lý Công văn đến",
-                                        "MocTienDo": "Tự do",
-                                        "SanPhamBanGiao": "Xem chi tiết văn bản",
-                                        "TenCongViec": f"📩 [Công văn đến] {trich_yeu} (Số: {so_ky_hieu})",
-                                        "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
-                                        "NgayBatDau": ngay_ban_hanh,
-                                        "Deadline": deadline_val,
-                                        "DoUuTien": "Trung bình",
-                                        "PhanTramHoanThanh": 100 if task_status == "Hoàn thành" else 99,
-                                        "TrangThai": task_status,
-                                        "LinkKetQua": "",
-                                        "GiaiTrinhDeXuat": "",
-                                        "NgayCapNhat": datetime.datetime.now(),
-                                        "ChuKyTheoDoi": "Theo dự án / Tự do",
-                                        "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
-                                    }
-                                    tasks_df = pd.concat([tasks_df, pd.DataFrame([new_task_row])], ignore_index=True)
-                                    
-                                success_count += 1
-                                
-                        if success_count > 0:
-                            if save_incoming_docs_db(docs_df) and save_db(tasks_df):
-                                st.success(f"🎉 Tải lên thành công! Đã thêm {success_count} công văn mới có thời hạn và tạo công việc tương ứng.")
-                                st.rerun()
+                        # Cập nhật và lưu cấu hình
+                        config_data = load_config()
+                        config_data["cv_gsheet_url"] = gsheet_input.strip()
+                        save_config(config_data)
+                        
+                        success, msg = sync_incoming_docs_from_df(import_df, selected_company, today)
+                        if success:
+                            st.success(f"🎉 {msg}")
+                            st.rerun()
                         else:
-                            st.info("ℹ️ Không có công văn mới nào được thêm (các công văn đều đã tồn tại).")
-            except Exception as e:
-                st.error(f"❌ Lỗi xử lý file Excel: {e}")
+                            st.error(f"❌ {msg}")
+                    except Exception as e:
+                        st.error(f"❌ Lỗi đọc Google Sheets: {e}")
+                        st.info("💡 Hướng dẫn: Đảm bảo Google Sheets được chia sẻ ở chế độ công khai ('Bất kỳ ai có liên kết đều có thể xem').")
+                        
+        with col_excel:
+            st.markdown("##### 📥 Cơ chế 2: Tải lên file Excel (.xlsx)")
+            uploaded_excel = st.file_uploader("Tải lên file Excel Công văn đến (.xlsx, .xls)", type=["xlsx", "xls"], key="upload_cv_excel")
+            if uploaded_excel is not None:
+                try:
+                    import_df = pd.read_excel(uploaded_excel)
+                    success, msg = sync_incoming_docs_from_df(import_df, selected_company, today)
+                    if success:
+                        st.success(f"🎉 {msg}")
+                        st.rerun()
+                    else:
+                        st.error(f"❌ {msg}")
+                except Exception as e:
+                    st.error(f"❌ Lỗi xử lý file Excel: {e}")
                 
     st.markdown("---")
     
