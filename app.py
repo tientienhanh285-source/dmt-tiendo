@@ -1031,6 +1031,7 @@ menu = st.sidebar.radio(
         "➕ Thêm / Cập Nhật Công Việc",
         "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
         "📩 Quản Lý Văn Bản Đến",
+        "📄 Trích Xuất Việc Từ TBGB",
         "⚙️ Quản Lý Cấu HÌnh"
     ],
     index=0
@@ -2867,6 +2868,259 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
                     if save_incoming_docs_db(docs_df_after_del):
                         st.success(f"🗑️ Đã xóa thành công văn bản mã: {selected_doc_id}!")
                         st.rerun()
+
+elif menu == "📄 Trích Xuất Việc Từ TBGB":
+    import io
+    st.markdown("### 📄 Trích xuất Công việc từ Thông báo Giao ban bằng AI")
+    
+    st.markdown("Hệ thống sử dụng AI để tự động đọc nội dung văn bản (PDF, DOCX, Ảnh) và trích xuất thành danh sách công việc tương ứng.")
+    
+    saved_api_key = config.get("gemini_api_key", "")
+    
+    with st.expander("🔑 Cấu hình Gemini API Key", expanded=(not saved_api_key)):
+        gemini_key = st.text_input(
+            "Nhập Gemini API Key của bạn", 
+            value=saved_api_key, 
+            type="password", 
+            help="API Key sẽ được lưu trong file cấu hình dự án để sử dụng cho các lần sau.",
+            key="gemini_api_key_input"
+        )
+        if gemini_key:
+            st.info("💡 Bạn có thể đăng ký API Key miễn phí tại Google AI Studio.")
+            
+    st.markdown("#### 📤 Tải lên tài liệu Giao ban")
+    uploaded_file = st.file_uploader(
+        "Chọn tệp Thông báo Giao ban (.pdf, .docx, .png, .jpg, .jpeg)", 
+        type=["pdf", "docx", "png", "jpg", "jpeg"], 
+        key="tbgb_file_uploader"
+    )
+    
+    col_action1, col_action2 = st.columns(2)
+    
+    with col_action1:
+        btn_extract = st.button("🔍 Phân tích & Trích xuất bằng AI", type="primary", use_container_width=True, key="btn_run_tbgb_ai")
+    with col_action2:
+        btn_demo = st.button("⚙️ Chạy Demo với Dữ liệu mẫu", type="secondary", use_container_width=True, key="btn_run_tbgb_demo")
+        
+    if btn_extract:
+        if not gemini_key.strip():
+            st.error("⚠️ Vui lòng cấu hình Gemini API Key trước khi sử dụng tính năng trích xuất bằng AI.")
+        elif uploaded_file is None:
+            st.error("⚠️ Vui lòng tải lên tệp văn bản hoặc hình ảnh Thông báo Giao ban.")
+        else:
+            with st.spinner("AI đang đọc và bóc tách dữ liệu... Vui lòng đợi trong giây lát..."):
+                file_bytes = uploaded_file.getvalue()
+                file_name = uploaded_file.name
+                file_ext = os.path.splitext(file_name)[1].lower()
+                
+                # Update saved API Key
+                config_data = load_config()
+                config_data["gemini_api_key"] = gemini_key.strip()
+                save_config(config_data)
+                
+                try:
+                    import google.generativeai as genai
+                    genai.configure(api_key=gemini_key.strip())
+                    model = genai.GenerativeModel("gemini-1.5-flash")
+                    
+                    extracted_text = ""
+                    # 1. If docx, extract text first
+                    if file_ext == ".docx":
+                        try:
+                            import docx
+                            doc = docx.Document(io.BytesIO(file_bytes))
+                            paras = [p.text for p in doc.paragraphs]
+                            tables_text = []
+                            for tbl in doc.tables:
+                                for row in tbl.rows:
+                                    for cell in row.cells:
+                                        tables_text.append(cell.text)
+                            extracted_text = "\n".join(paras + tables_text)
+                        except Exception as e_docx:
+                            st.error(f"Lỗi đọc file DOCX: {e_docx}")
+                            
+                    # Prepare Prompt
+                    prompt_text = f"""
+Hãy phân tích nội dung văn bản Thông báo Giao ban (TBGB) này và trích xuất toàn bộ các chỉ đạo, công việc cần thực hiện thành danh sách có cấu trúc.
+Yêu cầu trả về dữ liệu dưới dạng JSON (mảng các đối tượng) với các thuộc tính:
+- TenCongViec: Tên công việc hoặc nội dung chỉ đạo cụ thể (ngắn gọn, rõ ràng).
+- TenDuAn: Dự án hoặc hạng mục liên quan (Nếu có dự án cụ thể, hãy chọn một trong các dự án sau: KDC Bàu Mạc, KDC Nam Bàu Mạc, KĐT Phước Lý & Phước Lý MR, TĐC Phước Lý 2 & Hoà Liên 5, Dự án Phong Nam, Khu BT ST Hoà Ninh, Tuyến đường Lê Trọng Tấn, Tuyến đường Lê Trọng Tấn - Hoà Nhơn, Tuyến đường Trần Hưng Đạo (BT), Trục I Tây Bắc, Khu TĐC Hoà Vang, Khách sạn DMT-Group, Du thuyền Happy Yacht (DMT Marina), Quản lý Công văn đến. Nếu không liên quan dự án nào hoặc không tìm thấy, hãy điền chuỗi trống "").
+- PhongBan: Ban hoặc bộ phận chịu trách nhiệm chính thực hiện (chọn một trong các phòng ban: Ban Lãnh đạo, Ban Hành chính Nhân sự, Ban Tài chính Kế toán, Ban Kế hoạch Đầu tư, Ban Chuẩn bị Đầu tư, Ban Kỹ thuật, Ban Đền bù Giải tỏa, Tổ KPI. Nếu không có ban cụ thể, hãy phân tích xem nhiệm vụ thuộc về ban nào hợp lý nhất).
+- Deadline: Hạn chót hoàn thành. Hãy quy đổi sang định dạng YYYY-MM-DD. Nếu không ghi hạn cụ thể, hãy lấy ngày hiện tại cộng thêm 7 ngày (Ngày hiện tại: {today.strftime('%Y-%m-%d')}).
+
+Chỉ trả về định dạng chuỗi JSON hợp lệ bắt đầu bằng [ và kết thúc bằng ], không bọc trong thẻ markdown ```json hay thêm bất cứ văn bản nào khác ngoài JSON.
+"""
+                    
+                    if file_ext == ".docx":
+                        response = model.generate_content([extracted_text, prompt_text])
+                    else:
+                        # Multimodal for PDF/Image
+                        mime_type = "application/pdf"
+                        if file_ext == ".png":
+                            mime_type = "image/png"
+                        elif file_ext in [".jpg", ".jpeg"]:
+                            mime_type = "image/jpeg"
+                            
+                        response = model.generate_content([
+                            {
+                                "mime_type": mime_type,
+                                "data": file_bytes
+                            },
+                            prompt_text
+                        ])
+                        
+                    raw_result = response.text
+                    
+                    # Clean response to parse JSON
+                    def clean_json_string(text):
+                        text = text.strip()
+                        if text.startswith("```json"):
+                            text = text[7:]
+                        elif text.startswith("```"):
+                            text = text[3:]
+                        if text.endswith("```"):
+                            text = text[:-3]
+                        text = text.strip()
+                        
+                        start_idx = text.find("[")
+                        end_idx = text.rfind("]")
+                        if start_idx != -1 and end_idx != -1:
+                            text = text[start_idx:end_idx+1]
+                        return text
+                        
+                    clean_json = clean_json_string(raw_result)
+                    parsed_tasks = json.loads(clean_json)
+                    
+                    st.session_state["tbgb_tasks"] = parsed_tasks
+                    st.success("🎉 Đã phân tích và trích xuất dữ liệu thành công bằng AI!")
+                except Exception as e:
+                    st.error(f"❌ Có lỗi xảy ra trong quá trình gọi AI: {e}")
+                    
+    if btn_demo:
+        demo_data = [
+            {
+                "TenCongViec": "Hoàn thành Báo cáo nghiên cứu khả thi Dự án KDC Bàu Mạc",
+                "TenDuAn": "KDC Bàu Mạc",
+                "PhongBan": "Ban Kế hoạch Đầu tư",
+                "Deadline": (today + datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+            },
+            {
+                "TenCongViec": "Chuẩn bị hồ sơ xin cấp phép xây dựng tuyến đường Lê Trọng Tấn",
+                "TenDuAn": "Tuyến đường Lê Trọng Tấn",
+                "PhongBan": "Ban Kỹ thuật",
+                "Deadline": (today + datetime.timedelta(days=15)).strftime("%Y-%m-%d")
+            },
+            {
+                "TenCongViec": "Tuyển dụng bổ sung nhân sự chuyên trách cho Tổ KPI",
+                "TenDuAn": "",
+                "PhongBan": "Ban Hành chính Nhân sự",
+                "Deadline": (today + datetime.timedelta(days=5)).strftime("%Y-%m-%d")
+            }
+        ]
+        st.session_state["tbgb_tasks"] = demo_data
+        st.success("🎉 Đã nạp dữ liệu mẫu chạy thử nghiệm thành công!")
+        
+    st.markdown("---")
+    
+    if "tbgb_tasks" in st.session_state and st.session_state["tbgb_tasks"]:
+        st.markdown("#### 📋 Kiểm tra & Chỉnh sửa danh sách công việc trích xuất")
+        st.info("Nhấp đúp chuột vào các ô dưới đây để bổ sung hoặc sửa đổi thông tin trực tiếp nếu cần thiết:")
+        
+        editor_df = pd.DataFrame(st.session_state["tbgb_tasks"])
+        
+        if "TenCongViec" not in editor_df.columns:
+            editor_df["TenCongViec"] = ""
+        if "TenDuAn" not in editor_df.columns:
+            editor_df["TenDuAn"] = ""
+        if "PhongBan" not in editor_df.columns:
+            editor_df["PhongBan"] = "Ban Lãnh đạo"
+        if "Deadline" not in editor_df.columns:
+            editor_df["Deadline"] = (today + datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+            
+        edited_df = st.data_editor(
+            editor_df,
+            column_config={
+                "TenCongViec": st.column_config.TextColumn("Tên công việc / Chỉ đạo giao ban", width="large", required=True),
+                "TenDuAn": st.column_config.SelectboxColumn("Dự án liên quan", options=ALL_PROJECTS + [""], width="medium"),
+                "PhongBan": st.column_config.SelectboxColumn("Ban / Bộ phận thực hiện", options=OFFICIAL_DEPARTMENTS, width="medium"),
+                "Deadline": st.column_config.TextColumn("Hạn chót (YYYY-MM-DD)", width="small", required=True)
+            },
+            num_rows="dynamic",
+            use_container_width=True,
+            key="tbgb_editor_component"
+        )
+        
+        st.session_state["tbgb_tasks"] = edited_df.to_dict(orient="records")
+        
+        col_btn1, col_btn2 = st.columns([3, 1])
+        
+        with col_btn1:
+            btn_confirm = st.button("✅ Xác nhận & Đồng bộ vào Hệ thống Tiến độ", type="primary", use_container_width=True, key="btn_confirm_tbgb_sync")
+            if btn_confirm:
+                if not st.session_state["tbgb_tasks"]:
+                    st.warning("⚠️ Danh sách công việc rỗng. Không có gì để lưu.")
+                else:
+                    tasks_df = read_db()
+                    success_count = 0
+                    
+                    for row in st.session_state["tbgb_tasks"]:
+                        task_name_raw = str(row.get("TenCongViec", "")).strip()
+                        if not task_name_raw:
+                            continue
+                            
+                        proj_name = str(row.get("TenDuAn", "")).strip()
+                        dept_name = str(row.get("PhongBan", "")).strip()
+                        if dept_name not in OFFICIAL_DEPARTMENTS:
+                            dept_name = "Ban Lãnh đạo"
+                            
+                        try:
+                            deadline_val = pd.to_datetime(row.get("Deadline")).date()
+                        except Exception:
+                            deadline_val = today + datetime.timedelta(days=7)
+                            
+                        next_tsk_id = 1
+                        if not tasks_df.empty:
+                            t_ids = tasks_df['ID'].tolist()
+                            t_nums = [int(m[0]) for idx in t_ids for m in [re.findall(r'\d+', str(idx))] if m]
+                            if t_nums:
+                                next_tsk_id = max(t_nums) + 1
+                        task_id = f"TSK-{next_tsk_id:03d}"
+                        
+                        new_task_row = {
+                            "ID": task_id,
+                            "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                            "PhongBan": dept_name,
+                            "NguoiChuTri": "Ban Lãnh đạo",
+                            "TenDuAn": proj_name if proj_name else "Chỉ đạo Giao ban",
+                            "MocTienDo": "Tự do",
+                            "SanPhamBanGiao": "Xem báo cáo",
+                            "TenCongViec": f"📋 [Chỉ đạo Giao ban] {task_name_raw}",
+                            "PhanLoaiChiSo": "Chỉ số hành động (Activity Metric)",
+                            "NgayBatDau": today,
+                            "Deadline": deadline_val,
+                            "DoUuTien": "Cao",
+                            "PhanTramHoanThanh": 0,
+                            "TrangThai": "Đang thực hiện",
+                            "LinkKetQua": "",
+                            "GiaiTrinhDeXuat": "",
+                            "NgayCapNhat": datetime.datetime.now(),
+                            "ChuKyTheoDoi": "Theo dự án / Tự do",
+                            "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
+                        }
+                        tasks_df = pd.concat([tasks_df, pd.DataFrame([new_task_row])], ignore_index=True)
+                        success_count += 1
+                        
+                    if success_count > 0:
+                        if save_db(tasks_df):
+                            st.success(f"🎉 Đồng bộ thành công! Đã thêm {success_count} công việc chỉ đạo vào hệ thống.")
+                            st.session_state["tbgb_tasks"] = []
+                            st.rerun()
+                            
+        with col_btn2:
+            btn_clear = st.button("🗑️ Xóa danh sách này", type="secondary", use_container_width=True, key="btn_clear_tbgb_tasks")
+            if btn_clear:
+                st.session_state["tbgb_tasks"] = []
+                st.rerun()
 
 # ----------------- 5. QUẢN LÝ CẤU HÌNH (ADMIN) -----------------
 else:
