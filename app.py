@@ -690,16 +690,42 @@ def init_incoming_docs_db():
 
 def read_incoming_docs_db():
     init_incoming_docs_db()
-    df = read_sqlite_table("incoming_docs")
+    
+    # Try to sync from Google Sheets first if configured
+    conn = get_gsheets_conn()
+    df = None
+    required_cols = [
+        "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
+        "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
+        "TrangThai", "NgayCapNhat"
+    ]
+    
+    if conn is not None:
+        try:
+            df = conn.read(worksheet="VAN_BAN_DEN", ttl="0")
+            if df is None or df.empty or len(df.columns) < 2:
+                df = pd.DataFrame(columns=required_cols)
+                conn.update(worksheet="VAN_BAN_DEN", data=df)
+            else:
+                df.columns = [str(c).strip() for c in df.columns]
+                # Sync back to local SQLite and Excel
+                save_sqlite_table(df, "incoming_docs")
+                if os.path.exists(GANTT_DB_FILE):
+                    with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
+                        df.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
+        except Exception as e:
+            st.warning(f"Không thể đồng bộ văn bản đến từ Google Sheets (đang dùng dữ liệu cục bộ): {e}")
+
+    # Fallback to SQLite
+    if df is None:
+        df = read_sqlite_table("incoming_docs")
+        
+    # Fallback to Excel
     if df is None or df.empty:
         try:
             df = pd.read_excel(GANTT_DB_FILE, sheet_name="VAN_BAN_DEN")
         except Exception:
-            df = pd.DataFrame(columns=[
-                "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
-                "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
-                "TrangThai", "NgayCapNhat"
-            ])
+            df = pd.DataFrame(columns=required_cols)
             
     df.columns = [str(c).strip() for c in df.columns]
     
@@ -746,6 +772,14 @@ def save_incoming_docs_db(df):
         if os.path.exists(GANTT_DB_FILE):
             with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
                 df_save.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
+                
+        # Save to Google Sheets if configured
+        conn = get_gsheets_conn()
+        if conn is not None:
+            try:
+                conn.update(worksheet="VAN_BAN_DEN", data=df_save)
+            except Exception as e:
+                st.error(f"Lỗi đồng bộ dữ liệu văn bản đến lên Google Sheets: {e}")
         return True
     except Exception as e:
         st.error(f"Lỗi ghi dữ liệu văn bản đến: {e}")
