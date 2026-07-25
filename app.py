@@ -42,62 +42,44 @@ DEFAULT_PERSONNEL = {
     "Tổ KPI": []
 }
 
-def init_config():
-    if not os.path.exists("OUTPUT"):
-        os.makedirs("OUTPUT", exist_ok=True)
-    if not os.path.exists(CONFIG_FILE):
-        default_config = {
-            "projects_by_category": {
-                "BĐS & KDC": [
-                    "KDC Bàu Mạc", 
-                    "KDC Nam Bàu Mạc", 
-                    "KĐT Phước Lý & Phước Lý MR", 
-                    "TĐC Phước Lý 2 & Hoà Liên 5", 
-                    "Dự án Phong Nam", 
-                    "Khu BT ST Hoà Ninh"
-                ],
-                "HẠ TẦNG & GIAO THÔNG": [
-                    "Tuyến đường Lê Trọng Tấn", 
-                    "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", 
-                    "Tuyến đường Trần Hưng Đạo (BT)", 
-                    "Trục I Tây Bắc", 
-                    "Khu TĐC Hoà Vang"
-                ],
-                "THƯƠNG MẠI & KHÁCH SẠN": [
-                    "Khách sạn DMT-Group", 
-                    "Du thuyền Happy Yacht (DMT Marina)"
-                ]
-            },
-            "departments": [
-                "Ban Lãnh đạo",
-                "Ban Hành chính Nhân sự",
-                "Ban Tài chính Kế toán",
-                "Ban Kế hoạch Đầu tư",
-                "Ban Chuẩn bị Đầu tư",
-                "Ban Kỹ thuật",
-                "Ban Đền bù Giải tỏa",
-                "Tổ KPI"
-            ],
-            "personnel_by_department": DEFAULT_PERSONNEL,
-            "cv_gsheet_url": ""
-        }
-        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-            json.dump(default_config, f, ensure_ascii=False, indent=4)
-
 def save_config(config_data):
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa cấu hình Google Sheets (secrets.toml).")
+        return False
     try:
-        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-            json.dump(config_data, f, ensure_ascii=False, indent=4)
+        df_save = pd.DataFrame([{"config_json": json.dumps(config_data, ensure_ascii=False)}])
+        conn.update(worksheet="CONFIG", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi lưu cấu hình: {e}")
+        st.error(f"Lỗi lưu cấu hình lên Google Sheets: {e}")
         return False
 
 def load_config():
-    init_config()
+    default_config = {
+        "projects_by_category": {
+            "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
+            "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
+            "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group", "Du thuyền Happy Yacht (DMT Marina)"]
+        },
+        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI"],
+        "personnel_by_department": DEFAULT_PERSONNEL.copy(),
+        "cv_gsheet_url": ""
+    }
+    
+    conn = get_gsheets_conn()
+    if conn is None:
+        return default_config
+        
     try:
-        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        df = conn.read(worksheet="CONFIG", ttl=0)
+        if df is None or df.empty:
+            df_save = pd.DataFrame([{"config_json": json.dumps(default_config, ensure_ascii=False)}])
+            conn.update(worksheet="CONFIG", data=df_save)
+            return default_config
+            
+        json_str = df.iloc[0]["config_json"]
+        data = json.loads(json_str)
         
         needs_save = False
         if "personnel_by_department" not in data:
@@ -107,43 +89,14 @@ def load_config():
         if "cv_gsheet_url" not in data:
             data["cv_gsheet_url"] = ""
             needs_save = True
-        
-        # Specific overrides/migration matching user request for default personnel
-        kpi_p = data["personnel_by_department"].get("Tổ KPI", [])
-        if kpi_p == ["Nguyễn Băng Trinh", "Nguyễn Thị Mỹ Phương", "Lê Thị Hải"]:
-            data["personnel_by_department"]["Tổ KPI"] = []
-            needs_save = True
             
-        hcns_p = data["personnel_by_department"].get("Ban Hành chính Nhân sự", [])
-        if hcns_p == ["Nguyễn Băng Trinh", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Hạnh Tiên"]:
-            data["personnel_by_department"]["Ban Hành chính Nhân sự"] = ["Nguyễn Thị Hạnh Tiên"]
-            needs_save = True
-            
-        tckt_p = data["personnel_by_department"].get("Ban Tài chính Kế toán", [])
-        if tckt_p == ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Ngọc Hà", "Lê Thị Hải"]:
-            data["personnel_by_department"]["Ban Tài chính Kế toán"] = ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
-            needs_save = True
-        
-        for dept in data.get("departments", []):
-            if dept not in data["personnel_by_department"]:
-                data["personnel_by_department"][dept] = []
-                needs_save = True
-                
         if needs_save:
             save_config(data)
             
         return data
     except Exception as e:
-        st.error(f"Lỗi đọc cấu hình: {e}")
-        return {
-            "projects_by_category": {
-                "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
-                "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
-                "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group", "Du thuyền Happy Yacht (DMT Marina)"]
-            },
-            "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI"],
-            "personnel_by_department": DEFAULT_PERSONNEL.copy()
-        }
+        st.error(f"Lỗi đọc cấu hình từ Google Sheets: {e}")
+        return default_config
 
 # Load current config dynamically
 config = load_config()
@@ -261,129 +214,34 @@ DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 # Gantt DB Configuration
 GANTT_DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 
-def init_gantt_db():
-    if not os.path.exists("OUTPUT"):
-        os.makedirs("OUTPUT", exist_ok=True)
-    try:
-        # Check SQLite first
-        sqlite_df = read_sqlite_table("gantt_tasks")
-        if sqlite_df is not None and not sqlite_df.empty:
-            return
-            
-        if os.path.exists(GANTT_DB_FILE):
-            xls = pd.ExcelFile(GANTT_DB_FILE)
-            if "GANTT_KHDT" in xls.sheet_names:
-                df = pd.read_excel(GANTT_DB_FILE, sheet_name="GANTT_KHDT")
-                if not df.empty:
-                    save_sqlite_table(df, "gantt_tasks")
-                    return
-        
-        # Populate dummy data with localized Phase 1 - 8 names
-        dummy_data = [
-            {
-                "ID": "GNT-001",
-                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
-                "TenCongViec": "Khảo sát thị trường & Khả thi",
-                "GiaiDoan": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
-                "NgayBatDau": "2026-01-01",
-                "NgayKetThuc": "2026-01-31",
-                "PhanTramHoanThanh": 100,
-                "Milestone": "",
-                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            },
-            {
-                "ID": "GNT-002",
-                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
-                "TenCongViec": "Thiết kế quy hoạch & Kiến trúc",
-                "GiaiDoan": "2. Pháp lý Dự án & Quy hoạch 1/500",
-                "NgayBatDau": "2026-02-01",
-                "NgayKetThuc": "2026-03-15",
-                "PhanTramHoanThanh": 80,
-                "Milestone": "",
-                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            },
-            {
-                "ID": "GNT-003",
-                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
-                "TenCongViec": "Phê duyệt Pháp lý & Báo cáo KHĐT",
-                "GiaiDoan": "2. Pháp lý Dự án & Quy hoạch 1/500",
-                "NgayBatDau": "2026-02-01",
-                "NgayKetThuc": "2026-03-02",
-                "PhanTramHoanThanh": 100,
-                "Milestone": "Mốc 1: Phê duyệt Pháp lý & GPXD",
-                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            },
-            {
-                "ID": "GNT-004",
-                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
-                "TenCongViec": "Báo cáo Nghiên cứu Tiền khả thi",
-                "GiaiDoan": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
-                "NgayBatDau": "2026-03-15",
-                "NgayKetThuc": "2026-04-15",
-                "PhanTramHoanThanh": 40,
-                "Milestone": "",
-                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            },
-            {
-                "ID": "GNT-005",
-                "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
-                "TenCongViec": "Trình duyệt Thẩm định Đầu tư",
-                "GiaiDoan": "4. Thiết kế Bản vẽ Thi công & Thẩm định",
-                "NgayBatDau": "2026-04-01",
-                "NgayKetThuc": "2026-05-01",
-                "PhanTramHoanThanh": 10,
-                "Milestone": "Mốc 2: Cất nóc công trình",
-                "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            }
-        ]
-        df_dummy = pd.DataFrame(dummy_data)
-        
-        # Save to local SQLite
-        save_sqlite_table(df_dummy, "gantt_tasks")
-        
-        if os.path.exists(GANTT_DB_FILE):
-            with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
-                df_dummy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
-        else:
-            with pd.ExcelWriter(GANTT_DB_FILE, engine="openpyxl") as writer:
-                df_dummy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
-                
-        # Sync GSheets if configured
-        conn = get_gsheets_conn()
-        if conn is not None:
-            try:
-                conn.update(worksheet="GANTT_KHDT", data=df_dummy)
-            except Exception:
-                pass
-    except Exception as e:
-        st.error(f"Lỗi khởi tạo Gantt DB: {e}")
-
 def read_gantt_db():
-    init_gantt_db()
     conn = get_gsheets_conn()
-    df = None
-    if conn is not None:
-        try:
-            df = conn.read(worksheet="GANTT_KHDT", ttl="0")
-            if df is None or df.empty or len(df.columns) < 2:
-                df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
-                conn.update(worksheet="GANTT_KHDT", data=df)
-            else:
-                df.columns = [str(c).strip() for c in df.columns]
-                save_sqlite_table(df, "gantt_tasks")
-                with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
-                    df.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
-        except Exception as e:
-            st.warning(f"Không thể đồng bộ Gantt từ Google Sheets (đang dùng cục bộ): {e}")
-
-    if df is None:
-        df = read_sqlite_table("gantt_tasks")
-
-    if df is None:
-        try:
-            df = pd.read_excel(GANTT_DB_FILE, sheet_name="GANTT_KHDT")
-        except Exception:
-            df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
+    if conn is None:
+        return pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
+        
+    try:
+        df = conn.read(worksheet="GANTT_KHDT", ttl=0)
+        if df is None or df.empty or len(df.columns) < 2:
+            dummy_data = [
+                {
+                    "ID": "GNT-001",
+                    "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
+                    "TenCongViec": "Khảo sát thị trường & Khả thi",
+                    "GiaiDoan": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                    "NgayBatDau": "2026-01-01",
+                    "NgayKetThuc": "2026-01-31",
+                    "PhanTramHoanThanh": 100,
+                    "Milestone": "",
+                    "NgayCapNhat": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+            ]
+            df = pd.DataFrame(dummy_data)
+            conn.update(worksheet="GANTT_KHDT", data=df)
+        else:
+            df.columns = [str(c).strip() for c in df.columns]
+    except Exception as e:
+        st.error(f"Lỗi đọc dữ liệu Gantt từ Google Sheets: {e}")
+        df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
             
     df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau']).dt.date
     df['NgayKetThuc'] = pd.to_datetime(df['NgayKetThuc']).dt.date
@@ -395,7 +253,6 @@ def read_gantt_db():
     df['Milestone'] = df['Milestone'].fillna('')
     df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0).astype(int)
     
-    # Map old English/Vietnamese names to new standardized Phase 1 - 8 names if they exist
     phase_mapping = {
         "Concept Dev": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
         "1. Phát triển Ý tưởng & Khảo sát": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
@@ -416,29 +273,21 @@ def read_gantt_db():
     return df
 
 def save_gantt_db(df):
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa kết nối Google Sheets.")
+        return False
     try:
         df_save = df.copy()
         df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayKetThuc'] = df_save['NgayKetThuc'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         
-        # Save to local SQLite
-        save_sqlite_table(df_save, "gantt_tasks")
-        
-        with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
-            df_save.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
-            
-        conn = get_gsheets_conn()
-        if conn is not None:
-            try:
-                conn.update(worksheet="GANTT_KHDT", data=df_save)
-            except Exception as e:
-                st.error(f"Lỗi đồng bộ dữ liệu Gantt lên Google Sheets: {e}")
+        conn.update(worksheet="GANTT_KHDT", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi ghi dữ liệu Gantt: {e}")
+        st.error(f"Lỗi ghi dữ liệu Gantt lên Google Sheets: {e}")
         return False
-
 def read_sqlite_table(table_name):
     try:
         conn = sqlite3.connect("database.db")
@@ -675,84 +524,37 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
     else:
         return False, "Không thể lưu dữ liệu vào cơ sở dữ liệu."
 
-def init_incoming_docs_db():
-    if not os.path.exists("OUTPUT"):
-        os.makedirs("OUTPUT", exist_ok=True)
-    required_cols = [
-        "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
-        "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
-        "TrangThai", "NgayCapNhat", "GhiChu"
-    ]
-    # Initialize SQLite table if not exists
-    sqlite_df = read_sqlite_table("incoming_docs")
-    if sqlite_df is None:
-        df_init = pd.DataFrame(columns=required_cols)
-        save_sqlite_table(df_init, "incoming_docs")
-        
-    if os.path.exists(GANTT_DB_FILE):
-        try:
-            xls = pd.ExcelFile(GANTT_DB_FILE)
-            if "VAN_BAN_DEN" not in xls.sheet_names:
-                df_init = pd.DataFrame(columns=required_cols)
-                with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="overlay") as writer:
-                    df_init.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
-        except Exception:
-            pass
-
 def read_incoming_docs_db():
-    init_incoming_docs_db()
-    
-    # Try to sync from Google Sheets first if configured
     conn = get_gsheets_conn()
-    df = None
     required_cols = [
         "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
         "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
         "TrangThai", "NgayCapNhat", "GhiChu"
     ]
-    
-    if conn is not None:
-        try:
-            df = conn.read(worksheet="VAN_BAN_DEN", ttl="0")
-            if df is None or df.empty or len(df.columns) < 2:
-                df = pd.DataFrame(columns=required_cols)
-                conn.update(worksheet="VAN_BAN_DEN", data=df)
-            else:
-                df.columns = [str(c).strip() for c in df.columns]
-                # Sync back to local SQLite and Excel
-                save_sqlite_table(df, "incoming_docs")
-                if os.path.exists(GANTT_DB_FILE):
-                    with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
-                        df.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
-        except Exception as e:
-            st.warning(f"Không thể đồng bộ văn bản đến từ Google Sheets (đang dùng dữ liệu cục bộ): {e}")
-
-    # Fallback to SQLite
-    if df is None:
-        df = read_sqlite_table("incoming_docs")
+    if conn is None:
+        return pd.DataFrame(columns=required_cols)
         
-    # Fallback to Excel
-    if df is None or df.empty:
-        try:
-            df = pd.read_excel(GANTT_DB_FILE, sheet_name="VAN_BAN_DEN")
-        except Exception:
+    try:
+        df = conn.read(worksheet="VAN_BAN_DEN", ttl=0)
+        if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
-            
-    df.columns = [str(c).strip() for c in df.columns]
-    
-    # Clean data formats
+            conn.update(worksheet="VAN_BAN_DEN", data=df)
+        else:
+            df.columns = [str(c).strip() for c in df.columns]
+    except Exception as e:
+        st.warning(f"Lỗi đọc văn bản đến từ Google Sheets: {e}")
+        df = pd.DataFrame(columns=required_cols)
+        
     df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh']).dt.date
     df['Deadline'] = pd.to_datetime(df['Deadline']).dt.date
     df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'])
     df['ID'] = df['ID'].astype(str)
     
-    # Auto-adjust status to "⚠️ Trễ hạn" if Deadline < today and status != "✅ Đã xong"
     today_dt = datetime.date.today()
     for idx, row in df.iterrows():
         deadline_val = row['Deadline']
         status_val = str(row['TrangThai']).strip()
         
-        # If it's a string, try parsing it
         if isinstance(deadline_val, str):
             try:
                 deadline_val = datetime.datetime.strptime(deadline_val, '%Y-%m-%d').date()
@@ -770,118 +572,43 @@ def read_incoming_docs_db():
     return df
 
 def save_incoming_docs_db(df):
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa kết nối Google Sheets.")
+        return False
     try:
         df_save = df.copy()
         df_save['NgayBanHanh'] = df_save['NgayBanHanh'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         
-        # Save to SQLite
-        save_sqlite_table(df_save, "incoming_docs")
-        
-        # Save to local Excel
-        if os.path.exists(GANTT_DB_FILE):
-            with pd.ExcelWriter(GANTT_DB_FILE, mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
-                df_save.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
-                
-        # Save to Google Sheets if configured
-        conn = get_gsheets_conn()
-        if conn is not None:
-            try:
-                conn.update(worksheet="VAN_BAN_DEN", data=df_save)
-            except Exception as e:
-                st.error(f"Lỗi đồng bộ dữ liệu văn bản đến lên Google Sheets: {e}")
+        conn.update(worksheet="VAN_BAN_DEN", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi ghi dữ liệu văn bản đến: {e}")
+        st.error(f"Lỗi ghi dữ liệu văn bản đến lên Google Sheets: {e}")
         return False
 
-def init_db():
-    if not os.path.exists("OUTPUT"):
-        os.makedirs("OUTPUT", exist_ok=True)
-    required_cols = [
-        "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
-        "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
-    ]
-    
-    # Initialize SQLite table if not exists
-    sqlite_df = read_sqlite_table("tasks")
-    if sqlite_df is None:
-        df_init = pd.DataFrame(columns=required_cols)
-        save_sqlite_table(df_init, "tasks")
-        
-    if not os.path.exists(DB_FILE):
-        df = pd.DataFrame(columns=required_cols)
-        df.to_excel(DB_FILE, index=False)
-
-def calculate_time_progress(start_d, end_d, is_comp):
-    if is_comp:
-        return 100
-    # Current date
-    today = datetime.date.today()
-    
-    if not isinstance(start_d, (datetime.date, datetime.datetime)) or not isinstance(end_d, (datetime.date, datetime.datetime)):
-        return 0
-    if isinstance(start_d, datetime.datetime):
-        start_d = start_d.date()
-    if isinstance(end_d, datetime.datetime):
-        end_d = end_d.date()
-        
-    if today < start_d:
-        return 0
-    if today > end_d:
-        return 99
-    
-    total_days = (end_d - start_d).days
-    if total_days <= 0:
-        return 99
-    
-    elapsed_days = (today - start_d).days
-    prog = int((elapsed_days / total_days) * 100)
-    return min(max(prog, 0), 99)
-
 def read_db():
-    init_db()
-    
-    # Try to sync from Google Sheets first if configured
     conn = get_gsheets_conn()
-    df = None
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
         "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
     ]
-    
-    if conn is not None:
-        try:
-            df = conn.read(worksheet="Sheet1", ttl="0")
-            if df is None or df.empty or len(df.columns) < 2:
-                df = pd.DataFrame(columns=required_cols)
-                conn.update(worksheet="Sheet1", data=df)
-            else:
-                df.columns = [str(c).strip() for c in df.columns]
-                # Sync back to local SQLite and Excel
-                save_sqlite_table(df, "tasks")
-                df.to_excel(DB_FILE, index=False)
-        except Exception as e:
-            st.warning(f"Không thể đồng bộ từ Google Sheets (đang dùng dữ liệu cục bộ): {e}")
-
-    # Fallback to SQLite
-    if df is None:
-        df = read_sqlite_table("tasks")
+    if conn is None:
+        return pd.DataFrame(columns=required_cols)
         
-    # Fallback to Excel
-    if df is None:
-        try:
-            df = pd.read_excel(DB_FILE)
-        except Exception as e:
-            st.error(f"Lỗi đọc DB cục bộ: {e}")
+    try:
+        df = conn.read(worksheet="Sheet1", ttl=0)
+        if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
+            conn.update(worksheet="Sheet1", data=df)
+        else:
+            df.columns = [str(c).strip() for c in df.columns]
+    except Exception as e:
+        st.warning(f"Lỗi đọc DB từ Google Sheets: {e}")
+        df = pd.DataFrame(columns=required_cols)
 
-    # Clean column headers
-    df.columns = [str(c).strip() for c in df.columns]
-    
     # Check and initialize missing columns dynamically
     if "ChuKyTheoDoi" not in df.columns:
         df["ChuKyTheoDoi"] = "Theo dự án / Tự do"
@@ -905,7 +632,6 @@ def read_db():
     df['PhanLoaiTreHan'] = df['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
     df['ID'] = df['ID'].astype(str)
     
-    # Calculate progress dynamically based on time and status
     for idx, row in df.iterrows():
         is_comp = str(row['TrangThai']).strip() == "Hoàn thành"
         start_d = row['NgayBatDau']
@@ -915,6 +641,10 @@ def read_db():
     return df
 
 def save_db(df):
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa kết nối Google Sheets.")
+        return False
     try:
         df_save = df.copy()
         df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
@@ -923,23 +653,10 @@ def save_db(df):
         df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
         
-        # Save to local SQLite
-        save_sqlite_table(df_save, "tasks")
-        
-        # Save local Excel first
-        df_save.to_excel(DB_FILE, index=False)
-        
-        # Save to Google Sheets if configured
-        conn = get_gsheets_conn()
-        if conn is not None:
-            try:
-                conn.update(worksheet="Sheet1", data=df_save)
-            except Exception as e:
-                st.error(f"Lỗi đồng bộ dữ liệu lên Google Sheets: {e}")
-                
+        conn.update(worksheet="Sheet1", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi ghi DB: {e}")
+        st.error(f"Lỗi ghi dữ liệu DB lên Google Sheets: {e}")
         return False
 
 # CSS DMT GROUP Branding Theme (Navy Blue & Orange Gold Accent)
