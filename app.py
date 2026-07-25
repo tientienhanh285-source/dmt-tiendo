@@ -12,6 +12,33 @@ try:
 except ImportError:
     st.error("Thư viện google-generativeai chưa được cài đặt. Vui lòng kiểm tra file requirements.txt.")
 
+from datetime import datetime, date
+
+def calculate_time_progress(start_date, deadline_date, is_completed=False):
+    """Tính % thời gian đã trôi qua giữa Ngày bắt đầu và Hạn chót"""
+    if is_completed:
+        return 100.0
+    try:
+        today = date.today()
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        if isinstance(deadline_date, str):
+            deadline_date = datetime.strptime(deadline_date, "%Y-%m-%d").date()
+            
+        if not start_date or not deadline_date or start_date >= deadline_date:
+            return 0.0
+            
+        total_days = (deadline_date - start_date).days
+        elapsed_days = (today - start_date).days
+        
+        if elapsed_days <= 0:
+            return 0.0
+        if elapsed_days >= total_days:
+            return 100.0
+            
+        return round((elapsed_days / total_days) * 100, 1)
+    except Exception:
+        return 0.0
 
 # Page config - Light Theme is handled natively by Streamlit's default settings
 st.set_page_config(
