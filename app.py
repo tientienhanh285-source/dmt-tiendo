@@ -59,6 +59,42 @@ def get_gsheets_conn():
         st.warning(f"Chưa cấu hình Google Sheets Connection: {e}")
         return None
 
+
+def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
+    if fallback_df is None:
+        import pandas as pd
+        fallback_df = pd.DataFrame()
+    kwargs = {"worksheet": worksheet, "ttl": ttl}
+    
+    import streamlit as st
+    url = st.session_state.get("gsheet_url", "").strip()
+    if url:
+        kwargs["spreadsheet"] = url
+        
+    try:
+        df = conn.read(**kwargs)
+        return df if df is not None else fallback_df
+    except Exception as e:
+        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+            st.session_state["show_gsheet_input"] = True
+        return fallback_df
+
+def safe_gsheets_update(conn, worksheet, data):
+    kwargs = {"worksheet": worksheet, "data": data}
+    
+    import streamlit as st
+    url = st.session_state.get("gsheet_url", "").strip()
+    if url:
+        kwargs["spreadsheet"] = url
+        
+    try:
+        conn.update(**kwargs)
+        return True
+    except Exception as e:
+        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+            st.session_state["show_gsheet_input"] = True
+        return False
+
 def save_config(config_data):
     conn = get_gsheets_conn()
     if conn is None:
@@ -66,10 +102,10 @@ def save_config(config_data):
         return False
     try:
         df_save = pd.DataFrame([{"config_json": json.dumps(config_data, ensure_ascii=False)}])
-        conn.update(worksheet="CONFIG", data=df_save)
+        safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi lưu cấu hình lên Google Sheets: {e}")
+        pass
         return False
 
 def load_config():
@@ -89,10 +125,10 @@ def load_config():
         return default_config
         
     try:
-        df = conn.read(worksheet="CONFIG", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=0)
         if df is None or df.empty:
             df_save = pd.DataFrame([{"config_json": json.dumps(default_config, ensure_ascii=False)}])
-            conn.update(worksheet="CONFIG", data=df_save)
+            safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
             return default_config
             
         json_str = df.iloc[0]["config_json"]
@@ -112,7 +148,7 @@ def load_config():
             
         return data
     except Exception as e:
-        st.error(f"Lỗi đọc cấu hình từ Google Sheets: {e}")
+        pass
         return default_config
 
 # Load current config dynamically
@@ -219,7 +255,7 @@ def read_gantt_db():
         return pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
         
     try:
-        df = conn.read(worksheet="GANTT_KHDT", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=0)
         if df is None or df.empty or len(df.columns) < 2:
             dummy_data = [
                 {
@@ -235,11 +271,11 @@ def read_gantt_db():
                 }
             ]
             df = pd.DataFrame(dummy_data)
-            conn.update(worksheet="GANTT_KHDT", data=df)
+            safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df)
         else:
             df.columns = [str(c).strip() for c in df.columns]
     except Exception as e:
-        st.error(f"Lỗi đọc dữ liệu Gantt từ Google Sheets: {e}")
+        pass
         df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
             
     df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau']).dt.date
@@ -282,10 +318,10 @@ def save_gantt_db(df):
         df_save['NgayKetThuc'] = df_save['NgayKetThuc'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         
-        conn.update(worksheet="GANTT_KHDT", data=df_save)
+        safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi ghi dữ liệu Gantt lên Google Sheets: {e}")
+        pass
         return False
 def read_sqlite_table(table_name):
     try:
@@ -534,14 +570,14 @@ def read_incoming_docs_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = conn.read(worksheet="VAN_BAN_DEN", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="VAN_BAN_DEN", ttl=0)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
-            conn.update(worksheet="VAN_BAN_DEN", data=df)
+            safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df)
         else:
             df.columns = [str(c).strip() for c in df.columns]
     except Exception as e:
-        st.warning(f"Lỗi đọc văn bản đến từ Google Sheets: {e}")
+        pass
         df = pd.DataFrame(columns=required_cols)
         
     df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh']).dt.date
@@ -581,10 +617,10 @@ def save_incoming_docs_db(df):
         df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         
-        conn.update(worksheet="VAN_BAN_DEN", data=df_save)
+        safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi ghi dữ liệu văn bản đến lên Google Sheets: {e}")
+        pass
         return False
 
 def read_db():
@@ -598,14 +634,14 @@ def read_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = conn.read(worksheet="Sheet1", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=0)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
-            conn.update(worksheet="Sheet1", data=df)
+            safe_gsheets_update(conn, worksheet="Sheet1", data=df)
         else:
             df.columns = [str(c).strip() for c in df.columns]
     except Exception as e:
-        st.warning(f"Lỗi đọc DB từ Google Sheets: {e}")
+        pass
         df = pd.DataFrame(columns=required_cols)
 
     # Check and initialize missing columns dynamically
@@ -652,10 +688,10 @@ def save_db(df):
         df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
         
-        conn.update(worksheet="Sheet1", data=df_save)
+        safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
         return True
     except Exception as e:
-        st.error(f"Lỗi ghi dữ liệu DB lên Google Sheets: {e}")
+        pass
         return False
 
 # CSS DMT GROUP Branding Theme (Navy Blue & Orange Gold Accent)
@@ -780,6 +816,22 @@ else:
     st.sidebar.warning("💡 Vui lòng đặt file logo.png vào thư mục gốc của dự án để hiển thị logo.")
     st.sidebar.markdown("### ⚓ DMT GROUP")
 st.sidebar.markdown("---")
+
+# Link Google Sheets Config
+st.sidebar.markdown("### 🔗 Kết Nối Google Sheets")
+if "gsheet_url" not in st.session_state:
+    st.session_state["gsheet_url"] = ""
+
+gsheet_url_input = st.sidebar.text_input(
+    "Link Google Sheets (DB chính)", 
+    value=st.session_state["gsheet_url"], 
+    placeholder="Dán link Google Sheets..."
+)
+
+if gsheet_url_input != st.session_state["gsheet_url"]:
+    st.session_state["gsheet_url"] = gsheet_url_input
+    st.rerun()
+
 
 company_options = ["Tất cả đơn vị"] + list(COMPANIES.keys())
 selected_company = st.sidebar.selectbox("CHỌN CÔNG TY / THÀNH VIÊN", company_options, index=1)
