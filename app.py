@@ -482,7 +482,8 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
         "Số ký hiệu": ["Số ký hiệu", "Số / Ký hiệu", "So ky hieu", "SỐ KÝ HIỆU", "SoKyHieu"],
         "Thời hạn hoàn thành": ["Thời hạn hoàn thành", "THỜI HẠN HOÀN THÀNH", "Ngày hoàn thành", "NGÀY HOÀN THÀNH", "Deadline"],
         "Trạng thái": ["Trạng thái", "Trang thai", "TRẠNG THÁI", "TrangThai"],
-        "Người/ Ban thực hiện": ["Người/ Ban thực hiện", "Nguoi/ Ban thuc hien", "NGƯỜI/ BAN THỰC HIỆN", "Bộ phận chủ trì", "Ban chủ trì", "BanChuTri"]
+        "Người/ Ban thực hiện": ["Người/ Ban thực hiện", "Nguoi/ Ban thuc hien", "NGƯỜI/ BAN THỰC HIỆN", "Bộ phận chủ trì", "Ban chủ trì", "BanChuTri"],
+        "Ghi chú": ["Ghi chú", "Ghi chu", "GhiChu", "Note", "Ghi chú khác"]
     }
     
     for key, possibilities in fields.items():
@@ -503,6 +504,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
     deadline_col = mapping["Thời hạn hoàn thành"]
     content_col = mapping["NỘI DUNG"]
     so_ky_hieu_col = mapping["Số ký hiệu"]
+    ghi_chu_col = mapping["Ghi chú"]
     
     # Drop rows that are completely empty or have null deadline/content
     valid_df = import_df.dropna(subset=[deadline_col])
@@ -550,6 +552,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             ban_chu_tri = "Ban Lãnh đạo"
             
         trang_thai_raw = str(row[mapping["Trạng thái"]]).strip() if mapping["Trạng thái"] and not pd.isna(row[mapping["Trạng thái"]]) else "⏳ Đang xử lý"
+        ghi_chu = str(row[ghi_chu_col]).strip() if ghi_chu_col and not pd.isna(row[ghi_chu_col]) else ""
         
         is_completed = trang_thai_raw in ["Đã xong", "Hoàn thành", "Đã hoàn thành", "✅ Đã xong"]
         
@@ -589,7 +592,8 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                 "Deadline": deadline_val,
                 "LinkFile": "",
                 "TrangThai": trang_thai,
-                "NgayCapNhat": datetime.datetime.now()
+                "NgayCapNhat": datetime.datetime.now(),
+                "GhiChu": ghi_chu
             }
             docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
             success_count += 1
@@ -605,6 +609,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             docs_df.at[idx, "Deadline"] = deadline_val
             docs_df.at[idx, "TrangThai"] = trang_thai
             docs_df.at[idx, "NgayCapNhat"] = datetime.datetime.now()
+            docs_df.at[idx, "GhiChu"] = ghi_chu
             update_count += 1
             
         # Update or create the associated Task in tasks_df
@@ -670,7 +675,7 @@ def init_incoming_docs_db():
     required_cols = [
         "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
         "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
-        "TrangThai", "NgayCapNhat"
+        "TrangThai", "NgayCapNhat", "GhiChu"
     ]
     # Initialize SQLite table if not exists
     sqlite_df = read_sqlite_table("incoming_docs")
@@ -697,7 +702,7 @@ def read_incoming_docs_db():
     required_cols = [
         "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
         "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
-        "TrangThai", "NgayCapNhat"
+        "TrangThai", "NgayCapNhat", "GhiChu"
     ]
     
     if conn is not None:
@@ -2535,41 +2540,13 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         st.info("Chưa có văn bản đến nào được ghi nhận.")
     else:
         df_docs_show = pd.DataFrame()
-        df_docs_show['Mã VB'] = display_docs_df['ID']
-        df_docs_show['Số / Ký hiệu'] = display_docs_df['SoKyHieu']
-        df_docs_show['Ngày ban hành'] = display_docs_df['NgayBanHanh'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        df_docs_show['Cơ quan gửi'] = display_docs_df['CoQuanGui']
-        df_docs_show['Trích yếu'] = display_docs_df['TrichYeu']
-        df_docs_show['Dự án'] = display_docs_df['TenDuAn']
-        
-        # Format Gantt task link column
-        gantt_df = read_gantt_db()
-        def format_gantt_link(row):
-            gid = row.get('GanttTaskId')
-            if gid and str(gid).strip():
-                match_task = gantt_df[gantt_df['ID'] == str(gid).strip()]
-                if not match_task.empty:
-                    return f"{gid} - {match_task.iloc[0]['TenCongViec']}"
-                return str(gid)
-            return "--"
-        df_docs_show['CV Gantt liên kết'] = display_docs_df.apply(format_gantt_link, axis=1)
-        
-        df_docs_show['Bộ phận chủ trì'] = display_docs_df['BanChuTri']
-        df_docs_show['Hạn xử lý'] = display_docs_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
-        
-        # Format Link file or attachment
-        def format_doc_file(row):
-            val = row['LinkFile']
-            if not val or pd.isna(val):
-                return "--"
-            if isinstance(val, str) and val.startswith("OUTPUT"):
-                display_name = os.path.basename(val)
-                if "_" in display_name:
-                    display_name = display_name.split("_", 1)[1]
-                return f"📁 {display_name}"
-            return str(val)
-        df_docs_show['Đính kèm'] = display_docs_df.apply(format_doc_file, axis=1)
+        df_docs_show['Ngày'] = display_docs_df['NgayBanHanh'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
+        df_docs_show['Đơn vị'] = display_docs_df['CoQuanGui']
+        df_docs_show['Nội dung'] = display_docs_df['TrichYeu']
+        df_docs_show['Thời hạn hoàn thành'] = display_docs_df['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (datetime.date, datetime.datetime)) else str(x))
         df_docs_show['Trạng thái'] = display_docs_df['TrangThai']
+        df_docs_show['Người/Ban thực hiện'] = display_docs_df['BanChuTri']
+        df_docs_show['Ghi chú'] = display_docs_df.get('GhiChu', '').fillna('')
         
         # Báo đỏ toàn dòng cảnh báo trễ hạn
         def highlight_overdue_rows(row):
@@ -2582,17 +2559,13 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         st.dataframe(
             styled_df,
             column_config={
-                "Mã VB": st.column_config.TextColumn("Mã VB", width="small"),
-                "Số / Ký hiệu": st.column_config.TextColumn("Số / Ký hiệu", width="medium"),
-                "Ngày ban hành": st.column_config.TextColumn("Ngày ban hành", width="small"),
-                "Cơ quan gửi": st.column_config.TextColumn("Cơ quan gửi", width="medium"),
-                "Trích yếu": st.column_config.TextColumn("Trích yếu", width="large"),
-                "Dự án": st.column_config.TextColumn("Dự án", width="medium"),
-                "CV Gantt liên kết": st.column_config.TextColumn("CV Gantt liên kết", width="medium"),
-                "Bộ phận chủ trì": st.column_config.TextColumn("Bộ phận chủ trì", width="medium"),
-                "Hạn xử lý": st.column_config.TextColumn("Hạn xử lý", width="small"),
-                "Đính kèm": st.column_config.LinkColumn("Đính kèm", max_chars=300),
-                "Trạng thái": st.column_config.TextColumn("Trạng thái", width="medium")
+                "Ngày": st.column_config.TextColumn("Ngày", width="small"),
+                "Đơn vị": st.column_config.TextColumn("Đơn vị", width="medium"),
+                "Nội dung": st.column_config.TextColumn("Nội dung", width="large"),
+                "Thời hạn hoàn thành": st.column_config.TextColumn("Thời hạn hoàn thành", width="small"),
+                "Trạng thái": st.column_config.TextColumn("Trạng thái", width="medium"),
+                "Người/Ban thực hiện": st.column_config.TextColumn("Người/Ban thực hiện", width="medium"),
+                "Ghi chú": st.column_config.TextColumn("Ghi chú", width="medium")
             },
             use_container_width=True,
             hide_index=True
@@ -2600,61 +2573,44 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
         
     st.markdown("---")
     
-    # Kết nối dữ liệu Công văn đến (Cơ chế 1 & 2)
-    with st.expander("🔗 KẾT NỐI DỮ LIỆU CÔNG VĂN ĐẾN (GOOGLE SHEETS / EXCEL)", expanded=True):
-        st.markdown("Chọn một trong hai phương thức sau để kết nối dữ liệu công văn:")
+    # Giao diện tối giản (Chỉ dùng Google Sheets)
+    st.markdown("#### 🔗 Đồng bộ từ Google Sheets")
+    saved_gsheet_url = config.get("cv_gsheet_url", "")
+    
+    col_input, col_btn = st.columns([4, 1])
+    with col_input:
+        gsheet_input = st.text_input(
+            "🔗 Link Google Sheets Quản lý Văn bản đến", 
+            value=saved_gsheet_url, 
+            placeholder="https://docs.google.com/spreadsheets/d/...", 
+            label_visibility="collapsed",
+            key="cv_gsheet_input_minimal"
+        )
+    with col_btn:
+        btn_sync = st.button("🔄 Đồng bộ dữ liệu", key="btn_sync_cv_gsheet_minimal", use_container_width=True)
         
-        saved_gsheet_url = config.get("cv_gsheet_url", "")
-        
-        col_gsheet, col_excel = st.columns(2)
-        
-        with col_gsheet:
-            st.markdown("##### 🟢 Cơ chế 1: Đồng bộ qua Google Sheets")
-            gsheet_input = st.text_input(
-                "🔗 Dán Link Google Sheets Văn bản đến", 
-                value=saved_gsheet_url, 
-                placeholder="https://docs.google.com/spreadsheets/d/...", 
-                key="cv_gsheet_input"
-            )
-            btn_sync = st.button("🔄 Kết nối & Đồng bộ Auto", key="btn_sync_cv_gsheet", use_container_width=True)
-            
-            if btn_sync:
-                if not gsheet_input.strip():
-                    st.warning("⚠️ Vui lòng nhập link Google Sheets trước.")
+    if btn_sync:
+        if not gsheet_input.strip():
+            st.warning("⚠️ Vui lòng nhập link Google Sheets trước.")
+        else:
+            csv_url = convert_gsheet_to_csv_url(gsheet_input)
+            try:
+                import_df = pd.read_csv(csv_url)
+                
+                # Cập nhật và lưu cấu hình
+                config_data = load_config()
+                config_data["cv_gsheet_url"] = gsheet_input.strip()
+                save_config(config_data)
+                
+                success, msg = sync_incoming_docs_from_df(import_df, selected_company, today)
+                if success:
+                    st.success(f"🎉 {msg}")
+                    st.rerun()
                 else:
-                    csv_url = convert_gsheet_to_csv_url(gsheet_input)
-                    try:
-                        import_df = pd.read_csv(csv_url)
-                        
-                        # Cập nhật và lưu cấu hình
-                        config_data = load_config()
-                        config_data["cv_gsheet_url"] = gsheet_input.strip()
-                        save_config(config_data)
-                        
-                        success, msg = sync_incoming_docs_from_df(import_df, selected_company, today)
-                        if success:
-                            st.success(f"🎉 {msg}")
-                            st.rerun()
-                        else:
-                            st.error(f"❌ {msg}")
-                    except Exception as e:
-                        st.error(f"❌ Lỗi đọc Google Sheets: {e}")
-                        st.info("💡 Hướng dẫn: Đảm bảo Google Sheets được chia sẻ ở chế độ công khai ('Bất kỳ ai có liên kết đều có thể xem').")
-                        
-        with col_excel:
-            st.markdown("##### 📥 Cơ chế 2: Tải lên file Excel (.xlsx)")
-            uploaded_excel = st.file_uploader("Tải lên file Excel Công văn đến (.xlsx, .xls)", type=["xlsx", "xls"], key="upload_cv_excel")
-            if uploaded_excel is not None:
-                try:
-                    import_df = pd.read_excel(uploaded_excel)
-                    success, msg = sync_incoming_docs_from_df(import_df, selected_company, today)
-                    if success:
-                        st.success(f"🎉 {msg}")
-                        st.rerun()
-                    else:
-                        st.error(f"❌ {msg}")
-                except Exception as e:
-                    st.error(f"❌ Lỗi xử lý file Excel: {e}")
+                    st.error(f"❌ {msg}")
+            except Exception as e:
+                st.error(f"❌ Lỗi đọc Google Sheets: {e}")
+                st.info("💡 Hướng dẫn: Đảm bảo Google Sheets được chia sẻ ở chế độ công khai ('Bất kỳ ai có liên kết đều có thể xem').")
                 
     st.markdown("---")
     
