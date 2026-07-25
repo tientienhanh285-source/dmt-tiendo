@@ -299,7 +299,35 @@ def read_gantt_db():
             df = pd.DataFrame(dummy_data)
             safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df)
         else:
+            
             df.columns = [str(c).strip() for c in df.columns]
+            
+            # 1. Tự động chuẩn hóa và ánh xạ tên cột
+            col_mapping = {
+                'Mã CV': 'ID', 'MaCV': 'ID',
+                'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+                'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+                'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+                'Hạn chót': 'Deadline', 'Ngày hoàn thành': 'Deadline'
+            }
+            new_cols = []
+            for c in df.columns:
+                matched = c
+                for k, v in col_mapping.items():
+                    if c.lower() == k.lower():
+                        matched = v
+                        break
+                new_cols.append(matched)
+            df.columns = new_cols
+            
+            # 3. Xử lý dữ liệu rỗng / NaN an toàn
+            if 'PhanTramHoanThanh' in df.columns:
+                import pandas as pd
+                df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+            if 'TrangThai' in df.columns:
+                df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
+                df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
+
     except Exception as e:
         pass
         df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
@@ -607,7 +635,35 @@ def read_incoming_docs_db():
             df = pd.DataFrame(columns=required_cols)
             safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df)
         else:
+            
             df.columns = [str(c).strip() for c in df.columns]
+            
+            # 1. Tự động chuẩn hóa và ánh xạ tên cột
+            col_mapping = {
+                'Mã CV': 'ID', 'MaCV': 'ID',
+                'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+                'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+                'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+                'Hạn chót': 'Deadline', 'Ngày hoàn thành': 'Deadline'
+            }
+            new_cols = []
+            for c in df.columns:
+                matched = c
+                for k, v in col_mapping.items():
+                    if c.lower() == k.lower():
+                        matched = v
+                        break
+                new_cols.append(matched)
+            df.columns = new_cols
+            
+            # 3. Xử lý dữ liệu rỗng / NaN an toàn
+            if 'PhanTramHoanThanh' in df.columns:
+                import pandas as pd
+                df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+            if 'TrangThai' in df.columns:
+                df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
+                df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
+
     except Exception as e:
         pass
         df = pd.DataFrame(columns=required_cols)
@@ -677,7 +733,35 @@ def read_db():
             df = pd.DataFrame(columns=required_cols)
             safe_gsheets_update(conn, worksheet="Sheet1", data=df)
         else:
+            
             df.columns = [str(c).strip() for c in df.columns]
+            
+            # 1. Tự động chuẩn hóa và ánh xạ tên cột
+            col_mapping = {
+                'Mã CV': 'ID', 'MaCV': 'ID',
+                'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+                'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+                'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+                'Hạn chót': 'Deadline', 'Ngày hoàn thành': 'Deadline'
+            }
+            new_cols = []
+            for c in df.columns:
+                matched = c
+                for k, v in col_mapping.items():
+                    if c.lower() == k.lower():
+                        matched = v
+                        break
+                new_cols.append(matched)
+            df.columns = new_cols
+            
+            # 3. Xử lý dữ liệu rỗng / NaN an toàn
+            if 'PhanTramHoanThanh' in df.columns:
+                import pandas as pd
+                df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+            if 'TrangThai' in df.columns:
+                df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
+                df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
+
     except Exception as e:
         pass
         df = pd.DataFrame(columns=required_cols)
@@ -874,6 +958,7 @@ gsheet_url_input = st.sidebar.text_input(
 
 if gsheet_url_input != st.session_state["gsheet_url"]:
     st.session_state["gsheet_url"] = gsheet_url_input
+    st.cache_data.clear()
     st.rerun()
 
 
@@ -1658,6 +1743,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     df_updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                     if save_db(df_updated):
                         st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
+                        st.cache_data.clear()
                         st.rerun()
 
     # Form: Update Progress
@@ -1860,12 +1946,14 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         
                         if save_db(df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
+                            st.cache_data.clear()
                             st.rerun()
                             
                 if del_click:
                     df_after_del = df[df['ID'] != selected_id]
                     if save_db(df_after_del):
                         st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_id}!")
+                        st.cache_data.clear()
                         st.rerun()
 
 # ----------------- 4. SƠ ĐỒ GANTT DỰ ÁN KHĐT -----------------
@@ -2214,6 +2302,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                         gantt_df_updated = pd.concat([gantt_df, pd.DataFrame(new_rows)], ignore_index=True)
                         if save_gantt_db(gantt_df_updated):
                             st.success("🎉 Đã tự động nạp thành công 7 bước thi công mẫu tuần tự vào dự án!")
+                            st.cache_data.clear()
                             st.rerun()
                 
             g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
@@ -2247,6 +2336,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                     gantt_df_updated = pd.concat([gantt_df, pd.DataFrame([new_g_row])], ignore_index=True)
                     if save_gantt_db(gantt_df_updated):
                         st.success(f"🎉 Đã thêm thành công công việc mã: {g_task_id}!")
+                        st.cache_data.clear()
                         st.rerun()
                         
         with g_tab_edit:
@@ -2334,12 +2424,14 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                         
                         if save_gantt_db(gantt_df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_g_id}!")
+                            st.cache_data.clear()
                             st.rerun()
                             
                 if g_del_click:
                     gantt_df_after_del = gantt_df[gantt_df['ID'] != selected_g_id]
                     if save_gantt_db(gantt_df_after_del):
                         st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_g_id}!")
+                        st.cache_data.clear()
                         st.rerun()
 
 # ----------------- 5. QUẢN LÝ VĂN BẢN ĐẾN -----------------
@@ -2472,6 +2564,7 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
                 success, msg = sync_incoming_docs_from_df(import_df, selected_company, today)
                 if success:
                     st.success(f"🎉 {msg}")
+                    st.cache_data.clear()
                     st.rerun()
                 else:
                     st.error(f"❌ {msg}")
@@ -2583,6 +2676,7 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
                 docs_df_updated = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
                 if save_incoming_docs_db(docs_df_updated):
                     st.success(f"🎉 Đăng ký thành công văn bản đến mã: {doc_id}!")
+                    st.cache_data.clear()
                     st.rerun()
 
     # Tab 2: Update Document
@@ -2718,12 +2812,14 @@ elif menu == "📩 Quản Lý Văn Bản Đến":
                         
                         if save_incoming_docs_db(docs_df):
                             st.success(f"🎉 Đã lưu cập nhật văn bản mã: {selected_doc_id}!")
+                            st.cache_data.clear()
                             st.rerun()
                             
                 if del_doc_click:
                     docs_df_after_del = docs_df[docs_df['ID'] != selected_doc_id]
                     if save_incoming_docs_db(docs_df_after_del):
                         st.success(f"🗑️ Đã xóa thành công văn bản mã: {selected_doc_id}!")
+                        st.cache_data.clear()
                         st.rerun()
 
 elif menu == "📄 Trích Xuất Việc Từ TBGB":
@@ -2994,12 +3090,14 @@ Chỉ trả về định dạng chuỗi JSON hợp lệ bắt đầu bằng [ v�
                         if save_db(tasks_df):
                             st.success(f"🎉 Đồng bộ thành công! Đã thêm {success_count} công việc chỉ đạo vào hệ thống.")
                             st.session_state["tbgb_tasks"] = []
+                            st.cache_data.clear()
                             st.rerun()
                             
         with col_btn2:
             btn_clear = st.button("🗑️ Xóa danh sách này", type="secondary", use_container_width=True, key="btn_clear_tbgb_tasks")
             if btn_clear:
                 st.session_state["tbgb_tasks"] = []
+                st.cache_data.clear()
                 st.rerun()
 
 # ----------------- 5. QUẢN LÝ CẤU HÌNH (ADMIN) -----------------
@@ -3033,6 +3131,7 @@ else:
                         config["projects_by_category"] = PROJECTS_BY_CATEGORY
                         if save_config(config):
                             st.success(f"Đã thêm dự án: {new_proj_name}")
+                            st.cache_data.clear()
                             st.rerun()
                     else:
                         st.error("Dự án đã tồn tại!")
@@ -3051,6 +3150,7 @@ else:
                         config["projects_by_category"] = PROJECTS_BY_CATEGORY
                         if save_config(config):
                             st.success(f"Đã đổi tên thành: {edited_proj_name}")
+                            st.cache_data.clear()
                             st.rerun()
                     else:
                         st.error("Tên mới không được để trống!")
@@ -3066,6 +3166,7 @@ else:
                     config["projects_by_category"] = PROJECTS_BY_CATEGORY
                     if save_config(config):
                         st.success(f"Đã xóa dự án: {proj_to_del}")
+                        st.cache_data.clear()
                         st.rerun()
             else:
                 st.write("Không có dự án để xóa.")
@@ -3089,6 +3190,7 @@ else:
                         config["departments"] = OFFICIAL_DEPARTMENTS
                         if save_config(config):
                             st.success(f"Đã thêm phòng ban: {new_dept_name}")
+                            st.cache_data.clear()
                             st.rerun()
                     else:
                         st.error("Phòng ban đã tồn tại!")
@@ -3110,6 +3212,7 @@ else:
                             config["personnel_by_department"][edited_dept_name.strip()] = config["personnel_by_department"].pop(dept_to_edit, [])
                         if save_config(config):
                             st.success(f"Đã đổi tên thành: {edited_dept_name}")
+                            st.cache_data.clear()
                             st.rerun()
                     else:
                         st.error("Tên mới không được để trống!")
@@ -3128,6 +3231,7 @@ else:
                         config["personnel_by_department"].pop(dept_to_del, None)
                     if save_config(config):
                         st.success(f"Đã xóa phòng ban: {dept_to_del}")
+                        st.cache_data.clear()
                         st.rerun()
             else:
                 st.write("Không có phòng ban để xóa.")
@@ -3161,6 +3265,7 @@ else:
                             config["personnel_by_department"][sel_dept_p] = current_p_list
                             if save_config(config):
                                 st.success(f"Đã thêm nhân sự: {new_p_name.strip()}")
+                                st.cache_data.clear()
                                 st.rerun()
                         else:
                             st.error("Nhân sự đã tồn tại trong phòng ban này!")
@@ -3180,6 +3285,7 @@ else:
                                 config["personnel_by_department"][sel_dept_p] = current_p_list
                                 if save_config(config):
                                     st.success(f"Đã cập nhật tên nhân sự thành: {edited_p_name.strip()}")
+                                    st.cache_data.clear()
                                     st.rerun()
                             else:
                                 st.error("Tên mới đã tồn tại trong phòng ban này!")
@@ -3197,6 +3303,7 @@ else:
                         config["personnel_by_department"][sel_dept_p] = current_p_list
                         if save_config(config):
                             st.success(f"Đã xóa nhân sự: {p_to_del}")
+                            st.cache_data.clear()
                             st.rerun()
                 else:
                     st.write("Không có nhân sự để xóa.")
