@@ -42,6 +42,23 @@ DEFAULT_PERSONNEL = {
     "Tổ KPI": []
 }
 
+def is_gsheets_configured():
+    try:
+        # Check if connections.gsheets exists in secrets
+        if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+            return True
+    except Exception:
+        pass
+    return False
+
+def get_gsheets_conn():
+    try:
+        from streamlit_gsheets import GSheetsConnection
+        return st.connection("gsheets", type=GSheetsConnection)
+    except Exception as e:
+        st.warning(f"Chưa cấu hình Google Sheets Connection: {e}")
+        return None
+
 def save_config(config_data):
     conn = get_gsheets_conn()
     if conn is None:
@@ -183,25 +200,7 @@ def get_departments_for_company(company, all_departments):
         return [d for d in all_departments if d in allowed]
     return all_departments
 
-def is_gsheets_configured():
-    try:
-        # Check if connections.gsheets exists in secrets
-        if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
-            return True
-    except Exception:
-        pass
-    return False
 
-def get_gsheets_conn():
-    if is_gsheets_configured():
-        try:
-            from streamlit_gsheets import GSheetsConnection
-            conn = st.connection("gsheets", type=GSheetsConnection)
-            return conn
-        except Exception:
-            # Tra ve None de chay offline neu co loi kết nối hoac import
-            pass
-    return None
 
 # Generate flat list for dropdowns (brief clean names)
 ALL_PROJECTS = []
