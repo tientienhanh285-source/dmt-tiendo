@@ -276,9 +276,10 @@ DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 GANTT_DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 
 def read_gantt_db():
+    required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]
     conn = get_gsheets_conn()
     if conn is None:
-        return pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
+        return pd.DataFrame(columns=required_cols)
         
     try:
         df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=0)
@@ -330,7 +331,7 @@ def read_gantt_db():
 
     except Exception as e:
         pass
-        df = pd.DataFrame(columns=["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"])
+        df = pd.DataFrame(columns=required_cols)
         
     # Khởi tạo các cột thiếu
     for col in ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "NgayKetThuc", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]:
@@ -620,12 +621,12 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
         return False, "Không thể lưu dữ liệu vào cơ sở dữ liệu."
 
 def read_incoming_docs_db():
-    conn = get_gsheets_conn()
     required_cols = [
         "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
         "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile", 
         "TrangThai", "NgayCapNhat", "GhiChu"
     ]
+    conn = get_gsheets_conn()
     if conn is None:
         return pd.DataFrame(columns=required_cols)
         
@@ -718,12 +719,12 @@ def save_incoming_docs_db(df):
         return False
 
 def read_db():
-    conn = get_gsheets_conn()
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
         "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
     ]
+    conn = get_gsheets_conn()
     if conn is None:
         return pd.DataFrame(columns=required_cols)
         
