@@ -102,7 +102,6 @@ def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
         return df if df is not None else fallback_df
     except Exception as e:
         import streamlit as st
-        st.error(f"Lỗi cập nhật GSheets: {e}")
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
             st.session_state["show_gsheet_input"] = True
         return fallback_df
@@ -120,7 +119,6 @@ def safe_gsheets_update(conn, worksheet, data):
         return True
     except Exception as e:
         import streamlit as st
-        st.error(f"Lỗi cập nhật GSheets: {e}")
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
             st.session_state["show_gsheet_input"] = True
         return False
