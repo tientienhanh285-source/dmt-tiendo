@@ -1,0 +1,27 @@
+1224: alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+1225: st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(alert_df_show)} HẠNG MỤC CẦN LƯU Ý (TRỄ HẠN / SẮP ĐẾN HẠN)**")
+1227: for _, row in alert_df_show.iterrows():
+1264: alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+1266: crit_display['Dự án / Hạng mục'] = alert_df_show['TenDuAn']
+1267: crit_display['Tên công việc'] = alert_df_show['TenCongViec']
+1268: crit_display['Phòng ban'] = alert_df_show['PhongBan']
+1269: crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
+1270: crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+1271: crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
+1272: crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
+1422: table_df = display_df.copy()
+1425: table_df = table_df[table_df['TenDuAn'].str.contains(clean_proj, case=False, na=False)]
+1428: table_df = table_df[table_df['PhongBan'] == sel_dept_filter]
+1430: if table_df.empty:
+1433: df_display = pd.DataFrame()
+1434: df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
+1435: df_display['Tên công việc'] = table_df['TenCongViec']
+1436: df_display['Phòng ban'] = table_df['PhongBan']
+1437: df_display['Người thực hiện'] = table_df['NguoiChuTri']
+1438: df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+1459: df_display['Hạn chót'] = table_df.apply(format_dl, axis=1)
+1461: df_display['Tiến độ'] = table_df['PhanTramHoanThanh']
+1486: df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
+1505: df_display['Nguyên nhân trễ hạn'] = table_df.apply(format_late_cause, axis=1)
+1522: df_display['Kết quả / File đính kèm'] = table_df.apply(format_notes, axis=1)
+1526: df_display,

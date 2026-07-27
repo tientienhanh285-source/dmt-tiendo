@@ -1,0 +1,203 @@
+def save_db(df):
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa kết nối Google Sheets.")
+        return False
+    try:
+        df_save = df.copy()
+        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
+        df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+        df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
+        
+        safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
+        return True
+    except Exception as e:
+        st.error(f'Lỗi lưu Google Sheets: {e}')
+        return False
+
+# CSS DMT GROUP Branding Theme (Navy Blue & Orange Gold Accent)
+st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    html, body, [class*="css"], .stApp {
+        font-family: 'Be Vietnam Pro', sans-serif !important;
+    }
+    .main-title {
+        font-size: 28px;
+        font-weight: 800;
+        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #f97316 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 25px;
+        letter-spacing: -0.5px;
+    }
+    /* Style Streamlit primary button to have brand orange-to-gold gradient */
+    div.stButton > button:first-child {
+        background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        transition: all 0.3s ease !important;
+    }
+    div.stButton > button:first-child:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important;
+    }
+    
+    /* Style Streamlit download button to have brand Navy-Blue gradient and White text */
+    div.stDownloadButton > button:first-child {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        width: 100% !important;
+        transition: all 0.3s ease !important;
+    }
+    div.stDownloadButton > button:first-child:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3) !important;
+    }
+    
+    /* Style metrics cards to feel premium with Navy Blue border */
+    div[data-testid="stMetric"] {
+        background-color: #f8fafc;
+        border: 1.8px solid #1e3a8a;
+        border-radius: 10px;
+        padding: 14px 18px;
+        box-shadow: 0 2px 5px rgba(30, 58, 138, 0.05);
+    }
+    div[data-testid="stMetric"] div[data-testid="stMetricLabel"] p {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #1e3a8a !important;
+    }
+    div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+        font-size: 26px !important;
+        font-weight: 800 !important;
+        color: #f97316 !important;
+    }
+    
+    /* Input field labels - bold and larger font */
+    div[data-testid="stWidgetLabel"] p {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+    
+    /* Headers styling */
+    h1, h2, h3, h4 {
+        font-weight: 700 !important;
+        color: #1e3a8a !important;
+    }
+    
+    /* Style sidebar with Navy theme styling & high contrast text */
+    section[data-testid="stSidebar"] {
+        background-color: #0f172a !important;
+    }
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p, 
+    section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+    section[data-testid="stSidebar"] span[data-baseweb="select"] div,
+    section[data-testid="stSidebar"] div[role="radiogroup"] label p {
+        color: #ffffff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+    }
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 {
+        color: #ffd700 !important;
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        border-bottom: 2px solid #f97316;
+        padding-bottom: 5px;
+    }
+    
+    /* Pull logo up to the very top of Sidebar */
+    [data-testid="stSidebarContent"] {
+        padding-top: 10px !important;
+    }
+    [data-testid="stSidebarContent"] img {
+        margin-top: -30px !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Main Header Title with DMT branding
+st.markdown('<div class="main-title">⚓ DMT GROUP — QUẢN LÝ TIẾN ĐỘ</div>', unsafe_allow_html=True)
+
+# Sidebar layout with logo image and fallback
+logo_path = "logo.png" if os.path.exists("logo.png") else ("INPUT/logo.png" if os.path.exists("INPUT/logo.png") else None)
+if logo_path:
+    st.sidebar.image(logo_path, use_column_width=True)
+else:
+    st.sidebar.warning("💡 Vui lòng đặt file logo.png vào thư mục gốc của dự án để hiển thị logo.")
+    st.sidebar.markdown("### ⚓ DMT GROUP")
+st.sidebar.markdown("---")
+
+# Link Google Sheets Config
+st.sidebar.markdown("### 🔗 Kết Nối Google Sheets")
+if "gsheet_url" not in st.session_state:
+    st.session_state["gsheet_url"] = ""
+
+gsheet_url_input = st.sidebar.text_input(
+    "Link Google Sheets (DB chính)", 
+    value=st.session_state["gsheet_url"], 
+    placeholder="Dán link Google Sheets..."
+)
+
+if gsheet_url_input != st.session_state["gsheet_url"]:
+    st.session_state["gsheet_url"] = gsheet_url_input
+    st.cache_data.clear()
+    st.rerun()
+
+
+company_options = ["Tất cả đơn vị"] + list(COMPANIES.keys())
+selected_company = st.sidebar.selectbox("CHỌN CÔNG TY / THÀNH VIÊN", company_options, index=1)
+
+menu = st.sidebar.radio(
+    "PHÂN HỆ CHỨC NĂNG",
+    [
+        "📊 Dashboard Tổng Quan",
+        "📋 Bảng Tiến Độ Chi Tiết",
+        "➕ Thêm / Cập Nhật Công Việc",
+        "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
+        "📩 Quản Lý Văn Bản Đến",
+        "📄 Trích Xuất Việc Từ TBGB",
+        "⚙️ Quản Lý Cấu HÌnh"
+    ],
+    index=0
+)
+
+st.sidebar.markdown("---")
+
+# Current date
+df = read_db()
+today = date.today()
+
+# Filter display dataframe based on sidebar selected company
+if selected_company != "Tất cả đơn vị":
+    display_df = df[df['DonVi'] == selected_company]
+else:
+    display_df = df
+
+# Statistics helpers
+total_v = len(display_df)
+done_v = len(display_df[display_df['TrangThai'] == 'Hoàn thành'])
+issue_v = len(display_df[display_df['TrangThai'] == 'Có vướng mắc'])
+overdue_v = len(display_df[(display_df['Deadline'] < today) & (display_df['TrangThai'] != 'Hoàn thành')])
+doing_v = total_v - done_v - issue_v - overdue_v
+if doing_v < 0:
+    doing_v = 0
+
+# Sidebar Excel Download
+import io
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+
+def generate_styled_excel(tasks_df, gantt_df):

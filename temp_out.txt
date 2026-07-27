@@ -1,0 +1,24 @@
+308: 'Mã CV': 'ID', 'MaCV': 'ID',
+309: 'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+643: 'Mã CV': 'ID', 'MaCV': 'ID',
+644: 'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+740: 'Mã CV': 'ID', 'MaCV': 'ID',
+741: 'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+1081: 'GanttTaskId': 'Mã CV Gantt liên kết',
+1229: "Tên công việc": row['TenCongViec'],
+1267: crit_display['Tên công việc'] = alert_df_show['TenCongViec']
+1278: "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
+1435: df_display['Tên công việc'] = table_df['TenCongViec']
+1529: "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
+1586: task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
+1656: st.error("⚠️ Vui lòng nhập Tên công việc!")
+1774: u_name = st.text_input("Tên công việc", value=task_data['TenCongViec'], key=f"u_name_{task_data['ID']}")
+2033: "Tên công việc": row['TenCongViec'],
+2092: yaxis_title="Tên công việc",
+2209: "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
+2263: g_task_name = st.text_input("Tên công việc", value=g_task_name_val, key="g_task_name_new")
+2309: st.error("⚠️ Vui lòng nhập Tên công việc!")
+2355: u_g_task_name = st.text_input("Tên công việc", value=g_task_data['TenCongViec'], key="u_g_task_name")
+2411: st.error("⚠️ Vui lòng nhập Tên công việc!")
+2920: - TenCongViec: Tên công việc hoặc nội dung chỉ đạo cụ thể (ngắn gọn, rõ ràng).
+3017: "TenCongViec": st.column_config.TextColumn("Tên công việc / Chỉ đạo giao ban", width="large", required=True),
