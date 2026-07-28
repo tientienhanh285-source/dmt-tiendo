@@ -113,14 +113,23 @@ def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
     if url:
         kwargs["spreadsheet"] = url
         
+    cache_key = f"cached_df_{worksheet}"
+    
     try:
         df = conn.read(**kwargs)
-        return df if df is not None else fallback_df
+        if df is not None:
+            st.session_state[cache_key] = df
+            return df
+        else:
+            return st.session_state.get(cache_key, fallback_df)
     except Exception as e:
         import streamlit as st
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
             st.session_state["show_gsheet_input"] = True
-        return fallback_df
+        else:
+            # We don't want to show toast on every network glitch if it's running in background, but keeping silent is fine too.
+            pass
+        return st.session_state.get(cache_key, fallback_df)
 
 def safe_gsheets_update(conn, worksheet, data):
     kwargs = {"worksheet": worksheet, "data": data}
