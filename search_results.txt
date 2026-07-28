@@ -1,0 +1,236 @@
+Line 44: page_title="Hệ thống Quản lý Tiến độ Công việc & KPI - DMT Group",
+Line 71: def is_gsheets_configured():
+Line 73: # Check if connections.gsheets exists in secrets
+Line 74: if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+Line 80: def get_gsheets_conn():
+Line 82: from streamlit_gsheets import GSheetsConnection
+Line 83: return st.connection("gsheets", type=GSheetsConnection)
+Line 85: st.warning(f"Chưa cấu hình Google Sheets Connection: {e}")
+Line 89: def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
+Line 93: kwargs = {"worksheet": worksheet, "ttl": ttl}
+Line 96: url = st.session_state.get("gsheet_url", "").strip()
+Line 98: kwargs["spreadsheet"] = url
+Line 105: if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+Line 106: st.session_state["show_gsheet_input"] = True
+Line 109: def safe_gsheets_update(conn, worksheet, data):
+Line 110: kwargs = {"worksheet": worksheet, "data": data}
+Line 113: url = st.session_state.get("gsheet_url", "").strip()
+Line 115: kwargs["spreadsheet"] = url
+Line 122: if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+Line 123: st.session_state["show_gsheet_input"] = True
+Line 127: conn = get_gsheets_conn()
+Line 129: st.error("Chưa cấu hình Google Sheets (secrets.toml).")
+Line 133: safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+Line 136: st.error(f'Lỗi lưu Google Sheets: {e}')
+Line 148: "cv_gsheet_url": ""
+Line 151: conn = get_gsheets_conn()
+Line 156: df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=0)
+Line 159: safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+Line 170: if "cv_gsheet_url" not in data:
+Line 171: data["cv_gsheet_url"] = ""
+Line 282: conn = get_gsheets_conn()
+Line 287: df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=0)
+Line 303: safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df)
+Line 311: 'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc'
+Line 312: 'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+Line 373: conn = get_gsheets_conn()
+Line 375: st.error("Chưa kết nối Google Sheets.")
+Line 383: safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df_save)
+Line 386: st.error(f'Lỗi lưu Google Sheets: {e}')
+Line 406: def convert_gsheet_to_csv_url(url):
+Line 410: # Look for /spreadsheets/d/{spreadsheetId}
+Line 411: match = re.search(r"/spreadsheets/d/([a-zA-Z0-9-_]+)", url)
+Line 416: # Check if there is a gid parameter (specifying sheet ID)
+Line 420: return f"https://docs.google.com/spreadsheets/d/{key}/export?format=csv&gid={gid}"
+Line 422: return f"https://docs.google.com/spreadsheets/d/{key}/export?format=csv"
+Line 496: so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetim
+Line 545: "LinkFile": "",
+Line 601: "LinkKetQua": "",
+Line 605: "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ" if task_status != "Quá hạn" else "👤 Do chủ quan"
+Line 627: "TenDuAn", "GanttTaskId", "BanChuTri", "Deadline", "LinkFile",
+Line 630: conn = get_gsheets_conn()
+Line 635: df = safe_gsheets_read(conn, worksheet="VAN_BAN_DEN", ttl=0)
+Line 638: safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df)
+Line 646: 'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc'
+Line 647: 'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+Line 705: conn = get_gsheets_conn()
+Line 707: st.error("Chưa kết nối Google Sheets.")
+Line 715: safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df_save)
+Line 718: st.error(f'Lỗi lưu Google Sheets: {e}')
+Line 725: "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "P
+Line 727: conn = get_gsheets_conn()
+Line 732: df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=0)
+Line 735: safe_gsheets_update(conn, worksheet="Sheet1", data=df)
+Line 743: 'Tên công việc': 'TenCongViec', 'TenCongViec': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc'
+Line 744: 'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+Line 779: df["PhanLoaiTreHan"] = "🟢 Không trễ hạn / Đúng tiến độ"
+Line 792: df['LinkKetQua'] = df['LinkKetQua'].fillna('')
+Line 795: df['PhanLoaiTreHan'] = df['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
+Line 807: conn = get_gsheets_conn()
+Line 809: st.error("Chưa kết nối Google Sheets.")
+Line 817: df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
+Line 820: return safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
+Line 822: st.error(f'Lỗi lưu Google Sheets: {e}')
+Line 827: <link rel="preconnect" href="https://fonts.googleapis.com">
+Line 828: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+Line 829: <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&dis
+Line 937: st.markdown('<div class="main-title">⚓ DMT GROUP — QUẢN LÝ TIẾN ĐỘ</div>', unsafe_allow_html=True)
+Line 948: # Link Google Sheets Config
+Line 949: st.sidebar.markdown("### 🔗 Kết Nối Google Sheets")
+Line 950: if "gsheet_url" not in st.session_state:
+Line 951: st.session_state["gsheet_url"] = ""
+Line 953: gsheet_url_input = st.sidebar.text_input(
+Line 954: "Link Google Sheets (DB chính)",
+Line 955: value=st.session_state["gsheet_url"],
+Line 956: placeholder="Dán link Google Sheets..."
+Line 959: if gsheet_url_input != st.session_state["gsheet_url"]:
+Line 960: st.session_state["gsheet_url"] = gsheet_url_input
+Line 972: "📋 Bảng Tiến Độ Chi Tiết",
+Line 973: "➕ Thêm / Cập Nhật Công Việc",
+Line 1009: # Write Sheet1 (Drop ID column if exists)
+Line 1054: tasks_df_copy.to_excel(writer, sheet_name="Sheet1", index=False)
+Line 1062: gantt_df_copy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
+Line 1084: 'LinkFile': 'Đính kèm Link / File',
+Line 1088: docs_df_copy.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
+Line 1094: # Helper to style each worksheet
+Line 1095: def style_worksheet(ws):
+Line 1141: style_worksheet(workbook["Sheet1"])
+Line 1142: style_worksheet(workbook["GANTT_KHDT"])
+Line 1143: if "VAN_BAN_DEN" in workbook.sheetnames:
+Line 1144: style_worksheet(workbook["VAN_BAN_DEN"])
+Line 1157: mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+Line 1167: mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+Line 1174: if is_gsheets_configured():
+Line 1175: st.sidebar.success("🟢 Google Sheets: Đã kết nối")
+Line 1177: st.sidebar.warning("🟡 Google Sheets: Chạy Offline")
+Line 1229: "Tên công việc": row['TenCongViec'],
+Line 1267: crit_display['Tên công việc'] = alert_df_show['TenCongViec']
+Line 1278: "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
+Line 1289: st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc sắp đến hạn cần lưu ý!")
+Line 1340: st.metric("Tổng số VB đến", total_docs)
+Line 1342: st.metric("VB Đang xử lý", pending_docs)
+Line 1344: st.metric("VB Trễ hạn", late_docs)
+Line 1346: st.metric("VB Đã hoàn thành", done_docs)
+Line 1352: st.markdown("*Hiệu suất trung bình (%) hoàn thành công việc theo từng Phòng ban & Chu kỳ:*")
+Line 1405: # ----------------- 2. BẢNG TIẾN ĐỘ CHI TIẾT -----------------
+Line 1406: elif menu == "📋 Bảng Tiến Độ Chi Tiết":
+Line 1407: st.markdown(f"### 📋 Bảng Tiến Độ Công Việc Chi Tiết — {selected_company}")
+Line 1431: st.info("Không có công việc nào phù hợp với bộ lọc.")
+Line 1435: df_display['Tên công việc'] = table_df['TenCongViec']
+Line 1461: df_display['Tiến độ'] = table_df['PhanTramHoanThanh']
+Line 1511: val = row['LinkKetQua']
+Line 1529: "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
+Line 1534: "Tiến độ": st.column_config.ProgressColumn(
+Line 1535: "Tiến độ",
+Line 1542: "Kết quả / File đính kèm": st.column_config.LinkColumn(
+Line 1551: # ----------------- 3. THÊM / CẬP NHẬT CÔNG VIỆC -----------------
+Line 1552: elif menu == "➕ Thêm / Cập Nhật Công Việc":
+Line 1553: st.markdown("### ✏️ Phân hệ Thêm / Cập Nhật Công Việc")
+Line 1555: tab_new, tab_update = st.tabs(["➕ Khởi tạo công việc mới", "✏️ Cập nhật tiến độ công việc"])
+Line 1559: st.markdown("#### Thêm mới công việc tự do")
+Line 1586: task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
+Line 1614: task_is_completed = st.checkbox("Đã hoàn thành công việc", value=False)
+Line 1617: task_has_issue = st.checkbox("Công việc đang gặp vướng mắc, cần hỗ trợ", value=False)
+Line 1621: result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng
+Line 1622: if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+Line 1623: task_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link", placeholder="https://...
+Line 1627: task_link_text = ""
+Line 1631: task_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
+Line 1635: ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước.
+Line 1652: submit_new = st.button("💾 THÊM CÔNG VIỆC MỚI", type="primary")
+Line 1656: st.error("⚠️ Vui lòng nhập Tên công việc!")
+Line 1677: if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not task_link
+Line 1706: if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+Line 1707: saved_result = task_link_text.strip()
+Line 1734: "LinkKetQua": saved_result,
+Line 1738: "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ"
+Line 1743: st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
+Line 1749: st.markdown("#### Cập nhật tiến độ công việc đang chạy")
+Line 1755: st.info("Chưa có công việc nào khả dụng.")
+Line 1761: selected_task = st.selectbox("Chọn công việc cần cập nhật", task_options)
+Line 1774: u_name = st.text_input("Tên công việc", value=task_data['TenCongViec'], key=f"u_name_{task_data['ID'
+Line 1799: u_is_completed = st.checkbox("Đã hoàn thành công việc", value=default_is_completed, key=f"u_is_compl
+Line 1802: u_has_issue = st.checkbox("Công việc gặp vướng mắc, cần hỗ trợ", value=default_has_issue, key=f"u_ha
+Line 1815: current_link = task_data['LinkKetQua']
+Line 1816: if current_link:
+Line 1817: if isinstance(current_link, str) and current_link.startswith("OUTPUT") and os.path.exists(current_li
+Line 1818: display_name = os.path.basename(current_link)
+Line 1822: with open(current_link, "rb") as f:
+Line 1831: st.write(f"✍️ **Nội dung:** `{current_link}`")
+Line 1837: u_result_mode = st.radio("Hình thức nộp", ["Giữ nguyên hiện tại", "✍️ Nhập tên Báo cáo / Số hiệu Văn
+Line 1839: u_link_text = ""
+Line 1841: if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+Line 1842: u_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", key=f"u_result_text_{ta
+Line 1848: u_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
+Line 1850: u_options = ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ qu
+Line 1851: u_current_val = task_data.get('PhanLoaiTreHan', "🟢 Không trễ hạn / Đúng tiến độ")
+Line 1871: save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['I
+Line 1873: del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID
+Line 1893: if u_result_mode == "Giữ nguyên hiện tại" and not current_link:
+Line 1894: st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
+Line 1896: elif u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not u_lin
+Line 1897: st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
+Line 1900: st.error("⚠️ Bắt buộc tải file đính kèm để hoàn thành công việc!")
+Line 1914: # Determine final link value
+Line 1915: final_link = current_link
+Line 1917: final_link = ""
+Line 1919: if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+Line 1920: final_link = u_link_text.strip()
+Line 1930: final_link = file_path
+Line 1939: df.loc[df['ID'] == selected_id, 'LinkKetQua'] = final_link
+Line 1943: df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn 
+Line 1946: st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
+Line 1953: st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_id}!")
+Line 2033: "Tên công việc": row['TenCongViec'],
+Line 2035: "Tiến độ hiện tại": f"{row['PhanTramHoanThanh']}%",
+Line 2052: st.metric("Tổng số công việc", f"{total_tasks} việc")
+Line 2056: st.metric("Tiến độ trung bình", f"{avg_progress}%")
+Line 2074: project_tasks_df['Tiến độ %'] = project_tasks_df['PhanTramHoanThanh'].apply(lambda x: f"{x}%")
+Line 2083: text="Tiến độ %",
+Line 2092: yaxis_title="Tên công việc",
+Line 2118: # --- Biểu đồ Tiến độ Lũy kế S-Curve ---
+Line 2168: "Tiến độ Kế hoạch (%)": round(avg_planned, 1),
+Line 2169: "Tiến độ Thực tế (%)": round(avg_actual, 1)
+Line 2179: y=s_curve_df['Tiến độ Kế hoạch (%)'],
+Line 2180: name='Tiến độ Kế hoạch (%)',
+Line 2185: y=s_curve_df['Tiến độ Thực tế (%)'],
+Line 2186: name='Tiến độ Thực tế (%)',
+Line 2191: title="📈 Đường cong Tiến độ Lũy kế S-Curve",
+Line 2193: yaxis_title="Tiến độ lũy kế (%)",
+Line 2202: st.markdown("#### 📋 Bảng tiến độ chi tiết dự án")
+Line 2209: "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
+Line 2213: "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ %", format="%d%%", min_value=0, max_va
+Line 2220: st.info("Chưa có công việc nào trong dự án này. Vui lòng thêm mới bên dưới!")
+Line 2223: st.markdown("### ✏️ Quản lý Công việc Gantt")
+Line 2224: g_tab_new, g_tab_edit = st.tabs(["➕ Thêm công việc Gantt mới", "✏️ Sửa / Xóa công việc Gantt"])
+Line 2227: st.markdown("#### Thêm công việc mới vào dự án KHĐT")
+Line 2259: selected_suggestion = st.selectbox("💡 Gợi ý công việc mẫu:", ["-- Tự nhập tên công việc --"] + sugge
+Line 2260: if selected_suggestion != "-- Tự nhập tên công việc --":
+Line 2263: g_task_name = st.text_input("Tên công việc", value=g_task_name_val, key="g_task_name_new")
+Line 2264: g_progress = st.slider("Tiến độ %", 0, 100, 0, key="g_progress_new")
+Line 2306: g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
+Line 2309: st.error("⚠️ Vui lòng nhập Tên công việc!")
+Line 2336: st.success(f"🎉 Đã thêm thành công công việc mã: {g_task_id}!")
+Line 2341: st.markdown("#### Chỉnh sửa hoặc Xóa công việc")
+Line 2343: st.info("Chưa có công việc nào để chỉnh sửa.")
+Line 2349: selected_edit_task = st.selectbox("Chọn công việc cần cập nhật", edit_options, key="g_edit_sel")
+Line 2355: u_g_task_name = st.text_input("Tên công việc", value=g_task_data['TenCongViec'], key="u_g_task_name"
+Line 2397: u_g_progress = st.slider("Tiến độ %", 0, 100, int(g_task_data['PhanTramHoanThanh']), key="u_g_progre
+Line 2407: g_del_click = st.button("🗑️ XÓA CÔNG VIỆC GANTT", type="secondary", key="btn_g_del")
+Line 2411: st.error("⚠️ Vui lòng nhập Tên công việc!")
+Line 2424: st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_g_id}!")
+Line 2431: st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_g_id}!")
+Line 2438: tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Goog
+Line 2644: with tab_gsheets:
+Line 2645: st.markdown("#### 📊 Cấu hình kết nối Google Sheets")
+Line 2646: if is_gsheets_configured():
+Line 2647: st.success("🎉 Hệ thống đã kết nối thành công với Google Sheets! Mọi thay đổi dữ liệu sẽ được tự động
+Line 2649: st.info(f"**Spreadsheet URL:** `{st.secrets['connections']['gsheets']['spreadsheet']}`")
+Line 2656: ### 📝 Hướng dẫn kết nối Google Sheets trên Streamlit Cloud
+Line 2659: 1. **Tạo Google Sheet**: Tạo một bảng tính Google Sheets mới. Đảm bảo sheet đầu tiên có tên là `Shee
+Line 2660: 2. **Định cấu hình cột mẫu**: Bạn có thể tải file Excel hiện tại từ sidebar xuống và copy cấu trúc c
+Line 2661: `ID`, `DonVi`, `PhongBan`, `NguoiChuTri`, `TenDuAn`, `MocTienDo`, `SanPhamBanGiao`, `TenCongViec`, `
+Line 2662: 3. **Chia sẻ quyền chỉnh sửa**: Chia sẻ Google Sheet đó với tài khoản **Google Service Account** của
+Line 2667: [connections.gsheets]
+Line 2668: spreadsheet = "https://docs.google.com/spreadsheets/d/your-spreadsheet-id"
+Line 2680: 5. **Khởi động lại (Reboot) app**: Lưu lại Secrets, Streamlit sẽ tự động đồng bộ và nạp dữ liệu từ G
