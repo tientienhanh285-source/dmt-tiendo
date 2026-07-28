@@ -171,8 +171,6 @@ def load_config():
     try:
         df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=0)
         if df is None or df.empty:
-            df_save = pd.DataFrame([{"config_json": json.dumps(default_config, ensure_ascii=False)}])
-            safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
             return default_config
             
         json_str = df.iloc[0]["config_json"]
@@ -748,7 +746,6 @@ def read_db():
         df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=0)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
-            safe_gsheets_update(conn, worksheet="Sheet1", data=df)
         else:
             
             df.columns = [str(c).strip() for c in df.columns]
