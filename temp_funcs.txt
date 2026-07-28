@@ -1,0 +1,23 @@
+def load_settings():
+def save_settings(settings):
+def calculate_time_progress(start_date, deadline_date, is_completed=False):
+def is_gsheets_configured():
+def get_gsheets_conn():
+def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
+def safe_gsheets_update(conn, worksheet, data):
+def save_config(config_data):
+def load_config():
+def get_personnel_for_company_dept(company, dept, config):
+def get_departments_for_company(company, all_departments):
+def read_gantt_db():
+def save_gantt_db(df):
+def read_sqlite_table(table_name):
+def save_sqlite_table(df, table_name):
+def convert_gsheet_to_csv_url(url):
+def sync_incoming_docs_from_df(import_df, selected_company, today):
+def read_incoming_docs_db():
+def save_incoming_docs_db(df):
+def read_db():
+def save_db(df):
+def generate_styled_excel(tasks_df, df):
+def clean_proj_name(name):

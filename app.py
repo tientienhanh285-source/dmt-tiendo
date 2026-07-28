@@ -1167,7 +1167,7 @@ def generate_styled_excel(tasks_df, df):
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📥 XUẤT DỮ LIỆU EXCEL")
 try:
-    df_for_excel = read_gantt_db()
+    df_for_excel = df
     styled_excel_data = generate_styled_excel(df, df_for_excel)
     st.sidebar.download_button(
         label="Tải xuống tệp Excel",
@@ -1964,7 +1964,6 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
 elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
     st.markdown("### 📊 Phân hệ Sơ đồ Gantt Dự án DMT")
     
-    df = read_gantt_db()
     
     # 1. Select project (alphabetical order A-Z with default projects)
     is_marina_gantt = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
@@ -2085,9 +2084,9 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 x_start="NgayBatDau",
                 x_end="Deadline",
                 y="TenCongViec",
-                color="GiaiDoan",
+                color="TrangThai",
                 text="Tiến độ %",
-                hover_data=["PhanTramHoanThanh", "Milestone"]
+                hover_data=["PhanTramHoanThanh", "MocTienDo"]
             )
             
             # Format Chart Layout
@@ -2098,7 +2097,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 yaxis_title="Tên công việc",
                 height=min(400 + len(project_tasks_df) * 35, 750),
                 margin=dict(l=20, r=20, t=40, b=20),
-                legend_title_text="Giai đoạn"
+                legend_title_text="Trạng thái"
             )
             
             # Add vertical Today line (dynamic today)

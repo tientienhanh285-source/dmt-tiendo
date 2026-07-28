@@ -1,0 +1,30 @@
+def save_db(df):
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa kết nối Google Sheets.")
+        return False
+    try:
+        df_save = df.copy()
+        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
+        df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+        df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
+        
+        df_save = df_save.fillna("")
+        return safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
+    except Exception as e:
+        st.error(f'Lỗi lưu Google Sheets: {e}')
+        return False
+
+# CSS DMT GROUP Branding Theme (Navy Blue & Orange Gold Accent)
+st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    html, body, [class*="css"], .stApp {
+        font-family: 'Be Vietnam Pro', sans-serif !important;
+    }
+    .main-title {
+        font-size: 28px;

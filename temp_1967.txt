@@ -1,0 +1,20 @@
+                        st.rerun()
+
+# ----------------- 4. SƠ ĐỒ GANTT DỰ ÁN KHĐT -----------------
+elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
+    st.markdown("### 📊 Phân hệ Sơ đồ Gantt Dự án DMT")
+    
+    df = read_gantt_db()
+    
+    # 1. Select project (alphabetical order A-Z with default projects)
+    is_marina_gantt = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
+    
+    if is_marina_gantt:
+        gantt_project_options = ["➕ Tạo / Nhập Dự án mới..."]
+    else:
+        default_projects = [
+            "KDC Bàu Mạc",
+            "KDC Nam Bàu Mạc",
+            "KĐT Phước Lý & Phước Lý MR",
+            "TĐC Phước Lý 2 & Hoà Liên 5",
+            "Dự án Phong Nam",

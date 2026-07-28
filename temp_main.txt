@@ -1,0 +1,250 @@
+st.set_page_config(
+    page_title="Hệ thống Quản lý Tiến độ Công việc & KPI - DMT Group",
+    page_icon="⚓",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Standardized companies based on CIENCO, DMT Group, and DMT Marina documents
+COMPANIES = {
+    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {},
+    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {},
+    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {}
+}
+
+# Configuration JSON logic for dynamic Projects and Departments
+CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
+
+DEFAULT_PERSONNEL = {
+    "Ban Lãnh đạo": ["Trần Quốc Thể", "Thái Văn Thành", "Trần Cường"],
+    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
+    "Ban Tài chính Kế toán": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
+    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Trần Văn Trọng", "Trần Cường"],
+    "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phạm Quang Nghĩa", "Lê Thị Hải"],
+    "Ban Kỹ thuật": ["Trần Văn Trọng", "Nguyễn Văn Sang", "Trương Ngọc Sỹ"],
+    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Mai Văn Châu", "Thái Hữu Quý"],
+    "Tổ KPI": []
+}
+
+def is_gsheets_configured():
+    try:
+        # Check if connections.gsheets exists in secrets
+        if "connections" in st.secrets and "gsheets" in st.secrets["connections"]:
+            return True
+    except Exception:
+        pass
+    return False
+
+def get_gsheets_conn():
+    try:
+        from streamlit_gsheets import GSheetsConnection
+        return st.connection("gsheets", type=GSheetsConnection)
+    except Exception as e:
+        st.warning(f"Chưa cấu hình Google Sheets Connection: {e}")
+        return None
+
+
+def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
+    if fallback_df is None:
+        import pandas as pd
+        fallback_df = pd.DataFrame()
+    kwargs = {"worksheet": worksheet, "ttl": ttl}
+    
+    import streamlit as st
+    url = st.session_state.get("gsheet_url", "").strip()
+    if url:
+        kwargs["spreadsheet"] = url
+        
+    try:
+        df = conn.read(**kwargs)
+        return df if df is not None else fallback_df
+    except Exception as e:
+        import streamlit as st
+        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+            st.session_state["show_gsheet_input"] = True
+        return fallback_df
+
+def safe_gsheets_update(conn, worksheet, data):
+    kwargs = {"worksheet": worksheet, "data": data}
+    
+    import streamlit as st
+    url = st.session_state.get("gsheet_url", "").strip()
+    if url:
+        kwargs["spreadsheet"] = url
+        
+    try:
+        conn.update(**kwargs)
+        return True
+    except Exception as e:
+        import streamlit as st
+        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+            st.session_state["show_gsheet_input"] = True
+        return False
+
+def save_config(config_data):
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa cấu hình Google Sheets (secrets.toml).")
+        return False
+    try:
+        df_save = pd.DataFrame([{"config_json": json.dumps(config_data, ensure_ascii=False)}])
+        safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+        return True
+    except Exception as e:
+        st.error(f'Lỗi lưu Google Sheets: {e}')
+        return False
+
+def load_config():
+    default_config = {
+        "projects_by_category": {
+            "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
+            "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
+            "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group", "Du thuyền Happy Yacht (DMT Marina)"]
+        },
+        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI"],
+        "personnel_by_department": DEFAULT_PERSONNEL.copy(),
+        "cv_gsheet_url": ""
+    }
+    
+    conn = get_gsheets_conn()
+    if conn is None:
+        return default_config
+        
+    try:
+        df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=0)
+        if df is None or df.empty:
+            df_save = pd.DataFrame([{"config_json": json.dumps(default_config, ensure_ascii=False)}])
+            safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+            return default_config
+            
+        json_str = df.iloc[0]["config_json"]
+        data = json.loads(json_str)
+        
+        needs_save = False
+        if "personnel_by_department" not in data:
+            data["personnel_by_department"] = DEFAULT_PERSONNEL.copy()
+            needs_save = True
+            
+        if "cv_gsheet_url" not in data:
+            data["cv_gsheet_url"] = ""
+            needs_save = True
+            
+        if needs_save:
+            save_config(data)
+            
+        return data
+    except Exception as e:
+        pass
+        return default_config
+
+# Load current config dynamically
+config = load_config()
+PROJECTS_BY_CATEGORY = config.get("projects_by_category", {})
+OFFICIAL_DEPARTMENTS = config.get("departments", [])
+
+# Default owners by department and company for autofill
+DEPT_LEADS = {
+    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
+        "Ban Lãnh đạo": "Trần Quốc Thể",
+        "Ban Hành chính Nhân sự": "Nguyễn Thị Hạnh Tiên",
+        "Ban Tài chính Kế toán": "Đồng Thị Nguyệt Nga",
+        "Ban Kế hoạch Đầu tư": "Nguyễn Trần Thức",
+        "Ban Chuẩn bị Đầu tư": "Hồ Văn Khoa",
+        "Ban Kỹ thuật": "Trần Văn Trọng",
+        "Ban Đền bù Giải tỏa": "Nguyễn Ngọc Tôn",
+        "Tổ KPI": ""
+    },
+    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+        "Ban Lãnh đạo": "Thái Văn Thành",
+        "Ban Hành chính Nhân sự": "Nguyễn Thị Mỹ Phương",
+        "Ban Tài chính Kế toán": "Nguyễn Thị Ngọc Hà",
+        "Ban Kế hoạch Đầu tư": "",
+        "Ban Chuẩn bị Đầu tư": "",
+        "Ban Kỹ thuật": "",
+        "Ban Đền bù Giải tỏa": "",
+        "Tổ KPI": ""
+    },
+    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
+        "Ban Lãnh đạo": "Trần Cường",
+        "Ban Hành chính Nhân sự": "Nguyễn Thị Hạnh Tiên",
+        "Ban Tài chính Kế toán": "Lê Thị Hải",
+        "Ban Kế hoạch Đầu tư": "Trần Cường",
+        "Ban Chuẩn bị Đầu tư": "Lê Thị Hải",
+        "Ban Kỹ thuật": "Trương Ngọc Sỹ",
+        "Ban Đền bù Giải tỏa": "Thái Hữu Quý",
+        "Tổ KPI": ""
+    }
+}
+
+def get_personnel_for_company_dept(company, dept, config):
+    is_marina = False
+    is_traffic = False
+    if isinstance(company, str):
+        is_marina = "CTY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
+        is_traffic = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in company
+        
+    if is_marina:
+        if dept == "Ban Hành chính Nhân sự":
+            return ["Nguyễn Thị Hạnh Tiên"]
+        elif dept == "Ban Tài chính Kế toán":
+            return ["Lê Thị Hải"]
+        elif dept == "Ban Lãnh đạo":
+            return ["Trần Cường"]
+        elif dept == "Tổ KPI":
+            return []
+    elif is_traffic:
+        if dept == "Ban Lãnh đạo":
+            return ["Thái Văn Thành", "Trần Văn Trọng"]
+        elif dept == "Ban Tài chính Kế toán":
+            return ["Nguyễn Thị Ngọc Hà"]
+        elif dept == "Ban Hành chính Nhân sự":
+            return ["Nguyễn Thị Mỹ Phương"]
+        else:
+            return []
+    else:
+        if dept == "Ban Hành chính Nhân sự":
+            return ["Nguyễn Thị Hạnh Tiên"]
+        elif dept == "Ban Tài chính Kế toán":
+            return ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+        elif dept == "Tổ KPI":
+            return []
+            
+    # Mặc định lấy từ cấu hình cho các phòng ban khác
+    return config.get("personnel_by_department", {}).get(dept, [])
+
+def get_departments_for_company(company, all_departments):
+    is_marina = False
+    if isinstance(company, str):
+        is_marina = "CTY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
+    if is_marina:
+        # Chỉ hiển thị 3 ban, ẩn tất cả các ban còn lại
+        allowed = ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
+        return [d for d in all_departments if d in allowed]
+    return all_departments
+
+
+
+# Generate flat list for dropdowns (brief clean names)
+ALL_PROJECTS = []
+for cat, projs in PROJECTS_BY_CATEGORY.items():
+    for p in projs:
+        ALL_PROJECTS.append(p)
+
+DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
+
+# Gantt DB Configuration
+GANTT_DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
+
+def read_gantt_db():
+    required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]
+    conn = get_gsheets_conn()
+    if conn is None:
+        return pd.DataFrame(columns=required_cols)
+        
+    try:
+        df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=0)
+        if df is None or df.empty or len(df.columns) < 2:
+            dummy_data = [
+                {
+                    "ID": "GNT-001",
+                    "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
