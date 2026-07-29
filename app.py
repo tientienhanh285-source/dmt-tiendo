@@ -662,7 +662,6 @@ def read_incoming_docs_db():
         df = safe_gsheets_read(conn, worksheet="VAN_BAN_DEN", ttl=600)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
-            safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df)
         else:
             
             df.columns = [str(c).strip() for c in df.columns]
