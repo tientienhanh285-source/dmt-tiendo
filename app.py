@@ -1916,6 +1916,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
                         df.loc[df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
                         df.loc[df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
+                        df.loc[df['ID'] == selected_id, 'NguoiThucHienTructiep'] = u_executor.strip()
                         df.loc[df['ID'] == selected_id, 'NgayBatDau'] = u_start
                         df.loc[df['ID'] == selected_id, 'Deadline'] = u_deadline
                         df.loc[df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
