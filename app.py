@@ -1199,7 +1199,7 @@ st.sidebar.markdown("### ☁️ ĐỒNG BỘ CLOUD")
 if is_gsheets_configured():
     st.sidebar.success("🟢 Google Sheets: Đã kết nối")
 else:
-    st.sidebar.warning("🟡 Google Sheets: Chạy Offline")
+    st.sidebar.warning("⚠️ Google Sheets: Chạy Offline")
 
 # Helper function to clean project name whitespace
 def clean_proj_name(name):
@@ -1231,9 +1231,9 @@ if menu == "📊 Dashboard Tổng Quan":
             days_late = (today_dt - deadline_val).days
             return f"🔴 [⚠️ Trễ {days_late} ngày]", 1
         elif deadline_val == today_dt:
-            return "🟠 [⏳ Hạn hôm nay]", 2
+            return "⏳ [Hạn hôm nay]", 2
         elif deadline_val == today_dt + timedelta(days=1):
-            return "🟠 [⏳ Hạn ngày mai]", 3
+            return "⚠️ [Hạn ngày mai]", 3
         return None, None
 
     alert_list = []
@@ -1421,9 +1421,9 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
                 days_late = abs(days_left)
                 return f"🔴 {date_str} (Trễ hạn {days_late} ngày)"
             elif days_left == 0:
-                return f"🟠 {date_str} (Hạn hôm nay)"
+                return f"⏳ {date_str} (Hạn hôm nay)"
             elif 1 <= days_left <= 3:
-                return f"🟡 {date_str} (Sắp hạn - Còn {days_left} ngày)"
+                return f"⚠️ {date_str} (Sắp hạn - Còn {days_left} ngày)"
             else:
                 return date_str
         df_display['Hạn chót'] = table_df.apply(format_dl, axis=1)
@@ -1468,8 +1468,8 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
             elif "khách quan" in str(val).lower():
                 explain = row.get('GiaiTrinhDeXuat', '')
                 if explain and explain.strip():
-                    return f"🟠 [Do khách quan] - {explain.strip()}"
-                return "🟠 [Do khách quan]"
+                    return f"⚠️ [Do khách quan] - {explain.strip()}"
+                return "⚠️ [Do khách quan]"
             else:
                 return "--"
         df_display['Nguyên nhân trễ hạn'] = table_df.apply(format_late_cause, axis=1)
@@ -1979,10 +1979,10 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                 badge = f"🔴 [⚠️ Trễ {days_late} ngày]"
                 urgency = 1
             elif deadline_val == ref_today:
-                badge = "🟠 [⏳ Hạn hôm nay]"
+                badge = "⏳ [Hạn hôm nay]"
                 urgency = 2
             elif deadline_val == ref_today + timedelta(days=1):
-                badge = "🟠 [⏳ Hạn ngày mai]"
+                badge = "⚠️ [Hạn ngày mai]"
                 urgency = 3
             else:
                 badge = None
