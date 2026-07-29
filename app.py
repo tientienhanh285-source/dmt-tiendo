@@ -147,7 +147,9 @@ def safe_gsheets_update(conn, worksheet, data):
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
             st.session_state["show_gsheet_input"] = True
         else:
-            st.error(f"Lỗi cập nhật GSheets: {str(e)}")
+            # Ignore expected missing worksheets
+            if str(e) not in ["GANTT_KHDT", "VAN_BAN_DEN", "CONFIG"]:
+                st.error(f"Lỗi lưu dữ liệu GSheets ({worksheet}): {str(e)}")
         return False
 
 def save_config(config_data):
