@@ -1315,49 +1315,7 @@ if menu == "📊 Dashboard Tổng Quan":
         
     st.markdown("---")
 
-    # Dashboard incoming docs section
-    docs_df = read_incoming_docs_db()
-    if selected_company != "Tất cả đơn vị":
-        dash_docs = docs_df[docs_df['DonVi'] == selected_company]
-    else:
-        dash_docs = docs_df
-        
-    
-    st.markdown("### 📩 Thống kê Văn bản đến")
-    
-    # Red warnings for late docs
-    late_docs_list = dash_docs[dash_docs['TrangThai'].astype(str).str.contains('Trễ hạn', na=False)]
-    if not late_docs_list.empty:
-        st.error("🚨 **CẢNH BÁO: CÓ VĂN BẢN ĐẾN TRỄ HẠN XỬ LÝ / PHẢN HỒI**")
-        alert_docs_data = []
-        for _, row in late_docs_list.iterrows():
-            deadline_val = row['Deadline']
-            if isinstance(deadline_val, str):
-                try:
-                    deadline_val = datetime.strptime(deadline_val, '%Y-%m-%d').date()
-                except Exception:
-                    pass
-            ref_today = today
-            if isinstance(ref_today, datetime):
-                ref_today = ref_today.date()
-            if isinstance(deadline_val, datetime):
-                deadline_val = deadline_val.date()
-                
-            days_late = 0
-            if isinstance(deadline_val, date):
-                days_late = (ref_today - deadline_val).days
-            
-            alert_docs_data.append({
-                "Số / Ký hiệu": row['SoKyHieu'],
-                "Đơn vị gửi": row['CoQuanGui'],
-                "Trích yếu nội dung": row['TrichYeu'],
-                "Hạn xử lý": row['Deadline'].strftime('%d/%m/%Y') if isinstance(row['Deadline'], (date, datetime)) else str(row['Deadline']),
-                "Số ngày trễ": f"{days_late} ngày"
-            })
-        st.dataframe(pd.DataFrame(alert_docs_data), use_container_width=True, hide_index=True)
-        
-        
-    st.markdown("---")
+
     
     # Performance Review Section
     st.markdown("### 📈 Bảng Đánh giá Hiệu suất (Performance Review)")
