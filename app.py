@@ -1009,6 +1009,7 @@ st.sidebar.markdown("---")
 
 # Current date
 df = read_db()
+gantt_df = read_gantt_db()
 today = date.today()
 
 # Filter display dataframe based on sidebar selected company
@@ -1963,7 +1964,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             "Khách sạn DMT Group",
             "Khách sạn DMT Măng Đen"
         ]
-        existing_db_projects = list(df['TenDuAn'].unique())
+        existing_db_projects = list(gantt_df['TenDuAn'].unique())
         merged_projects = list(set(default_projects + existing_db_projects))
         existing_projects = sorted(merged_projects)
         gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
@@ -1977,7 +1978,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
         
     if gantt_project_name.strip():
         # Filter data for this project
-        project_tasks_df = df[df['TenDuAn'] == gantt_project_name]
+        project_tasks_df = gantt_df[gantt_df['TenDuAn'] == gantt_project_name]
         
         # Overdue and due today/tomorrow alerts scanning for Gantt tasks (Group 1 & 2)
         ref_today = date.today()
