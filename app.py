@@ -102,7 +102,7 @@ def get_gsheets_conn():
         return None
 
 
-def safe_gsheets_read(conn, worksheet, ttl=0, fallback_df=None):
+def safe_gsheets_read(conn, worksheet, ttl=600, fallback_df=None):
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
@@ -148,7 +148,7 @@ def safe_gsheets_update(conn, worksheet, data):
             st.session_state["show_gsheet_input"] = True
         else:
             # Ignore expected missing worksheets
-            if str(e) not in ["GANTT_KHDT", "VAN_BAN_DEN", "CONFIG"]:
+            if str(e).strip(''"') not in ["GANTT_KHDT", "VAN_BAN_DEN", "CONFIG"] and "WorksheetNotFound" not in str(type(e)):
                 st.error(f"Lỗi lưu dữ liệu GSheets ({worksheet}): {str(e)}")
         return False
 
@@ -182,7 +182,7 @@ def load_config():
         return default_config
         
     try:
-        df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=600)
         if df is None or df.empty:
             return default_config
             
@@ -311,7 +311,7 @@ def read_gantt_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=600)
         if df is None or df.empty or len(df.columns) < 2:
             dummy_data = [
                 {
@@ -659,7 +659,7 @@ def read_incoming_docs_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = safe_gsheets_read(conn, worksheet="VAN_BAN_DEN", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="VAN_BAN_DEN", ttl=600)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
             safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df)
@@ -756,7 +756,7 @@ def read_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=600)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
         else:
