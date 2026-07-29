@@ -747,7 +747,7 @@ def save_incoming_docs_db(df):
 
 def read_db():
     required_cols = [
-        "ID", "DonVi", "PhongBan", "NguoiChuTri", "NguoiThucHienTructiep", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
+        "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
         "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
     ]
@@ -799,8 +799,6 @@ def read_db():
 
 
     # Check and initialize missing columns dynamically
-    if "NguoiThucHienTructiep" not in df.columns:
-        df["NguoiThucHienTructiep"] = df["NguoiChuTri"]
     if "ChuKyTheoDoi" not in df.columns:
         df["ChuKyTheoDoi"] = "Theo dự án / Tự do"
     if "PhanLoaiTreHan" not in df.columns:
@@ -1577,15 +1575,11 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             if dept_lead in dept_personnel:
                 default_lead_idx = dept_personnel.index(dept_lead)
             
-            sel_owner_opt = st.selectbox("Trưởng bộ phận phụ trách", owner_options, index=default_lead_idx)
+            sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", owner_options, index=default_lead_idx)
             if sel_owner_opt == "✍️ Nhập tên người khác...":
-                task_owner = st.text_input("✍️ Nhập tên phụ trách khác...", value="")
+                task_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="")
             else:
                 task_owner = sel_owner_opt
-                
-            task_executor = st.text_input("Thành viên thực hiện trực tiếp (Để trống nếu trưởng bộ phận tự làm)", value="")
-            if not task_executor.strip():
-                task_executor = task_owner
             
         with col2:
             # 6. Dates
@@ -1703,7 +1697,6 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "DonVi": entry_company,
                         "PhongBan": task_dept,
                         "NguoiChuTri": task_owner.strip(),
-                        "NguoiThucHienTructiep": task_executor.strip(),
                         "TenDuAn": project_name,
                         "MocTienDo": "Tự do",
                         "SanPhamBanGiao": "Xem chi tiết",
@@ -1764,20 +1757,15 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     current_owner = task_data['NguoiChuTri']
                     if current_owner in u_dept_personnel:
                         u_default_index = u_dept_personnel.index(current_owner)
-                        u_sel_owner_opt = st.selectbox("Trưởng bộ phận phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
+                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
                         if u_sel_owner_opt == "✍️ Nhập tên người khác...":
-                            u_owner = st.text_input("✍️ Nhập tên phụ trách khác...", value="", key=f"u_owner_custom_{task_data['ID']}")
+                            u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="", key=f"u_owner_custom_{task_data['ID']}")
                         else:
                             u_owner = u_sel_owner_opt
                     else:
                         u_default_index = len(u_owner_options) - 1
-                        u_sel_owner_opt = st.selectbox("Trưởng bộ phận phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
-                        u_owner = st.text_input("✍️ Nhập tên phụ trách khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
-                    
-                    current_executor = task_data.get('NguoiThucHienTructiep', current_owner)
-                    u_executor = st.text_input("Thành viên thực hiện trực tiếp", value=current_executor, key=f"u_executor_{task_data['ID']}")
-                    if not u_executor.strip():
-                        u_executor = u_owner
+                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
+                        u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
                     u_start = st.date_input("Ngày bắt đầu thực hiện", value=task_data['NgayBatDau'], format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
@@ -1920,7 +1908,6 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
                         df.loc[df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
                         df.loc[df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
-                        df.loc[df['ID'] == selected_id, 'NguoiThucHienTructiep'] = u_executor.strip()
                         df.loc[df['ID'] == selected_id, 'NgayBatDau'] = u_start
                         df.loc[df['ID'] == selected_id, 'Deadline'] = u_deadline
                         df.loc[df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
@@ -2244,7 +2231,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         else:
             # Nhóm theo Người thực hiện
             personnel_kpi = []
-            grouped = kpi_df.groupby('NguoiThucHienTructiep')
+            grouped = kpi_df.groupby('NguoiChuTri')
             for person, group in grouped:
                 if not str(person).strip(): continue
                 total_tasks = len(group)
@@ -2299,12 +2286,12 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         
         if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
             with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
-                all_personnel = list(display_df['NguoiThucHienTructiep'].unique())
+                all_personnel = list(display_df['NguoiChuTri'].unique())
                 all_personnel = [p for p in all_personnel if str(p).strip()]
                 
                 yearly_data = []
                 for person in all_personnel:
-                    person_df = display_df[display_df['NguoiThucHienTructiep'] == person].copy()
+                    person_df = display_df[display_df['NguoiChuTri'] == person].copy()
                     
                     months_grades = {}
                     count_c = 0
