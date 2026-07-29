@@ -146,6 +146,8 @@ def safe_gsheets_update(conn, worksheet, data):
         import streamlit as st
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
             st.session_state["show_gsheet_input"] = True
+        else:
+            st.error(f"Lỗi cập nhật GSheets: {str(e)}")
         return False
 
 def save_config(config_data):
