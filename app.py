@@ -148,7 +148,7 @@ def safe_gsheets_update(conn, worksheet, data):
             st.session_state["show_gsheet_input"] = True
         else:
             # Ignore expected missing worksheets
-            if str(e).strip(''"') not in ["GANTT_KHDT", "VAN_BAN_DEN", "CONFIG"] and "WorksheetNotFound" not in str(type(e)):
+            if str(e).strip("'\"") not in ["GANTT_KHDT", "VAN_BAN_DEN", "CONFIG"] and "WorksheetNotFound" not in str(type(e)):
                 st.error(f"Lỗi lưu dữ liệu GSheets ({worksheet}): {str(e)}")
         return False
 
