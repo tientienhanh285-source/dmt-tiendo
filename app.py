@@ -75,10 +75,10 @@ CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
 
 DEFAULT_PERSONNEL = {
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Thái Văn Thành", "Trần Cường"],
-    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
-    "Ban Tài chính Kế toán": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Như Can"],
-    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Trần Văn Trọng", "Trần Cường"],
-    "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phạm Quang Nghĩa", "Lê Thị Hải"],
+    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Thị Tú Uyên"],
+    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
+    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Phan Thị Mỹ Hạnh", "Nguyễn Đức Lợi"],
+    "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
     "Ban Kỹ thuật": ["Trần Văn Trọng", "Nguyễn Văn Sang", "Trương Ngọc Sỹ"],
     "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Mai Văn Châu", "Thái Hữu Quý"],
     "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
@@ -282,9 +282,9 @@ def get_personnel_for_company_dept(company, dept, config):
             return []
     else:
         if dept == "Ban Hành chính Nhân sự":
-            return ["Nguyễn Thị Hạnh Tiên"]
+            return ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Thị Tú Uyên"]
         elif dept == "Ban Tài chính Kế toán":
-            return ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+            return ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
         elif dept == "Tổ KPI":
             return []
             
