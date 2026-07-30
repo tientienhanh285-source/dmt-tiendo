@@ -2614,6 +2614,71 @@ elif menu == "⚙️ Quản Lý Cấu HÌnh":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
     tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
     
+    with tab_proj:
+        st.markdown("#### Quản lý Danh mục Dự án")
+        
+        # Show existing categories
+        cats = list(PROJECTS_BY_CATEGORY.keys())
+        sel_cat = st.selectbox("Chọn Lĩnh vực dự án", cats)
+        projs_in_cat = PROJECTS_BY_CATEGORY.get(sel_cat, [])
+        
+        st.markdown(f"**Danh sách dự án hiện tại trong [{sel_cat}]:**")
+        st.write(", ".join(projs_in_cat) if projs_in_cat else "Chưa có dự án nào")
+        
+        st.markdown("---")
+        
+        col_add, col_edit, col_del = st.columns(3)
+        
+        with col_add:
+            st.markdown("**➕ Thêm dự án mới**")
+            new_proj_name = st.text_input("Tên dự án mới", key="admin_add_proj")
+            if st.button("Thêm dự án", type="primary"):
+                if new_proj_name.strip():
+                    if new_proj_name.strip() not in projs_in_cat:
+                        PROJECTS_BY_CATEGORY[sel_cat].append(new_proj_name.strip())
+                        config["projects_by_category"] = PROJECTS_BY_CATEGORY
+                        if save_config(config):
+                            st.success(f"Đã thêm dự án: {new_proj_name}")
+                            st.cache_data.clear()
+                            st.rerun()
+                    else:
+                        st.error("Dự án đã tồn tại!")
+                else:
+                    st.error("Tên dự án không được để trống!")
+                    
+        with col_edit:
+            st.markdown("**✏️ Đổi tên dự án**")
+            if projs_in_cat:
+                proj_to_edit = st.selectbox("Chọn dự án cần sửa", projs_in_cat, key="admin_edit_proj_sel")
+                edited_proj_name = st.text_input("Tên dự án mới", value=proj_to_edit, key="admin_edit_proj_val")
+                if st.button("Lưu đổi tên"):
+                    if edited_proj_name.strip():
+                        idx = PROJECTS_BY_CATEGORY[sel_cat].index(proj_to_edit)
+                        PROJECTS_BY_CATEGORY[sel_cat][idx] = edited_proj_name.strip()
+                        config["projects_by_category"] = PROJECTS_BY_CATEGORY
+                        if save_config(config):
+                            st.success(f"Đã đổi tên thành: {edited_proj_name}")
+                            st.cache_data.clear()
+                            st.rerun()
+                    else:
+                        st.error("Tên mới không được để trống!")
+            else:
+                st.write("Không có dự án để sửa.")
+                
+        with col_del:
+            st.markdown("**🗑️ Xóa dự án**")
+            if projs_in_cat:
+                proj_to_del = st.selectbox("Chọn dự án cần xóa", projs_in_cat, key="admin_del_proj_sel")
+                if st.button("Xác nhận xóa dự án", type="secondary"):
+                    PROJECTS_BY_CATEGORY[sel_cat].remove(proj_to_del)
+                    config["projects_by_category"] = PROJECTS_BY_CATEGORY
+                    if save_config(config):
+                        st.success(f"Đã xóa dự án: {proj_to_del}")
+                        st.cache_data.clear()
+                        st.rerun()
+            else:
+                st.write("Không có dự án để xóa.")
+
     with tab_dept:
         st.markdown("#### Quản lý Danh sách Phòng ban")
         st.markdown(f"**Danh sách phòng ban hiện tại ({len(OFFICIAL_DEPARTMENTS)} phòng ban):**")
