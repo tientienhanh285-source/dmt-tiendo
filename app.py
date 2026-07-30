@@ -308,6 +308,21 @@ def get_departments_for_company(company, all_departments):
 
 
 
+def get_filtered_projects(company_name, all_projs, db_projs):
+    merged = list(set(all_projs + db_projs))
+    if not isinstance(company_name, str):
+        return sorted(merged)
+    
+    is_marina = "CTY CP DMT - MARINA" in company_name or "Du thuyền Happy Yacht" in company_name
+    marina_only_projs = ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
+    happy_yacht_projs = ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht"]
+    
+    if is_marina:
+        return sorted([p for p in merged if p in marina_only_projs])
+    else:
+        # For other companies, hide Happy Yacht
+        return sorted([p for p in merged if p not in happy_yacht_projs])
+
 # Generate flat list for dropdowns (brief clean names)
 ALL_PROJECTS = []
 for cat, projs in PROJECTS_BY_CATEGORY.items():
@@ -1387,7 +1402,7 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
     
     with col_filter1:
         db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
-        merged_projs = sorted(list(set(ALL_PROJECTS + db_projs)))
+        merged_projs = get_filtered_projects(selected_company, ALL_PROJECTS, db_projs)
         proj_options = ["Tất cả dự án"] + merged_projs
         sel_proj_filter = st.selectbox("Lọc nhanh theo Dự án / Hạng mục", proj_options)
         
@@ -1568,11 +1583,11 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
             # 2. Project selection (Categorized dropdown or custom)
             is_marina_co = "CTY CP DMT - MARINA" in entry_company or "Du thuyền Happy Yacht" in entry_company
-            if is_marina_co:
+            if False:
                 proj_options_with_custom = ["➕ Tạo / Nhập Dự án mới..."]
             else:
                 db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
-                merged_projs = sorted(list(set(ALL_PROJECTS + db_projs)))
+                merged_projs = get_filtered_projects(entry_company, ALL_PROJECTS, db_projs)
                 proj_options_with_custom = merged_projs + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
                 
             default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)
@@ -1946,8 +1961,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
         gantt_project_options = ["➕ Tạo / Nhập Dự án mới..."]
     else:
         existing_db_projects = list(gantt_df['TenDuAn'].unique())
-        merged_projects = list(set(ALL_PROJECTS + existing_db_projects))
-        existing_projects = sorted(merged_projects)
+        existing_projects = get_filtered_projects(selected_company, ALL_PROJECTS, existing_db_projects)
         gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
     
     selected_gantt_project = st.selectbox("Chọn Dự án KHĐT", gantt_project_options)
