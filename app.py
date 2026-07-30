@@ -1407,7 +1407,7 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
     st.markdown(f"### 📋 Bảng Tiến Độ Công Việc Chi Tiết — {selected_company}")
     
     # Filter tools for Boss
-    col_filter1, col_filter2 = st.columns(2)
+    col_filter1, col_filter2, col_filter3 = st.columns(3)
     
     with col_filter1:
         db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
@@ -1418,7 +1418,18 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
     with col_filter2:
         allowed_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
         dept_options = ["Tất cả phòng ban"] + allowed_depts
-        sel_dept_filter = st.selectbox("Lọc nhanh theo Phòng ban chịu trách nhiệm", dept_options)
+        sel_dept_filter = st.selectbox("Lọc nhanh theo Phòng ban", dept_options)
+        
+    with col_filter3:
+        months = set()
+        if not display_df.empty:
+            for _, row in display_df.iterrows():
+                if pd.notna(row.get('NgayBatDau')) and hasattr(row['NgayBatDau'], 'strftime'):
+                    months.add(row['NgayBatDau'].strftime('%m/%Y'))
+                if pd.notna(row.get('Deadline')) and hasattr(row['Deadline'], 'strftime'):
+                    months.add(row['Deadline'].strftime('%m/%Y'))
+        month_options = ["Tất cả các tháng"] + sorted(list(months), key=lambda x: datetime.strptime(x, '%m/%Y'), reverse=True)
+        sel_month_filter = st.selectbox("Lọc nhanh theo Tháng", month_options)
         
     # Apply filters
     table_df = display_df.copy()
@@ -1428,6 +1439,15 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         
     if sel_dept_filter != "Tất cả phòng ban":
         table_df = table_df[table_df['PhongBan'] == sel_dept_filter]
+        
+    if sel_month_filter != "Tất cả các tháng":
+        target_month = sel_month_filter
+        mask = (
+            table_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == target_month
+        ) | (
+            table_df['Deadline'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == target_month
+        )
+        table_df = table_df[mask]
         
     if table_df.empty:
         st.info("Không có công việc nào phù hợp với bộ lọc.")
