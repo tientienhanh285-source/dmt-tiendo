@@ -305,7 +305,7 @@ DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 GANTT_DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 
 def read_gantt_db():
-    required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]
+    required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "QuanTrong", "KhanCap", "NgayCapNhat"]
     conn = get_gsheets_conn()
     if conn is None:
         return pd.DataFrame(columns=required_cols)
@@ -2160,28 +2160,296 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             
             # Task Table
             st.markdown("#### 📋 Bảng tiến độ chi tiết dự án")
+            
             disp_table = project_tasks_df.copy()
-            disp_table['NgayBatDau'] = disp_table['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y'))
-            disp_table['Deadline'] = disp_table['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y'))
+            
+            # Filter bar
+            f_col1, f_col2 = st.columns(2)
+            with f_col1:
+                filter_status = st.multiselect("🔍 Lọc theo trạng thái:", ["🟢 Hoàn thành", "🟡 Đang thực hiện", "🔴 Quá hạn", "⚪ Chưa bắt đầu"], default=[])
+            with f_col2:
+                filter_search = st.text_input("🔍 Tìm tên công việc:")
+            
+            # Auto-calculate status and remaining days
+            today_date = date.today()
+            def calc_status(row):
+                if row['PhanTramHoanThanh'] >= 100: return "🟢 Hoàn thành"
+                dl = row['Deadline']
+                if isinstance(dl, datetime): dl = dl.date()
+                st_d = row['NgayBatDau']
+                if isinstance(st_d, datetime): st_d = st_d.date()
+                
+                if pd.notna(dl) and dl < today_date: return "🔴 Quá hạn"
+                if pd.notna(st_d) and st_d > today_date: return "⚪ Chưa bắt đầu"
+                return "🟡 Đang thực hiện"
+                
+            def calc_remaining(row):
+                if row['PhanTramHoanThanh'] >= 100: return "✅ Đã xong"
+                dl = row['Deadline']
+                if isinstance(dl, datetime): dl = dl.date()
+                if pd.isna(dl): return ""
+                diff = (dl - today_date).days
+                if diff < 0: return f"🚨 Vượt {-diff} ngày"
+                if diff == 0: return "⏰ Đến hạn hôm nay"
+                if diff <= 3: return f"⚠️ Còn {diff} ngày"
+                return f"{diff} ngày"
+            
+            disp_table['Trạng Thái'] = disp_table.apply(calc_status, axis=1)
+            disp_table['Số Ngày Còn Lại'] = disp_table.apply(calc_remaining, axis=1)
+            
+            # Ensure new columns exist
+            for col in ['QuanTrong', 'KhanCap']:
+                if col not in disp_table.columns:
+                    disp_table[col] = False
+                else:
+                    disp_table[col] = disp_table[col].fillna(False).astype(bool)
+            
+            # Apply filters
+            if filter_status:
+                disp_table = disp_table[disp_table['Trạng Thái'].isin(filter_status)]
+            if filter_search.strip():
+                disp_table = disp_table[disp_table['TenCongViec'].str.contains(filter_search.strip(), case=False, na=False)]
+            
+            disp_table['NgayBatDau'] = disp_table['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) else "")
+            disp_table['Deadline'] = disp_table['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) else "")
+            
             st.dataframe(
-                disp_table[["TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone"]],
+                disp_table[["Trạng Thái", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "Số Ngày Còn Lại", "PhanTramHoanThanh", "QuanTrong", "KhanCap", "Milestone"]],
                 column_config={
+                    "Trạng Thái": st.column_config.TextColumn("Trạng thái", width="medium"),
                     "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
                     "GiaiDoan": st.column_config.TextColumn("Giai đoạn"),
                     "NgayBatDau": st.column_config.TextColumn("Ngày bắt đầu"),
-                    "Deadline": st.column_config.TextColumn("Ngày kết thúc"),
+                    "Deadline": st.column_config.TextColumn("Hạn chót"),
+                    "Số Ngày Còn Lại": st.column_config.TextColumn("Thời gian còn lại"),
                     "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ %", format="%d%%", min_value=0, max_value=100),
+                    "QuanTrong": st.column_config.CheckboxColumn("Quan trọng 🌟", default=False),
+                    "KhanCap": st.column_config.CheckboxColumn("Khẩn cấp ⚡", default=False),
                     "Milestone": st.column_config.TextColumn("Cột mốc quan trọng")
                 },
                 use_container_width=True,
                 hide_index=True
             )
-        else:
-            st.info("Chưa có công việc nào trong dự án này. Vui lòng thêm mới bên dưới!")
-            
         st.markdown("---")
         st.markdown("### ✏️ Quản lý Công việc Gantt")
 
+        st.markdown("### ✏️ Quản lý Công việc Gantt")
+        g_tab_new, g_tab_edit = st.tabs(["➕ Thêm công việc Gantt mới", "✏️ Sửa / Xóa công việc Gantt"])
+        
+        with g_tab_new:
+            st.markdown("#### Thêm công việc mới vào dự án KHĐT")
+            g_col1, g_col2 = st.columns(2)
+            
+            g_phase_suggestions = {
+                "6. Thi công Xây lắp & Lắp đặt Thiết bị": [
+                    "Bàn giao mặt bằng, dựng lán trại & Đấu nối điện nước thi công",
+                    "Định vị tim mốc & Đào đất hố móng",
+                    "Thi công Cọc & Kết cấu Móng / Bể ngầm",
+                    "Thi công Kết cấu Khung Thân (Cột, Dầm, Sàn các tầng)",
+                    "Xây tường bao & Tường ngăn",
+                    "Thi công lắp đặt Đường ống MEP (Điện - Nước - PCCC) âm tường/sàn",
+                    "Thi công Kết cấu Mái & Chống thấm"
+                ]
+            }
+            
+            with g_col1:
+                g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", [
+                    "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                    "2. Pháp lý Dự án & Quy hoạch 1/500",
+                    "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                    "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                    "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                    "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                    "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                    "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                    "Khác"
+                ], key="g_phase_new")
+                
+                # Check for suggestions
+                suggested_tasks = g_phase_suggestions.get(g_phase, [])
+                g_task_name_val = ""
+                if suggested_tasks:
+                    selected_suggestion = st.selectbox("💡 Gợi ý công việc mẫu:", ["-- Tự nhập tên công việc --"] + suggested_tasks, key="g_suggest_new")
+                    if selected_suggestion != "-- Tự nhập tên công việc --":
+                        g_task_name_val = selected_suggestion
+                        
+                g_task_name = st.text_input("Tên công việc", value=g_task_name_val, key="g_task_name_new")
+                g_progress = st.slider("Tiến độ %", 0, 100, 0, key="g_progress_new")
+            with g_col2:
+                today_ref = date.today()
+                g_start = st.date_input("Ngày bắt đầu", value=today_ref, key="g_start_new", format="DD/MM/YYYY")
+                g_end = st.date_input("Ngày kết thúc", value=today_ref + timedelta(days=7), key="g_end_new", format="DD/MM/YYYY")
+                g_milestone = st.text_input("Cột mốc quan trọng (Nếu có)", placeholder="ví dụ: Mốc 1: Phê duyệt Pháp lý & GPXD, Mốc 2: Cất nóc công trình...", key="g_milestone_new")
+                
+                # Sequential template loader button
+                if g_phase == "6. Thi công Xây lắp & Lắp đặt Thiết bị":
+                    st.markdown("💡 *Hoặc bạn có thể nạp nhanh toàn bộ 7 bước thi công mẫu bên dưới:*")
+                    if st.button("⚡ NẠP NHANH 7 BƯỚC THI CÔNG MẪU", key="btn_g_load_template_phase6"):
+                        new_rows = []
+                        start_date = today_ref
+                        for idx, task_name in enumerate(g_phase_suggestions["6. Thi công Xây lắp & Lắp đặt Thiết bị"]):
+                            next_id = 1
+                            if not gantt_df.empty:
+                                g_ids = gantt_df['ID'].tolist() + [r['ID'] for r in new_rows]
+                                nums = [int(m[0]) for idx_id in g_ids for m in [re.findall(r'\d+', str(idx_id))] if m]
+                                if nums:
+                                    next_id = max(nums) + 1
+                            g_task_id = f"GNT-{next_id:03d}"
+                            
+                            end_date = start_date + timedelta(days=7)
+                            new_rows.append({
+                                "ID": g_task_id,
+                                "TenDuAn": gantt_project_name.strip(),
+                                "TenCongViec": task_name,
+                                "GiaiDoan": g_phase,
+                                "NgayBatDau": start_date,
+                                "NgayKetThuc": end_date,
+                                "PhanTramHoanThanh": 0,
+                                "Milestone": "",
+                                "NgayCapNhat": datetime.now()
+                            })
+                            start_date = end_date # Sequential
+                            
+                        gantt_df_updated = pd.concat([gantt_df, pd.DataFrame(new_rows)], ignore_index=True)
+                        if save_gantt_db(gantt_df_updated):
+                            st.success("🎉 Đã tự động nạp thành công 7 bước thi công mẫu tuần tự vào dự án!")
+                            st.cache_data.clear()
+                            st.rerun()
+                
+            g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
+            if g_submit:
+                if not g_task_name.strip():
+                    st.error("⚠️ Vui lòng nhập Tên công việc!")
+                elif g_start > g_end:
+                    st.error("⚠️ Ngày bắt đầu không được lớn hơn ngày kết thúc!")
+                else:
+                    # Auto ID generator for Gantt
+                    next_id = 1
+                    if not gantt_df.empty:
+                        g_ids = gantt_df['ID'].tolist()
+                        nums = [int(m[0]) for idx in g_ids for m in [re.findall(r'\d+', str(idx))] if m]
+                        if nums:
+                            next_id = max(nums) + 1
+                    g_task_id = f"GNT-{next_id:03d}"
+                    
+                    new_g_row = {
+                        "ID": g_task_id,
+                        "TenDuAn": gantt_project_name.strip(),
+                        "TenCongViec": g_task_name.strip(),
+                        "GiaiDoan": g_phase,
+                        "NgayBatDau": g_start,
+                        "NgayKetThuc": g_end,
+                        "PhanTramHoanThanh": g_progress,
+                        "Milestone": g_milestone.strip(),
+                        "QuanTrong": False,
+                        "KhanCap": False,
+                        "NgayCapNhat": datetime.now()
+                    }
+                    
+                    gantt_df_updated = pd.concat([gantt_df, pd.DataFrame([new_g_row])], ignore_index=True)
+                    if save_gantt_db(gantt_df_updated):
+                        st.success(f"🎉 Đã thêm thành công công việc mã: {g_task_id}!")
+                        st.cache_data.clear()
+                        st.rerun()
+                        
+        with g_tab_edit:
+            st.markdown("#### Chỉnh sửa hoặc Xóa công việc")
+            if project_tasks_df.empty:
+                st.info("Chưa có công việc nào để chỉnh sửa.")
+            else:
+                edit_options = []
+                for _, row in project_tasks_df.iterrows():
+                    edit_options.append(f"{row['ID']} - {row['TenCongViec']}")
+                
+                selected_edit_task = st.selectbox("Chọn công việc cần cập nhật", edit_options, key="g_edit_sel")
+                selected_g_id = selected_edit_task.split(" - ")[0]
+                g_task_data = gantt_df[gantt_df['ID'] == selected_g_id].iloc[0]
+                
+                g_col_u1, g_col_u2 = st.columns(2)
+                with g_col_u1:
+                    u_g_task_name = st.text_input("Tên công việc", value=g_task_data['TenCongViec'], key="u_g_task_name")
+                    u_g_phase = st.selectbox("Nhóm / Giai đoạn (Phase)", [
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
+                    ], index=[
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
+                    ].index(g_task_data['GiaiDoan']) if g_task_data['GiaiDoan'] in [
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
+                    ] else [
+                        "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
+                        "2. Pháp lý Dự án & Quy hoạch 1/500",
+                        "3. Thiết kế Cơ sở & Báo cáo Tự đánh giá / ĐTM",
+                        "4. Thiết kế Bản vẽ Thi công & Thẩm định",
+                        "5. Cấp phép Xây dựng & Lựa chọn Nhà thầu",
+                        "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+                        "7. Nghiệm thu, Phê duyệt PCCC & Hoàn công",
+                        "8. Bàn giao & Đưa vào Vận hành / Khai thác",
+                        "Khác"
+                    ].index('Khác'), key="u_g_phase")
+                    u_g_progress = st.slider("Tiến độ %", 0, 100, int(g_task_data['PhanTramHoanThanh']), key="u_g_progress")
+                with g_col_u2:
+                    u_g_start = st.date_input("Ngày bắt đầu", value=g_task_data['NgayBatDau'], key="u_g_start", format="DD/MM/YYYY")
+                    u_g_end = st.date_input("Ngày kết thúc", value=g_task_data['NgayKetThuc'], key="u_g_end", format="DD/MM/YYYY")
+                    u_g_milestone = st.text_input("Cột mốc quan trọng", value=g_task_data['Milestone'], key="u_g_milestone")
+                    u_g_important = st.checkbox("Quan trọng 🌟", value=bool(g_task_data.get("QuanTrong", False)), key="u_g_important")
+                    u_g_urgent = st.checkbox("Khẩn cấp ⚡", value=bool(g_task_data.get("KhanCap", False)), key="u_g_urgent")
+                    
+                btn_g_save, btn_g_del = st.columns([4, 1])
+                with btn_g_save:
+                    g_save_click = st.button("💾 LƯU CẬP NHẬT GANTT", type="primary", key="btn_g_save")
+                with btn_g_del:
+                    g_del_click = st.button("🗑️ XÓA CÔNG VIỆC GANTT", type="secondary", key="btn_g_del")
+                    
+                if g_save_click:
+                    if not u_g_task_name.strip():
+                        st.error("⚠️ Vui lòng nhập Tên công việc!")
+                    elif u_g_start > u_g_end:
+                        st.error("⚠️ Ngày bắt đầu không được lớn hơn ngày kết thúc!")
+                    else:
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'TenCongViec'] = u_g_task_name.strip()
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'GiaiDoan'] = u_g_phase
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'NgayBatDau'] = u_g_start
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'NgayKetThuc'] = u_g_end
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'PhanTramHoanThanh'] = u_g_progress
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'Milestone'] = u_g_milestone.strip()
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'QuanTrong'] = u_g_important
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'KhanCap'] = u_g_urgent
+                        gantt_df.loc[gantt_df['ID'] == selected_g_id, 'NgayCapNhat'] = datetime.now()
+                        
+                        if save_gantt_db(gantt_df):
+                            st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_g_id}!")
+                            st.cache_data.clear()
+                            st.rerun()
+                            
+                if g_del_click:
+                    gantt_df_after_del = gantt_df[gantt_df['ID'] != selected_g_id]
+                    if save_gantt_db(gantt_df_after_del):
+                        st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_g_id}!")
+                        st.cache_data.clear()
+                        st.rerun()
 # ----------------- 5. ĐÁNH GIÁ KPI & XẾP LOẠI -----------------
 elif menu == "🏆 Đánh giá KPI & Xếp loại":
     st.markdown(f"### 🏆 Đánh giá KPI & Xếp loại Cá nhân — {selected_company}")
