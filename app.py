@@ -310,7 +310,10 @@ def get_departments_for_company(company, all_departments):
     if is_traffic:
         allowed = ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
         return [d for d in allowed]
-    return all_departments
+        
+    # For DMT (and any other), exclude CIENCO specific departments
+    cienco_only = ["Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị"]
+    return [d for d in all_departments if d not in cienco_only]
 
 
 
