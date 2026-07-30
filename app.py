@@ -1978,6 +1978,59 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         st.cache_data.clear()
                         st.rerun()
 
+                st.markdown("---")
+                with st.expander("🔄 Tái tạo công việc định kỳ (Nhân bản cho kỳ sau)"):
+                    st.info("Tính năng này giúp nhân bản công việc hiện tại thành một công việc mới cho kỳ tiếp theo (dành cho các báo cáo tuần, giao ban tháng...).")
+                    
+                    rep_name = st.text_input("Tên công việc mới", value=f"{task_data['TenCongViec']} (Kỳ tiếp theo)", key=f"rep_name_{task_data['ID']}")
+                    
+                    default_start = task_data['Deadline'] + timedelta(days=1) if pd.notna(task_data['Deadline']) else today
+                    default_deadline = default_start + timedelta(days=6)
+                    
+                    col_rep1, col_rep2 = st.columns(2)
+                    with col_rep1:
+                        rep_start = st.date_input("Ngày bắt đầu mới", value=default_start, key=f"rep_start_{task_data['ID']}")
+                    with col_rep2:
+                        rep_deadline = st.date_input("Hạn chót mới", value=default_deadline, key=f"rep_deadline_{task_data['ID']}")
+                        
+                    if st.button("🔄 TẠO CÔNG VIỆC CHO KỲ SAU", type="primary", key=f"btn_rep_{task_data['ID']}"):
+                        next_id = 1
+                        if not df.empty:
+                            ids = df['ID'].tolist()
+                            import re
+                            nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                            if nums:
+                                next_id = max(nums) + 1
+                        new_id = f"TSK-{next_id:03d}"
+                        
+                        new_row = {
+                            "ID": new_id,
+                            "DonVi": task_data['DonVi'],
+                            "PhongBan": task_data['PhongBan'],
+                            "NguoiChuTri": task_data['NguoiChuTri'],
+                            "TenDuAn": task_data['TenDuAn'],
+                            "MocTienDo": "Tự do",
+                            "SanPhamBanGiao": "Xem chi tiết",
+                            "TenCongViec": rep_name.strip(),
+                            "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+                            "NgayBatDau": rep_start,
+                            "Deadline": rep_deadline,
+                            "DoUuTien": "Trung bình",
+                            "PhanTramHoanThanh": 0,
+                            "TrangThai": "Chưa bắt đầu" if today < rep_start else "Đang thực hiện",
+                            "LinkKetQua": "",
+                            "GiaiTrinhDeXuat": "",
+                            "NgayCapNhat": datetime.now(),
+                            "ChuKyTheoDoi": task_data['ChuKyTheoDoi'],
+                            "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
+                        }
+                        
+                        df_rep = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                        if save_db(df_rep):
+                            st.success(f"🎉 Đã nhân bản thành công công việc mới mã: {new_id}!")
+                            st.cache_data.clear()
+                            st.rerun()
+
 # ----------------- 4. SƠ ĐỒ GANTT DỰ ÁN KHĐT -----------------
 elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
     st.markdown("### 📊 Phân hệ Sơ đồ Gantt Dự án DMT")
