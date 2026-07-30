@@ -81,6 +81,8 @@ DEFAULT_PERSONNEL = {
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phạm Quang Nghĩa", "Lê Thị Hải"],
     "Ban Kỹ thuật": ["Trần Văn Trọng", "Nguyễn Văn Sang", "Trương Ngọc Sỹ"],
     "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Mai Văn Châu", "Thái Hữu Quý"],
+    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
+    "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
     "Tổ KPI": []
 }
 
@@ -175,7 +177,7 @@ def load_config():
             "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
             "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group", "Du thuyền Happy Yacht (DMT Marina)"]
         },
-        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI"],
+        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị"],
         "personnel_by_department": DEFAULT_PERSONNEL.copy(),
         "cv_gsheet_url": ""
     }
@@ -230,10 +232,9 @@ DEPT_LEADS = {
         "Ban Lãnh đạo": "Thái Văn Thành",
         "Ban Hành chính Nhân sự": "Nguyễn Thị Mỹ Phương",
         "Ban Tài chính Kế toán": "Nguyễn Thị Ngọc Hà",
-        "Ban Kế hoạch Đầu tư": "",
-        "Ban Chuẩn bị Đầu tư": "",
-        "Ban Kỹ thuật": "",
-        "Ban Đền bù Giải tỏa": "",
+        "Ban Kỹ thuật": "Trần Văn Trọng",
+        "Ban chỉ huy Công trường": "Nguyễn Phong Trung",
+        "Xí nghiệp xe máy thiết bị": "Đặng Hiền",
         "Tổ KPI": ""
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
@@ -267,6 +268,12 @@ def get_personnel_for_company_dept(company, dept, config):
     elif is_traffic:
         if dept == "Ban Lãnh đạo":
             return ["Thái Văn Thành", "Trần Văn Trọng"]
+        elif dept == "Ban Kỹ thuật":
+            return ["Trần Văn Trọng", "Phạm Quang Nghĩa"]
+        elif dept == "Ban chỉ huy Công trường":
+            return ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"]
+        elif dept == "Xí nghiệp xe máy thiết bị":
+            return ["Đặng Hiền"]
         elif dept == "Ban Tài chính Kế toán":
             return ["Nguyễn Thị Ngọc Hà"]
         elif dept == "Ban Hành chính Nhân sự":
@@ -286,12 +293,17 @@ def get_personnel_for_company_dept(company, dept, config):
 
 def get_departments_for_company(company, all_departments):
     is_marina = False
+    is_traffic = False
     if isinstance(company, str):
         is_marina = "CTY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
+        is_traffic = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in company
     if is_marina:
         # Chỉ hiển thị 3 ban, ẩn tất cả các ban còn lại
         allowed = ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
         return [d for d in all_departments if d in allowed]
+    if is_traffic:
+        allowed = ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
+        return [d for d in allowed]
     return all_departments
 
 
