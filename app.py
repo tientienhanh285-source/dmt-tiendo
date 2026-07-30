@@ -1546,25 +1546,6 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 default_company_idx = company_list.index(selected_company)
             entry_company = st.selectbox("Đơn vị / Công ty thành viên", company_list, index=default_company_idx)
             
-            # 2. Project selection (Categorized dropdown or custom)
-            is_marina_co = "CTY CP DMT - MARINA" in entry_company or "Du thuyền Happy Yacht" in entry_company
-            if is_marina_co:
-                proj_options_with_custom = ["➕ Tạo / Nhập Dự án mới..."]
-            else:
-                db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
-                merged_projs = sorted(list(set(ALL_PROJECTS + db_projs)))
-                proj_options_with_custom = merged_projs + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
-                
-            default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)
-            
-            if is_marina_co or default_proj_opt in ["✍️ Tự nhập Dự án / Hạng mục khác...", "➕ Tạo / Nhập Dự án mới..."]:
-                project_name = st.text_input("Nhập tên Dự án / Hạng mục mới", value="")
-            else:
-                project_name = clean_proj_name(default_proj_opt)
-            
-            # 3. Task details
-            task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
-            
             # 4. Department
             allowed_depts = get_departments_for_company(entry_company, OFFICIAL_DEPARTMENTS)
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", allowed_depts)
@@ -1584,6 +1565,25 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 task_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="")
             else:
                 task_owner = sel_owner_opt
+            
+            # 2. Project selection (Categorized dropdown or custom)
+            is_marina_co = "CTY CP DMT - MARINA" in entry_company or "Du thuyền Happy Yacht" in entry_company
+            if is_marina_co:
+                proj_options_with_custom = ["➕ Tạo / Nhập Dự án mới..."]
+            else:
+                db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
+                merged_projs = sorted(list(set(ALL_PROJECTS + db_projs)))
+                proj_options_with_custom = merged_projs + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
+                
+            default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)
+            
+            if is_marina_co or default_proj_opt in ["✍️ Tự nhập Dự án / Hạng mục khác...", "➕ Tạo / Nhập Dự án mới..."]:
+                project_name = st.text_input("Nhập tên Dự án / Hạng mục mới", value="")
+            else:
+                project_name = clean_proj_name(default_proj_opt)
+            
+            # 3. Task details
+            task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
             
         with col2:
             # 6. Dates
