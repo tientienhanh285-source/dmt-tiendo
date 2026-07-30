@@ -313,21 +313,7 @@ def read_gantt_db():
     try:
         df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=600)
         if df is None or df.empty or len(df.columns) < 2:
-            dummy_data = [
-                {
-                    "ID": "GNT-001",
-                    "TenDuAn": "Dự án Xây dựng Khu Đô thị Marina",
-                    "TenCongViec": "Khảo sát thị trường & Khả thi",
-                    "GiaiDoan": "1. Chuẩn bị Đầu tư & Nghiên cứu Tiền khả thi",
-                    "NgayBatDau": "2026-01-01",
-                    "Deadline": "2026-01-31",
-                    "PhanTramHoanThanh": 100,
-                    "Milestone": "",
-                    "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                }
-            ]
-            df = pd.DataFrame(dummy_data)
-            safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df)
+            df = pd.DataFrame(columns=required_cols)
         else:
             
             df.columns = [str(c).strip() for c in df.columns]
