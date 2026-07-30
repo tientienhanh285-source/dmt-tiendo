@@ -1926,23 +1926,8 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
     if is_marina_gantt:
         gantt_project_options = ["➕ Tạo / Nhập Dự án mới..."]
     else:
-        default_projects = [
-            "KDC Bàu Mạc",
-            "KDC Nam Bàu Mạc",
-            "KĐT Phước Lý & Phước Lý MR",
-            "TĐC Phước Lý 2 & Hoà Liên 5",
-            "Dự án Phong Nam",
-            "Khu BT ST Hoà Ninh",
-            "Tuyến đường Lê Trọng Tấn",
-            "Tuyến đường Lê Trọng Tấn - Hoà Nhơn",
-            "Tuyến đường Trần Hưng Đạo (BT)",
-            "Trục I Tây Bắc",
-            "Khu TĐC Hoà Vang",
-            "Khách sạn DMT Group",
-            "Khách sạn DMT Măng Đen"
-        ]
         existing_db_projects = list(gantt_df['TenDuAn'].unique())
-        merged_projects = list(set(default_projects + existing_db_projects))
+        merged_projects = list(set(ALL_PROJECTS + existing_db_projects))
         existing_projects = sorted(merged_projects)
         gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
     
