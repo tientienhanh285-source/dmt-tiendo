@@ -76,7 +76,7 @@ CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
 DEFAULT_PERSONNEL = {
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Thái Văn Thành", "Trần Cường"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
-    "Ban Tài chính Kế toán": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
+    "Ban Tài chính Kế toán": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Như Can"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Trần Văn Trọng", "Trần Cường"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phạm Quang Nghĩa", "Lê Thị Hải"],
     "Ban Kỹ thuật": ["Trần Văn Trọng", "Nguyễn Văn Sang", "Trương Ngọc Sỹ"],
@@ -275,7 +275,7 @@ def get_personnel_for_company_dept(company, dept, config):
         elif dept == "Xí nghiệp xe máy thiết bị":
             return ["Đặng Hiền"]
         elif dept == "Ban Tài chính Kế toán":
-            return ["Nguyễn Thị Ngọc Hà"]
+            return ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"]
         elif dept == "Ban Hành chính Nhân sự":
             return ["Nguyễn Thị Mỹ Phương"]
         else:
