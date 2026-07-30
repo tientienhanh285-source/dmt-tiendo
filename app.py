@@ -1281,10 +1281,10 @@ if menu == "📊 Dashboard Tổng Quan":
         alert_data = []
         for _, row in alert_df_show.iterrows():
             alert_data.append({
-                "Tên công việc": row['TenCongViec'],
-                "Dự án / Hạng mục": row['TenDuAn'],
                 "Ban phụ trách": row['PhongBan'],
                 "Người phụ trách": row['NguoiChuTri'],
+                "Dự án / Hạng mục": row['TenDuAn'],
+                "Tên công việc": row['TenCongViec'],
                 "Trạng thái thực tế": row['Badge']
             })
         st.dataframe(pd.DataFrame(alert_data), use_container_width=True, hide_index=True)
