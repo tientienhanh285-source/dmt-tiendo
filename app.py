@@ -1984,8 +1984,23 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     rep_name = st.text_input("Tên công việc mới", value=f"{task_data['TenCongViec']} (Kỳ tiếp theo)", key=f"rep_name_{task_data['ID']}")
                     
-                    default_start = task_data['Deadline'] + timedelta(days=1) if pd.notna(task_data['Deadline']) else today
-                    default_deadline = default_start + timedelta(days=6)
+                    try:
+                        from dateutil.relativedelta import relativedelta
+                        import pandas as pd
+                        
+                        # Fix for cases where NgayBatDau or Deadline might be NaT or None
+                        if pd.notna(task_data.get('NgayBatDau')):
+                            default_start = task_data['NgayBatDau'] + relativedelta(months=1)
+                        else:
+                            default_start = today
+                            
+                        if pd.notna(task_data.get('Deadline')):
+                            default_deadline = task_data['Deadline'] + relativedelta(months=1)
+                        else:
+                            default_deadline = default_start + timedelta(days=6)
+                    except Exception as e:
+                        default_start = task_data['Deadline'] + timedelta(days=1) if pd.notna(task_data.get('Deadline')) else today
+                        default_deadline = default_start + timedelta(days=6)
                     
                     col_rep1, col_rep2 = st.columns(2)
                     with col_rep1:
