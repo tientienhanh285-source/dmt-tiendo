@@ -1371,7 +1371,9 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
     col_filter1, col_filter2 = st.columns(2)
     
     with col_filter1:
-        proj_options = ["Tất cả dự án"] + ALL_PROJECTS
+        db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
+        merged_projs = sorted(list(set(ALL_PROJECTS + db_projs)))
+        proj_options = ["Tất cả dự án"] + merged_projs
         sel_proj_filter = st.selectbox("Lọc nhanh theo Dự án / Hạng mục", proj_options)
         
     with col_filter2:
@@ -1534,7 +1536,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             if is_marina_co:
                 proj_options_with_custom = ["➕ Tạo / Nhập Dự án mới..."]
             else:
-                proj_options_with_custom = ALL_PROJECTS + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
+                db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
+                merged_projs = sorted(list(set(ALL_PROJECTS + db_projs)))
+                proj_options_with_custom = merged_projs + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
                 
             default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)
             
