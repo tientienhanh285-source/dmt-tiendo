@@ -1318,10 +1318,10 @@ if menu == "📊 Dashboard Tổng Quan":
     if alert_list:
         alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
         crit_display = pd.DataFrame()
-        crit_display['Dự án / Hạng mục'] = alert_df_show['TenDuAn']
-        crit_display['Tên công việc'] = alert_df_show['TenCongViec']
         crit_display['Phòng ban'] = alert_df_show['PhongBan']
         crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
+        crit_display['Dự án / Hạng mục'] = alert_df_show['TenDuAn']
+        crit_display['Tên công việc'] = alert_df_show['TenCongViec']
         crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
         crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
         crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
@@ -1329,10 +1329,10 @@ if menu == "📊 Dashboard Tổng Quan":
         st.dataframe(
             crit_display,
             column_config={
-                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width="medium"),
-                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                 "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
                 "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width="medium"),
+                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width="medium"),
+                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                 "Hạn chót": st.column_config.TextColumn("Hạn chót", width="small"),
                 "Trạng thái thực tế": st.column_config.TextColumn("Trạng thái thực tế", width="small"),
                 "Ghi chú / Giải trình vướng mắc": st.column_config.TextColumn("Ghi chú / Giải trình vướng mắc", width="large")
@@ -1433,10 +1433,10 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         st.info("Không có công việc nào phù hợp với bộ lọc.")
     else:
         df_display = pd.DataFrame()
-        df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
-        df_display['Tên công việc'] = table_df['TenCongViec']
         df_display['Phòng ban'] = table_df['PhongBan']
         df_display['Người thực hiện'] = table_df['NguoiChuTri']
+        df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
+        df_display['Tên công việc'] = table_df['TenCongViec']
         df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
         
         # Format Hạn chót
@@ -1527,10 +1527,10 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         st.dataframe(
             df_display,
             column_config={
-                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width="medium"),
-                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                 "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
                 "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width="medium"),
+                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width="medium"),
+                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                 "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width="small"),
                 "Hạn chót": st.column_config.TextColumn("Hạn chót", width="medium"),
                 "Tiến độ": st.column_config.ProgressColumn(
