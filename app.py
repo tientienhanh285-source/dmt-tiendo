@@ -76,13 +76,16 @@ CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
 DEFAULT_PERSONNEL = {
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Thái Văn Thành", "Trần Cường"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Thị Tú Uyên"],
-    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
-    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Phan Thị Mỹ Hạnh", "Nguyễn Đức Lợi"],
+    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Phan Thị Mỹ Hạnh", "Nguyễn Đức Lợi", "Trần Tin"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
-    "Ban Kỹ thuật": ["Trần Văn Trọng", "Nguyễn Văn Sang", "Trương Ngọc Sỹ"],
-    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Mai Văn Châu", "Thái Hữu Quý"],
+    "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
+    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
     "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
+    "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+    "Xí nghiệp DTBD": ["Mai Văn Châu"],
+    "Sàn GDBĐS": ["Ngô Thị Tâm"],
     "Tổ KPI": []
 }
 
@@ -177,7 +180,7 @@ def load_config():
             "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
             "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group", "Du thuyền Happy Yacht (DMT Marina)"]
         },
-        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị"],
+        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
         "personnel_by_department": DEFAULT_PERSONNEL.copy(),
         "cv_gsheet_url": ""
     }
@@ -224,8 +227,11 @@ DEPT_LEADS = {
         "Ban Tài chính Kế toán": "Đồng Thị Nguyệt Nga",
         "Ban Kế hoạch Đầu tư": "Nguyễn Trần Thức",
         "Ban Chuẩn bị Đầu tư": "Hồ Văn Khoa",
-        "Ban Kỹ thuật": "Trần Văn Trọng",
+        "Ban Kỹ thuật": "Nguyễn Văn Bồn",
         "Ban Đền bù Giải tỏa": "Nguyễn Ngọc Tôn",
+        "Ban Dự án": "Nguyễn Đình Thắng",
+        "Xí nghiệp DTBD": "Mai Văn Châu",
+        "Sàn GDBĐS": "Ngô Thị Tâm",
         "Tổ KPI": ""
     },
     "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
@@ -284,7 +290,7 @@ def get_personnel_for_company_dept(company, dept, config):
         if dept == "Ban Hành chính Nhân sự":
             return ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Thị Tú Uyên"]
         elif dept == "Ban Tài chính Kế toán":
-            return ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+            return ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"]
         elif dept == "Tổ KPI":
             return []
             
