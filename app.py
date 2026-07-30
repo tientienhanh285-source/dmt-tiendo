@@ -124,7 +124,7 @@ def safe_gsheets_read(conn, worksheet, ttl=600, fallback_df=None):
             return st.session_state.get(cache_key, fallback_df)
     except Exception as e:
         import streamlit as st
-        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e) or "Spreadsheet must not be None" in str(e):
             st.session_state["show_gsheet_input"] = True
         else:
             # We don't want to show toast on every network glitch if it's running in background, but keeping silent is fine too.
@@ -144,7 +144,7 @@ def safe_gsheets_update(conn, worksheet, data):
         return True
     except Exception as e:
         import streamlit as st
-        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e):
+        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e) or "Spreadsheet must not be None" in str(e):
             st.session_state["show_gsheet_input"] = True
         else:
             # Ignore expected missing worksheets
