@@ -159,7 +159,10 @@ def save_config(config_data):
         return False
     try:
         df_save = pd.DataFrame([{"config_json": json.dumps(config_data, ensure_ascii=False)}])
-        safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+        success = safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+        if not success:
+            st.error("⚠️ Lỗi: Không tìm thấy trang tính 'CONFIG' trên Google Sheets! Vui lòng mở Google Sheets, tạo một Sheet mới đặt tên là 'CONFIG', sau đó lưu lại.")
+            return False
         return True
     except Exception as e:
         st.error(f'Lỗi lưu Google Sheets: {e}')
