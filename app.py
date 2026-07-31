@@ -1,4 +1,5 @@
 import streamlit as st
+import kpi_reports
 import pandas as pd
 import os
 import re
@@ -421,6 +422,28 @@ def read_gantt_db():
     
     return df
 
+
+
+def read_kpi_adjustments():
+    import sqlite3
+    import pandas as pd
+    conn = sqlite3.connect("database.db")
+    try:
+        df = pd.read_sql("SELECT * FROM kpi_adjustments", conn)
+        return df
+    except Exception:
+        return pd.DataFrame(columns=["ID", "TenNhanVien", "Thang", "Nam", "LoaiHanhVi", "DiemDieuChinh", "LyDo"])
+    finally:
+        conn.close()
+
+def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
+    import sqlite3
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO kpi_adjustments (TenNhanVien, Thang, Nam, LoaiHanhVi, DiemDieuChinh, LyDo) VALUES (?, ?, ?, ?, ?, ?)", (ten, thang, nam, loai, diem, lydo))
+    conn.commit()
+    conn.close()
+
 def save_gantt_db(df):
     conn = get_gsheets_conn()
     if conn is None:
@@ -773,7 +796,7 @@ def read_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI"
     ]
     conn = get_gsheets_conn()
     if conn is None:
@@ -1032,6 +1055,30 @@ menu = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
+role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý"], index=0)
+
+if "is_admin_authenticated" not in st.session_state:
+    st.session_state.is_admin_authenticated = False
+
+if role_mode == "Quản lý":
+    if not st.session_state.is_admin_authenticated:
+        admin_pwd = st.sidebar.text_input("Nhập Mật khẩu Quản lý", type="password")
+        if admin_pwd:
+            if admin_pwd == "admindmt123":
+                st.session_state.is_admin_authenticated = True
+                st.rerun()
+            else:
+                st.sidebar.error("Mật khẩu không đúng!")
+    
+    if st.session_state.is_admin_authenticated:
+        st.sidebar.success("Đã xác thực quyền Quản lý!")
+        if st.sidebar.button("Đăng xuất"):
+            st.session_state.is_admin_authenticated = False
+            st.rerun()
+else:
+    st.session_state.is_admin_authenticated = False
+
+st.sidebar.markdown("---")
 
 # Current date
 df = read_db()
@@ -1040,9 +1087,15 @@ today = date.today()
 
 # Filter display dataframe based on sidebar selected company
 if selected_company != "Tất cả đơn vị":
-    display_df = df[df['DonVi'] == selected_company]
+    display_df = df
+    
+if 'NguoiChuTri' not in display_df.columns:
+    display_df['NguoiChuTri'] = ''[df['DonVi'] == selected_company]
 else:
     display_df = df
+    
+if 'NguoiChuTri' not in display_df.columns:
+    display_df['NguoiChuTri'] = ''
 
 # Statistics helpers
 total_v = len(display_df)
@@ -1673,6 +1726,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             # 11. Chu kỳ theo dõi
             task_cycle = st.selectbox("Chu kỳ theo dõi", ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"], index=3)
             
+            # 12. Tỷ trọng KPI
+            task_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=0)
+            
         submit_new = st.button("💾 THÊM CÔNG VIỆC MỚI", type="primary")
         
         if submit_new:
@@ -1831,6 +1887,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
                     u_cycle = st.selectbox("Chu kỳ theo dõi", cycle_list, index=default_cycle_idx, key=f"u_cycle_sel_{task_data['ID']}")
                     
+                    u_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=int(task_data.get('TyTrongKPI', 0)), key=f"u_weight_{task_data['ID']}")
+                    
                 st.markdown("#### ⚓ THÔNG TIN RÀNG BUỘC KẾT QUẢ & GIẢI TRÌNH")
                 col_ub1, col_ub2 = st.columns(2)
                 
@@ -1965,6 +2023,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now()
                         df.loc[df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
                         df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
+                        df.loc[df['ID'] == selected_id, 'TyTrongKPI'] = u_weight
                         
                         if save_db(df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
@@ -2569,7 +2628,10 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
 elif menu == "🏆 Đánh giá KPI & Xếp loại":
     st.markdown(f"### 🏆 Đánh giá KPI & Xếp loại Cá nhân — {selected_company}")
     
-    kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
+    if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
+        kpi_tab1, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
+    else:
+        kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
     
     with kpi_tab1:
         st.markdown("#### Đánh giá và Xếp loại KPI Tháng")
@@ -2580,10 +2642,13 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         with col_m2:
             selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
             
-        # Lọc công việc trong tháng (dựa trên Deadline)
         kpi_df = display_df.copy()
+        if 'NguoiChuTri' not in kpi_df.columns:
+            kpi_df['NguoiChuTri'] = ''
         
         def is_in_month(d, m, y):
+            import pandas as pd
+            from datetime import datetime, date
             if pd.isna(d): return False
             if isinstance(d, str):
                 try: d = datetime.strptime(d, "%Y-%m-%d").date()
@@ -2594,19 +2659,28 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             
         kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))]
         
-        if kpi_df.empty:
-            st.info(f"Không có dữ liệu công việc nào có Hạn chót trong Tháng {selected_month}/{selected_year}.")
+        adj_df = read_kpi_adjustments()
+        adj_df = adj_df[(adj_df['Thang'] == selected_month) & (adj_df['Nam'] == selected_year)]
+        
+        if kpi_df.empty and adj_df.empty:
+            st.info(f"Không có dữ liệu công việc hoặc điểm thưởng/phạt nào trong Tháng {selected_month}/{selected_year}.")
         else:
-            # Nhóm theo Người thực hiện
+            import pandas as pd
+            from datetime import datetime, date
             personnel_kpi = []
-            grouped = kpi_df.groupby('NguoiChuTri')
-            for person, group in grouped:
+            
+            all_p = set(kpi_df['NguoiChuTri'].dropna().unique())
+            all_p.update(adj_df['TenNhanVien'].dropna().unique())
+            
+            for person in all_p:
                 if not str(person).strip(): continue
+                group = kpi_df[kpi_df['NguoiChuTri'] == person]
                 total_tasks = len(group)
                 done_tasks = len(group[group['TrangThai'] == 'Hoàn thành'])
                 
-                # Tính điểm trung bình (cân đối trễ hạn chủ quan)
                 group_copy = group.copy()
+                group_copy['TyTrongKPI'] = pd.to_numeric(group_copy.get('TyTrongKPI', 0), errors='coerce').fillna(0)
+                
                 for idx, row in group_copy.iterrows():
                     is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                     is_late = False
@@ -2620,19 +2694,43 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     if is_late and row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
                         group_copy.at[idx, 'PhanTramHoanThanh'] = 100
                         
-                avg_score = group_copy['PhanTramHoanThanh'].mean()
+                explicit_weight_sum = group_copy[group_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+                unweighted_count = len(group_copy[group_copy['TyTrongKPI'] <= 0])
                 
-                # Xếp loại
-                if avg_score >= 90: grade = "A"
-                elif avg_score >= 75: grade = "B"
-                else: grade = "C"
+                remaining_weight = max(0, 100 - explicit_weight_sum)
+                auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
+                
+                task_score = 0
+                for idx, row in group_copy.iterrows():
+                    weight = row['TyTrongKPI']
+                    if weight <= 0:
+                        weight = auto_weight
+                    
+                    pt_hoan_thanh = row.get('PhanTramHoanThanh', 0)
+                    if pd.isna(pt_hoan_thanh): pt_hoan_thanh = 0
+                    
+                    task_score += (pt_hoan_thanh / 100.0) * weight
+                
+                p_adj_df = adj_df[adj_df['TenNhanVien'] == person]
+                adj_score = p_adj_df['DiemDieuChinh'].sum()
+                
+                final_score = min(115, max(0, round(task_score + adj_score, 2)))
+                
+                # Xếp loại mới
+                if final_score > 91: grade = "A"
+                elif final_score > 81: grade = "B"
+                elif final_score > 71: grade = "C"
+                else: grade = "D"
+                
+                pb = group['PhongBan'].iloc[0] if not group.empty else ""
                 
                 personnel_kpi.append({
                     "Người thực hiện": person,
-                    "Phòng ban": group['PhongBan'].iloc[0],
-                    "Tổng số việc": total_tasks,
-                    "Đã hoàn thành": done_tasks,
-                    "Điểm KPI (%)": round(avg_score, 1),
+                    "Phòng ban": pb,
+                    "Số việc": total_tasks,
+                    "Điểm công việc": round(task_score, 1),
+                    "Thưởng/Phạt": adj_score,
+                    "TỔNG ĐIỂM": final_score,
                     "Xếp loại": grade
                 })
                 
@@ -2641,7 +2739,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 st.dataframe(
                     kpi_month_df,
                     column_config={
-                        "Điểm KPI (%)": st.column_config.ProgressColumn("Điểm KPI (%)", format="%f%%", min_value=0, max_value=100),
+                        "TỔNG ĐIỂM": st.column_config.ProgressColumn("TỔNG ĐIỂM", format="%f", min_value=0, max_value=115),
                     },
                     use_container_width=True, hide_index=True
                 )
@@ -2654,25 +2752,46 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         
         if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
             with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
+                import pandas as pd
+                from datetime import datetime, date
                 all_personnel = list(display_df['NguoiChuTri'].unique())
-                all_personnel = [p for p in all_personnel if str(p).strip()]
+                adj_year_df = read_kpi_adjustments()
+                adj_year_df = adj_year_df[adj_year_df['Nam'] == selected_year_full]
+                all_personnel.extend(adj_year_df['TenNhanVien'].unique())
+                
+                all_personnel = list(set([p for p in all_personnel if str(p).strip()]))
                 
                 yearly_data = []
                 for person in all_personnel:
                     person_df = display_df[display_df['NguoiChuTri'] == person].copy()
                     
                     months_grades = {}
-                    count_c = 0
+                    count_a = 0
                     count_b = 0
+                    count_c = 0
+                    count_d = 0
                     
                     for m in range(1, 13):
-                        m_df = person_df[person_df['Deadline'].apply(lambda x: is_in_month(x, m, selected_year_full))]
-                        if m_df.empty:
+                        def is_in_m(d):
+                            if pd.isna(d): return False
+                            if isinstance(d, str):
+                                try: d = datetime.strptime(d, "%Y-%m-%d").date()
+                                except: return False
+                            if isinstance(d, datetime): d = d.date()
+                            if isinstance(d, date): return d.month == m and d.year == selected_year_full
+                            return False
+                            
+                        m_df = person_df[person_df['Deadline'].apply(is_in_m)]
+                        m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)]
+                        
+                        if m_df.empty and m_adj_df.empty:
                             months_grades[f"Tháng {m}"] = "-"
                             continue
                             
-                        # Tính điểm
-                        for idx, row in m_df.iterrows():
+                        m_df_copy = m_df.copy()
+                        m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', 0), errors='coerce').fillna(0)
+                        
+                        for idx, row in m_df_copy.iterrows():
                             is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                             is_late = False
                             dl = row['Deadline']
@@ -2682,34 +2801,52 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             if isinstance(dl, datetime): dl = dl.date()
                             if isinstance(dl, date): is_late = (dl < today) and not is_comp
                             if is_late and row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
-                                m_df.at[idx, 'PhanTramHoanThanh'] = 100
+                                m_df_copy.at[idx, 'PhanTramHoanThanh'] = 100
                                 
-                        avg_score = m_df['PhanTramHoanThanh'].mean()
-                        if avg_score >= 90: 
+                        explicit_weight = m_df_copy[m_df_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+                        uw_count = len(m_df_copy[m_df_copy['TyTrongKPI'] <= 0])
+                        auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
+                        
+                        t_score = 0
+                        for idx, row in m_df_copy.iterrows():
+                            w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+                            p = row.get('PhanTramHoanThanh', 0)
+                            t_score += (p / 100.0) * w
+                        
+                        f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
+                        
+                        if f_score > 91: 
                             grade = "A"
-                        elif avg_score >= 75: 
+                            count_a += 1
+                        elif f_score > 81: 
                             grade = "B"
                             count_b += 1
-                        else: 
+                        elif f_score > 71: 
                             grade = "C"
                             count_c += 1
+                        else: 
+                            grade = "D"
+                            count_d += 1
                             
                         months_grades[f"Tháng {m}"] = grade
                         
-                    # Logic xếp loại năm
-                    if count_c >= 1:
+                    # Logic xếp loại năm mới
+                    if count_c > 0 or count_d > 0:
                         final_grade = "C"
                         bonus = "60%"
                     elif count_b >= 2:
                         final_grade = "B"
                         bonus = "80%"
+                    elif count_a >= 11:
+                        final_grade = "A"
+                        bonus = "100%"
                     else:
                         if all(v == "-" for v in months_grades.values()):
                             final_grade = "-"
                             bonus = "-"
                         else:
-                            final_grade = "A"
-                            bonus = "100%"
+                            final_grade = "B"
+                            bonus = "80%"
                             
                     row_data = {
                         "Người thực hiện": person,
@@ -2724,7 +2861,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     yearly_df = pd.DataFrame(yearly_data)
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
                     
-                    # Nút xuất Excel
+                    import io
                     output = io.BytesIO()
                     with pd.ExcelWriter(output, engine="openpyxl") as writer:
                         yearly_df.to_excel(writer, index=False, sheet_name="KPI_TongKet")
@@ -2732,7 +2869,114 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 else:
                     st.info("Không có dữ liệu.")
 
-# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------
+    if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
+        with kpi_tab3:
+            st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
+            all_p_list = []
+            for dept, persons in config.get("personnel_by_department", {}).items():
+                all_p_list.extend(persons)
+            all_p_list = sorted(list(set(all_p_list)))
+            if not all_p_list:
+                all_p_list = ["(Chưa có nhân sự)"]
+                
+            col_f1, col_f2 = st.columns(2)
+            with col_f1:
+                adj_person = st.selectbox("Tên nhân viên", all_p_list)
+                adj_month = st.selectbox("Tháng áp dụng", list(range(1, 13)), index=today.month - 1)
+                adj_year = st.selectbox("Năm áp dụng", [today.year - 1, today.year, today.year + 1], index=1)
+            
+            with col_f2:
+                adj_template = st.selectbox("Lý do mẫu", ["Đi trễ, về sớm", "Quên chấm công", "Lý do khác"])
+                
+                # Fetch existing records to count
+                hist_df_all = read_kpi_adjustments()
+                count_violations = 0
+                if not hist_df_all.empty:
+                    count_violations = len(hist_df_all[
+                        (hist_df_all['TenNhanVien'] == adj_person) & 
+                        (hist_df_all['Thang'] == adj_month) & 
+                        (hist_df_all['Nam'] == adj_year) & 
+                        (hist_df_all['LyDo'].str.startswith(f"[{adj_template}]", na=False))
+                    ])
+                current_time = count_violations + 1
+                
+                if adj_template == "Đi trễ, về sớm":
+                    st.info(f"ℹ️ Đã vi phạm {count_violations} lần trong tháng {adj_month}. Lần nhập này là lần thứ {current_time}.")
+                    if current_time >= 6:
+                        sugg_val = 2
+                        st.warning("⚠️ Từ lần 6 trở đi: Đề xuất trừ 2 điểm.")
+                    else:
+                        sugg_val = 0
+                        st.success("✅ Dưới 6 lần: Chưa bị trừ điểm.")
+                    adj_type = "🛑 Phạt điểm"
+                    adj_val = st.number_input("Số điểm trừ", min_value=0, max_value=15, value=sugg_val)
+                    adj_reason = st.text_input("Ghi chú thêm (Tùy chọn)")
+                    
+                elif adj_template == "Quên chấm công":
+                    st.info(f"ℹ️ Đã vi phạm {count_violations} lần trong tháng {adj_month}. Lần nhập này là lần thứ {current_time}.")
+                    if current_time >= 3:
+                        sugg_val = 1
+                        st.warning("⚠️ Từ lần 3 trở đi: Đề xuất trừ 1 điểm.")
+                    else:
+                        sugg_val = 0
+                        st.success("✅ Dưới 3 lần: Chưa bị trừ điểm.")
+                    adj_type = "🛑 Phạt điểm"
+                    adj_val = st.number_input("Số điểm trừ", min_value=0, max_value=15, value=sugg_val)
+                    adj_reason = st.text_input("Ghi chú thêm (Tùy chọn)")
+                    
+                else:
+                    adj_type = st.radio("Phân loại hành vi", ["⭐ Thưởng điểm", "🛑 Phạt điểm"], horizontal=True)
+                    adj_val = st.number_input("Số điểm", min_value=0, max_value=15, value=5)
+                    adj_reason = st.text_area("Lý do chi tiết (Bắt buộc)")
+                    
+            if st.button("Lưu Điểm Điều Chỉnh", type="primary"):
+                if adj_template == "Lý do khác" and not adj_reason.strip():
+                    st.error("⚠️ Vui lòng nhập lý do chi tiết!")
+                else:
+                    actual_val = adj_val if adj_type == "⭐ Thưởng điểm" else -adj_val
+                    final_reason = f"[{adj_template}] {adj_reason.strip()}".strip() if adj_template != "Lý do khác" else adj_reason.strip()
+                    add_kpi_adjustment(adj_person, adj_month, adj_year, adj_type, actual_val, final_reason)
+                    st.success("🎉 Đã lưu điều chỉnh điểm thành công!")
+                    st.rerun()
+
+        with kpi_tab4:
+            st.markdown("### Tùy chọn Xuất Báo Cáo & Phân tích")
+            col_x1, col_x2 = st.columns(2)
+            
+            with col_x1:
+                st.markdown("#### 1. Báo Cáo Phòng Ban (Excel)")
+                if st.button("Tải Báo cáo Phòng Ban"):
+                    data_rows = []
+                    for i, person in enumerate(all_p_list):
+                        data_rows.append({
+                            'HoTen': person, 'ChucVu': 'Nhân viên',
+                            'SoLanTre': 0, 'SoLanSom': 0, 'SoLanKhongCC': 0,
+                            'DiemTruTre': 0, 'DiemTruSom': 0, 'DiemTruKhongCC': 0,
+                            'TongTru': 0, 'DiemConLai': 100, 'XepLoai': 'A', 'GhiChu': ''
+                        })
+                    excel_data = kpi_reports.generate_department_excel(selected_company, selected_month, selected_year, data_rows)
+                    st.download_button("📥 Tải Báo Cáo Excel", data=excel_data, file_name=f"KPI_Thang_{selected_month}_{selected_year}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            
+            with col_x2:
+                st.markdown("#### 2. Phiếu KPI Cá Nhân (Word)")
+                emp_to_export = st.selectbox("Chọn nhân viên", all_p_list, key='emp_export')
+                if st.button("Tạo Phiếu Đánh Giá"):
+                    tasks = [{'TenCV': 'Công việc mẫu', 'TyTrong': 100, 'Diem': 100}]
+                    word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, 100, tasks, [])
+                    st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    
+            st.divider()
+            st.info("Để xem Biểu đồ Phân tích, vui lòng qua tab 'Tổng kết KPI Cả Năm' và bấm 'Chạy / Cập nhật' trước.")
+
+                        
+            st.markdown("##### Lịch sử Thưởng / Phạt")
+            hist_df = read_kpi_adjustments()
+            if not hist_df.empty:
+                st.dataframe(hist_df.sort_values(by="ID", ascending=False), use_container_width=True, hide_index=True)
+            else:
+                st.info("Chưa có lịch sử điều chỉnh.")
+
+# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------
 elif menu == "⚙️ Quản Lý Cấu HÌnh":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
     tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
