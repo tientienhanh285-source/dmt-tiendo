@@ -1319,16 +1319,7 @@ def clean_proj_name(name):
 if menu == "📊 Dashboard Tổng Quan":
     st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
     
-    # 1. Filter cycle dropdown
-    cycle_filter = st.selectbox(
-        "📅 Lọc theo Chu kỳ theo dõi",
-        ["Tất cả chu kỳ", "Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"],
-        index=0
-    )
-    
     dash_df = display_df.copy()
-    if cycle_filter != "Tất cả chu kỳ":
-        dash_df = dash_df[dash_df['ChuKyTheoDoi'] == cycle_filter]
         
     # Overdue and due today/tomorrow alerts scanning (Group 1 & 2)
     def get_badge_and_urgency(deadline_val, today_dt):
@@ -1358,17 +1349,6 @@ if menu == "📊 Dashboard Tổng Quan":
     if alert_list:
         alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
         st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(alert_df_show)} HẠNG MỤC CẦN LƯU Ý (TRỄ HẠN / SẮP ĐẾN HẠN)**")
-        alert_data = []
-        for _, row in alert_df_show.iterrows():
-            alert_data.append({
-                "Ban phụ trách": row['PhongBan'],
-                "Người phụ trách": row['NguoiChuTri'],
-                "Dự án / Hạng mục": row['TenDuAn'],
-                "Tên công việc": row['TenCongViec'],
-                "Trạng thái thực tế": row['Badge']
-            })
-        st.dataframe(pd.DataFrame(alert_data), use_container_width=True, hide_index=True)
-        st.markdown("---")
     
     # Calculate stats based on filtered dash_df
     total_dash = len(dash_df)
