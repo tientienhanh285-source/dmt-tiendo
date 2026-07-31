@@ -2876,19 +2876,23 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         months_grades[f"Tháng {m}"] = grade
                         
                     # Logic xếp loại năm mới
-                    if count_c > 0 or count_d > 0:
-                        final_grade = "C"
-                        bonus = "60%"
-                    elif count_b >= 2:
-                        final_grade = "B"
-                        bonus = "80%"
-                    elif count_a >= 11:
-                        final_grade = "A"
-                        bonus = "100%"
+                    evaluated = count_a + count_b + count_c + count_d
+                    if evaluated == 0:
+                        final_grade = "-"
+                        bonus = "-"
+                    elif evaluated < 12 and selected_year_full >= today.year:
+                        final_grade = "Đang tích lũy"
+                        bonus = "-"
                     else:
-                        if all(v == "-" for v in months_grades.values()):
-                            final_grade = "-"
-                            bonus = "-"
+                        if count_c > 0 or count_d > 0:
+                            final_grade = "C"
+                            bonus = "60%"
+                        elif count_b >= 2:
+                            final_grade = "B"
+                            bonus = "80%"
+                        elif count_a >= 11:
+                            final_grade = "A"
+                            bonus = "100%"
                         else:
                             final_grade = "B"
                             bonus = "80%"
