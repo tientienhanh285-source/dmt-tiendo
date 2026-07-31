@@ -118,9 +118,21 @@ def generate_department_excel(company_name, month, year, data_rows):
     wb.save(out)
     return out.getvalue()
 
+def set_cell_center(cell):
+    cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    cell.vertical_alignment = 1 # Center
+
 def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, penalties):
     doc = Document()
     
+    # Adjust margins
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Inches(0.5)
+        section.bottom_margin = Inches(0.5)
+        section.left_margin = Inches(0.5)
+        section.right_margin = Inches(0.5)
+        
     # --- Style definitions ---
     style = doc.styles['Normal']
     font = style.font
@@ -150,14 +162,33 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     
     doc.add_paragraph(f"Số điểm trừ cả 2 tiêu chí : {round(total_penalty_all, 1)}            Số điểm hoàn thành cả 2 tiêu chí: {round(final_score, 1)}")
     
-    p_sig1 = doc.add_paragraph()
-    p_sig1.add_run("NHÂN VIÊN:__________________\t\t\tGIÁM ĐỐC BAN:_________________")
+    # --- Signatures (using invisible table for perfect alignment) ---
+    sig_table = doc.add_table(rows=3, cols=2)
+    sig_table.autofit = True
     
-    p_sig2 = doc.add_paragraph()
-    p_sig2.add_run(f"Kiểm tra từ Ban HCNS: ____________\t\t\tTổng điểm để tính lương: {round(final_score, 1)} % lương")
+    c00 = sig_table.cell(0, 0)
+    c00.text = "NHÂN VIÊN:__________________"
+    c00.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
     
-    p_sig3 = doc.add_paragraph()
-    p_sig3.add_run("Phê duyệt của Tổng giám đốc:_______\t\tPhó Tổng giám đốc phụ trách: _________")
+    c01 = sig_table.cell(0, 1)
+    c01.text = "GIÁM ĐỐC BAN:_________________"
+    c01.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    c10 = sig_table.cell(1, 0)
+    c10.text = "Kiểm tra từ Ban HCNS: ____________"
+    c10.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    c11 = sig_table.cell(1, 1)
+    c11.text = f"Tổng điểm để tính lương: {round(final_score, 1)} % lương"
+    c11.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    c20 = sig_table.cell(2, 0)
+    c20.text = "Phê duyệt của Tổng giám đốc:_______"
+    c20.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    c21 = sig_table.cell(2, 1)
+    c21.text = "Phó Tổng giám đốc phụ trách: _________"
+    c21.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     doc.add_paragraph()
     
@@ -171,25 +202,39 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     # --- TABLE 1 ---
     t1 = doc.add_table(rows=2, cols=5)
     t1.style = 'Table Grid'
+    t1.autofit = False
+    for row in t1.rows:
+        row.cells[0].width = Inches(0.5)
+        row.cells[1].width = Inches(3.5)
+        row.cells[2].width = Inches(1.2)
+        row.cells[3].width = Inches(1.2)
+        row.cells[4].width = Inches(1.2)
     
     cell_0_0 = t1.cell(0, 0)
     cell_0_0.merge(t1.cell(1, 0))
     cell_0_0.text = "TT"
+    set_cell_center(cell_0_0)
     
     cell_0_1 = t1.cell(0, 1)
     cell_0_1.merge(t1.cell(1, 1))
     cell_0_1.text = "Tiêu chí 1: Đánh giá việc thực hiện thời gian làm việc"
+    set_cell_center(cell_0_1)
     
     cell_0_2 = t1.cell(0, 2)
     cell_0_2.merge(t1.cell(0, 4))
     cell_0_2.text = "Chi tiết từ máy Chấm công"
+    set_cell_center(cell_0_2)
     
     t1.cell(1, 2).text = "Đi trễ về sớm (lần)"
+    set_cell_center(t1.cell(1, 2))
     t1.cell(1, 3).text = "Quên bấm (lần)"
+    set_cell_center(t1.cell(1, 3))
     t1.cell(1, 4).text = "Tổng điểm trừ đtc1"
+    set_cell_center(t1.cell(1, 4))
     
     row_cells = t1.add_row().cells
     row_cells[0].text = "1"
+    set_cell_center(row_cells[0])
     row_cells[1].text = "Tổng số điểm bị trừ (đtc1) tối đa không quá 15 điểm."
     
     # Count penalties for C1
@@ -201,38 +246,58 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
         if 'công' in lv: quen_bam += 1
     
     row_cells[2].text = str(tre_som)
+    set_cell_center(row_cells[2])
     row_cells[3].text = str(quen_bam)
+    set_cell_center(row_cells[3])
     row_cells[4].text = str(abs(total_penalty_c1))
+    set_cell_center(row_cells[4])
     
     doc.add_paragraph()
     
     # --- TABLE 2 ---
     t2 = doc.add_table(rows=2, cols=5)
     t2.style = 'Table Grid'
+    t2.autofit = False
+    for row in t2.rows:
+        row.cells[0].width = Inches(0.5)
+        row.cells[1].width = Inches(3.5)
+        row.cells[2].width = Inches(1.2)
+        row.cells[3].width = Inches(1.2)
+        row.cells[4].width = Inches(1.2)
     
     cell2_0_0 = t2.cell(0, 0)
     cell2_0_0.merge(t2.cell(1, 0))
     cell2_0_0.text = "TT"
+    set_cell_center(cell2_0_0)
     
     cell2_0_1 = t2.cell(0, 1)
     cell2_0_1.merge(t2.cell(1, 1))
     cell2_0_1.text = "Tiêu chí 2: Đánh giá mức độ hoàn thành công việc"
+    set_cell_center(cell2_0_1)
     
     cell2_0_2 = t2.cell(0, 2)
     cell2_0_2.merge(t2.cell(0, 4))
     cell2_0_2.text = "Điểm trừ nhiệm vụ ko hoàn thành"
+    set_cell_center(cell2_0_2)
     
     t2.cell(1, 2).text = "Tgian y/c hoàn thành"
+    set_cell_center(t2.cell(1, 2))
     t2.cell(1, 3).text = "Kết quả"
+    set_cell_center(t2.cell(1, 3))
     t2.cell(1, 4).text = "Tổng điểm trừ đtc2"
+    set_cell_center(t2.cell(1, 4))
     
     for i, t in enumerate(list_tasks, 1):
         r_cells = t2.add_row().cells
         r_cells[0].text = str(i)
+        set_cell_center(r_cells[0])
         r_cells[1].text = t.get('TenCV', '')
         r_cells[2].text = str(t.get('TgianYC', ''))
+        set_cell_center(r_cells[2])
         r_cells[3].text = str(t.get('KetQua', ''))
+        set_cell_center(r_cells[3])
         r_cells[4].text = str(t.get('DiemTru', '0'))
+        set_cell_center(r_cells[4])
         
     for i in range(3):
         r_cells = t2.add_row().cells
@@ -240,13 +305,15 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     last_row = t2.add_row().cells
     last_row[0].merge(last_row[2])
     last_row[0].text = "Tổng điểm"
+    set_cell_center(last_row[0])
     last_row[3].text = "100"
+    set_cell_center(last_row[3])
     last_row[4].text = str(abs(total_penalty_c2))
+    set_cell_center(last_row[4])
     
     out = BytesIO()
     doc.save(out)
     return out.getvalue()
-
 def generate_yearly_excel(df, year):
     wb = openpyxl.Workbook()
     ws = wb.active
