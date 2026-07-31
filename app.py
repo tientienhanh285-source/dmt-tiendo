@@ -1858,15 +1858,22 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         # Display only items matching selected company
         avail_update_df = display_df
         
+        # Filter by Department
+        departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().unique()))
+        filter_dept = st.selectbox("Lọc theo Phòng/Ban (Tuỳ chọn)", departments, key="filter_dept_update")
+        
+        if filter_dept != "Tất cả":
+            avail_update_df = avail_update_df[avail_update_df['PhongBan'] == filter_dept]
+
         if avail_update_df.empty:
             st.info("Chưa có công việc nào khả dụng.")
         else:
-            task_options = []
-            for _, row in avail_update_df.iterrows():
-                task_options.append(f"{row['ID']} - {row['PhongBan']} - {row['TenCongViec']}")
-                
-            selected_task = st.selectbox("Chọn công việc cần cập nhật", task_options)
-            selected_id = selected_task.split(" - ")[0]
+            def format_task_option(task_id):
+                row = df[df['ID'] == task_id].iloc[0]
+                pic = row.get('NguoiChuTri', 'Chưa rõ')
+                return f"{row['TenCongViec']} - Phụ trách: {pic}"
+            
+            selected_id = st.selectbox("Chọn công việc cần cập nhật", avail_update_df['ID'].tolist(), format_func=format_task_option)
             task_data = df[df['ID'] == selected_id].iloc[0]
             
             with st.container():
