@@ -50,7 +50,7 @@ def calculate_time_progress(start_date, deadline_date, is_completed=False):
         if elapsed_days <= 0:
             return 0.0
         if elapsed_days >= total_days:
-            return 100.0
+            return 99.0
             
         return round((elapsed_days / total_days) * 100, 1)
     except Exception:
