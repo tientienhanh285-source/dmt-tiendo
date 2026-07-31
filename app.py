@@ -2896,11 +2896,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         yearly_df = yearly_df[yearly_df["Phòng ban"] == selected_dept_y]
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
                     
-                    import io
-                    output = io.BytesIO()
-                    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-                        yearly_df.to_excel(writer, index=False, sheet_name="KPI_TongKet")
-                    st.download_button("📥 Xuất Báo cáo Excel", data=output.getvalue(), file_name=f"TongKet_KPI_{selected_year_full}.xlsx")
+                    excel_data = kpi_reports.generate_yearly_excel(yearly_df, selected_year_full)
+                    st.download_button("📥 Xuất Báo cáo Excel", data=excel_data, file_name=f"TongKet_KPI_{selected_year_full}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 else:
                     st.info("Không có dữ liệu.")
 
