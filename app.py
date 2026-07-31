@@ -425,24 +425,39 @@ def read_gantt_db():
 
 
 def read_kpi_adjustments():
-    import sqlite3
     import pandas as pd
-    conn = sqlite3.connect("database.db")
+    conn = get_gsheets_conn()
+    empty_df = pd.DataFrame(columns=["ID", "TenNhanVien", "Thang", "Nam", "LoaiHanhVi", "DiemDieuChinh", "LyDo"])
+    if conn is None:
+        return empty_df
     try:
-        df = pd.read_sql("SELECT * FROM kpi_adjustments", conn)
+        df = conn.read(worksheet="KPI_ADJUSTMENTS", ttl=0)
+        if df is None or df.empty:
+            return empty_df
         return df
     except Exception:
-        return pd.DataFrame(columns=["ID", "TenNhanVien", "Thang", "Nam", "LoaiHanhVi", "DiemDieuChinh", "LyDo"])
-    finally:
-        conn.close()
+        return empty_df
 
 def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
-    import sqlite3
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-    c.execute("INSERT INTO kpi_adjustments (TenNhanVien, Thang, Nam, LoaiHanhVi, DiemDieuChinh, LyDo) VALUES (?, ?, ?, ?, ?, ?)", (ten, thang, nam, loai, diem, lydo))
-    conn.commit()
-    conn.close()
+    import pandas as pd
+    df = read_kpi_adjustments()
+    new_id = 1 if df.empty else int(pd.to_numeric(df['ID'], errors='coerce').max(skipna=True) + 1 if not df['ID'].empty else 1)
+    new_row = {
+        "ID": new_id,
+        "TenNhanVien": ten,
+        "Thang": thang,
+        "Nam": nam,
+        "LoaiHanhVi": loai,
+        "DiemDieuChinh": diem,
+        "LyDo": lydo
+    }
+    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+    conn = get_gsheets_conn()
+    if conn is not None:
+        try:
+            conn.update(worksheet="KPI_ADJUSTMENTS", data=df)
+        except Exception:
+            pass
 
 def save_gantt_db(df):
     conn = get_gsheets_conn()
