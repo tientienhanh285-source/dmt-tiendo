@@ -438,7 +438,9 @@ def read_kpi_adjustments():
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
         return df
-    except Exception:
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi khi đọc trang tính KPI_ADJUSTMENTS: {e}")
         return empty_df
 
 def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
@@ -2919,7 +2921,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 count_violations = 0
                 if not hist_df_all.empty:
                     count_violations = len(hist_df_all[
-                        (hist_df_all['TenNhanVien'] == adj_person) & 
+                        (hist_df_all['TenNhanVien'].str.strip() == adj_person.strip()) & 
                         (hist_df_all['Thang'] == adj_month) & 
                         (hist_df_all['Nam'] == adj_year) & 
                         (hist_df_all['LyDo'].str.startswith(f"[{adj_template}]", na=False))
