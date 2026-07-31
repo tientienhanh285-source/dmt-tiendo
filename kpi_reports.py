@@ -80,12 +80,19 @@ def generate_department_excel(company_name, month, year, data_rows):
     thin = Side(border_style="thin", color="000000")
     border = Border(top=thin, left=thin, right=thin, bottom=thin)
     
+    # Áp dụng font Times New Roman, size 13 cho toàn bộ worksheet
+    font_default = Font(name='Times New Roman', size=13)
+    font_bold = Font(name='Times New Roman', size=13, bold=True)
+    
+    ws['A1'].font = Font(name='Times New Roman', size=14, bold=True)
+    ws['A2'].font = Font(name='Times New Roman', size=16, bold=True)
+    
     for row in ws['A4:M5']:
         for cell in row:
-            cell.font = Font(bold=True)
+            cell.font = font_bold
             cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
             cell.border = border
-            cell.fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
+            cell.fill = PatternFill(start_color="C6E0B4", end_color="C6E0B4", fill_type="solid") # Light green
             
     # Data
     for i, row in enumerate(data_rows, 1):
@@ -97,6 +104,7 @@ def generate_department_excel(company_name, month, year, data_rows):
         ]
         ws.append(r)
         for cell in ws[ws.max_row]:
+            cell.font = font_default
             cell.border = border
             cell.alignment = Alignment(horizontal='center', vertical='center')
             
@@ -112,78 +120,128 @@ def generate_department_excel(company_name, month, year, data_rows):
 
 def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, penalties):
     doc = Document()
-    # Title
+    
+    # --- Style definitions ---
+    style = doc.styles['Normal']
+    font = style.font
+    font.name = 'Times New Roman'
+    font.size = Pt(13)
+    
+    # --- Title ---
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run(f"PHIẾU ĐÁNH GIÁ KPI CÁ NHÂN\nTháng {month}/{year}")
+    r = p.add_run("BẢNG ĐÁNH GIÁ CÔNG VIỆC CỦA CBNV\n")
     r.bold = True
-    r.font.size = Pt(16)
+    r.font.size = Pt(14)
+    r2 = p.add_run(f"THÁNG {month:02d}/{year}")
+    r2.bold = True
+    r2.font.size = Pt(14)
     
-    # Info
-    doc.add_paragraph(f"Họ và tên: {employee_name}")
-    doc.add_paragraph(f"Thời gian đánh giá: Tháng {month} năm {year}")
+    # --- Info ---
+    doc.add_paragraph(f"Họ và tên: {employee_name}       - Chức danh: .....................      - Ban: .....................")
     
-    # Tiêu chí 1
-    doc.add_heading("TIÊU CHÍ 1: KẾT QUẢ CÔNG VIỆC (Tổng: 100 điểm)", level=2)
-    t1 = doc.add_table(rows=1, cols=4)
+    # Calculate score
+    total_penalty_c1 = sum(float(adj.get('DiemDieuChinh', 0)) for adj in penalties if 'chuyên cần' in adj.get('LoaiHanhVi', '').lower() or 'trễ' in adj.get('LoaiHanhVi', '').lower() or 'sớm' in adj.get('LoaiHanhVi', '').lower() or 'công' in adj.get('LoaiHanhVi', '').lower())
+    total_penalty_c2 = sum(float(t.get('DiemTru', 0)) for t in list_tasks)
+    total_penalty_other = sum(float(adj.get('DiemDieuChinh', 0)) for adj in penalties) - total_penalty_c1
+    
+    total_penalty_all = abs(total_penalty_c1) + abs(total_penalty_c2) + abs(total_penalty_other)
+    final_score = 100 - total_penalty_all
+    
+    doc.add_paragraph(f"Số điểm trừ cả 2 tiêu chí : {round(total_penalty_all, 1)}            Số điểm hoàn thành cả 2 tiêu chí: {round(final_score, 1)}")
+    
+    p_sig1 = doc.add_paragraph()
+    p_sig1.add_run("NHÂN VIÊN:__________________\t\t\tGIÁM ĐỐC BAN:_________________")
+    
+    p_sig2 = doc.add_paragraph()
+    p_sig2.add_run(f"Kiểm tra từ Ban HCNS: ____________\t\t\tTổng điểm để tính lương: {round(final_score, 1)} % lương")
+    
+    p_sig3 = doc.add_paragraph()
+    p_sig3.add_run("Phê duyệt của Tổng giám đốc:_______\t\tPhó Tổng giám đốc phụ trách: _________")
+    
+    doc.add_paragraph()
+    
+    p_note = doc.add_paragraph()
+    p_note.add_run("*Cơ sở đánh giá kết quả tính lương và xếp loại lao động hàng tháng:\n").bold = True
+    p_note.add_run("Mức 1:Từ >91 – 100 điểm : 100% lương, xếp loại A trong tháng.\n")
+    p_note.add_run("Mức 2:Từ >81 – 91 điểm : 90% lương, xếp loại B trong tháng.\n")
+    p_note.add_run("Mức 3:Từ >71 – 81 điểm : 80% lương, xếp loại C trong tháng.\n")
+    p_note.add_run("Mức 4: Dưới 71 điểm : 60% lương, xem xét kỷ luật.")
+    
+    # --- TABLE 1 ---
+    t1 = doc.add_table(rows=2, cols=5)
     t1.style = 'Table Grid'
-    hdr_cells = t1.rows[0].cells
-    hdr_cells[0].text = 'STT'
-    hdr_cells[1].text = 'Mục tiêu/Công việc'
-    hdr_cells[2].text = 'Tỷ trọng (%)'
-    hdr_cells[3].text = 'Điểm Đạt'
     
-    for i, task in enumerate(list_tasks, 1):
-        row_cells = t1.add_row().cells
-        row_cells[0].text = str(i)
-        row_cells[1].text = task.get('TenCV', '')
-        row_cells[2].text = str(task.get('TyTrong', ''))
-        row_cells[3].text = str(task.get('Diem', ''))
+    cell_0_0 = t1.cell(0, 0)
+    cell_0_0.merge(t1.cell(1, 0))
+    cell_0_0.text = "TT"
+    
+    cell_0_1 = t1.cell(0, 1)
+    cell_0_1.merge(t1.cell(1, 1))
+    cell_0_1.text = "Tiêu chí 1: Đánh giá việc thực hiện thời gian làm việc"
+    
+    cell_0_2 = t1.cell(0, 2)
+    cell_0_2.merge(t1.cell(0, 4))
+    cell_0_2.text = "Chi tiết từ máy Chấm công"
+    
+    t1.cell(1, 2).text = "Đi trễ về sớm (lần)"
+    t1.cell(1, 3).text = "Quên bấm (lần)"
+    t1.cell(1, 4).text = "Tổng điểm trừ đtc1"
+    
+    row_cells = t1.add_row().cells
+    row_cells[0].text = "1"
+    row_cells[1].text = "Tổng số điểm bị trừ (đtc1) tối đa không quá 15 điểm."
+    
+    # Count penalties for C1
+    tre_som = 0
+    quen_bam = 0
+    for p in penalties:
+        lv = p.get('LoaiHanhVi', '').lower()
+        if 'trễ' in lv or 'sớm' in lv: tre_som += 1
+        if 'công' in lv: quen_bam += 1
+    
+    row_cells[2].text = str(tre_som)
+    row_cells[3].text = str(quen_bam)
+    row_cells[4].text = str(abs(total_penalty_c1))
+    
+    doc.add_paragraph()
+    
+    # --- TABLE 2 ---
+    t2 = doc.add_table(rows=2, cols=5)
+    t2.style = 'Table Grid'
+    
+    cell2_0_0 = t2.cell(0, 0)
+    cell2_0_0.merge(t2.cell(1, 0))
+    cell2_0_0.text = "TT"
+    
+    cell2_0_1 = t2.cell(0, 1)
+    cell2_0_1.merge(t2.cell(1, 1))
+    cell2_0_1.text = "Tiêu chí 2: Đánh giá mức độ hoàn thành công việc"
+    
+    cell2_0_2 = t2.cell(0, 2)
+    cell2_0_2.merge(t2.cell(0, 4))
+    cell2_0_2.text = "Điểm trừ nhiệm vụ ko hoàn thành"
+    
+    t2.cell(1, 2).text = "Tgian y/c hoàn thành"
+    t2.cell(1, 3).text = "Kết quả"
+    t2.cell(1, 4).text = "Tổng điểm trừ đtc2"
+    
+    for i, t in enumerate(list_tasks, 1):
+        r_cells = t2.add_row().cells
+        r_cells[0].text = str(i)
+        r_cells[1].text = t.get('TenCV', '')
+        r_cells[2].text = str(t.get('TgianYC', ''))
+        r_cells[3].text = str(t.get('KetQua', ''))
+        r_cells[4].text = str(t.get('DiemTru', '0'))
         
-    doc.add_paragraph(f"Tổng điểm Tiêu chí 1: {kpi_score} điểm").bold = True
+    for i in range(3):
+        r_cells = t2.add_row().cells
     
-    # Tiêu chí 2
-    doc.add_heading("TIÊU CHÍ 2: KỶ LUẬT LÀO ĐỘNG (Thưởng / Phạt)", level=2)
-    if not penalties:
-        doc.add_paragraph("Không có vi phạm hoặc thưởng điểm trong tháng.")
-        total_adj = 0
-    else:
-        t2 = doc.add_table(rows=1, cols=3)
-        t2.style = 'Table Grid'
-        hdr2 = t2.rows[0].cells
-        hdr2[0].text = 'Phân loại'
-        hdr2[1].text = 'Lý do chi tiết'
-        hdr2[2].text = 'Điểm'
-        
-        total_adj = 0
-        for adj in penalties:
-            row_cells = t2.add_row().cells
-            row_cells[0].text = adj.get('LoaiHanhVi', '')
-            row_cells[1].text = adj.get('LyDo', '')
-            row_cells[2].text = str(adj.get('DiemDieuChinh', ''))
-            try: total_adj += float(adj.get('DiemDieuChinh', 0))
-            except: pass
-            
-    doc.add_paragraph(f"Tổng điểm Tiêu chí 2 (Thưởng/Phạt): {total_adj} điểm").bold = True
-    
-    # Kết luận
-    final_score = kpi_score + total_adj
-    if final_score > 91: grade = "A"
-    elif final_score > 81: grade = "B"
-    elif final_score > 71: grade = "C"
-    else: grade = "D"
-    
-    doc.add_heading("KẾT LUẬN", level=2)
-    doc.add_paragraph(f"Tổng điểm KPI cuối cùng: {final_score} điểm")
-    doc.add_paragraph(f"Xếp loại: {grade}")
-    
-    # Signatures
-    doc.add_paragraph("\n")
-    p_sig = doc.add_paragraph()
-    p_sig.add_run("TRƯỞNG BỘ PHẬN").bold = True
-    p_sig.add_run("\t\t\t\t\t\t\t").bold = False
-    p_sig.add_run("NGƯỜI LAO ĐỘNG").bold = True
-    p_sig.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    last_row = t2.add_row().cells
+    last_row[0].merge(last_row[2])
+    last_row[0].text = "Tổng điểm"
+    last_row[3].text = "100"
+    last_row[4].text = str(abs(total_penalty_c2))
     
     out = BytesIO()
     doc.save(out)
