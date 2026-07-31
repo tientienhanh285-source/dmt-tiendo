@@ -2813,6 +2813,10 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     count_d = 0
                     
                     for m in range(1, 13):
+                        if selected_year_full > today.year or (selected_year_full == today.year and m > today.month):
+                            months_grades[f"Tháng {m}"] = "-"
+                            continue
+                        
                         def is_in_m(d):
                             if pd.isna(d): return False
                             if isinstance(d, str):
