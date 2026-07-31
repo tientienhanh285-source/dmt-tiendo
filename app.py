@@ -431,7 +431,7 @@ def read_kpi_adjustments():
     if conn is None:
         return empty_df
     try:
-        df = conn.read(worksheet="KPI_ADJUSTMENTS", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="KPI_ADJUSTMENTS", ttl=0)
         if df is None or df.empty:
             return empty_df
         for col in ["ID", "Thang", "Nam", "DiemDieuChinh"]:
@@ -460,10 +460,13 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
     conn = get_gsheets_conn()
     if conn is not None:
         try:
-            conn.update(worksheet="KPI_ADJUSTMENTS", data=df)
-            import streamlit as st
-            st.cache_data.clear()
-            return True, ""
+            success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
+            if success:
+                import streamlit as st
+                st.cache_data.clear()
+                return True, ""
+            else:
+                return False, "Không thể cập nhật lên Google Sheets (lỗi đã ghi log)"
         except Exception as e:
             return False, str(e)
     return False, "Không kết nối được Google Sheets"
