@@ -1887,11 +1887,11 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
                     u_cycle = st.selectbox("Chu kỳ theo dõi", cycle_list, index=default_cycle_idx, key=f"u_cycle_sel_{task_data['ID']}")
                     
-                                    try:
-                    current_weight = int(float(str(task_data.get('TyTrongKPI', 0)).strip() or 0))
-                except:
-                    current_weight = 0
-                u_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=current_weight, key=f"u_weight_{task_data['ID']}")
+                    try:
+                        current_weight = int(float(str(task_data.get('TyTrongKPI', 0)).strip() or 0))
+                    except:
+                        current_weight = 0
+                    u_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=current_weight, key=f"u_weight_{task_data['ID']}")
                     
                 st.markdown("#### ⚓ THÔNG TIN RÀNG BUỘC KẾT QUẢ & GIẢI TRÌNH")
                 col_ub1, col_ub2 = st.columns(2)
