@@ -1538,6 +1538,8 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
         df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
         df_display['Tên công việc'] = table_df['TenCongViec']
         df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+        import pandas as pd
+        df_display['Tỷ trọng KPI'] = table_df.apply(lambda row: f"{int(float(str(row.get('TyTrongKPI', 0)).strip() or 0))}%" if pd.to_numeric(row.get('TyTrongKPI', 0), errors='coerce') > 0 else "Tự chia", axis=1)
         
         # Format Hạn chót
         def format_dl(row):
@@ -1842,7 +1844,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "GiaiTrinhDeXuat": task_explain.strip() if ((is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not is_late and calc_status == "Có vướng mắc")) else "",
                         "NgayCapNhat": datetime.now(),
                         "ChuKyTheoDoi": task_cycle,
-                        "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ"
+                        "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
+                        "TyTrongKPI": task_weight
                     }
                     
                     df_updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
