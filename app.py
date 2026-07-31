@@ -434,6 +434,9 @@ def read_kpi_adjustments():
         df = conn.read(worksheet="KPI_ADJUSTMENTS", ttl=0)
         if df is None or df.empty:
             return empty_df
+        for col in ["ID", "Thang", "Nam", "DiemDieuChinh"]:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
         return df
     except Exception:
         return empty_df
@@ -456,6 +459,8 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
     if conn is not None:
         try:
             conn.update(worksheet="KPI_ADJUSTMENTS", data=df)
+            import streamlit as st
+            st.cache_data.clear()
             return True, ""
         except Exception as e:
             return False, str(e)
