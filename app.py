@@ -456,8 +456,10 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
     if conn is not None:
         try:
             conn.update(worksheet="KPI_ADJUSTMENTS", data=df)
-        except Exception:
-            pass
+            return True, ""
+        except Exception as e:
+            return False, str(e)
+    return False, "Không kết nối được Google Sheets"
 
 def save_gantt_db(df):
     conn = get_gsheets_conn()
