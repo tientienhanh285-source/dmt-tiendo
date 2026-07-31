@@ -3001,7 +3001,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     kpi_score = 100
                     if personnel_kpi:
                         for p in personnel_kpi:
-                            if p['Nhân viên'] == emp_to_export:
+                            if p['Người thực hiện'] == emp_to_export:
                                 kpi_score = p['Điểm công việc']
                                 break
                     
