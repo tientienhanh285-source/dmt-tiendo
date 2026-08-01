@@ -124,6 +124,8 @@ def safe_gsheets_read(conn, worksheet, ttl=600, fallback_df=None):
     try:
         df = conn.read(**kwargs)
         if df is not None:
+            import numpy as np
+            df = df.replace("", np.nan).dropna(how='all')
             st.session_state[cache_key] = df
             return df
         else:
@@ -146,8 +148,18 @@ def safe_gsheets_update(conn, worksheet, data):
         kwargs["spreadsheet"] = url
         
     try:
+        cache_key = f"cached_df_{worksheet}"
+        orig_data = st.session_state.get(cache_key)
+        
+        if orig_data is not None and len(orig_data) > len(data):
+            import pandas as pd
+            pad_len = len(orig_data) - len(data)
+            pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
+            write_data = pd.concat([data, pad_df], ignore_index=True)
+            kwargs["data"] = write_data
+            
         conn.update(**kwargs)
-        st.session_state[f"cached_df_{worksheet}"] = data
+        st.session_state[cache_key] = data
         return True
     except Exception as e:
         import streamlit as st
