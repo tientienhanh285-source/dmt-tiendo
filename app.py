@@ -882,7 +882,7 @@ def read_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan"
     ]
     conn = get_gsheets_conn()
     if conn is None:
@@ -938,6 +938,8 @@ def read_db():
         df["PhanLoaiTreHan"] = "🟢 Không trễ hạn / Đúng tiến độ"
     if "NguonGiaoViec" not in df.columns:
         df["NguonGiaoViec"] = "Công việc được giao / định kì"
+    if "MucDoGhiNhan" not in df.columns:
+        df["MucDoGhiNhan"] = "0% (Không ghi nhận)"
     for col in required_cols:
         if col not in df.columns:
             df[col] = ""
@@ -978,6 +980,8 @@ def save_db(df):
         df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
         if 'NguonGiaoViec' not in df_save.columns: df_save['NguonGiaoViec'] = 'Công việc được giao / định kì'
         df_save['NguonGiaoViec'] = df_save['NguonGiaoViec'].fillna('Công việc được giao / định kì')
+        if 'MucDoGhiNhan' not in df_save.columns: df_save['MucDoGhiNhan'] = '0% (Không ghi nhận)'
+        df_save['MucDoGhiNhan'] = df_save['MucDoGhiNhan'].fillna('0% (Không ghi nhận)')
         
         df_save = df_save.fillna("")
         return safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
@@ -1898,7 +1902,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "ChuKyTheoDoi": task_cycle,
                         "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
                         "TyTrongKPI": task_weight,
-                        "NguonGiaoViec": task_nguon
+                        "NguonGiaoViec": task_nguon,
+                        "MucDoGhiNhan": "0% (Không ghi nhận)"
                     }
                     
                     df_updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -2038,9 +2043,23 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         )
                         if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
                             u_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+                            
+                            if st.session_state.is_admin_authenticated:
+                                current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                                chamchuoc_opts = ["0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"]
+                                idx_cc = chamchuoc_opts.index(current_chamchuoc) if current_chamchuoc in chamchuoc_opts else 0
+                                u_chamchuoc = st.selectbox("Mức độ ghi nhận (Dành cho Quản lý)", chamchuoc_opts, index=idx_cc, key=f"u_cc_{task_data['ID']}")
+                            else:
+                                current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                                u_chamchuoc = current_chamchuoc
+                                if current_chamchuoc != '0% (Không ghi nhận)':
+                                    st.info(f"Đã được Quản lý ghi nhận mức độ KPI: **{current_chamchuoc}**")
                         else:
                             u_explain = ""
+                            u_chamchuoc = '0% (Không ghi nhận)'
                     else:
+                        u_chamchuoc = '0% (Không ghi nhận)'
+
                         if u_has_issue:
                             u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
                         else:
@@ -2123,6 +2142,11 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
                         df.loc[df['ID'] == selected_id, 'TyTrongKPI'] = u_weight
                         df.loc[df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
+                        if u_is_late:
+                            df.loc[df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
+                        else:
+                            df.loc[df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
+
                         
                         if save_db(df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
@@ -2813,13 +2837,30 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 def calc_score_for_group(grp):
                     if grp.empty: return 0
                     t_score = 0
+                    total_w = 0
                     for idx, row in grp.iterrows():
+                        is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                         w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
-                        p = row.get('PhanTramHoanThanh', 0)
+                        
+                        if is_comp:
+                            p = 100
+                        else:
+                            if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+                                cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                                if cc == "Miễn trừ (Loại bỏ KPI)":
+                                    w = 0
+                                    p = 0
+                                elif cc == "50%": p = 50
+                                elif cc == "80%": p = 80
+                                elif cc == "90%": p = 90
+                                else: p = 0
+                            else:
+                                p = 0
+                        
                         if pd.isna(p): p = 0
                         t_score += (p / 100.0) * w
-                    # Normalize back to 100 max if auto_weight was not used or weights don't sum to 100
-                    total_w = grp['TyTrongKPI'].apply(lambda x: x if x > 0 else auto_weight).sum()
+                        total_w += w
+                        
                     if total_w > 0:
                         return (t_score / total_w) * 100
                     return 0
@@ -2949,12 +2990,30 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         def calc_score_for_group_y(grp, auto_w):
                             if grp.empty: return 0
                             score = 0
+                            total_w = 0
                             for idx, row in grp.iterrows():
+                                is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                                 w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
-                                p = row.get('PhanTramHoanThanh', 0)
+                                
+                                if is_comp:
+                                    p = 100
+                                else:
+                                    if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+                                        cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                                        if cc == "Miễn trừ (Loại bỏ KPI)":
+                                            w = 0
+                                            p = 0
+                                        elif cc == "50%": p = 50
+                                        elif cc == "80%": p = 80
+                                        elif cc == "90%": p = 90
+                                        else: p = 0
+                                    else:
+                                        p = 0
+                                        
                                 if pd.isna(p): p = 0
                                 score += (p / 100.0) * w
-                            total_w = grp['TyTrongKPI'].apply(lambda x: x if x > 0 else auto_w).sum()
+                                total_w += w
+                                
                             if total_w > 0:
                                 return (score / total_w) * 100
                             return 0
