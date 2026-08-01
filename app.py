@@ -474,7 +474,8 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
                 return False, "Không thể cập nhật lên Google Sheets (lỗi đã ghi log)"
         except Exception as e:
             return False, str(e)
-    return False, "Không kết nối được Google Sheets"\n
+    return False, "Không kết nối được Google Sheets"
+
 def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
     import pandas as pd
     df = read_kpi_adjustments()
