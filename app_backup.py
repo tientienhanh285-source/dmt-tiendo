@@ -1649,7 +1649,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             # 11. Chu kỳ theo dõi
             task_cycle = st.selectbox("Chu kỳ theo dõi", ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"], index=3)
             
-        submit_new = st.button("💾 THÊM CÔNG VIỆC MỚI", type="primary")
+        submit_new = st.button("💾 Lưu", type="primary")
         
         if submit_new:
             if not task_name.strip():
@@ -2303,7 +2303,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                             st.cache_data.clear()
                             st.rerun()
                 
-            g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
+            g_submit = st.button("💾 Lưu", type="primary")
             if g_submit:
                 if not g_task_name.strip():
                     st.error("⚠️ Vui lòng nhập Tên công việc!")

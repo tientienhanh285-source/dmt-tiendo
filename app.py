@@ -1725,12 +1725,12 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", placeholder="Mô tả chi tiết khó khăn...", key="new_task_explain")
             
             # 11. Chu kỳ theo dõi
-            task_cycle = st.selectbox("Chu kỳ theo dõi", ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"], index=3)
+            task_cycle = "Theo dự án / Tự do"
             
             # 12. Tỷ trọng KPI
             task_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=0)
             
-        submit_new = st.button("💾 THÊM CÔNG VIỆC MỚI", type="primary")
+        submit_new = st.button("💾 Lưu", type="primary")
         
         if submit_new:
             if not task_name.strip():
@@ -1773,9 +1773,25 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         has_error = True
                         
                 if not has_error:
-                    # Auto ID generator
-                    next_id = 1
+                    # Check for duplicate submission to prevent multiple clicks saving the same task
+                    is_duplicate = False
                     if not df.empty:
+                        dup_df = df[
+                            (df['TenCongViec'].astype(str).str.strip() == task_name.strip()) & 
+                            (df['NguoiChuTri'].astype(str).str.strip() == task_owner.strip()) & 
+                            (df['TenDuAn'].astype(str).str.strip() == project_name) &
+                            (df['Deadline'].astype(str) == str(task_deadline)) &
+                            (df['NgayBatDau'].astype(str) == str(task_start))
+                        ]
+                        if not dup_df.empty:
+                            is_duplicate = True
+                            
+                    if is_duplicate:
+                        st.success("🎉 Đã lưu công việc thành công!")
+                    else:
+                        # Auto ID generator
+                        next_id = 1
+                        if not df.empty:
                         ids = df['ID'].tolist()
                         nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
                         if nums:
@@ -2503,7 +2519,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
                             st.cache_data.clear()
                             st.rerun()
                 
-            g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
+            g_submit = st.button("💾 Lưu", type="primary")
             if g_submit:
                 if not g_task_name.strip():
                     st.error("⚠️ Vui lòng nhập Tên công việc!")
@@ -2905,8 +2921,14 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         with kpi_tab3:
             st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
             all_p_list = []
-            for dept, persons in config.get("personnel_by_department", {}).items():
-                all_p_list.extend(persons)
+            if selected_company == "Tất cả đơn vị":
+                for dept, persons in config.get("personnel_by_department", {}).items():
+                    all_p_list.extend(persons)
+            else:
+                valid_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+                for dept in valid_depts:
+                    persons = get_personnel_for_company_dept(selected_company, dept, config)
+                    all_p_list.extend(persons)
             all_p_list = sorted(list(set(all_p_list)))
             if not all_p_list:
                 all_p_list = ["(Chưa có nhân sự)"]
@@ -2920,40 +2942,32 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             with col_f2:
                 adj_template = st.selectbox("Lý do mẫu", ["Đi trễ, về sớm", "Quên chấm công", "Lý do khác"])
                 
-                # Fetch existing records to count
-                hist_df_all = read_kpi_adjustments()
-                count_violations = 0
-                if not hist_df_all.empty:
-                    count_violations = len(hist_df_all[
-                        (hist_df_all['TenNhanVien'].str.strip() == adj_person.strip()) & 
-                        (hist_df_all['Thang'] == adj_month) & 
-                        (hist_df_all['Nam'] == adj_year) & 
-                        (hist_df_all['LyDo'].str.startswith(f"[{adj_template}]", na=False))
-                    ])
-                current_time = count_violations + 1
-                
                 if adj_template == "Đi trễ, về sớm":
-                    st.info(f"ℹ️ Đã vi phạm {count_violations} lần trong tháng {adj_month}. Lần nhập này là lần thứ {current_time}.")
-                    if current_time >= 6:
-                        sugg_val = 2
-                        st.warning("⚠️ Từ lần 6 trở đi: Đề xuất trừ 2 điểm.")
+                    so_lan = st.number_input("Tổng số lần trong tháng", min_value=1, value=1)
+                    sugg_val = max(0, so_lan - 5) * 2
+                    
+                    st.info(f"ℹ️ Bạn đang nhập tổng cộng {so_lan} lần vi phạm trong tháng {adj_month}.")
+                    if so_lan >= 6:
+                        st.warning(f"⚠️ Từ lần 6 trở đi: Đề xuất trừ tổng cộng {sugg_val} điểm.")
                     else:
-                        sugg_val = 0
                         st.success("✅ Dưới 6 lần: Chưa bị trừ điểm.")
+                        
                     adj_type = "🛑 Phạt điểm"
-                    adj_val = st.number_input("Số điểm trừ", min_value=0, max_value=15, value=sugg_val)
+                    adj_val = st.number_input("Tổng số điểm trừ", min_value=0, max_value=100, value=sugg_val)
                     adj_reason = st.text_input("Ghi chú thêm (Tùy chọn)")
                     
                 elif adj_template == "Quên chấm công":
-                    st.info(f"ℹ️ Đã vi phạm {count_violations} lần trong tháng {adj_month}. Lần nhập này là lần thứ {current_time}.")
-                    if current_time >= 3:
-                        sugg_val = 1
-                        st.warning("⚠️ Từ lần 3 trở đi: Đề xuất trừ 1 điểm.")
+                    so_lan = st.number_input("Tổng số lần trong tháng", min_value=1, value=1)
+                    sugg_val = max(0, so_lan - 2) * 1
+                    
+                    st.info(f"ℹ️ Bạn đang nhập tổng cộng {so_lan} lần vi phạm trong tháng {adj_month}.")
+                    if so_lan >= 3:
+                        st.warning(f"⚠️ Từ lần 3 trở đi: Đề xuất trừ tổng cộng {sugg_val} điểm.")
                     else:
-                        sugg_val = 0
                         st.success("✅ Dưới 3 lần: Chưa bị trừ điểm.")
+                        
                     adj_type = "🛑 Phạt điểm"
-                    adj_val = st.number_input("Số điểm trừ", min_value=0, max_value=15, value=sugg_val)
+                    adj_val = st.number_input("Tổng số điểm trừ", min_value=0, max_value=100, value=sugg_val)
                     adj_reason = st.text_input("Ghi chú thêm (Tùy chọn)")
                     
                 else:
@@ -2966,7 +2980,10 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     st.error("⚠️ Vui lòng nhập lý do chi tiết!")
                 else:
                     actual_val = adj_val if adj_type == "⭐ Thưởng điểm" else -adj_val
-                    final_reason = f"[{adj_template}] {adj_reason.strip()}".strip() if adj_template != "Lý do khác" else adj_reason.strip()
+                    if adj_template != "Lý do khác":
+                        final_reason = f"[{adj_template}] ({so_lan} lần) {adj_reason.strip()}".strip()
+                    else:
+                        final_reason = adj_reason.strip()
                     add_kpi_adjustment(adj_person, adj_month, adj_year, adj_type, actual_val, final_reason)
                     st.success("🎉 Đã lưu điều chỉnh điểm thành công!")
                     st.rerun()
