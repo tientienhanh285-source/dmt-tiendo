@@ -2829,6 +2829,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
                 
                 # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
+                if 'NguonGiaoViec' not in group_copy.columns:
+                    group_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
                 ke_hoach_tasks = group_copy[group_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
                 giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
                 
@@ -2982,6 +2984,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         else:
                             auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
                         
+                        if 'NguonGiaoViec' not in m_df_copy.columns:
+                            m_df_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
                         ke_hoach_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
                         giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
                         
