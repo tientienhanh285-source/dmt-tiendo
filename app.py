@@ -147,6 +147,7 @@ def safe_gsheets_update(conn, worksheet, data):
         
     try:
         conn.update(**kwargs)
+        st.session_state[f"cached_df_{worksheet}"] = data
         return True
     except Exception as e:
         import streamlit as st
@@ -2712,7 +2713,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 done_tasks = len(group[group['TrangThai'] == 'Hoàn thành'])
                 
                 group_copy = group.copy()
-                group_copy['TyTrongKPI'] = pd.to_numeric(group_copy.get('TyTrongKPI', 0), errors='coerce').fillna(0)
+                group_copy['TyTrongKPI'] = pd.to_numeric(group_copy.get('TyTrongKPI', pd.Series(0, index=group_copy.index)), errors='coerce').fillna(0)
                 
                 for idx, row in group_copy.iterrows():
                     is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
@@ -2834,7 +2835,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             continue
                             
                         m_df_copy = m_df.copy()
-                        m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', 0), errors='coerce').fillna(0)
+                        m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', pd.Series(0, index=m_df_copy.index)), errors='coerce').fillna(0)
                         
                         for idx, row in m_df_copy.iterrows():
                             is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
