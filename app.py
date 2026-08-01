@@ -1182,12 +1182,9 @@ today = date.today()
 
 # Filter display dataframe based on sidebar selected company
 if selected_company != "Tất cả đơn vị":
-    display_df = df
-    
-if 'NguoiChuTri' not in display_df.columns:
-    display_df['NguoiChuTri'] = ''[df['DonVi'] == selected_company]
+    display_df = df[df['DonVi'] == selected_company].copy()
 else:
-    display_df = df
+    display_df = df.copy()
     
 if 'NguoiChuTri' not in display_df.columns:
     display_df['NguoiChuTri'] = ''
