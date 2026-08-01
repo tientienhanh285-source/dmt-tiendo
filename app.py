@@ -2783,14 +2783,17 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     if isinstance(dl, datetime): dl = dl.date()
                     if isinstance(dl, date): is_late = (dl < today) and not is_comp
                     
-                    if is_late and row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
+                    if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
                         group_copy.at[idx, 'PhanTramHoanThanh'] = 100
                         
                 explicit_weight_sum = group_copy[group_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
                 unweighted_count = len(group_copy[group_copy['TyTrongKPI'] <= 0])
                 
                 remaining_weight = max(0, 100 - explicit_weight_sum)
-                auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
+                if (selected_year > 2026) or (selected_year == 2026 and selected_month >= 8):
+                    auto_weight = 0
+                else:
+                    auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
                 
                 task_score = 0
                 for idx, row in group_copy.iterrows():
@@ -2904,12 +2907,15 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 except: pass
                             if isinstance(dl, datetime): dl = dl.date()
                             if isinstance(dl, date): is_late = (dl < today) and not is_comp
-                            if is_late and row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
+                            if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
                                 m_df_copy.at[idx, 'PhanTramHoanThanh'] = 100
                                 
                         explicit_weight = m_df_copy[m_df_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
                         uw_count = len(m_df_copy[m_df_copy['TyTrongKPI'] <= 0])
-                        auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
+                        if (selected_year_full > 2026) or (selected_year_full == 2026 and m >= 8):
+                            auto_w = 0
+                        else:
+                            auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
                         
                         t_score = 0
                         for idx, row in m_df_copy.iterrows():
