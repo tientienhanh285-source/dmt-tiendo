@@ -882,7 +882,7 @@ def read_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec"
     ]
     conn = get_gsheets_conn()
     if conn is None:
@@ -936,6 +936,8 @@ def read_db():
         df["ChuKyTheoDoi"] = "Theo dự án / Tự do"
     if "PhanLoaiTreHan" not in df.columns:
         df["PhanLoaiTreHan"] = "🟢 Không trễ hạn / Đúng tiến độ"
+    if "NguonGiaoViec" not in df.columns:
+        df["NguonGiaoViec"] = "Công việc được giao / định kì"
     for col in required_cols:
         if col not in df.columns:
             df[col] = ""
@@ -974,6 +976,8 @@ def save_db(df):
         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if isinstance(x, (date, datetime)) else str(x))
         df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
+        if 'NguonGiaoViec' not in df_save.columns: df_save['NguonGiaoViec'] = 'Công việc được giao / định kì'
+        df_save['NguonGiaoViec'] = df_save['NguonGiaoViec'].fillna('Công việc được giao / định kì')
         
         df_save = df_save.fillna("")
         return safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
@@ -1741,6 +1745,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
             # 3. Task details
             task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
+            task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'Công việc trong "Giao ban"'])
             
         with col2:
             # 6. Dates
@@ -1892,7 +1897,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "NgayCapNhat": datetime.now(),
                         "ChuKyTheoDoi": task_cycle,
                         "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
-                        "TyTrongKPI": task_weight
+                        "TyTrongKPI": task_weight,
+                        "NguonGiaoViec": task_nguon
                     }
                     
                     df_updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -1936,6 +1942,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     u_proj = st.text_input("Dự án / Hạng mục", value=task_data['TenDuAn'], key=f"u_proj_{task_data['ID']}")
                     u_name = st.text_input("Tên công việc", value=task_data['TenCongViec'], key=f"u_name_{task_data['ID']}")
+                    u_nguon_opts = ["Công việc được giao / định kì", 'Công việc trong "Giao ban"']
+                    current_nguon = task_data.get('NguonGiaoViec', 'Công việc được giao / định kì')
+                    u_nguon_idx = u_nguon_opts.index(current_nguon) if current_nguon in u_nguon_opts else 0
+                    u_nguon = st.selectbox("Nguồn giao việc", u_nguon_opts, index=u_nguon_idx, key=f"u_nguon_{task_data['ID']}")
                     
                     # Owner selection based on configuration
                     u_dept = task_data['PhongBan']
@@ -2112,6 +2122,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         df.loc[df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
                         df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
                         df.loc[df['ID'] == selected_id, 'TyTrongKPI'] = u_weight
+                        df.loc[df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
                         
                         if save_db(df):
                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
@@ -2795,16 +2806,31 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 else:
                     auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
                 
-                task_score = 0
-                for idx, row in group_copy.iterrows():
-                    weight = row['TyTrongKPI']
-                    if weight <= 0:
-                        weight = auto_weight
-                    
-                    pt_hoan_thanh = row.get('PhanTramHoanThanh', 0)
-                    if pd.isna(pt_hoan_thanh): pt_hoan_thanh = 0
-                    
-                    task_score += (pt_hoan_thanh / 100.0) * weight
+                # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
+                ke_hoach_tasks = group_copy[group_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+                giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+                
+                def calc_score_for_group(grp):
+                    if grp.empty: return 0
+                    t_score = 0
+                    for idx, row in grp.iterrows():
+                        w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
+                        p = row.get('PhanTramHoanThanh', 0)
+                        if pd.isna(p): p = 0
+                        t_score += (p / 100.0) * w
+                    # Normalize back to 100 max if auto_weight was not used or weights don't sum to 100
+                    total_w = grp['TyTrongKPI'].apply(lambda x: x if x > 0 else auto_weight).sum()
+                    if total_w > 0:
+                        return (t_score / total_w) * 100
+                    return 0
+
+                if len(giao_ban_tasks) > 0:
+                    kh_score = calc_score_for_group(ke_hoach_tasks)
+                    gb_score = calc_score_for_group(giao_ban_tasks)
+                    task_score = kh_score * 0.7 + gb_score * 0.3
+                else:
+                    task_score = calc_score_for_group(ke_hoach_tasks)
+
                 
                 p_adj_df = adj_df[adj_df['TenNhanVien'] == person]
                 adj_score = p_adj_df['DiemDieuChinh'].sum()
@@ -2917,11 +2943,28 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         else:
                             auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
                         
-                        t_score = 0
-                        for idx, row in m_df_copy.iterrows():
-                            w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
-                            p = row.get('PhanTramHoanThanh', 0)
-                            t_score += (p / 100.0) * w
+                        ke_hoach_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+                        giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+                        
+                        def calc_score_for_group_y(grp, auto_w):
+                            if grp.empty: return 0
+                            score = 0
+                            for idx, row in grp.iterrows():
+                                w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+                                p = row.get('PhanTramHoanThanh', 0)
+                                if pd.isna(p): p = 0
+                                score += (p / 100.0) * w
+                            total_w = grp['TyTrongKPI'].apply(lambda x: x if x > 0 else auto_w).sum()
+                            if total_w > 0:
+                                return (score / total_w) * 100
+                            return 0
+                            
+                        if len(giao_ban_tasks_y) > 0:
+                            kh_score_y = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
+                            gb_score_y = calc_score_for_group_y(giao_ban_tasks_y, auto_w)
+                            t_score = kh_score_y * 0.7 + gb_score_y * 0.3
+                        else:
+                            t_score = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
                         
                         f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
                         
