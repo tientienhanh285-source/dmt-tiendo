@@ -3249,7 +3249,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
 
 # ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------
 elif menu == "✅ Duyệt việc Khách quan":
-    st.header("✅ Bàn làm việc Quản lý (Duyệt nhanh Khách quan)")
+    st.header("✅ Duyệt lý do trễ hạn khách quan")
     
     if not st.session_state.is_admin_authenticated:
         st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")
