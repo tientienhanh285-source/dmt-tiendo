@@ -3143,34 +3143,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     display_df = display_df[display_df["Thang"] == f_thang]
                 
                 st.dataframe(display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False]), use_container_width=True, hide_index=True)
-                
-                st.markdown("##### ✏️ Sửa / Xóa Lịch sử Điều chỉnh")
-                adj_opts = hist_df.apply(lambda row: f"[{row['ID']}] {row['TenNhanVien']} - T{row['Thang']}/{row['Nam']}: {row['DiemDieuChinh']} điểm ({row['LyDo']})", axis=1).tolist()
-                sel_adj_str = st.selectbox("Chọn bản ghi để thao tác:", ["-- Chọn bản ghi --"] + adj_opts)
-                if sel_adj_str != "-- Chọn bản ghi --":
-                    sel_adj_id = int(sel_adj_str.split("]")[0].replace("[", ""))
-                    adj_row = hist_df[hist_df['ID'] == sel_adj_id].iloc[0]
-                    
-                    st.markdown(f"**Chỉnh sửa bản ghi ID: {sel_adj_id}**")
-                    u_adj_ten = st.selectbox("Tên nhân viên", all_p_list, index=all_p_list.index(adj_row['TenNhanVien']) if adj_row['TenNhanVien'] in all_p_list else 0, key="u_adj_ten")
-                    u_adj_thang = st.selectbox("Tháng", list(range(1, 13)), index=int(adj_row['Thang'])-1, key="u_adj_thang")
-                    u_adj_nam = st.selectbox("Năm", [today.year - 1, today.year, today.year + 1], index=[today.year - 1, today.year, today.year + 1].index(int(adj_row['Nam'])), key="u_adj_nam")
-                    u_adj_loai = st.radio("Loại hành vi", ["⭐ Thưởng điểm", "🛑 Phạt điểm"], index=0 if adj_row['LoaiHanhVi'] == "⭐ Thưởng điểm" else 1, key="u_adj_loai")
-                    u_adj_diem = st.number_input("Điểm điều chỉnh", value=int(abs(adj_row['DiemDieuChinh'])), key="u_adj_diem")
-                    u_adj_lydo = st.text_input("Lý do", value=adj_row['LyDo'], key="u_adj_lydo")
-                    
-                    col_sa, col_sd = st.columns(2)
-                    with col_sa:
-                        if st.button("💾 Lưu thay đổi", type="primary", key="btn_save_adj"):
-                            actual_val = u_adj_diem if u_adj_loai == "⭐ Thưởng điểm" else -u_adj_diem
-                            if edit_kpi_adjustment(sel_adj_id, u_adj_ten, u_adj_thang, u_adj_nam, u_adj_loai, actual_val, u_adj_lydo):
-                                st.success("Cập nhật thành công!")
-                                st.rerun()
-                    with col_sd:
-                        if st.button("🗑️ Xóa bản ghi", type="secondary", key="btn_del_adj"):
-                            if delete_kpi_adjustment(sel_adj_id):
-                                st.success("Xóa thành công!")
-                                st.rerun()
+
             else:
                 st.info("Chưa có lịch sử điều chỉnh.")
 
