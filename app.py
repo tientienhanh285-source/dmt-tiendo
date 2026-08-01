@@ -1792,10 +1792,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         # Auto ID generator
                         next_id = 1
                         if not df.empty:
-                        ids = df['ID'].tolist()
-                        nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
-                        if nums:
-                            next_id = max(nums) + 1
+                            ids = df['ID'].tolist()
+                            nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                            if nums:
+                                next_id = max(nums) + 1
                     task_id = f"TSK-{next_id:03d}"
                     
                     saved_result = ""
