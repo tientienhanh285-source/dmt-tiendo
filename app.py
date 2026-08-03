@@ -1418,7 +1418,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
 
     st.markdown("---")
     
-    tab_report, tab_data = st.tabs(["📊 Góc nhìn Báo cáo", "📋 Góc nhìn Bảng dữ liệu"])
+    tab_report, tab_data = st.tabs(["📊 CÔNG VIỆC TỚI HẠN", "📋 BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC"])
     
     with tab_report:
         st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
