@@ -1795,6 +1795,7 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         sel_status = st.selectbox("Lọc Trạng thái", status_options, key="tv_status", index=1)
     with col_auto:
         auto_refresh = st.checkbox("🔄 Auto-refresh (5p)", value=True, help="Tự động tải lại trang sau mỗi 5 phút")
+        mobile_mode = st.checkbox("📱 Chế độ Điện thoại", value=False, help="Hiển thị dạng thẻ dọc để xem trên mobile")
         if auto_refresh:
             import streamlit.components.v1 as components
             components.html("""
@@ -1873,22 +1874,36 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         ordered_cols = ['Ngày bắt đầu', 'Hạn chót', 'Tiến độ', 'Trạng thái', 'Người thực hiện', 'Phòng ban', 'Dự án / Hạng mục', 'Tên công việc']
         df_display = df_display[ordered_cols]
         
-        st.dataframe(
-            df_display,
-            column_config={
-                "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
-                "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
-                "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
-                "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
-                "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-                "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
-                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
-                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
-            },
-            use_container_width=True,
-            hide_index=True,
-            height=700
-        )
+        st.markdown("---")
+        if mobile_mode:
+            for idx, row in df_display.iterrows():
+                # Build a simple progress bar string
+                prog = int(row['Tiến độ'])
+                bars = "■" * (prog // 10) + "□" * (10 - prog // 10)
+                
+                with st.container():
+                    st.markdown(f"**📌 {row['Tên công việc']}**")
+                    st.markdown(f"📁 *{row['Dự án / Hạng mục']}* | 👤 *{row['Người thực hiện']}*")
+                    st.markdown(f"⏳ **Hạn chót:** {row['Hạn chót']} | **Tiến độ:** {bars} {prog}%")
+                    st.markdown(f"Trạng thái: **{row['Trạng thái']}**")
+                    st.markdown("---")
+        else:
+            st.dataframe(
+                df_display,
+                column_config={
+                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
+                    "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
+                    "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
+                    "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
+                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
+                    "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
+                    "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
+                },
+                use_container_width=True,
+                hide_index=True,
+                height=700
+            )
 
 # ----------------- 3. THÊM / CẬP NHẬT CÔNG VIỆC -----------------
 
