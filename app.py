@@ -3692,7 +3692,8 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - 🕒 **Thời gian:** Từ ngày 1 đến ngày 3 hàng tháng.
         - 🎯 **Mục đích:** Xác nhận điểm số KPI của tháng trước để Phòng HCNS lưu kết quả.
         - 🖱️ **Thao tác:** Vào mục **🏆 Đánh giá KPI & Xếp loại**.
-        - Xem biểu đồ tổng quan và Bảng dữ liệu tự động Xếp loại (Xuất sắc, Tốt, Khá, Kém...) cho từng nhân sự.
+        - Xem biểu đồ tổng quan và Bảng dữ liệu tự động Xếp loại cho từng nhân sự.
+        - 📊 **Tiêu chí Xếp loại:** Điểm > 91 (Loại A), Điểm > 81 (Loại B), Điểm > 71 (Loại C), Điểm <= 71 (Loại D).
         """)
         
         st.warning("""
