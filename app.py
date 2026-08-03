@@ -1443,23 +1443,27 @@ if menu == "📊 Dashboard Tổng Quan":
     if alert_list:
         alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
         crit_display = pd.DataFrame()
-        crit_display['Phòng ban'] = alert_df_show['PhongBan']
+        crit_display['Ngày bắt đầu'] = alert_df_show['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+        crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+        crit_display['Tiến độ'] = alert_df_show['PhanTramHoanThanh'].apply(lambda x: f"{int(x)}%" if pd.notna(x) else "0%")
+        crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
         crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
+        crit_display['Phòng ban'] = alert_df_show['PhongBan']
         crit_display['Dự án / Hạng mục'] = alert_df_show['TenDuAn']
         crit_display['Tên công việc'] = alert_df_show['TenCongViec']
-        crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
-        crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
         crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
         
         st.dataframe(
             crit_display,
             column_config={
-                "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
+                "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width="small"),
+                "Hạn chót": st.column_config.TextColumn("Hạn chót", width="small"),
+                "Tiến độ": st.column_config.TextColumn("Tiến độ", width="small"),
+                "Trạng thái thực tế": st.column_config.TextColumn("Trạng thái thực tế", width="small"),
                 "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width="medium"),
+                "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
                 "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width="medium"),
                 "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
-                "Hạn chót": st.column_config.TextColumn("Hạn chót", width="small"),
-                "Trạng thái thực tế": st.column_config.TextColumn("Trạng thái thực tế", width="small"),
                 "Ghi chú / Giải trình vướng mắc": st.column_config.TextColumn("Ghi chú / Giải trình vướng mắc", width="large")
             },
             use_container_width=True,
