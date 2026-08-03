@@ -1792,7 +1792,7 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept")
     with col_f3:
         status_options = ["Đang thực hiện", "Sắp tới hạn / Trễ hạn", "Hoàn thành", "Vướng mắc", "Tất cả trạng thái"]
-        sel_status = st.selectbox("Lọc Trạng thái", status_options, key="tv_status")
+        sel_status = st.selectbox("Lọc Trạng thái", status_options, key="tv_status", index=1)
     with col_auto:
         auto_refresh = st.checkbox("🔄 Auto-refresh (5p)", value=True, help="Tự động tải lại trang sau mỗi 5 phút")
         if auto_refresh:
