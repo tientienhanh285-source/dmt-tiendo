@@ -3365,6 +3365,8 @@ elif menu == "✅ Duyệt việc Khách quan":
                         df = df.drop(columns=['is_in_month'], errors='ignore')
                         if save_db(df):
                             st.success("✅ Đã lưu toàn bộ phê duyệt thành công!")
+                            st.cache_data.clear()
+                            st.rerun()
                     else:
                         st.info("Chưa có thay đổi nào cần lưu.")
 
