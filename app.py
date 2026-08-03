@@ -3372,7 +3372,7 @@ elif menu == "✅ Duyệt việc Khách quan":
                     "GiaiTrinhDeXuat": st.column_config.TextColumn("Giải Trình Khách Quan", disabled=True),
                     "MucDoGhiNhan": st.column_config.SelectboxColumn(
                         "Mức độ Ghi nhận KPI",
-                        help="Chọn mức điểm châm chước (Chỉ dành cho Quản lý)",
+                        help="Chọn mức điểm đánh giá theo lý do khách quan (Chỉ dành cho Quản lý)",
                         options=["0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"],
                         required=True
                     )
@@ -3678,7 +3678,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         st.warning("""
         **3️⃣ Xử lý Trễ hạn / Có vướng mắc**
         - Nếu rủi ro trễ hạn, đổi trạng thái thành **Có vướng mắc** và ghi rõ lý do tại ô *Giải trình / Đề xuất*.
-        - 🌍 **Do khách quan**: Hệ thống gửi yêu cầu chờ Quản lý duyệt để chấm điểm châm chước (50%, 80%, 90%...).
+        - 🌍 **Do khách quan**: Hệ thống gửi yêu cầu để Quản lý xem xét lý do và đánh giá lại mức điểm (50%, 80%, 90%...).
         - 🌧️ **Do chủ quan**: Công việc bị tính là chưa hoàn thành và nhận 0 điểm KPI.
         """)
         
@@ -3690,7 +3690,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         
     with tab_ql:
         st.success("""
-        **1️⃣ Duyệt việc Khách quan (Chấm điểm châm chước)**
+        **1️⃣ Xem xét và Đánh giá lý do Khách quan**
         - 🖱️ Vào mục **✅ Duyệt việc Khách quan**.
         - Hệ thống liệt kê các công việc nhân viên báo cáo trễ hạn với lý do **Khách quan**.
         - Bạn xem xét giải trình, click trực tiếp vào ô *Mức độ KPI ghi nhận* để chọn điểm phù hợp (Miễn trừ, 50%, 80%, 90%...).
