@@ -3715,7 +3715,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         **🌟 TIÊU CHÍ ĐÁNH GIÁ VÀ XẾP LOẠI KPI**
         
         🧮 **1. Công thức tính điểm KPI Tổng:**
-        > **Điểm KPI** = (Điểm trung bình công việc **Định kỳ** × 70%) + (Điểm trung bình công việc **Giao ban** × 30%) + Điểm thưởng/phạt.
+        > :blue[**Điểm KPI**] = (:green[**Điểm trung bình công việc Định kỳ**] × **70%**) + (:orange[**Điểm trung bình công việc Giao ban**] × **30%**) + :red[**Điểm thưởng/phạt**]
         
         *(Lưu ý: Nếu không có công việc Giao ban, hệ thống sẽ tự động điều chỉnh 100% trọng số cho công việc Định kỳ).*
         
