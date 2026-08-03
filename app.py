@@ -1008,8 +1008,8 @@ st.markdown("""
         font-family: 'Be Vietnam Pro', sans-serif !important;
     }
     .block-container {
-        padding-top: 2rem !important;
-        padding-bottom: 2rem !important;
+        padding-top: 4rem !important;
+        padding-bottom: 3rem !important;
     }
     .main-title {
         font-size: 28px;
@@ -1156,7 +1156,8 @@ menu = st.sidebar.radio(
         "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
         "🏆 Đánh giá KPI & Xếp loại",
         "✅ Duyệt việc Khách quan",
-        "⚙️ Quản Lý Cấu HÌnh"
+        "⚙️ Quản Lý Cấu HÌnh",
+        "📖 Sổ tay Hướng dẫn"
     ],
     index=0
 )
@@ -1394,15 +1395,7 @@ def clean_proj_name(name):
 
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
 if menu == "🚀 Bảng theo dõi tiến độ công việc":
-    st.info("""📘 **Sổ tay Hướng dẫn KPI dành cho Nhân sự - DMT-Group**
-*Đây là cẩm nang hành động trực quan, ngắn gọn giúp nhân viên làm quen với hệ thống chỉ trong 2 phút.*
-
-1. **Đăng ký đầu tháng (Từ ngày 30 đến ngày 3):** Tự khai báo các đầu việc. Bạn có thể tự điền "Tỷ trọng KPI" cho từng việc. Nếu để trống (hoặc 0), hệ thống sẽ tự động chia đều tỷ trọng còn lại cho các công việc này.
-2. **Báo cáo Đã hoàn thành:** Khi hoàn thành, đổi trạng thái thành **Đã hoàn thành** (tiến độ 100%). Cần dán kèm Link minh chứng kết quả (Drive/OneDrive) vào ô tương ứng.
-3. **Báo cáo Có vướng mắc (Trễ hạn):** Chuyển trạng thái thành **Có vướng mắc** và viết giải trình cụ thể.
-   - Phân loại **Do khách quan**: Hệ thống sẽ gửi chờ Quản lý duyệt để chấm điểm châm chước (50%, 80%, 90%...).
-   - Phân loại **Do chủ quan**: Công việc bị tính là chưa hoàn thành (0 điểm).
-4. **Theo dõi:** Kiểm soát hạn chót tại thẻ *CÔNG VIỆC TỚI HẠN* để chủ động điều phối tiến độ.""")
+    st.info("💡 **Gợi ý:** Để xem chi tiết hướng dẫn sử dụng phần mềm, bạn hãy nhấp vào mục **📖 Sổ tay Hướng dẫn** ở thanh Menu bên trái nhé!")
     
     st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_company}")
 
@@ -3649,4 +3642,50 @@ elif menu == "⚙️ Quản Lý Cấu HÌnh":
            client_x509_cert_url = "https://www.googleapis.com/workspace/3pid/cert"
            ```
         5. **Khởi động lại (Reboot) app**: Lưu lại Secrets, Streamlit sẽ tự động đồng bộ và nạp dữ liệu từ Google Sheets.
+        """)
+
+# ----------------- 6. SỔ TAY HƯỚNG DẪN -----------------
+elif menu == "📖 Sổ tay Hướng dẫn":
+    st.markdown("## 📖 Sổ tay Hướng dẫn sử dụng phần mềm KPI")
+    st.markdown("Chọn vai trò của bạn để xem hướng dẫn chi tiết:")
+    
+    tab_nv, tab_ql = st.tabs(["👨‍💼 Hướng dẫn dành cho Nhân viên", "👔 Hướng dẫn dành cho Quản lý"])
+    
+    with tab_nv:
+        st.markdown("""
+        ### 1. Đăng ký công việc (Đầu tháng)
+        - **Thời gian:** Từ ngày 30 tháng trước đến ngày 3 tháng này.
+        - **Thao tác:** Vào mục **Thêm / Cập nhật công việc**.
+        - **Nội dung:** Tự khai báo các đầu việc chính trong tháng. Bạn có thể tự điền *Tỷ trọng KPI* (%). Nếu để trống hoặc bằng 0, hệ thống sẽ tự động tính toán và chia đều tỷ trọng còn lại cho các đầu việc đó.
+        
+        ### 2. Báo cáo tiến độ và Hoàn thành
+        - Khi thực hiện xong công việc, vào mục **Thêm / Cập nhật công việc**, kéo thanh tiến độ lên 100% hoặc đổi Trạng thái thành **Đã hoàn thành**.
+        - **Lưu ý quan trọng:** Bạn cần dán kèm Link minh chứng kết quả (từ Google Drive, OneDrive...) vào ô *Link Kết Quả*.
+        
+        ### 3. Xử lý Trễ hạn / Có vướng mắc
+        - Nếu công việc gặp rủi ro trễ hạn, đổi trạng thái thành **Có vướng mắc** và ghi rõ lý do tại ô *Giải trình / Đề xuất*.
+        - Phân loại **Do khách quan**: Hệ thống sẽ gửi yêu cầu chờ Quản lý duyệt để chấm điểm châm chước (ví dụ: 50%, 80%, 90%...).
+        - Phân loại **Do chủ quan**: Công việc sẽ bị tính là chưa hoàn thành và nhận 0 điểm KPI cho phần việc đó.
+        
+        ### 4. Theo dõi công việc hàng ngày
+        - Vào mục **Bảng theo dõi tiến độ công việc**.
+        - Xem thẻ **CÔNG VIỆC TỚI HẠN** để biết việc nào sắp đến hạn (màu vàng) hoặc đã trễ hạn (màu đỏ) để ưu tiên xử lý.
+        """)
+        
+    with tab_ql:
+        st.markdown("""
+        ### 1. Duyệt việc Khách quan (Chấm điểm châm chước)
+        - Vào mục **✅ Duyệt việc Khách quan**.
+        - Hệ thống sẽ liệt kê các công việc mà nhân viên báo cáo trễ hạn với lý do **Khách quan**.
+        - Bạn xem xét lý do giải trình, click trực tiếp vào ô *Mức độ KPI ghi nhận* để chọn mức điểm phù hợp (Miễn trừ, 50%, 80%, 90%...).
+        - Sau khi chọn xong tất cả, bấm nút **💾 Lưu toàn bộ phê duyệt** ở cuối danh sách.
+        
+        ### 2. Xem Báo cáo Xếp loại KPI
+        - Vào mục **🏆 Đánh giá KPI & Xếp loại**.
+        - Xem biểu đồ tổng quan về tỷ lệ hoàn thành KPI của toàn bộ nhân sự trong phòng ban.
+        - Bảng dữ liệu chi tiết sẽ tính toán ra điểm KPI cuối cùng và tự động Xếp loại (Xuất sắc, Tốt, Khá, Kém...) cho từng nhân sự dựa trên trọng số công việc.
+        
+        ### 3. Xem Tiến độ Tổng thể (Gantt)
+        - Vào mục **📊 SƠ ĐỒ GANTT DỰ ÁN DMT**.
+        - Xem tiến độ của tất cả dự án/công việc trực quan theo dòng thời gian thực để dễ dàng điều phối nguồn lực.
         """)
