@@ -3008,13 +3008,6 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             adj_val = p_info['Thưởng/Phạt']
                             final_val = p_info['TỔNG ĐIỂM']
                             
-                            if has_gb:
-                                st.info(f"**Tổng điểm = (Điểm Công việc định kỳ × 70% + Điểm Giao ban × 30%) + Điểm Thưởng/Phạt**\n\n"
-                                        f"👉 **{final_val}** = ({kh_val} × 0.7 + {gb_val} × 0.3) + ({adj_val})")
-                            else:
-                                st.info(f"**Tổng điểm = Điểm Công việc định kỳ + Điểm Thưởng/Phạt** (Không có việc Giao ban)\n\n"
-                                        f"👉 **{final_val}** = {kh_val} + ({adj_val})")
-                            
                             st.markdown(f"**📝 Danh sách công việc của {det_p}:**")
                             p_tasks = kpi_df[kpi_df['NguoiChuTri'] == det_p].copy()
                             if p_tasks.empty:
@@ -3027,6 +3020,11 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 
                                 quy_dois = []
                                 w_thuctes = []
+                                kh_parts = []
+                                gb_parts = []
+                                kh_tw = 0.0
+                                gb_tw = 0.0
+                                
                                 for idx, row in p_tasks.iterrows():
                                     is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                                     w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
@@ -3045,11 +3043,34 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                         p_tasks.at[idx, 'MucDoGhiNhan'] = "-"
                                     
                                     quy_dois.append(p)
-                                    w_thuctes.append(round(w, 2))
+                                    w_round = round(w, 2)
+                                    w_thuctes.append(w_round)
+                                    
+                                    if row.get('NguonGiaoViec', '') == 'Công việc trong "Giao ban"':
+                                        if w_round > 0:
+                                            gb_parts.append(f"({p} × {w_round}%)")
+                                            gb_tw += w_round
+                                    else:
+                                        if w_round > 0:
+                                            kh_parts.append(f"({p} × {w_round}%)")
+                                            kh_tw += w_round
                                     
                                 p_tasks['Tỷ trọng (Thực tế) %'] = w_thuctes
                                 p_tasks['Điểm quy đổi'] = quy_dois
                                 
+                                kh_math = f"[{' + '.join(kh_parts)}] / {round(kh_tw,2)}%" if kh_parts else "0"
+                                gb_math = f"[{' + '.join(gb_parts)}] / {round(gb_tw,2)}%" if gb_parts else "0"
+                                
+                                if has_gb:
+                                    st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
+                                            f"**2️⃣ Điểm Giao ban ({gb_val}):** = {gb_math}\n\n"
+                                            f"**3️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
+                                            f"👉 **TỔNG ĐIỂM ({final_val})** = (Điểm KH × 70% + Điểm GB × 30%) + Thưởng/Phạt = ({kh_val} × 0.7 + {gb_val} × 0.3) + ({adj_val})")
+                                else:
+                                    st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
+                                            f"**2️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
+                                            f"👉 **TỔNG ĐIỂM ({final_val})** = Điểm KH + Thưởng/Phạt = {kh_val} + ({adj_val})")
+
                                 p_tasks_disp = p_tasks[['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI', 'Tỷ trọng (Thực tế) %', 'Điểm quy đổi']]
                                 st.dataframe(p_tasks_disp, use_container_width=True, hide_index=True)
                                 
