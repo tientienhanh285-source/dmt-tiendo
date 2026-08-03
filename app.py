@@ -53,6 +53,35 @@ def calculate_time_progress(start_date, deadline_date, is_completed=False):
     except Exception:
         return 0.0
 
+from contextlib import contextmanager
+import time
+
+@contextmanager
+def acquire_db_lock(timeout=15):
+    lock_dir = "db_write.lock"
+    start_time = time.time()
+    locked = False
+    
+    while time.time() - start_time < timeout:
+        try:
+            os.mkdir(lock_dir)
+            locked = True
+            break
+        except FileExistsError:
+            time.sleep(0.5)
+            
+    if not locked:
+        st.error("⚠️ Hệ thống đang bận do có nhiều người cùng lưu dữ liệu. Vui lòng đợi vài giây và thử lại.")
+        st.stop()
+        
+    try:
+        yield
+    finally:
+        try:
+            os.rmdir(lock_dir)
+        except Exception:
+            pass
+
 # Page config - Light Theme is handled natively by Streamlit's default settings
 st.set_page_config(
     page_title="Hệ thống Quản lý Tiến độ Công việc & KPI - DMT Group",
@@ -632,165 +661,166 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
     if valid_df.empty:
         return False, "Không tìm thấy dòng hợp lệ nào chứa đầy đủ thông tin 'Thời hạn hoàn thành' và 'Nội dung'."
         
-    # Load existing docs & tasks database
-    docs_df = read_incoming_docs_db()
-    tasks_df = read_db()
+    with acquire_db_lock():
+        st.cache_data.clear()
+        docs_df = read_incoming_docs_db()
+        tasks_df = read_db()
+        
+        success_count = 0
+        update_count = 0
     
-    success_count = 0
-    update_count = 0
-    
-    # Convert today to date if it is datetime
-    if isinstance(today, datetime):
-        today = today.date()
-        
-    for _, row in valid_df.iterrows():
-        # Parse fields
-        date_col = mapping["NGÀY"]
-        if date_col and not pd.isna(row[date_col]):
-            try:
-                ngay_ban_hanh = pd.to_datetime(row[date_col]).date()
-            except Exception:
-                ngay_ban_hanh = today
-        else:
-            ngay_ban_hanh = today
+        # Convert today to date if it is datetime
+        if isinstance(today, datetime):
+            today = today.date()
             
-        try:
-            deadline_val = pd.to_datetime(row[deadline_col]).date()
-        except Exception:
-            continue
-            
-        so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetime.now().strftime('%M%S')}"
-        co_quan_gui = str(row[mapping["ĐƠN VỊ"]]).strip() if mapping["ĐƠN VỊ"] and not pd.isna(row[mapping["ĐƠN VỊ"]]) else ""
-        trich_yeu = str(row[content_col]).strip()
-        
-        ban_chu_tri_raw = str(row[mapping["Người/ Ban thực hiện"]]).strip() if mapping["Người/ Ban thực hiện"] and not pd.isna(row[mapping["Người/ Ban thực hiện"]]) else ""
-        config = load_settings()
-        all_depts = set(config.get("departments", []))
-        for comp_data in config.get("companies", {}).values():
-            all_depts.update(comp_data.get("departments", []))
-            
-        if ban_chu_tri_raw in all_depts:
-            ban_chu_tri = ban_chu_tri_raw
-        else:
-            ban_chu_tri = "Ban Lãnh đạo"
-            
-        trang_thai_raw = str(row[mapping["Trạng thái"]]).strip() if mapping["Trạng thái"] and not pd.isna(row[mapping["Trạng thái"]]) else "⏳ Đang xử lý"
-        ghi_chu = str(row[ghi_chu_col]).strip() if ghi_chu_col and not pd.isna(row[ghi_chu_col]) else ""
-        
-        is_completed = trang_thai_raw in ["Đã xong", "Hoàn thành", "Đã hoàn thành", "✅ Đã xong"]
-        
-        trang_thai = "⏳ Đang xử lý"
-        if is_completed:
-            trang_thai = "✅ Đã xong"
-        else:
-            if deadline_val < today:
-                days_late = (today - deadline_val).days
-                trang_thai = f"⚠️ Trễ hạn xử lý CV (Trễ {days_late} ngày)"
+        for _, row in valid_df.iterrows():
+            # Parse fields
+            date_col = mapping["NGÀY"]
+            if date_col and not pd.isna(row[date_col]):
+                try:
+                    ngay_ban_hanh = pd.to_datetime(row[date_col]).date()
+                except Exception:
+                    ngay_ban_hanh = today
             else:
-                trang_thai = "⏳ Đang xử lý"
+                ngay_ban_hanh = today
                 
-        # Check duplicate in docs_df
-        duplicate_doc = docs_df[docs_df['SoKyHieu'] == so_ky_hieu]
-        
-        if duplicate_doc.empty:
-            # Generate next DOC ID
-            next_doc_id = 1
-            if not docs_df.empty:
-                ids = docs_df['ID'].tolist()
-                nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
-                if nums:
-                    next_doc_id = max(nums) + 1
-            doc_id = f"DOC-{next_doc_id:03d}"
+            try:
+                deadline_val = pd.to_datetime(row[deadline_col]).date()
+            except Exception:
+                continue
+                
+            so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetime.now().strftime('%M%S')}"
+            co_quan_gui = str(row[mapping["ĐƠN VỊ"]]).strip() if mapping["ĐƠN VỊ"] and not pd.isna(row[mapping["ĐƠN VỊ"]]) else ""
+            trich_yeu = str(row[content_col]).strip()
             
-            new_doc_row = {
-                "ID": doc_id,
-                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
-                "SoKyHieu": so_ky_hieu,
-                "NgayBanHanh": ngay_ban_hanh,
-                "CoQuanGui": co_quan_gui,
-                "TrichYeu": trich_yeu,
-                "TenDuAn": "Quản lý Công văn đến",
-                "GanttTaskId": "",
-                "BanChuTri": ban_chu_tri,
-                "Deadline": deadline_val,
-                "LinkFile": "",
-                "TrangThai": trang_thai,
-                "NgayCapNhat": datetime.now(),
-                "GhiChu": ghi_chu
-            }
-            docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
-            success_count += 1
-        else:
-            # Update existing document
-            doc_id = duplicate_doc.iloc[0]['ID']
-            idx = docs_df[docs_df['ID'] == doc_id].index[0]
-            docs_df.at[idx, "DonVi"] = selected_company if selected_company != "Tất cả đơn vị" else docs_df.at[idx, "DonVi"]
-            docs_df.at[idx, "NgayBanHanh"] = ngay_ban_hanh
-            docs_df.at[idx, "CoQuanGui"] = co_quan_gui
-            docs_df.at[idx, "TrichYeu"] = trich_yeu
-            docs_df.at[idx, "BanChuTri"] = ban_chu_tri
-            docs_df.at[idx, "Deadline"] = deadline_val
-            docs_df.at[idx, "TrangThai"] = trang_thai
-            docs_df.at[idx, "NgayCapNhat"] = datetime.now()
-            docs_df.at[idx, "GhiChu"] = ghi_chu
-            update_count += 1
+            ban_chu_tri_raw = str(row[mapping["Người/ Ban thực hiện"]]).strip() if mapping["Người/ Ban thực hiện"] and not pd.isna(row[mapping["Người/ Ban thực hiện"]]) else ""
+            config = load_settings()
+            all_depts = set(config.get("departments", []))
+            for comp_data in config.get("companies", {}).values():
+                all_depts.update(comp_data.get("departments", []))
+                
+            if ban_chu_tri_raw in all_depts:
+                ban_chu_tri = ban_chu_tri_raw
+            else:
+                ban_chu_tri = "Ban Lãnh đạo"
+                
+            trang_thai_raw = str(row[mapping["Trạng thái"]]).strip() if mapping["Trạng thái"] and not pd.isna(row[mapping["Trạng thái"]]) else "⏳ Đang xử lý"
+            ghi_chu = str(row[ghi_chu_col]).strip() if ghi_chu_col and not pd.isna(row[ghi_chu_col]) else ""
             
-        # Update or create the associated Task in tasks_df
-        task_name = f"📩 [Công văn đến] {trich_yeu} (Số: {so_ky_hieu})"
-        duplicate_task = tasks_df[tasks_df['TenCongViec'].str.contains(so_ky_hieu, na=False)]
-        
-        task_status = "Đang thực hiện"
-        if trang_thai == "✅ Đã xong":
-            task_status = "Hoàn thành"
-        elif deadline_val < today:
-            task_status = "Quá hạn"
+            is_completed = trang_thai_raw in ["Đã xong", "Hoàn thành", "Đã hoàn thành", "✅ Đã xong"]
             
-        if duplicate_task.empty:
-            next_tsk_id = 1
-            if not tasks_df.empty:
-                t_ids = tasks_df['ID'].tolist()
-                t_nums = [int(m[0]) for idx in t_ids for m in [re.findall(r'\d+', str(idx))] if m]
-                if t_nums:
-                    next_tsk_id = max(t_nums) + 1
-            task_id = f"TSK-{next_tsk_id:03d}"
+            trang_thai = "⏳ Đang xử lý"
+            if is_completed:
+                trang_thai = "✅ Đã xong"
+            else:
+                if deadline_val < today:
+                    days_late = (today - deadline_val).days
+                    trang_thai = f"⚠️ Trễ hạn xử lý CV (Trễ {days_late} ngày)"
+                else:
+                    trang_thai = "⏳ Đang xử lý"
+                    
+            # Check duplicate in docs_df
+            duplicate_doc = docs_df[docs_df['SoKyHieu'] == so_ky_hieu]
             
-            new_task_row = {
-                "ID": task_id,
-                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
-                "PhongBan": ban_chu_tri,
-                "NguoiChuTri": "Ban Lãnh đạo",
-                "TenDuAn": "Quản lý Công văn đến",
-                "MocTienDo": "Tự do",
-                "SanPhamBanGiao": "Xem chi tiết văn bản",
-                "TenCongViec": task_name,
-                "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
-                "NgayBatDau": ngay_ban_hanh,
-                "Deadline": deadline_val,
-                "DoUuTien": "Trung bình",
-                "PhanTramHoanThanh": 100 if task_status == "Hoàn thành" else 99,
-                "TrangThai": task_status,
-                "LinkKetQua": "",
-                "GiaiTrinhDeXuat": "",
-                "NgayCapNhat": datetime.now(),
-                "ChuKyTheoDoi": "Theo dự án / Tự do",
-                "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ" if task_status != "Quá hạn" else "👤 Do chủ quan"
-            }
-            tasks_df = pd.concat([tasks_df, pd.DataFrame([new_task_row])], ignore_index=True)
-        else:
-            task_id = duplicate_task.iloc[0]['ID']
-            t_idx = tasks_df[tasks_df['ID'] == task_id].index[0]
-            tasks_df.at[t_idx, "PhongBan"] = ban_chu_tri
-            tasks_df.at[t_idx, "TenCongViec"] = task_name
-            tasks_df.at[t_idx, "NgayBatDau"] = ngay_ban_hanh
-            tasks_df.at[t_idx, "Deadline"] = deadline_val
-            tasks_df.at[t_idx, "TrangThai"] = task_status
-            tasks_df.at[t_idx, "PhanTramHoanThanh"] = 100 if task_status == "Hoàn thành" else 99
+            if duplicate_doc.empty:
+                # Generate next DOC ID
+                next_doc_id = 1
+                if not docs_df.empty:
+                    ids = docs_df['ID'].tolist()
+                    nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                    if nums:
+                        next_doc_id = max(nums) + 1
+                doc_id = f"DOC-{next_doc_id:03d}"
+                
+                new_doc_row = {
+                    "ID": doc_id,
+                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                    "SoKyHieu": so_ky_hieu,
+                    "NgayBanHanh": ngay_ban_hanh,
+                    "CoQuanGui": co_quan_gui,
+                    "TrichYeu": trich_yeu,
+                    "TenDuAn": "Quản lý Công văn đến",
+                    "GanttTaskId": "",
+                    "BanChuTri": ban_chu_tri,
+                    "Deadline": deadline_val,
+                    "LinkFile": "",
+                    "TrangThai": trang_thai,
+                    "NgayCapNhat": datetime.now(),
+                    "GhiChu": ghi_chu
+                }
+                docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
+                success_count += 1
+            else:
+                # Update existing document
+                doc_id = duplicate_doc.iloc[0]['ID']
+                idx = docs_df[docs_df['ID'] == doc_id].index[0]
+                docs_df.at[idx, "DonVi"] = selected_company if selected_company != "Tất cả đơn vị" else docs_df.at[idx, "DonVi"]
+                docs_df.at[idx, "NgayBanHanh"] = ngay_ban_hanh
+                docs_df.at[idx, "CoQuanGui"] = co_quan_gui
+                docs_df.at[idx, "TrichYeu"] = trich_yeu
+                docs_df.at[idx, "BanChuTri"] = ban_chu_tri
+                docs_df.at[idx, "Deadline"] = deadline_val
+                docs_df.at[idx, "TrangThai"] = trang_thai
+                docs_df.at[idx, "NgayCapNhat"] = datetime.now()
+                docs_df.at[idx, "GhiChu"] = ghi_chu
+                update_count += 1
+                
+            # Update or create the associated Task in tasks_df
+            task_name = f"📩 [Công văn đến] {trich_yeu} (Số: {so_ky_hieu})"
+            duplicate_task = tasks_df[tasks_df['TenCongViec'].str.contains(so_ky_hieu, na=False)]
+            
+            task_status = "Đang thực hiện"
+            if trang_thai == "✅ Đã xong":
+                task_status = "Hoàn thành"
+            elif deadline_val < today:
+                task_status = "Quá hạn"
+                
+            if duplicate_task.empty:
+                next_tsk_id = 1
+                if not tasks_df.empty:
+                    t_ids = tasks_df['ID'].tolist()
+                    t_nums = [int(m[0]) for idx in t_ids for m in [re.findall(r'\d+', str(idx))] if m]
+                    if t_nums:
+                        next_tsk_id = max(t_nums) + 1
+                task_id = f"TSK-{next_tsk_id:03d}"
+                
+                new_task_row = {
+                    "ID": task_id,
+                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                    "PhongBan": ban_chu_tri,
+                    "NguoiChuTri": "Ban Lãnh đạo",
+                    "TenDuAn": "Quản lý Công văn đến",
+                    "MocTienDo": "Tự do",
+                    "SanPhamBanGiao": "Xem chi tiết văn bản",
+                    "TenCongViec": task_name,
+                    "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+                    "NgayBatDau": ngay_ban_hanh,
+                    "Deadline": deadline_val,
+                    "DoUuTien": "Trung bình",
+                    "PhanTramHoanThanh": 100 if task_status == "Hoàn thành" else 99,
+                    "TrangThai": task_status,
+                    "LinkKetQua": "",
+                    "GiaiTrinhDeXuat": "",
+                    "NgayCapNhat": datetime.now(),
+                    "ChuKyTheoDoi": "Theo dự án / Tự do",
+                    "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ" if task_status != "Quá hạn" else "👤 Do chủ quan"
+                }
+                tasks_df = pd.concat([tasks_df, pd.DataFrame([new_task_row])], ignore_index=True)
+            else:
+                task_id = duplicate_task.iloc[0]['ID']
+                t_idx = tasks_df[tasks_df['ID'] == task_id].index[0]
+                tasks_df.at[t_idx, "PhongBan"] = ban_chu_tri
+                tasks_df.at[t_idx, "TenCongViec"] = task_name
+                tasks_df.at[t_idx, "NgayBatDau"] = ngay_ban_hanh
+                tasks_df.at[t_idx, "Deadline"] = deadline_val
+                tasks_df.at[t_idx, "TrangThai"] = task_status
+                tasks_df.at[t_idx, "PhanTramHoanThanh"] = 100 if task_status == "Hoàn thành" else 99
             tasks_df.at[t_idx, "NgayCapNhat"] = datetime.now()
             
-    if save_incoming_docs_db(docs_df) and save_db(tasks_df):
-        return True, f"Đồng bộ thành công! Đã thêm mới {success_count} văn bản và cập nhật {update_count} văn bản."
-    else:
-        return False, "Không thể lưu dữ liệu vào cơ sở dữ liệu."
+        if save_incoming_docs_db(docs_df) and save_db(tasks_df):
+            return True, f"Đồng bộ thành công! Đã thêm mới {success_count} văn bản và cập nhật {update_count} văn bản."
+        else:
+            return False, "Không thể lưu dữ liệu vào cơ sở dữ liệu."
 
 def read_incoming_docs_db():
     required_cols = [
@@ -2155,11 +2185,13 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         "MucDoGhiNhan": "0% (Không ghi nhận)"
                     }
                     
-                    df_updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-                    if save_db(df_updated):
-                        st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
+                    with acquire_db_lock():
                         st.cache_data.clear()
-                        st.rerun()
+                        fresh_df = read_db()
+                        df_updated = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
+                        if save_db(df_updated):
+                            st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
+                            st.rerun()
 
     # Form: Update Progress
     with tab_update:
@@ -2394,37 +2426,40 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                     f.write(u_file.getbuffer())
                                 final_link = file_path
                                 
-                        df.loc[df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
-                        df.loc[df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
-                        df.loc[df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
-                        df.loc[df['ID'] == selected_id, 'NgayBatDau'] = u_start
-                        df.loc[df['ID'] == selected_id, 'Deadline'] = u_deadline
-                        df.loc[df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
-                        df.loc[df['ID'] == selected_id, 'TrangThai'] = u_status
-                        df.loc[df['ID'] == selected_id, 'LinkKetQua'] = final_link
-                        df.loc[df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if ((u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not u_is_late and u_status == "Có vướng mắc")) else ""
-                        df.loc[df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now()
-                        df.loc[df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
-                        df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
-                        df.loc[df['ID'] == selected_id, 'TyTrongKPI'] = u_weight
-                        df.loc[df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
-                        if u_is_late:
-                            df.loc[df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
-                        else:
-                            df.loc[df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
-
-                        
-                        if save_db(df):
-                            st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
+                        with acquire_db_lock():
                             st.cache_data.clear()
-                            st.rerun()
+                            fresh_df = read_db()
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayBatDau'] = u_start
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'Deadline'] = u_deadline
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if ((u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not u_is_late and u_status == "Có vướng mắc")) else ""
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now()
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = u_weight
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
+                            if u_is_late:
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
+                            else:
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
+
+                            if save_db(fresh_df):
+                                st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
+                                st.rerun()
                             
                 if del_click:
-                    df_after_del = df[df['ID'] != selected_id]
-                    if save_db(df_after_del):
-                        st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_id}!")
+                    with acquire_db_lock():
                         st.cache_data.clear()
-                        st.rerun()
+                        fresh_df = read_db()
+                        df_after_del = fresh_df[fresh_df['ID'] != selected_id]
+                        if save_db(df_after_del):
+                            st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_id}!")
+                            st.rerun()
 
                 st.markdown("---")
                 with st.expander("🔄 Tái tạo công việc định kỳ (Nhân bản cho kỳ sau)"):
@@ -2457,42 +2492,45 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         rep_deadline = st.date_input("Hạn chót mới", value=default_deadline, key=f"rep_deadline_{task_data['ID']}")
                         
                     if st.button("🔄 TẠO CÔNG VIỆC CHO KỲ SAU", type="primary", key=f"btn_rep_{task_data['ID']}"):
-                        next_id = 1
-                        if not df.empty:
-                            ids = df['ID'].tolist()
-                            import re
-                            nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
-                            if nums:
-                                next_id = max(nums) + 1
-                        new_id = f"TSK-{next_id:03d}"
-                        
-                        new_row = {
-                            "ID": new_id,
-                            "DonVi": task_data['DonVi'],
-                            "PhongBan": task_data['PhongBan'],
-                            "NguoiChuTri": task_data['NguoiChuTri'],
-                            "TenDuAn": task_data['TenDuAn'],
-                            "MocTienDo": "Tự do",
-                            "SanPhamBanGiao": "Xem chi tiết",
-                            "TenCongViec": rep_name.strip(),
-                            "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
-                            "NgayBatDau": rep_start,
-                            "Deadline": rep_deadline,
-                            "DoUuTien": "Trung bình",
-                            "PhanTramHoanThanh": 0,
-                            "TrangThai": "Chưa bắt đầu" if today < rep_start else "Đang thực hiện",
-                            "LinkKetQua": "",
-                            "GiaiTrinhDeXuat": "",
-                            "NgayCapNhat": datetime.now(),
-                            "ChuKyTheoDoi": task_data['ChuKyTheoDoi'],
-                            "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
-                        }
-                        
-                        df_rep = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-                        if save_db(df_rep):
-                            st.success(f"🎉 Đã nhân bản thành công công việc mới mã: {new_id}!")
+                        with acquire_db_lock():
                             st.cache_data.clear()
-                            st.rerun()
+                            fresh_df = read_db()
+                            
+                            next_id = 1
+                            if not fresh_df.empty:
+                                ids = fresh_df['ID'].tolist()
+                                import re
+                                nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                                if nums:
+                                    next_id = max(nums) + 1
+                            new_id = f"TSK-{next_id:03d}"
+                            
+                            new_row = {
+                                "ID": new_id,
+                                "DonVi": task_data['DonVi'],
+                                "PhongBan": task_data['PhongBan'],
+                                "NguoiChuTri": task_data['NguoiChuTri'],
+                                "TenDuAn": task_data['TenDuAn'],
+                                "MocTienDo": "Tự do",
+                                "SanPhamBanGiao": "Xem chi tiết",
+                                "TenCongViec": rep_name.strip(),
+                                "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+                                "NgayBatDau": rep_start,
+                                "Deadline": rep_deadline,
+                                "DoUuTien": "Trung bình",
+                                "PhanTramHoanThanh": 0,
+                                "TrangThai": "Chưa bắt đầu" if today < rep_start else "Đang thực hiện",
+                                "LinkKetQua": "",
+                                "GiaiTrinhDeXuat": "",
+                                "NgayCapNhat": datetime.now(),
+                                "ChuKyTheoDoi": task_data['ChuKyTheoDoi'],
+                                "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
+                            }
+                            
+                            df_rep = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
+                            if save_db(df_rep):
+                                st.success(f"🎉 Đã nhân bản thành công công việc mới mã: {new_id}!")
+                                st.rerun()
 
 # ----------------- 5. ĐÁNH GIÁ KPI & XẾP LOẠI -----------------
 elif menu == "🏆 Đánh giá KPI & Xếp loại":
@@ -3205,24 +3243,27 @@ elif menu == "✅ Duyệt việc Khách quan":
                 )
                 
                 if st.button("💾 Lưu tất cả thay đổi", type="primary"):
-                    # Update main df
-                    changed = False
-                    for idx, row in edited_df.iterrows():
-                        task_id = row['ID']
-                        new_val = row['MucDoGhiNhan']
-                        old_val = df.loc[df['ID'] == task_id, 'MucDoGhiNhan'].values[0]
-                        if new_val != old_val:
-                            df.loc[df['ID'] == task_id, 'MucDoGhiNhan'] = new_val
-                            changed = True
-                            
-                    if changed:
-                        df = df.drop(columns=['is_in_month'], errors='ignore')
-                        if save_db(df):
-                            st.success("✅ Đã lưu toàn bộ phê duyệt thành công!")
-                            st.cache_data.clear()
-                            st.rerun()
-                    else:
-                        st.info("Chưa có thay đổi nào cần lưu.")
+                    with acquire_db_lock():
+                        st.cache_data.clear()
+                        fresh_df = read_db()
+                        changed = False
+                        for idx, row in edited_df.iterrows():
+                            task_id = row['ID']
+                            new_val = row['MucDoGhiNhan']
+                            # Some tasks might not exist if deleted concurrently, but for robustness:
+                            if task_id in fresh_df['ID'].values:
+                                old_val = fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'].values[0]
+                                if new_val != old_val:
+                                    fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'] = new_val
+                                    changed = True
+                                
+                        if changed:
+                            fresh_df = fresh_df.drop(columns=['is_in_month'], errors='ignore')
+                            if save_db(fresh_df):
+                                st.success("✅ Đã lưu toàn bộ phê duyệt thành công!")
+                                st.rerun()
+                        else:
+                            st.info("Chưa có thay đổi nào cần lưu.")
 
 elif menu == "⚙️ Quản Lý Cấu Hình":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
