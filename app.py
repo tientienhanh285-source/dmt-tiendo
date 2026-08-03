@@ -1390,14 +1390,15 @@ def clean_proj_name(name):
 
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
 if menu == "🚀 Bảng theo dõi tiến độ công việc":
-    st.info("""💡 **Dành cho người mới:**
-1. **Đăng ký công việc đầu tháng:** Từ ngày 30 tháng này đến ngày 3 tháng sau, cần đăng ký công việc chủ chốt/định kỳ trong tháng. Nếu là công việc được giao trong cuộc họp giao ban, hãy chọn *Giao ban* (có thể cập nhật bổ sung sau nếu họp vào giữa/cuối tháng) 👉
-2. **Ghi nhận việc mới phát sinh:** Vào mục *Thêm / Cập nhật công việc* 👉
-3. **Cập nhật tiến độ:** Khi làm xong, vào mục *Thêm / Cập nhật công việc*, chuyển trạng thái thành **Đã hoàn thành** (tiến độ 100%).
-   - *Trường hợp trễ hạn/vướng mắc:* Chọn trạng thái **Có vướng mắc**.
-   - Nếu do lý do **khách quan**: Chờ Quản lý duyệt để chấm điểm KPI.
-   - Nếu do lý do **chủ quan**: Công việc được tính là chưa hoàn thành 👉
-4. **Theo dõi hạn chót:** Tại thẻ *CÔNG VIỆC TỚI HẠN* bên dưới.""")
+    st.info("""📘 **Sổ tay Hướng dẫn KPI dành cho Nhân sự - DMT-Group**
+*Đây là cẩm nang hành động trực quan, ngắn gọn giúp nhân viên (đặc biệt là nhân sự mới) làm quen với hệ thống chỉ trong 2 phút.*
+
+1. **Đăng ký đầu tháng (Từ ngày 30 đến ngày 3):** Tự chủ khai báo 3 - 5 đầu việc chủ chốt. Hệ thống tự động chia đều tỷ trọng mặc định, bạn có thể tự điều chỉnh (giới hạn từ 10% đến 50%/việc) sao cho tổng luôn bằng 100%.
+2. **Báo cáo Đã hoàn thành (100%):** Bắt buộc dán kèm Link minh chứng Drive/OneDrive dẫn đến kết quả thực tế. *(Nếu để trống link, hệ thống sẽ tính là 0 điểm)*.
+3. **Báo cáo Có vướng mắc (Trễ hạn):** Cần viết giải trình cụ thể.
+   - Lý do **khách quan & có giải trình**: Hệ thống sẽ gửi yêu cầu duyệt châm chước tới Quản lý.
+   - Lý do **chủ quan / không giải trình**: Công việc bị tính là chưa hoàn thành (0 điểm).
+4. **Theo dõi:** Kiểm soát hạn chót tại thẻ *CÔNG VIỆC TỚI HẠN* trên Dashboard để chủ động điều phối tiến độ.""")
     
     st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_company}")
 
