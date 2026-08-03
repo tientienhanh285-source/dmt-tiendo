@@ -31,28 +31,25 @@ except ImportError:
 from datetime import datetime, date, timedelta
 
 def calculate_time_progress(start_date, deadline_date, is_completed=False):
-    """Tính % thời gian đã trôi qua giữa Ngày bắt đầu và Hạn chót"""
+    """Tính % sức khỏe thời gian: Đang tốt (99), Sắp tới hạn (50), Trễ hạn (0)"""
     if is_completed:
         return 100.0
     try:
         today = date.today()
-        if isinstance(start_date, str):
-            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
         if isinstance(deadline_date, str):
             deadline_date = datetime.strptime(deadline_date, "%Y-%m-%d").date()
             
-        if not start_date or not deadline_date or start_date >= deadline_date:
+        if not deadline_date:
             return 0.0
             
-        total_days = (deadline_date - start_date).days
-        elapsed_days = (today - start_date).days
+        days_left = (deadline_date - today).days
         
-        if elapsed_days <= 0:
-            return 0.0
-        if elapsed_days >= total_days:
-            return 99.0
-            
-        return round((elapsed_days / total_days) * 100, 1)
+        if days_left < 0:
+            return 0.0  # Trễ hạn
+        elif 0 <= days_left <= 3:
+            return 50.0  # Sắp tới hạn
+        else:
+            return 99.0  # Còn nhiều hạn
     except Exception:
         return 0.0
 
@@ -108,7 +105,7 @@ def get_gsheets_conn():
         return None
 
 
-def safe_gsheets_read(conn, worksheet, ttl=600, fallback_df=None):
+def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
@@ -887,6 +884,7 @@ def save_incoming_docs_db(df):
         return False
 
 def read_db():
+    # Force cache clear for new progress calculation rules
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
