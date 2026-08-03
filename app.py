@@ -1390,7 +1390,13 @@ def clean_proj_name(name):
 
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
 if menu == "🚀 Bảng theo dõi tiến độ công việc":
-    st.info("💡 **Dành cho người mới:**\n1. Vào mục Thêm công việc để ghi nhận việc mới 👉\n2. Khi làm xong, vào mục Cập nhật tiến độ để kéo lên 100% 👉\n3. Theo dõi hạn chót ở Dashboard.")
+    st.info("""💡 **Dành cho người mới:**
+1. **Ghi nhận việc mới:** Vào mục *Thêm / Cập nhật công việc* 👉
+2. **Cập nhật tiến độ:** Khi làm xong, vào mục *Thêm / Cập nhật công việc*, chuyển trạng thái thành **Đã hoàn thành** (tiến độ 100%).
+   - *Trường hợp trễ hạn/vướng mắc:* Chọn trạng thái **Có vướng mắc**.
+   - Nếu do lý do **khách quan**: Chờ Quản lý duyệt để chấm điểm KPI.
+   - Nếu do lý do **chủ quan**: Công việc được tính là chưa hoàn thành 👉
+3. **Theo dõi hạn chót:** Tại thẻ *CÔNG VIỆC TỚI HẠN* bên dưới.""")
     
     st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_company}")
 
