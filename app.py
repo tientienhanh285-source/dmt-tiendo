@@ -2599,8 +2599,6 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
             )
         st.markdown("---")
         st.markdown("### ✏️ Quản lý Công việc Gantt")
-
-        st.markdown("### ✏️ Quản lý Công việc Gantt")
         g_tab_new, g_tab_edit = st.tabs(["➕ Thêm công việc Gantt mới", "✏️ Sửa / Xóa công việc Gantt"])
         
         with g_tab_new:
