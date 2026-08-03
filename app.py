@@ -1008,6 +1008,19 @@ st.markdown("""
         font-family: 'Be Vietnam Pro', sans-serif !important;
     }
     
+    /* Make Tab headers bolder and clearer */
+    button[data-baseweb="tab"] {
+        font-weight: 700 !important;
+        font-size: 15px !important;
+    }
+    button[data-baseweb="tab"] p {
+        font-weight: 700 !important;
+        font-size: 15px !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"] p {
+        color: #e65100 !important;
+    }
+    
     /* Hide Streamlit top-right icons */
     .stDeployButton {display:none !important;}
     .viewerBadge_container__1QSob {display: none !important;}
