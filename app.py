@@ -1147,8 +1147,7 @@ selected_company = st.sidebar.selectbox("CHỌN CÔNG TY / THÀNH VIÊN", compan
 menu = st.sidebar.radio(
     "PHÂN HỆ CHỨC NĂNG",
     [
-        "📊 Dashboard Tổng Quan",
-        "📋 Bảng Tiến Độ Chi Tiết",
+        "🚀 Trạm Điều Hành",
         "➕ Thêm / Cập Nhật Công Việc",
         "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
         "🏆 Đánh giá KPI & Xếp loại",
@@ -1390,39 +1389,11 @@ def clean_proj_name(name):
     return name.strip()
 
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
-if menu == "📊 Dashboard Tổng Quan":
-    st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
+if menu == "🚀 Trạm Điều Hành":
+    st.info("💡 **Dành cho người mới:**\n1. Vào mục Thêm công việc để ghi nhận việc mới 👉\n2. Khi làm xong, vào mục Cập nhật tiến độ để kéo lên 100% 👉\n3. Theo dõi hạn chót ở Dashboard.")
     
-    dash_df = display_df.copy()
-        
-    # Overdue and due today/tomorrow alerts scanning (Group 1 & 2)
-    def get_badge_and_urgency(deadline_val, today_dt):
-        if not isinstance(deadline_val, date):
-            if isinstance(deadline_val, datetime):
-                deadline_val = deadline_val.date()
-            else:
-                return None, None
-        if deadline_val < today_dt:
-            days_late = (today_dt - deadline_val).days
-            return f"🔴 [⚠️ Trễ {days_late} ngày]", 1
-        elif deadline_val == today_dt:
-            return "⏳ [Hạn hôm nay]", 2
-        elif deadline_val == today_dt + timedelta(days=1):
-            return "⚠️ [Hạn ngày mai]", 3
-        return None, None
+    st.markdown(f"### 🚀 Trạm Điều Hành — {selected_company}")
 
-    alert_list = []
-    for _, row in dash_df[dash_df['TrangThai'] != 'Hoàn thành'].iterrows():
-        badge, urgency = get_badge_and_urgency(row['Deadline'], today)
-        if badge:
-            row_copy = row.copy()
-            row_copy['Badge'] = badge
-            row_copy['Urgency'] = urgency
-            alert_list.append(row_copy)
-
-    if alert_list:
-        alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
-        st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(alert_df_show)} HẠNG MỤC CẦN LƯU Ý (TRỄ HẠN / SẮP ĐẾN HẠN)**")
     
     # Calculate stats based on filtered dash_df
     total_dash = len(dash_df)
@@ -1443,284 +1414,325 @@ if menu == "📊 Dashboard Tổng Quan":
         st.metric("Đang làm", doing_dash)
     with m_col4:
         st.metric("🔴 Trễ hạn / Vướng mắc", issue_dash + overdue_dash)
-        
+
     st.markdown("---")
     
-    # Critical alert panel
-    st.markdown("### ⚠️ Hạng mục cần lưu ý (Trễ hạn hoặc Sắp đến hạn)")
+    tab_report, tab_data = st.tabs(["📊 Góc nhìn Báo cáo", "📋 Góc nhìn Bảng dữ liệu"])
     
-    if alert_list:
-        alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
-        crit_display = pd.DataFrame()
-        crit_display['Ngày bắt đầu'] = alert_df_show['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
-        crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
-        crit_display['Tiến độ'] = alert_df_show['PhanTramHoanThanh'].apply(lambda x: f"{int(x)}%" if pd.notna(x) else "0%")
-        crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
-        crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
-        crit_display['Phòng ban'] = alert_df_show['PhongBan']
-        crit_display['Dự án / Hạng mục'] = alert_df_show['TenDuAn']
-        crit_display['Tên công việc'] = alert_df_show['TenCongViec']
-        crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
+    with tab_report:
+        st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
+    
+        dash_df = display_df.copy()
         
-        st.dataframe(
-            crit_display,
-            column_config={
-                "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
-                "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
-                "Tiến độ": st.column_config.TextColumn("Tiến độ", width=80),
-                "Trạng thái thực tế": st.column_config.TextColumn("Trạng thái thực tế", width=120),
-                "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-                "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
-                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
-                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
-                "Ghi chú / Giải trình vướng mắc": st.column_config.TextColumn("Ghi chú / Giải trình vướng mắc", width="large")
-            },
-            use_container_width=True,
-            hide_index=True
-        )
-    else:
-        st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc sắp đến hạn cần lưu ý!")
-        
-    st.markdown("---")
+        # Overdue and due today/tomorrow alerts scanning (Group 1 & 2)
+        def get_badge_and_urgency(deadline_val, today_dt):
+            if not isinstance(deadline_val, date):
+                if isinstance(deadline_val, datetime):
+                    deadline_val = deadline_val.date()
+                else:
+                    return None, None
+            if deadline_val < today_dt:
+                days_late = (today_dt - deadline_val).days
+                return f"🔴 [⚠️ Trễ {days_late} ngày]", 1
+            elif deadline_val == today_dt:
+                return "⏳ [Hạn hôm nay]", 2
+            elif deadline_val == today_dt + timedelta(days=1):
+                return "⚠️ [Hạn ngày mai]", 3
+            return None, None
 
+        alert_list = []
+        for _, row in dash_df[dash_df['TrangThai'] != 'Hoàn thành'].iterrows():
+            badge, urgency = get_badge_and_urgency(row['Deadline'], today)
+            if badge:
+                row_copy = row.copy()
+                row_copy['Badge'] = badge
+                row_copy['Urgency'] = urgency
+                alert_list.append(row_copy)
 
+        if alert_list:
+            alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+            st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(alert_df_show)} HẠNG MỤC CẦN LƯU Ý (TRỄ HẠN / SẮP ĐẾN HẠN)**")        
+        st.markdown("---")
     
-    # Performance Review Section
-    st.markdown("### 📈 Bảng Đánh giá Hiệu suất (Performance Review)")
-    st.markdown("*Hiệu suất trung bình (%) hoàn thành công việc theo từng Phòng ban:*")
+        # Critical alert panel
+        st.markdown("### ⚠️ Hạng mục cần lưu ý (Trễ hạn hoặc Sắp đến hạn)")
     
-    if not display_df.empty:
-        perf_df = display_df.copy()
+        if alert_list:
+            alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+            crit_display = pd.DataFrame()
+            crit_display['Ngày bắt đầu'] = alert_df_show['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+            crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+            crit_display['Tiến độ'] = alert_df_show['PhanTramHoanThanh'].apply(lambda x: f"{int(x)}%" if pd.notna(x) else "0%")
+            crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
+            crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
+            crit_display['Phòng ban'] = alert_df_show['PhongBan']
+            crit_display['Dự án / Hạng mục'] = alert_df_show['TenDuAn']
+            crit_display['Tên công việc'] = alert_df_show['TenCongViec']
+            crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
         
-        # Ensure ChuKyTheoDoi has valid values
-        perf_df['ChuKyTheoDoi'] = perf_df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
-        
-        # Adjust progress for objective delay / on track so it doesn't deduct points
-        # Only tasks with PhanLoaiTreHan == "👤 Do chủ quan" will keep their real (deducted) progress.
-        # Other tasks (objective or on time) that are late will be treated as 100% to avoid deduction.
-        for idx, row in perf_df.iterrows():
-            is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
-            is_late = (row['Deadline'] < today) and not is_comp
-            if is_late:
-                if row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
-                    perf_df.at[idx, 'PhanTramHoanThanh'] = 100
-        
-        # Calculate summary table
-        try:
-            perf_summary = perf_df.groupby("PhongBan").agg(
-                Tổng_Việc=("ID", "count"),
-                Đã_Xong=("TrangThai", lambda x: (x == "Hoàn thành").sum()),
-                Hiệu_Suất=("PhanTramHoanThanh", "mean")
-            ).fillna(0)
-            perf_summary["Hiệu_Suất"] = perf_summary["Hiệu_Suất"].astype(int)
-            perf_summary = perf_summary.reset_index()
-            perf_summary.columns = ["Phòng ban", "Tổng số việc", "Số việc đã xong", "Hiệu suất Trung bình (%)"]
-            
             st.dataframe(
-                perf_summary,
+                crit_display,
                 column_config={
-                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
-                    "Tổng số việc": st.column_config.NumberColumn("Tổng số việc", width="small"),
-                    "Số việc đã xong": st.column_config.NumberColumn("Số việc đã xong", width="small"),
-                    "Hiệu suất Trung bình (%)": st.column_config.ProgressColumn("Hiệu suất Trung bình", format="%d%%", min_value=0, max_value=100)
+                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
+                    "Tiến độ": st.column_config.TextColumn("Tiến độ", width=80),
+                    "Trạng thái thực tế": st.column_config.TextColumn("Trạng thái thực tế", width=120),
+                    "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
+                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
+                    "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
+                    "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
+                    "Ghi chú / Giải trình vướng mắc": st.column_config.TextColumn("Ghi chú / Giải trình vướng mắc", width="large")
                 },
                 use_container_width=True,
                 hide_index=True
             )
-        except Exception as pe:
-            st.info(f"Không thể hiển thị bảng hiệu suất: {pe}")
-    else:
-        st.info("Chưa có dữ liệu để đánh giá hiệu suất.")
+        else:
+            st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc sắp đến hạn cần lưu ý!")
+        
+        st.markdown("---")
 
-# ----------------- 2. BẢNG TIẾN ĐỘ CHI TIẾT -----------------
-elif menu == "📋 Bảng Tiến Độ Chi Tiết":
-    st.markdown(f"### 📋 Bảng Tiến Độ Công Việc Chi Tiết — {selected_company}")
+
     
-    # Filter tools for Boss
-    col_filter1, col_filter2, col_filter3 = st.columns(3)
+        # Performance Review Section
+        st.markdown("### 📈 Bảng Đánh giá Hiệu suất (Performance Review)")
+        st.markdown("*Hiệu suất trung bình (%) hoàn thành công việc theo từng Phòng ban:*")
     
-    with col_filter1:
-        db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
-        merged_projs = get_filtered_projects(selected_company, ALL_PROJECTS, db_projs)
-        proj_options = ["Tất cả dự án"] + merged_projs
-        sel_proj_filter = st.selectbox("Lọc nhanh theo Dự án / Hạng mục", proj_options)
-        
-    with col_filter2:
-        allowed_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
-        dept_options = ["Tất cả phòng ban"] + allowed_depts
-        sel_dept_filter = st.selectbox("Lọc nhanh theo Phòng ban", dept_options)
-        
-    with col_filter3:
-        months = set()
         if not display_df.empty:
-            for _, row in display_df.iterrows():
-                if pd.notna(row.get('NgayBatDau')) and hasattr(row['NgayBatDau'], 'strftime'):
-                    months.add(row['NgayBatDau'].strftime('%m/%Y'))
-                if pd.notna(row.get('Deadline')) and hasattr(row['Deadline'], 'strftime'):
-                    months.add(row['Deadline'].strftime('%m/%Y'))
-        month_options = ["Tất cả các tháng"] + sorted(list(months), key=lambda x: datetime.strptime(x, '%m/%Y'), reverse=True)
-        sel_month_filter = st.selectbox("Lọc nhanh theo Tháng", month_options)
+            perf_df = display_df.copy()
         
-    # Apply filters
-    table_df = display_df.copy()
-    if sel_proj_filter != "Tất cả dự án":
-        clean_proj = clean_proj_name(sel_proj_filter)
-        table_df = table_df[table_df['TenDuAn'].str.contains(clean_proj, case=False, na=False)]
+            # Ensure ChuKyTheoDoi has valid values
+            perf_df['ChuKyTheoDoi'] = perf_df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         
-    if sel_dept_filter != "Tất cả phòng ban":
-        table_df = table_df[table_df['PhongBan'] == sel_dept_filter]
+            # Adjust progress for objective delay / on track so it doesn't deduct points
+            # Only tasks with PhanLoaiTreHan == "👤 Do chủ quan" will keep their real (deducted) progress.
+            # Other tasks (objective or on time) that are late will be treated as 100% to avoid deduction.
+            for idx, row in perf_df.iterrows():
+                is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                is_late = (row['Deadline'] < today) and not is_comp
+                if is_late:
+                    if row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
+                        perf_df.at[idx, 'PhanTramHoanThanh'] = 100
         
-    if sel_month_filter != "Tất cả các tháng":
-        target_month = sel_month_filter
-        mask = (
-            table_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == target_month
-        ) | (
-            table_df['Deadline'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == target_month
-        )
-        table_df = table_df[mask]
-        
-    if table_df.empty:
-        st.info("Không có công việc nào phù hợp với bộ lọc.")
-    else:
-        df_display = pd.DataFrame()
-        df_display['Phòng ban'] = table_df['PhongBan']
-        df_display['Người thực hiện'] = table_df['NguoiChuTri']
-        df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
-        df_display['Tên công việc'] = table_df['TenCongViec']
-        df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
-        import pandas as pd
-        df_display['Tỷ trọng KPI'] = table_df.apply(lambda row: f"{int(float(str(row.get('TyTrongKPI', 0)).strip() or 0))}%" if pd.to_numeric(row.get('TyTrongKPI', 0), errors='coerce') > 0 else "Tự chia", axis=1)
-        
-        # Format Hạn chót
-        def format_dl(row):
-            prog = int(row['PhanTramHoanThanh'])
-            date_str = row['Deadline'].strftime('%d/%m/%Y')
+            # Calculate summary table
+            try:
+                perf_summary = perf_df.groupby("PhongBan").agg(
+                    Tổng_Việc=("ID", "count"),
+                    Đã_Xong=("TrangThai", lambda x: (x == "Hoàn thành").sum()),
+                    Hiệu_Suất=("PhanTramHoanThanh", "mean")
+                ).fillna(0)
+                perf_summary["Hiệu_Suất"] = perf_summary["Hiệu_Suất"].astype(int)
+                perf_summary = perf_summary.reset_index()
+                perf_summary.columns = ["Phòng ban", "Tổng số việc", "Số việc đã xong", "Hiệu suất Trung bình (%)"]
             
-            if prog >= 100:
-                return date_str
-            
-            # prog < 100
-            days_left = (row['Deadline'] - today).days
-            if days_left < 0:
-                days_late = abs(days_left)
-                return f"🔴 {date_str} (Trễ hạn {days_late} ngày)"
-            elif days_left == 0:
-                return f"⏳ {date_str} (Hạn hôm nay)"
-            elif 1 <= days_left <= 3:
-                return f"⚠️ {date_str} (Sắp hạn - Còn {days_left} ngày)"
-            else:
-                return date_str
-        df_display['Hạn chót'] = table_df.apply(format_dl, axis=1)
-        
-        df_display['Tiến độ'] = table_df['PhanTramHoanThanh']
-        
-        # Format Trạng thái
-        def format_status(row):
-            prog = int(row['PhanTramHoanThanh'])
-            is_issue = row['TrangThai'] == 'Có vướng mắc'
-            
-            if prog >= 100:
-                return "✅ Đã xong"
-                
-            # prog < 100
-            if row['Deadline'] < today:
-                return "⚠️ Trễ hạn"
-                
-            if is_issue:
-                return "🔴 Vướng mắc"
-                
-            if prog == 0 and row['NgayBatDau'] > today:
-                return "❌ Chưa bắt đầu"
-                
-            # Default state based on start date
-            if today >= row['NgayBatDau']:
-                return "⏳ Đang thực hiện"
-            else:
-                return "❌ Chưa bắt đầu"
-        df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
-        
-        # Format Nguyên nhân trễ hạn
-        def format_late_cause(row):
-            is_comp = (row['TrangThai'] == 'Hoàn thành')
-            is_late = (row['Deadline'] < today) and not is_comp
-            if not is_late:
-                return "--"
-            
-            val = row.get('PhanLoaiTreHan', '')
-            if "chủ quan" in str(val).lower():
-                return "🔴 [Do chủ quan]"
-            elif "khách quan" in str(val).lower():
-                explain = row.get('GiaiTrinhDeXuat', '')
-                if pd.notna(explain) and str(explain).strip():
-                    return f"⚠️ [Do khách quan] - {str(explain).strip()}"
-                return "⚠️ [Do khách quan]"
-            else:
-                return "--"
-        df_display['Nguyên nhân trễ hạn'] = table_df.apply(format_late_cause, axis=1)
-        
-        # Format Kết quả / File đính kèm
-        def format_notes(row):
-            is_comp = (row['TrangThai'] == 'Hoàn thành')
-            if is_comp:
-                val = row['LinkKetQua']
-                if not val or pd.isna(val):
-                    return "Chưa đính kèm kết quả"
-                if isinstance(val, str) and val.startswith("OUTPUT"):
-                    display_name = os.path.basename(val)
-                    if "_" in display_name:
-                        display_name = display_name.split("_", 1)[1]
-                    return f"📁 {display_name}"
-                return str(val)
-            else:
-                return row['GiaiTrinhDeXuat'] if (isinstance(row['GiaiTrinhDeXuat'], str) and row['GiaiTrinhDeXuat']) else "--"
-        df_display['Kết quả / File đính kèm'] = table_df.apply(format_notes, axis=1)
-        
-        # Reorder columns
-        ordered_cols = [
-            'Ngày bắt đầu',
-            'Hạn chót',
-            'Tiến độ',
-            'Trạng thái',
-            'Người thực hiện',
-            'Phòng ban',
-            'Dự án / Hạng mục',
-            'Tên công việc',
-            'Tỷ trọng KPI',
-            'Nguyên nhân trễ hạn',
-            'Kết quả / File đính kèm'
-        ]
-        df_display = df_display[ordered_cols]
-        
-        # Render clean st.dataframe
-        st.dataframe(
-            df_display,
-            column_config={
-                "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
-                "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
-                "Tiến độ": st.column_config.ProgressColumn(
-                    "Tiến độ",
-                    format="%d%%",
-                    min_value=0,
-                    max_value=100,
-                    width=100
-                ),
-                "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
-                "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-                "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
-                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
-                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
-                "Nguyên nhân trễ hạn": st.column_config.TextColumn("Nguyên nhân trễ hạn", width=150),
-                "Kết quả / File đính kèm": st.column_config.LinkColumn(
-                    "Kết quả / File đính kèm",
-                    max_chars=300,
-                    width="medium"
+                st.dataframe(
+                    perf_summary,
+                    column_config={
+                        "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
+                        "Tổng số việc": st.column_config.NumberColumn("Tổng số việc", width="small"),
+                        "Số việc đã xong": st.column_config.NumberColumn("Số việc đã xong", width="small"),
+                        "Hiệu suất Trung bình (%)": st.column_config.ProgressColumn("Hiệu suất Trung bình", format="%d%%", min_value=0, max_value=100)
+                    },
+                    use_container_width=True,
+                    hide_index=True
                 )
-            },
-            use_container_width=True,
-            hide_index=True
-        )
+            except Exception as pe:
+                st.info(f"Không thể hiển thị bảng hiệu suất: {pe}")
+        else:
+            st.info("Chưa có dữ liệu để đánh giá hiệu suất.")
 
-# ----------------- 3. THÊM / CẬP NHẬT CÔNG VIỆC -----------------
+    # ----------------- 2. BẢNG TIẾN ĐỘ CHI TIẾT -----------------
+
+
+    with tab_data:
+        st.markdown(f"### 📋 Bảng Tiến Độ Công Việc Chi Tiết — {selected_company}")
+    
+        # Filter tools for Boss
+        col_filter1, col_filter2, col_filter3 = st.columns(3)
+    
+        with col_filter1:
+            db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
+            merged_projs = get_filtered_projects(selected_company, ALL_PROJECTS, db_projs)
+            proj_options = ["Tất cả dự án"] + merged_projs
+            sel_proj_filter = st.selectbox("Lọc nhanh theo Dự án / Hạng mục", proj_options)
+        
+        with col_filter2:
+            allowed_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+            dept_options = ["Tất cả phòng ban"] + allowed_depts
+            sel_dept_filter = st.selectbox("Lọc nhanh theo Phòng ban", dept_options)
+        
+        with col_filter3:
+            months = set()
+            if not display_df.empty:
+                for _, row in display_df.iterrows():
+                    if pd.notna(row.get('NgayBatDau')) and hasattr(row['NgayBatDau'], 'strftime'):
+                        months.add(row['NgayBatDau'].strftime('%m/%Y'))
+                    if pd.notna(row.get('Deadline')) and hasattr(row['Deadline'], 'strftime'):
+                        months.add(row['Deadline'].strftime('%m/%Y'))
+            month_options = ["Tất cả các tháng"] + sorted(list(months), key=lambda x: datetime.strptime(x, '%m/%Y'), reverse=True)
+            sel_month_filter = st.selectbox("Lọc nhanh theo Tháng", month_options)
+        
+        # Apply filters
+        table_df = display_df.copy()
+        if sel_proj_filter != "Tất cả dự án":
+            clean_proj = clean_proj_name(sel_proj_filter)
+            table_df = table_df[table_df['TenDuAn'].str.contains(clean_proj, case=False, na=False)]
+        
+        if sel_dept_filter != "Tất cả phòng ban":
+            table_df = table_df[table_df['PhongBan'] == sel_dept_filter]
+        
+        if sel_month_filter != "Tất cả các tháng":
+            target_month = sel_month_filter
+            mask = (
+                table_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == target_month
+            ) | (
+                table_df['Deadline'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == target_month
+            )
+            table_df = table_df[mask]
+        
+        if table_df.empty:
+            st.info("Không có công việc nào phù hợp với bộ lọc.")
+        else:
+            df_display = pd.DataFrame()
+            df_display['Phòng ban'] = table_df['PhongBan']
+            df_display['Người thực hiện'] = table_df['NguoiChuTri']
+            df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
+            df_display['Tên công việc'] = table_df['TenCongViec']
+            df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+            import pandas as pd
+            df_display['Tỷ trọng KPI'] = table_df.apply(lambda row: f"{int(float(str(row.get('TyTrongKPI', 0)).strip() or 0))}%" if pd.to_numeric(row.get('TyTrongKPI', 0), errors='coerce') > 0 else "Tự chia", axis=1)
+        
+            # Format Hạn chót
+            def format_dl(row):
+                prog = int(row['PhanTramHoanThanh'])
+                date_str = row['Deadline'].strftime('%d/%m/%Y')
+            
+                if prog >= 100:
+                    return date_str
+            
+                # prog < 100
+                days_left = (row['Deadline'] - today).days
+                if days_left < 0:
+                    days_late = abs(days_left)
+                    return f"🔴 {date_str} (Trễ hạn {days_late} ngày)"
+                elif days_left == 0:
+                    return f"⏳ {date_str} (Hạn hôm nay)"
+                elif 1 <= days_left <= 3:
+                    return f"⚠️ {date_str} (Sắp hạn - Còn {days_left} ngày)"
+                else:
+                    return date_str
+            df_display['Hạn chót'] = table_df.apply(format_dl, axis=1)
+        
+            df_display['Tiến độ'] = table_df['PhanTramHoanThanh']
+        
+            # Format Trạng thái
+            def format_status(row):
+                prog = int(row['PhanTramHoanThanh'])
+                is_issue = row['TrangThai'] == 'Có vướng mắc'
+            
+                if prog >= 100:
+                    return "✅ Đã xong"
+                
+                # prog < 100
+                if row['Deadline'] < today:
+                    return "⚠️ Trễ hạn"
+                
+                if is_issue:
+                    return "🔴 Vướng mắc"
+                
+                if prog == 0 and row['NgayBatDau'] > today:
+                    return "❌ Chưa bắt đầu"
+                
+                # Default state based on start date
+                if today >= row['NgayBatDau']:
+                    return "⏳ Đang thực hiện"
+                else:
+                    return "❌ Chưa bắt đầu"
+            df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
+        
+            # Format Nguyên nhân trễ hạn
+            def format_late_cause(row):
+                is_comp = (row['TrangThai'] == 'Hoàn thành')
+                is_late = (row['Deadline'] < today) and not is_comp
+                if not is_late:
+                    return "--"
+            
+                val = row.get('PhanLoaiTreHan', '')
+                if "chủ quan" in str(val).lower():
+                    return "🔴 [Do chủ quan]"
+                elif "khách quan" in str(val).lower():
+                    explain = row.get('GiaiTrinhDeXuat', '')
+                    if pd.notna(explain) and str(explain).strip():
+                        return f"⚠️ [Do khách quan] - {str(explain).strip()}"
+                    return "⚠️ [Do khách quan]"
+                else:
+                    return "--"
+            df_display['Nguyên nhân trễ hạn'] = table_df.apply(format_late_cause, axis=1)
+        
+            # Format Kết quả / File đính kèm
+            def format_notes(row):
+                is_comp = (row['TrangThai'] == 'Hoàn thành')
+                if is_comp:
+                    val = row['LinkKetQua']
+                    if not val or pd.isna(val):
+                        return "Chưa đính kèm kết quả"
+                    if isinstance(val, str) and val.startswith("OUTPUT"):
+                        display_name = os.path.basename(val)
+                        if "_" in display_name:
+                            display_name = display_name.split("_", 1)[1]
+                        return f"📁 {display_name}"
+                    return str(val)
+                else:
+                    return row['GiaiTrinhDeXuat'] if (isinstance(row['GiaiTrinhDeXuat'], str) and row['GiaiTrinhDeXuat']) else "--"
+            df_display['Kết quả / File đính kèm'] = table_df.apply(format_notes, axis=1)
+        
+            # Reorder columns
+            ordered_cols = [
+                'Ngày bắt đầu',
+                'Hạn chót',
+                'Tiến độ',
+                'Trạng thái',
+                'Người thực hiện',
+                'Phòng ban',
+                'Dự án / Hạng mục',
+                'Tên công việc',
+                'Tỷ trọng KPI',
+                'Nguyên nhân trễ hạn',
+                'Kết quả / File đính kèm'
+            ]
+            df_display = df_display[ordered_cols]
+        
+            # Render clean st.dataframe
+            st.dataframe(
+                df_display,
+                column_config={
+                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
+                    "Tiến độ": st.column_config.ProgressColumn(
+                        "Tiến độ",
+                        format="%d%%",
+                        min_value=0,
+                        max_value=100,
+                        width=100
+                    ),
+                    "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
+                    "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
+                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
+                    "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
+                    "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
+                    "Nguyên nhân trễ hạn": st.column_config.TextColumn("Nguyên nhân trễ hạn", width=150),
+                    "Kết quả / File đính kèm": st.column_config.LinkColumn(
+                        "Kết quả / File đính kèm",
+                        max_chars=300,
+                        width="medium"
+                    )
+                },
+                use_container_width=True,
+                hide_index=True
+            )
+
+    # ----------------- 3. THÊM / CẬP NHẬT CÔNG VIỆC -----------------
+
+
 elif menu == "➕ Thêm / Cập Nhật Công Việc":
     st.markdown("### ✏️ Phân hệ Thêm / Cập Nhật Công Việc")
     
