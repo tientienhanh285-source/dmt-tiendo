@@ -3003,7 +3003,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 st.dataframe(p_tasks, use_container_width=True, hide_index=True)
                                 
                             st.markdown(f"**⚖️ Lịch sử Thưởng/Phạt của {det_p}:**")
-                            p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LyDo', 'DiemDieuChinh', 'GhiChu']]
+                            p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LoaiHanhVi', 'LyDo', 'DiemDieuChinh']]
                             if p_adjs.empty:
                                 st.success("Không có ghi nhận thưởng/phạt nào.")
                             else:
