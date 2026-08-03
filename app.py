@@ -1396,6 +1396,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
 
     
     # Calculate stats based on filtered dash_df
+    dash_df = display_df.copy()
     total_dash = len(dash_df)
     done_dash = len(dash_df[dash_df['TrangThai'] == 'Hoàn thành'])
     issue_dash = len(dash_df[dash_df['TrangThai'] == 'Có vướng mắc'])
@@ -1422,7 +1423,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
     with tab_report:
         st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
     
-        dash_df = display_df.copy()
+        pass
         
         # Overdue and due today/tomorrow alerts scanning (Group 1 & 2)
         def get_badge_and_urgency(deadline_val, today_dt):
