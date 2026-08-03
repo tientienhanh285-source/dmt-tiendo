@@ -2973,7 +2973,10 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     "Điểm công việc": round(task_score, 1),
                     "Thưởng/Phạt": adj_score,
                     "TỔNG ĐIỂM": final_score,
-                    "Xếp loại": grade
+                    "Xếp loại": grade,
+                    "_kh_score": round(kh_score, 1) if len(giao_ban_tasks) > 0 else round(task_score, 1),
+                    "_gb_score": round(gb_score, 1) if len(giao_ban_tasks) > 0 else 0,
+                    "_has_gb": len(giao_ban_tasks) > 0
                 })
                 
             if personnel_kpi:
@@ -2981,7 +2984,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 if selected_dept_m != "Tất cả phòng ban":
                     kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == selected_dept_m]
                 st.dataframe(
-                    kpi_month_df,
+                    kpi_month_df[["Người thực hiện", "Phòng ban", "Số việc", "Điểm công việc", "Thưởng/Phạt", "TỔNG ĐIỂM", "Xếp loại"]],
                     column_config={
                         "TỔNG ĐIỂM": st.column_config.ProgressColumn("TỔNG ĐIỂM", format="%f", min_value=0, max_value=115),
                     },
@@ -2995,6 +2998,23 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     if valid_people:
                         det_p = st.selectbox("👤 Chọn nhân sự cần tra cứu", valid_people, key="detail_person_kpi")
                         if det_p:
+                            p_info = kpi_month_df[kpi_month_df['Người thực hiện'] == det_p].iloc[0]
+                            st.markdown(f"### 🧮 Diễn giải công thức tính điểm của **{det_p}**")
+                            
+                            kh_val = p_info['_kh_score']
+                            gb_val = p_info['_gb_score']
+                            has_gb = p_info['_has_gb']
+                            task_val = p_info['Điểm công việc']
+                            adj_val = p_info['Thưởng/Phạt']
+                            final_val = p_info['TỔNG ĐIỂM']
+                            
+                            if has_gb:
+                                st.info(f"**Tổng điểm = (Điểm Công việc định kỳ × 70% + Điểm Giao ban × 30%) + Điểm Thưởng/Phạt**\\n\\n"
+                                        f"👉 **{final_val}** = ({kh_val} × 0.7 + {gb_val} × 0.3) + ({adj_val})")
+                            else:
+                                st.info(f"**Tổng điểm = Điểm Công việc định kỳ + Điểm Thưởng/Phạt** (Không có việc Giao ban)\\n\\n"
+                                        f"👉 **{final_val}** = {kh_val} + ({adj_val})")
+                            
                             st.markdown(f"**📝 Danh sách công việc của {det_p}:**")
                             p_tasks = kpi_df[kpi_df['NguoiChuTri'] == det_p][['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI']]
                             if p_tasks.empty:
