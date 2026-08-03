@@ -3693,6 +3693,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - 🎯 **Mục đích:** Xác nhận điểm số KPI của tháng trước để Phòng HCNS lưu kết quả.
         - 🖱️ **Thao tác:** Vào mục **🏆 Đánh giá KPI & Xếp loại**.
         - Xem biểu đồ tổng quan và Bảng dữ liệu tự động Xếp loại cho từng nhân sự.
+        - 🧮 **Cách tính điểm:** Điểm KPI = (Điểm việc Định kỳ × 70%) + (Điểm việc Giao ban × 30%) + Điểm thưởng/phạt.
         - 📊 **Tiêu chí Xếp loại:** Điểm > 91 (Loại A), Điểm > 81 (Loại B), Điểm > 71 (Loại C), Điểm <= 71 (Loại D).
         """)
         
