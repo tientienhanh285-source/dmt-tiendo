@@ -3009,10 +3009,10 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             final_val = p_info['TỔNG ĐIỂM']
                             
                             if has_gb:
-                                st.info(f"**Tổng điểm = (Điểm Công việc định kỳ × 70% + Điểm Giao ban × 30%) + Điểm Thưởng/Phạt**\\n\\n"
+                                st.info(f"**Tổng điểm = (Điểm Công việc định kỳ × 70% + Điểm Giao ban × 30%) + Điểm Thưởng/Phạt**\n\n"
                                         f"👉 **{final_val}** = ({kh_val} × 0.7 + {gb_val} × 0.3) + ({adj_val})")
                             else:
-                                st.info(f"**Tổng điểm = Điểm Công việc định kỳ + Điểm Thưởng/Phạt** (Không có việc Giao ban)\\n\\n"
+                                st.info(f"**Tổng điểm = Điểm Công việc định kỳ + Điểm Thưởng/Phạt** (Không có việc Giao ban)\n\n"
                                         f"👉 **{final_val}** = {kh_val} + ({adj_val})")
                             
                             st.markdown(f"**📝 Danh sách công việc của {det_p}:**")
