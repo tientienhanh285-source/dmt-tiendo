@@ -1791,7 +1791,7 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         dept_options = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
         sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept")
     with col_f3:
-        status_options = ["Đang làm & Trễ hạn", "Tất cả trạng thái", "Hoàn thành", "Có vướng mắc"]
+        status_options = ["Đang thực hiện", "Sắp tới hạn / Trễ hạn", "Hoàn thành", "Vướng mắc", "Tất cả trạng thái"]
         sel_status = st.selectbox("Lọc Trạng thái", status_options, key="tv_status")
     with col_auto:
         auto_refresh = st.checkbox("🔄 Auto-refresh (5p)", value=True, help="Tự động tải lại trang sau mỗi 5 phút")
@@ -1813,11 +1813,27 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
     if sel_dept != "Tất cả phòng ban":
         table_df = table_df[table_df['PhongBan'] == sel_dept]
         
-    if sel_status == "Đang làm & Trễ hạn":
-        table_df = table_df[table_df['TrangThai'] != 'Hoàn thành']
+    def get_days_left(d):
+        if pd.notna(d) and hasattr(d, 'strftime'):
+            if isinstance(d, datetime):
+                d = d.date()
+            return (d - today).days
+        return 999
+
+    if sel_status == "Đang thực hiện":
+        table_df = table_df[
+            (table_df['TrangThai'] != 'Hoàn thành') & 
+            (table_df['TrangThai'] != 'Có vướng mắc') & 
+            (table_df['Deadline'].apply(get_days_left) > 3)
+        ]
+    elif sel_status == "Sắp tới hạn / Trễ hạn":
+        table_df = table_df[
+            (table_df['TrangThai'] != 'Hoàn thành') & 
+            (table_df['Deadline'].apply(get_days_left) <= 3)
+        ]
     elif sel_status == "Hoàn thành":
         table_df = table_df[table_df['TrangThai'] == 'Hoàn thành']
-    elif sel_status == "Có vướng mắc":
+    elif sel_status == "Vướng mắc":
         table_df = table_df[table_df['TrangThai'] == 'Có vướng mắc']
         
     if table_df.empty:
