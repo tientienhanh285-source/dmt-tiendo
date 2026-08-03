@@ -1851,6 +1851,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
             # 12. Tỷ trọng KPI
             task_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=0)
+            st.caption("💡 **Mẹo:** Nếu bạn có 4 việc, điền 40 cho việc A và để 0 cho 3 việc còn lại, máy sẽ tự chia đều phần còn lại (60%) cho 3 việc đó (mỗi việc 20%).")
             
         submit_new = st.button("💾 Lưu", type="primary")
         
@@ -2046,6 +2047,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     except:
                         current_weight = 0
                     u_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=current_weight, key=f"u_weight_{task_data['ID']}")
+                    st.caption("💡 **Mẹo:** Nếu bạn có 4 việc, điền 40 cho việc A và để 0 cho 3 việc còn lại, máy sẽ tự chia đều phần còn lại (60%) cho 3 việc đó (mỗi việc 20%).")
                     
                 st.markdown("#### ⚓ THÔNG TIN RÀNG BUỘC KẾT QUẢ & GIẢI TRÌNH")
                 col_ub1, col_ub2 = st.columns(2)
