@@ -3016,11 +3016,38 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                         f"👉 **{final_val}** = {kh_val} + ({adj_val})")
                             
                             st.markdown(f"**📝 Danh sách công việc của {det_p}:**")
-                            p_tasks = kpi_df[kpi_df['NguoiChuTri'] == det_p][['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI']]
+                            p_tasks = kpi_df[kpi_df['NguoiChuTri'] == det_p].copy()
                             if p_tasks.empty:
                                 st.warning("Không có đầu việc nào được ghi nhận trong tháng.")
                             else:
-                                st.dataframe(p_tasks, use_container_width=True, hide_index=True)
+                                p_tasks['TyTrongKPI'] = pd.to_numeric(p_tasks.get('TyTrongKPI', pd.Series(0, index=p_tasks.index)), errors='coerce').fillna(0)
+                                explicit_w = p_tasks[p_tasks['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+                                unweighted = len(p_tasks[p_tasks['TyTrongKPI'] <= 0])
+                                auto_w = max(0, 100 - explicit_w) / unweighted if unweighted > 0 else 0
+                                
+                                quy_dois = []
+                                w_thuctes = []
+                                for _, row in p_tasks.iterrows():
+                                    is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                                    w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+                                    if is_comp: p = 100
+                                    elif "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+                                        cc = str(row.get('MucDoGhiNhan', '0%'))
+                                        if "Miễn trừ" in cc: w = 0; p = 0
+                                        elif "50%" in cc: p = 50
+                                        elif "80%" in cc: p = 80
+                                        elif "90%" in cc: p = 90
+                                        else: p = 0
+                                    else: p = 0
+                                    
+                                    quy_dois.append(p)
+                                    w_thuctes.append(round(w, 2))
+                                    
+                                p_tasks['Tỷ trọng (Thực tế) %'] = w_thuctes
+                                p_tasks['Điểm quy đổi'] = quy_dois
+                                
+                                p_tasks_disp = p_tasks[['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI', 'Tỷ trọng (Thực tế) %', 'Điểm quy đổi']]
+                                st.dataframe(p_tasks_disp, use_container_width=True, hide_index=True)
                                 
                             st.markdown(f"**⚖️ Lịch sử Thưởng/Phạt của {det_p}:**")
                             p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LoaiHanhVi', 'LyDo', 'DiemDieuChinh']]
