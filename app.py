@@ -3027,10 +3027,12 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 
                                 quy_dois = []
                                 w_thuctes = []
-                                for _, row in p_tasks.iterrows():
+                                for idx, row in p_tasks.iterrows():
                                     is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                                     w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
-                                    if is_comp: p = 100
+                                    if is_comp: 
+                                        p = 100
+                                        p_tasks.at[idx, 'MucDoGhiNhan'] = "-"
                                     elif "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
                                         cc = str(row.get('MucDoGhiNhan', '0%'))
                                         if "Miễn trừ" in cc: w = 0; p = 0
@@ -3038,7 +3040,9 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                         elif "80%" in cc: p = 80
                                         elif "90%" in cc: p = 90
                                         else: p = 0
-                                    else: p = 0
+                                    else: 
+                                        p = 0
+                                        p_tasks.at[idx, 'MucDoGhiNhan'] = "-"
                                     
                                     quy_dois.append(p)
                                     w_thuctes.append(round(w, 2))
