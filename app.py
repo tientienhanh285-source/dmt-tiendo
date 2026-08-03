@@ -2309,12 +2309,16 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         else:
                             u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
                     
-                btn_save, btn_del = st.columns([4, 1])
+                btn_save, btn_del = st.columns([3, 2])
                 with btn_save:
                     save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}")
                 with btn_del:
-                    del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}")
-                    
+                    del_click = False
+                    if st.session_state.is_admin_authenticated:
+                        confirm_del = st.checkbox("Xác nhận xóa dữ liệu này", key=f"confirm_del_{task_data['ID']}")
+                        if confirm_del:
+                            del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}")
+
                 if save_click:
                     # Calculate status and progress automatically
                     if u_is_completed:
