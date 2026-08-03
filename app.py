@@ -3102,13 +3102,17 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
                 import pandas as pd
                 from datetime import datetime, date
-                all_personnel = list(display_df['NguoiChuTri'].unique())
+                all_personnel = set(display_df['NguoiChuTri'].dropna().unique())
                 adj_year_df = read_kpi_adjustments()
                 adj_year_df = adj_year_df[adj_year_df['Nam'] == selected_year_full]
-                all_personnel.extend(adj_year_df['TenNhanVien'].unique())
+                all_personnel.update(adj_year_df['TenNhanVien'].dropna().unique())
                 
-                all_personnel = list(set([p for p in all_personnel if str(p).strip()]))
+                # Filter to only keep those who belong to the selected company
+                company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+                all_personnel = all_personnel.intersection(company_personnel)
                 
+                all_personnel = list(all_personnel)
+                all_personnel = [p for p in all_personnel if str(p).strip()]
                 yearly_data = []
                 for person in all_personnel:
                     person_df = display_df[display_df['NguoiChuTri'] == person].copy()
