@@ -189,13 +189,41 @@ def save_config(config_data):
 
 def load_config():
     default_config = {
-        "projects_by_category": {
-            "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
-            "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
-            "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group", "Du thuyền Happy Yacht (DMT Marina)"]
+        "companies": {
+            "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
+                "projects_by_category": {
+                    "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
+                    "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
+                    "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group"]
+                },
+                "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
+                "personnel_by_department": DEFAULT_PERSONNEL.copy()
+            },
+            "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
+                "projects_by_category": {
+                    "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
+                },
+                "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "personnel_by_department": {
+                    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
+                    "Ban Tài chính Kế toán": ["Lê Thị Hải"],
+                    "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
+                    "Tổ KPI": []
+                }
+            },
+            "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+                "projects_by_category": {},
+                "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "personnel_by_department": {
+                    "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                    "Ban Kỹ thuật": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
+                    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
+                    "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
+                    "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                    "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"]
+                }
+            }
         },
-        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
-        "personnel_by_department": DEFAULT_PERSONNEL.copy(),
         "cv_gsheet_url": ""
     }
     
@@ -220,18 +248,51 @@ def load_config():
             data["cv_gsheet_url"] = ""
             needs_save = True
             
-        if needs_save:
-            save_config(data)
+            if "companies" not in data:
+                # Perform migration from legacy format
+                data["companies"] = {
+                    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
+                        "projects_by_category": data.get("projects_by_category", {}).copy(),
+                        "departments": data.get("departments", []).copy(),
+                        "personnel_by_department": data.get("personnel_by_department", {}).copy()
+                    },
+                    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
+                        "projects_by_category": {
+                            "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
+                        },
+                        "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                        "personnel_by_department": {
+                            "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
+                            "Ban Tài chính Kế toán": ["Lê Thị Hải"],
+                            "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
+                            "Tổ KPI": []
+                        }
+                    },
+                    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+                        "projects_by_category": {},
+                        "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                        "personnel_by_department": {
+                            "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                            "Ban Kỹ thuật": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
+                            "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
+                            "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
+                            "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                            "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"]
+                        }
+                    }
+                }
+                needs_save = True
+                
+            if needs_save:
+                save_config(data)
             
-        return data
+            return data
     except Exception as e:
         pass
         return default_config
 
 # Load current config dynamically
 config = load_config()
-PROJECTS_BY_CATEGORY = config.get("projects_by_category", {})
-OFFICIAL_DEPARTMENTS = config.get("departments", [])
 
 # Default owners by department and company for autofill
 DEPT_LEADS = {
@@ -270,87 +331,34 @@ DEPT_LEADS = {
 }
 
 def get_personnel_for_company_dept(company, dept, config):
-    is_marina = False
-    is_traffic = False
-    if isinstance(company, str):
-        is_marina = "CTY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
-        is_traffic = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in company
-        
-    if is_marina:
-        if dept == "Ban Hành chính Nhân sự":
-            return ["Nguyễn Thị Hạnh Tiên"]
-        elif dept == "Ban Tài chính Kế toán":
-            return ["Lê Thị Hải"]
-        elif dept == "Ban Lãnh đạo":
-            return ["Trần Cường", "Đặng Ngọc Hoàng"]
-        elif dept == "Tổ KPI":
-            return []
-    elif is_traffic:
-        if dept == "Ban Lãnh đạo":
-            return ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"]
-        elif dept == "Ban Kỹ thuật":
-            return ["Trần Văn Trọng", "Phạm Quang Nghĩa"]
-        elif dept == "Ban chỉ huy Công trường":
-            return ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"]
-        elif dept == "Xí nghiệp xe máy thiết bị":
-            return ["Đặng Hiền"]
-        elif dept == "Ban Tài chính Kế toán":
-            return ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"]
-        elif dept == "Ban Hành chính Nhân sự":
-            return ["Nguyễn Thị Mỹ Phương"]
-        else:
-            return []
-    else:
-        if dept == "Ban Hành chính Nhân sự":
-            return ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Thị Tú Uyên"]
-        elif dept == "Ban Tài chính Kế toán":
-            return ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"]
-        elif dept == "Tổ KPI":
-            return []
-            
-    # Mặc định lấy từ cấu hình cho các phòng ban khác
+    companies = config.get("companies", {})
+    if company in companies:
+        return companies[company].get("personnel_by_department", {}).get(dept, [])
+    # Fallback to global config if any, or empty list
     return config.get("personnel_by_department", {}).get(dept, [])
 
-def get_departments_for_company(company, all_departments):
-    is_marina = False
-    is_traffic = False
-    if isinstance(company, str):
-        is_marina = "CTY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
-        is_traffic = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in company
-    if is_marina:
-        # Chỉ hiển thị 3 ban, ẩn tất cả các ban còn lại
-        allowed = ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
-        return [d for d in all_departments if d in allowed]
-    if is_traffic:
-        allowed = ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
-        return [d for d in allowed]
-        
-    # For DMT (and any other), exclude CIENCO specific departments
-    cienco_only = ["Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị"]
-    return [d for d in all_departments if d not in cienco_only]
+def get_departments_for_company(company, config):
+    companies = config.get("companies", {})
+    if company in companies:
+        return companies[company].get("departments", [])
+    # Fallback to global departments
+    return config.get("departments", [])
 
 
-
-def get_filtered_projects(company_name, all_projs, db_projs):
-    merged = list(set(all_projs + db_projs))
-    if not isinstance(company_name, str):
-        return sorted(merged)
-    
-    is_marina = "CTY CP DMT - MARINA" in company_name or "Du thuyền Happy Yacht" in company_name
-    marina_only_projs = ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
-    happy_yacht_projs = ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht"]
-    
-    if is_marina:
-        return sorted([p for p in merged if p in marina_only_projs])
+def get_filtered_projects(company_name, config, db_projs):
+    companies = config.get("companies", {})
+    projs_by_cat = {}
+    if company_name in companies:
+        projs_by_cat = companies[company_name].get("projects_by_category", {})
     else:
-        # For other companies, hide Happy Yacht
-        return sorted([p for p in merged if p not in happy_yacht_projs])
-
-# Generate flat list for dropdowns (brief clean names)
-ALL_PROJECTS = []
-for cat, projs in PROJECTS_BY_CATEGORY.items():
-    for p in projs:
-        ALL_PROJECTS.append(p)
+        projs_by_cat = config.get("projects_by_category", {})
+        
+    all_projs = []
+    for cat, projs in projs_by_cat.items():
+        all_projs.extend(projs)
+        
+    merged = list(set(all_projs + db_projs))
+    return sorted(merged)
 
 DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 
@@ -1581,12 +1589,12 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
     
         with col_filter1:
             db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
-            merged_projs = get_filtered_projects(selected_company, ALL_PROJECTS, db_projs)
+            merged_projs = get_filtered_projects(selected_company, config, db_projs)
             proj_options = ["Tất cả dự án"] + merged_projs
             sel_proj_filter = st.selectbox("Lọc nhanh theo Dự án / Hạng mục", proj_options)
         
         with col_filter2:
-            allowed_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+            allowed_depts = get_departments_for_company(selected_company, config)
             dept_options = ["Tất cả phòng ban"] + allowed_depts
             sel_dept_filter = st.selectbox("Lọc nhanh theo Phòng ban", dept_options)
         
@@ -1788,7 +1796,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             )
             
             # 4. Department
-            allowed_depts = get_departments_for_company(entry_company, OFFICIAL_DEPARTMENTS)
+            allowed_depts = get_departments_for_company(entry_company, config)
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", allowed_depts)
             
             # 5. Owner (based on configuration with custom type option)
@@ -1813,7 +1821,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 proj_options_with_custom = ["➕ Tạo / Nhập Dự án mới..."]
             else:
                 db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
-                merged_projs = get_filtered_projects(entry_company, ALL_PROJECTS, db_projs)
+                merged_projs = get_filtered_projects(entry_company, config, db_projs)
                 proj_options_with_custom = merged_projs + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
                 
             default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)
@@ -2320,7 +2328,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
         gantt_project_options = ["➕ Tạo / Nhập Dự án mới..."]
     else:
         existing_db_projects = list(gantt_df['TenDuAn'].unique())
-        existing_projects = get_filtered_projects(selected_company, ALL_PROJECTS, existing_db_projects)
+        existing_projects = get_filtered_projects(selected_company, config, existing_db_projects)
         gantt_project_options = existing_projects + ["➕ Tạo Dự án KHĐT mới..."]
     
     selected_gantt_project = st.selectbox("Chọn Dự án KHĐT", gantt_project_options)
@@ -2843,7 +2851,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         with col_m2:
             selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
         with col_m3:
-            allowed_depts_m = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+            allowed_depts_m = get_departments_for_company(selected_company, config)
             dept_options_m = ["Tất cả phòng ban"] + allowed_depts_m
             selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
             
@@ -3094,7 +3102,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         with col_y1:
             selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
         with col_y2:
-            allowed_depts_y = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+            allowed_depts_y = get_departments_for_company(selected_company, config)
             dept_options_y = ["Tất cả phòng ban"] + allowed_depts_y
             selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
         
@@ -3276,7 +3284,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 for dept, persons in config.get("personnel_by_department", {}).items():
                     all_p_list.extend(persons)
             else:
-                valid_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+                valid_depts = get_departments_for_company(selected_company, config)
                 for dept in valid_depts:
                     persons = get_personnel_for_company_dept(selected_company, dept, config)
                     all_p_list.extend(persons)
@@ -3421,7 +3429,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     def _get_pb(name):
                         # Try to find from current company's departments
                         if selected_company != "Tất cả đơn vị":
-                            depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+                            depts = get_departments_for_company(selected_company, config)
                             for d in depts:
                                 p_list = get_personnel_for_company_dept(selected_company, d, config)
                                 if name in p_list: return d
@@ -3555,211 +3563,213 @@ elif menu == "✅ Duyệt việc Khách quan":
 
 elif menu == "⚙️ Quản Lý Cấu HÌnh":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
-    tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
     
-    with tab_proj:
-        st.markdown("#### Quản lý Danh mục Dự án")
+    if selected_company == "Tất cả đơn vị":
+        st.warning("⚠️ Vui lòng chọn cụ thể một **Công ty / Đơn vị** ở menu bên trái để tiến hành cấu hình (Không áp dụng cho 'Tất cả đơn vị').")
+    else:
+        st.info(f"Đang cấu hình dữ liệu cho: **{selected_company}**")
+        tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
         
-        # Show existing categories
-        cats = list(PROJECTS_BY_CATEGORY.keys())
-        sel_cat = st.selectbox("Chọn Lĩnh vực dự án", cats)
-        projs_in_cat = PROJECTS_BY_CATEGORY.get(sel_cat, [])
+        # Load current company's config
+        comp_config = config.get("companies", {}).get(selected_company, {})
+        comp_projects_by_cat = comp_config.get("projects_by_category", {})
+        comp_depts = comp_config.get("departments", [])
+        comp_personnel = comp_config.get("personnel_by_department", {})
         
-        st.markdown(f"**Danh sách dự án hiện tại trong [{sel_cat}]:**")
-        st.write(", ".join(projs_in_cat) if projs_in_cat else "Chưa có dự án nào")
-        
-        st.markdown("---")
-        
-        col_add, col_edit, col_del = st.columns(3)
-        
-        with col_add:
-            st.markdown("**➕ Thêm dự án mới**")
-            new_proj_name = st.text_input("Tên dự án mới", key="admin_add_proj")
-            if st.button("Thêm dự án", type="primary"):
-                if new_proj_name.strip():
-                    if new_proj_name.strip() not in projs_in_cat:
-                        PROJECTS_BY_CATEGORY[sel_cat].append(new_proj_name.strip())
-                        config["projects_by_category"] = PROJECTS_BY_CATEGORY
-                        if save_config(config):
-                            st.success(f"Đã thêm dự án: {new_proj_name}")
-                            st.cache_data.clear()
-                            st.rerun()
-                    else:
-                        st.error("Dự án đã tồn tại!")
-                else:
-                    st.error("Tên dự án không được để trống!")
-                    
-        with col_edit:
-            st.markdown("**✏️ Đổi tên dự án**")
-            if projs_in_cat:
-                proj_to_edit = st.selectbox("Chọn dự án cần sửa", projs_in_cat, key="admin_edit_proj_sel")
-                edited_proj_name = st.text_input("Tên dự án mới", value=proj_to_edit, key="admin_edit_proj_val")
-                if st.button("Lưu đổi tên"):
-                    if edited_proj_name.strip():
-                        idx = PROJECTS_BY_CATEGORY[sel_cat].index(proj_to_edit)
-                        PROJECTS_BY_CATEGORY[sel_cat][idx] = edited_proj_name.strip()
-                        config["projects_by_category"] = PROJECTS_BY_CATEGORY
-                        if save_config(config):
-                            st.success(f"Đã đổi tên thành: {edited_proj_name}")
-                            st.cache_data.clear()
-                            st.rerun()
-                    else:
-                        st.error("Tên mới không được để trống!")
+        with tab_proj:
+            st.markdown(f"#### Quản lý Danh mục Dự án - {selected_company}")
+            
+            cats = list(comp_projects_by_cat.keys())
+            if not cats:
+                st.info("Chưa có lĩnh vực dự án nào. Vui lòng cập nhật cấu trúc JSON hoặc thêm mới.")
             else:
-                st.write("Không có dự án để sửa.")
+                sel_cat = st.selectbox("Chọn Lĩnh vực dự án", cats)
+                projs_in_cat = comp_projects_by_cat.get(sel_cat, [])
                 
-        with col_del:
-            st.markdown("**🗑️ Xóa dự án**")
-            if projs_in_cat:
-                proj_to_del = st.selectbox("Chọn dự án cần xóa", projs_in_cat, key="admin_del_proj_sel")
-                if st.button("Xác nhận xóa dự án", type="secondary"):
-                    PROJECTS_BY_CATEGORY[sel_cat].remove(proj_to_del)
-                    config["projects_by_category"] = PROJECTS_BY_CATEGORY
-                    if save_config(config):
-                        st.success(f"Đã xóa dự án: {proj_to_del}")
-                        st.cache_data.clear()
-                        st.rerun()
-            else:
-                st.write("Không có dự án để xóa.")
-
-    with tab_dept:
-        st.markdown("#### Quản lý Danh sách Phòng ban")
-        st.markdown(f"**Danh sách phòng ban hiện tại ({len(OFFICIAL_DEPARTMENTS)} phòng ban):**")
-        st.write(", ".join(OFFICIAL_DEPARTMENTS) if OFFICIAL_DEPARTMENTS else "Chưa có phòng ban nào")
-        
-        st.markdown("---")
-        
-        col_d_add, col_d_edit, col_d_del = st.columns(3)
-        
-        with col_d_add:
-            st.markdown("**➕ Thêm phòng ban mới**")
-            new_dept_name = st.text_input("Tên phòng ban mới", key="admin_add_dept")
-            if st.button("Thêm phòng ban", type="primary"):
-                if new_dept_name.strip():
-                    if new_dept_name.strip() not in OFFICIAL_DEPARTMENTS:
-                        OFFICIAL_DEPARTMENTS.append(new_dept_name.strip())
-                        config["departments"] = OFFICIAL_DEPARTMENTS
-                        if save_config(config):
-                            st.success(f"Đã thêm phòng ban: {new_dept_name}")
-                            st.cache_data.clear()
-                            st.rerun()
-                    else:
-                        st.error("Phòng ban đã tồn tại!")
-                else:
-                    st.error("Tên không được để trống!")
-                    
-        with col_d_edit:
-            st.markdown("**✏️ Đổi tên phòng ban**")
-            if OFFICIAL_DEPARTMENTS:
-                dept_to_edit = st.selectbox("Chọn phòng ban cần sửa", OFFICIAL_DEPARTMENTS, key="admin_edit_dept_sel")
-                edited_dept_name = st.text_input("Tên phòng ban mới", value=dept_to_edit, key="admin_edit_dept_val")
-                if st.button("Lưu đổi tên phòng"):
-                    if edited_dept_name.strip():
-                        idx = OFFICIAL_DEPARTMENTS.index(dept_to_edit)
-                        OFFICIAL_DEPARTMENTS[idx] = edited_dept_name.strip()
-                        config["departments"] = OFFICIAL_DEPARTMENTS
-                        # Update personnel keys as well
-                        if "personnel_by_department" in config:
-                            config["personnel_by_department"][edited_dept_name.strip()] = config["personnel_by_department"].pop(dept_to_edit, [])
-                        if save_config(config):
-                            st.success(f"Đã đổi tên thành: {edited_dept_name}")
-                            st.cache_data.clear()
-                            st.rerun()
-                    else:
-                        st.error("Tên mới không được để trống!")
-            else:
-                st.write("Không có phòng ban để sửa.")
+                st.markdown(f"**Danh sách dự án hiện tại trong [{sel_cat}]:**")
+                st.write(", ".join(projs_in_cat) if projs_in_cat else "Chưa có dự án nào")
                 
-        with col_d_del:
-            st.markdown("**🗑️ Xóa phòng ban**")
-            if OFFICIAL_DEPARTMENTS:
-                dept_to_del = st.selectbox("Chọn phòng ban cần xóa", OFFICIAL_DEPARTMENTS, key="admin_del_dept_sel")
-                if st.button("Xác nhận xóa phòng", type="secondary"):
-                    OFFICIAL_DEPARTMENTS.remove(dept_to_del)
-                    config["departments"] = OFFICIAL_DEPARTMENTS
-                    # Remove personnel mapping too
-                    if "personnel_by_department" in config:
-                        config["personnel_by_department"].pop(dept_to_del, None)
-                    if save_config(config):
-                        st.success(f"Đã xóa phòng ban: {dept_to_del}")
-                        st.cache_data.clear()
-                        st.rerun()
-            else:
-                st.write("Không có phòng ban để xóa.")
-
-        st.markdown("---")
-        st.markdown("#### 👥 Quản lý Nhân sự theo Phòng ban")
-        
-        if OFFICIAL_DEPARTMENTS:
-            sel_dept_p = st.selectbox("Chọn phòng ban để quản lý nhân sự", OFFICIAL_DEPARTMENTS, key="admin_sel_dept_p")
-            
-            if sel_dept_p in ["Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Lãnh đạo", "Tổ KPI"]:
-                st.info("ℹ️ Nhân sự của phòng ban này được cấu hình tự động theo logic Công ty / Thành viên.")
+                st.markdown("---")
                 
-            # Load personnel list
-            current_p_list = config.get("personnel_by_department", {}).get(sel_dept_p, [])
-            
-            st.markdown(f"**Danh sách nhân sự thuộc [{sel_dept_p}] ({len(current_p_list)} người):**")
-            st.write(", ".join(current_p_list) if current_p_list else "Chưa có nhân sự nào")
-            
-            st.markdown("---")
-            
-            col_p_add, col_p_edit, col_p_del = st.columns(3)
-            
-            with col_p_add:
-                st.markdown("**➕ Thêm nhân sự mới**")
-                new_p_name = st.text_input("Tên nhân sự mới", key="admin_add_p_name")
-                if st.button("Thêm nhân sự", type="primary", key="btn_admin_add_p"):
-                    if new_p_name.strip():
-                        if new_p_name.strip() not in current_p_list:
-                            current_p_list.append(new_p_name.strip())
-                            config["personnel_by_department"][sel_dept_p] = current_p_list
-                            if save_config(config):
-                                st.success(f"Đã thêm nhân sự: {new_p_name.strip()}")
-                                st.cache_data.clear()
-                                st.rerun()
-                        else:
-                            st.error("Nhân sự đã tồn tại trong phòng ban này!")
-                    else:
-                        st.error("Tên nhân sự không được để trống!")
-                        
-            with col_p_edit:
-                st.markdown("**✏️ Sửa tên nhân sự**")
-                if current_p_list:
-                    p_to_edit = st.selectbox("Chọn nhân sự cần sửa", current_p_list, key="admin_edit_p_sel")
-                    edited_p_name = st.text_input("Tên nhân sự mới", value=p_to_edit, key="admin_edit_p_val")
-                    if st.button("Lưu thay đổi", key="btn_admin_edit_p"):
-                        if edited_p_name.strip():
-                            if edited_p_name.strip() not in current_p_list or edited_p_name.strip() == p_to_edit:
-                                idx = current_p_list.index(p_to_edit)
-                                current_p_list[idx] = edited_p_name.strip()
-                                config["personnel_by_department"][sel_dept_p] = current_p_list
+                col_add, col_edit, col_del = st.columns(3)
+                
+                with col_add:
+                    st.markdown("**➕ Thêm dự án mới**")
+                    new_proj_name = st.text_input("Tên dự án mới", key="admin_add_proj")
+                    if st.button("Thêm dự án", type="primary"):
+                        if new_proj_name.strip():
+                            if new_proj_name.strip() not in projs_in_cat:
+                                config["companies"][selected_company]["projects_by_category"][sel_cat].append(new_proj_name.strip())
                                 if save_config(config):
-                                    st.success(f"Đã cập nhật tên nhân sự thành: {edited_p_name.strip()}")
+                                    st.success(f"Đã thêm dự án: {new_proj_name}")
                                     st.cache_data.clear()
                                     st.rerun()
                             else:
-                                st.error("Tên mới đã tồn tại trong phòng ban này!")
+                                st.error("Dự án đã tồn tại!")
+                        else:
+                            st.error("Tên dự án không được để trống!")
+                            
+                with col_edit:
+                    st.markdown("**✏️ Đổi tên dự án**")
+                    if projs_in_cat:
+                        proj_to_edit = st.selectbox("Chọn dự án cần sửa", projs_in_cat, key="admin_edit_proj_sel")
+                        edited_proj_name = st.text_input("Tên dự án mới", value=proj_to_edit, key="admin_edit_proj_val")
+                        if st.button("Lưu đổi tên"):
+                            if edited_proj_name.strip():
+                                idx = config["companies"][selected_company]["projects_by_category"][sel_cat].index(proj_to_edit)
+                                config["companies"][selected_company]["projects_by_category"][sel_cat][idx] = edited_proj_name.strip()
+                                if save_config(config):
+                                    st.success(f"Đã đổi tên thành: {edited_proj_name}")
+                                    st.cache_data.clear()
+                                    st.rerun()
+                            else:
+                                st.error("Tên mới không được để trống!")
+                    else:
+                        st.write("Không có dự án để sửa.")
+                        
+                with col_del:
+                    st.markdown("**🗑️ Xóa dự án**")
+                    if projs_in_cat:
+                        proj_to_del = st.selectbox("Chọn dự án cần xóa", projs_in_cat, key="admin_del_proj_sel")
+                        if st.button("Xác nhận xóa dự án", type="secondary"):
+                            config["companies"][selected_company]["projects_by_category"][sel_cat].remove(proj_to_del)
+                            if save_config(config):
+                                st.success(f"Đã xóa dự án: {proj_to_del}")
+                                st.cache_data.clear()
+                                st.rerun()
+                    else:
+                        st.write("Không có dự án để xóa.")
+    
+        with tab_dept:
+            st.markdown(f"#### Quản lý Danh sách Phòng ban - {selected_company}")
+            st.markdown(f"**Danh sách phòng ban hiện tại ({len(comp_depts)} phòng ban):**")
+            st.write(", ".join(comp_depts) if comp_depts else "Chưa có phòng ban nào")
+            
+            st.markdown("---")
+            
+            col_d_add, col_d_edit, col_d_del = st.columns(3)
+            
+            with col_d_add:
+                st.markdown("**➕ Thêm phòng ban mới**")
+                new_dept_name = st.text_input("Tên phòng ban mới", key="admin_add_dept")
+                if st.button("Thêm phòng ban", type="primary"):
+                    if new_dept_name.strip():
+                        if new_dept_name.strip() not in comp_depts:
+                            config["companies"][selected_company]["departments"].append(new_dept_name.strip())
+                            if save_config(config):
+                                st.success(f"Đã thêm phòng ban: {new_dept_name}")
+                                st.cache_data.clear()
+                                st.rerun()
+                        else:
+                            st.error("Phòng ban đã tồn tại!")
+                    else:
+                        st.error("Tên không được để trống!")
+                        
+            with col_d_edit:
+                st.markdown("**✏️ Đổi tên phòng ban**")
+                if comp_depts:
+                    dept_to_edit = st.selectbox("Chọn phòng ban cần sửa", comp_depts, key="admin_edit_dept_sel")
+                    edited_dept_name = st.text_input("Tên phòng ban mới", value=dept_to_edit, key="admin_edit_dept_val")
+                    if st.button("Lưu đổi tên phòng"):
+                        if edited_dept_name.strip():
+                            idx = config["companies"][selected_company]["departments"].index(dept_to_edit)
+                            config["companies"][selected_company]["departments"][idx] = edited_dept_name.strip()
+                            # Update personnel keys as well
+                            if dept_to_edit in config["companies"][selected_company]["personnel_by_department"]:
+                                config["companies"][selected_company]["personnel_by_department"][edited_dept_name.strip()] = config["companies"][selected_company]["personnel_by_department"].pop(dept_to_edit, [])
+                            if save_config(config):
+                                st.success(f"Đã đổi tên thành: {edited_dept_name}")
+                                st.cache_data.clear()
+                                st.rerun()
                         else:
                             st.error("Tên mới không được để trống!")
                 else:
-                    st.write("Không có nhân sự để sửa.")
+                    st.write("Không có phòng ban để sửa.")
                     
-            with col_p_del:
-                st.markdown("**🗑️ Xóa nhân sự**")
-                if current_p_list:
-                    p_to_del = st.selectbox("Chọn nhân sự cần xóa", current_p_list, key="admin_del_p_sel")
-                    if st.button("Xác nhận xóa", type="secondary", key="btn_admin_del_p"):
-                        current_p_list.remove(p_to_del)
-                        config["personnel_by_department"][sel_dept_p] = current_p_list
+            with col_d_del:
+                st.markdown("**🗑️ Xóa phòng ban**")
+                if comp_depts:
+                    dept_to_del = st.selectbox("Chọn phòng ban cần xóa", comp_depts, key="admin_del_dept_sel")
+                    if st.button("Xác nhận xóa phòng", type="secondary"):
+                        config["companies"][selected_company]["departments"].remove(dept_to_del)
+                        # Remove personnel mapping too
+                        config["companies"][selected_company]["personnel_by_department"].pop(dept_to_del, None)
                         if save_config(config):
-                            st.success(f"Đã xóa nhân sự: {p_to_del}")
+                            st.success(f"Đã xóa phòng ban: {dept_to_del}")
                             st.cache_data.clear()
                             st.rerun()
                 else:
-                    st.write("Không có nhân sự để xóa.")
-        else:
-            st.warning("Vui lòng tạo ít nhất một phòng ban trước khi cấu hình nhân sự.")
+                    st.write("Không có phòng ban để xóa.")
+    
+            st.markdown("---")
+            st.markdown(f"#### 👥 Quản lý Nhân sự theo Phòng ban - {selected_company}")
+            
+            if comp_depts:
+                sel_dept_p = st.selectbox("Chọn phòng ban để quản lý nhân sự", comp_depts, key="admin_sel_dept_p")
+                    
+                # Load personnel list
+                current_p_list = comp_personnel.get(sel_dept_p, [])
+                
+                st.markdown(f"**Danh sách nhân sự thuộc [{sel_dept_p}] ({len(current_p_list)} người):**")
+                st.write(", ".join(current_p_list) if current_p_list else "Chưa có nhân sự nào")
+                
+                st.markdown("---")
+                
+                col_p_add, col_p_edit, col_p_del = st.columns(3)
+                
+                with col_p_add:
+                    st.markdown("**➕ Thêm nhân sự mới**")
+                    new_p_name = st.text_input("Tên nhân sự mới", key="admin_add_p_name")
+                    if st.button("Thêm nhân sự", type="primary", key="btn_admin_add_p"):
+                        if new_p_name.strip():
+                            if new_p_name.strip() not in current_p_list:
+                                if sel_dept_p not in config["companies"][selected_company]["personnel_by_department"]:
+                                    config["companies"][selected_company]["personnel_by_department"][sel_dept_p] = []
+                                config["companies"][selected_company]["personnel_by_department"][sel_dept_p].append(new_p_name.strip())
+                                if save_config(config):
+                                    st.success(f"Đã thêm nhân sự: {new_p_name.strip()}")
+                                    st.cache_data.clear()
+                                    st.rerun()
+                            else:
+                                st.error("Nhân sự đã tồn tại trong phòng ban này!")
+                        else:
+                            st.error("Tên nhân sự không được để trống!")
+                            
+                with col_p_edit:
+                    st.markdown("**✏️ Sửa tên nhân sự**")
+                    if current_p_list:
+                        p_to_edit = st.selectbox("Chọn nhân sự cần sửa", current_p_list, key="admin_edit_p_sel")
+                        edited_p_name = st.text_input("Tên nhân sự mới", value=p_to_edit, key="admin_edit_p_val")
+                        if st.button("Lưu thay đổi", key="btn_admin_edit_p"):
+                            if edited_p_name.strip():
+                                if edited_p_name.strip() not in current_p_list or edited_p_name.strip() == p_to_edit:
+                                    idx = current_p_list.index(p_to_edit)
+                                    config["companies"][selected_company]["personnel_by_department"][sel_dept_p][idx] = edited_p_name.strip()
+                                    if save_config(config):
+                                        st.success(f"Đã cập nhật tên nhân sự thành: {edited_p_name.strip()}")
+                                        st.cache_data.clear()
+                                        st.rerun()
+                                else:
+                                    st.error("Tên mới đã tồn tại trong phòng ban này!")
+                            else:
+                                st.error("Tên mới không được để trống!")
+                    else:
+                        st.write("Không có nhân sự để sửa.")
+                        
+                with col_p_del:
+                    st.markdown("**🗑️ Xóa nhân sự**")
+                    if current_p_list:
+                        p_to_del = st.selectbox("Chọn nhân sự cần xóa", current_p_list, key="admin_del_p_sel")
+                        if st.button("Xác nhận xóa", type="secondary", key="btn_admin_del_p"):
+                            config["companies"][selected_company]["personnel_by_department"][sel_dept_p].remove(p_to_del)
+                            if save_config(config):
+                                st.success(f"Đã xóa nhân sự: {p_to_del}")
+                                st.cache_data.clear()
+                                st.rerun()
+                    else:
+                        st.write("Không có nhân sự để xóa.")
+            else:
+                st.warning("Vui lòng tạo ít nhất một phòng ban trước khi cấu hình nhân sự.")
 
     with tab_gsheets:
         st.markdown("#### 📊 Cấu hình kết nối Google Sheets")
