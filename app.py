@@ -2161,12 +2161,23 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         # Display only items matching selected company
         avail_update_df = display_df
         
-        # Filter by Department
-        departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().unique()))
-        filter_dept = st.selectbox("Lọc theo Phòng/Ban (Tuỳ chọn)", departments, key="filter_dept_update")
-        
+        col_f1, col_f2, col_f3 = st.columns(3)
+        with col_f1:
+            departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().astype(str).unique()))
+            filter_dept = st.selectbox("Lọc theo Phòng ban", departments, key="filter_dept_update")
+        with col_f2:
+            owners = ["Tất cả"] + sorted(list(avail_update_df['NguoiChuTri'].dropna().astype(str).unique()))
+            filter_owner = st.selectbox("Lọc theo Người phụ trách", owners, key="filter_owner_update")
+        with col_f3:
+            projects = ["Tất cả"] + sorted(list(avail_update_df['TenDuAn'].dropna().astype(str).unique()))
+            filter_proj = st.selectbox("Lọc theo Dự án", projects, key="filter_proj_update")
+            
         if filter_dept != "Tất cả":
             avail_update_df = avail_update_df[avail_update_df['PhongBan'] == filter_dept]
+        if filter_owner != "Tất cả":
+            avail_update_df = avail_update_df[avail_update_df['NguoiChuTri'] == filter_owner]
+        if filter_proj != "Tất cả":
+            avail_update_df = avail_update_df[avail_update_df['TenDuAn'] == filter_proj]
 
         if avail_update_df.empty:
             st.info("Chưa có công việc nào khả dụng.")
