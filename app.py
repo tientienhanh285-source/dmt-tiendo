@@ -1184,6 +1184,7 @@ menu = st.sidebar.radio(
     "PHÂN HỆ CHỨC NĂNG",
     [
         "🚀 Bảng theo dõi tiến độ công việc",
+        "👀 Dashboard Lãnh Đạo (TV Mode)",
         "➕ Thêm / Cập Nhật Công Việc",
         "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
         "🏆 Đánh giá KPI & Xếp loại",
@@ -1768,7 +1769,113 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                 hide_index=True
             )
 
-    # ----------------- 3. THÊM / CẬP NHẬT CÔNG VIỆC -----------------
+elif menu == "👀 Dashboard Lãnh Đạo (TV Mode)":
+    # 1. Hide Streamlit UI elements for a clean dashboard view
+    st.markdown("""
+        <style>
+            header {visibility: hidden;}
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            .block-container {padding-top: 1rem; padding-bottom: 0rem;}
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"### 📊 Dashboard Lãnh Đạo — {selected_company}")
+    
+    col_f1, col_f2, col_f3, col_auto = st.columns([2, 2, 2, 1])
+    with col_f1:
+        db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
+        merged_projs = get_filtered_projects(selected_company, config, db_projs)
+        proj_options = ["Tất cả dự án"] + merged_projs
+        sel_proj = st.selectbox("Lọc Dự án", proj_options, key="tv_proj")
+    with col_f2:
+        dept_options = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
+        sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept")
+    with col_f3:
+        status_options = ["Đang làm & Trễ hạn", "Tất cả trạng thái", "Hoàn thành", "Có vướng mắc"]
+        sel_status = st.selectbox("Lọc Trạng thái", status_options, key="tv_status")
+    with col_auto:
+        auto_refresh = st.checkbox("🔄 Auto-refresh (5p)", value=True, help="Tự động tải lại trang sau mỗi 5 phút")
+        if auto_refresh:
+            import streamlit.components.v1 as components
+            components.html("""
+                <script>
+                    setTimeout(function(){
+                        window.parent.location.reload();
+                    }, 300000);
+                </script>
+            """, height=0, width=0)
+            
+    # Apply filters
+    table_df = display_df.copy()
+    if sel_proj != "Tất cả dự án":
+        clean_proj = clean_proj_name(sel_proj)
+        table_df = table_df[table_df['TenDuAn'].str.contains(clean_proj, case=False, na=False)]
+    if sel_dept != "Tất cả phòng ban":
+        table_df = table_df[table_df['PhongBan'] == sel_dept]
+        
+    if sel_status == "Đang làm & Trễ hạn":
+        table_df = table_df[table_df['TrangThai'] != 'Hoàn thành']
+    elif sel_status == "Hoàn thành":
+        table_df = table_df[table_df['TrangThai'] == 'Hoàn thành']
+    elif sel_status == "Có vướng mắc":
+        table_df = table_df[table_df['TrangThai'] == 'Có vướng mắc']
+        
+    if table_df.empty:
+        st.info("Không có công việc nào phù hợp với bộ lọc.")
+    else:
+        df_display = pd.DataFrame()
+        df_display['Phòng ban'] = table_df['PhongBan']
+        df_display['Người thực hiện'] = table_df['NguoiChuTri']
+        df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
+        df_display['Tên công việc'] = table_df['TenCongViec']
+        df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if isinstance(x, (date, datetime)) else str(x))
+        df_display['Tỷ trọng KPI'] = table_df.apply(lambda row: f"{int(float(str(row.get('TyTrongKPI', 0)).strip() or 0))}%" if pd.to_numeric(row.get('TyTrongKPI', 0), errors='coerce') > 0 else "Tự chia", axis=1)
+        
+        def format_dl(row):
+            prog = int(row['PhanTramHoanThanh'])
+            date_str = row['Deadline'].strftime('%d/%m/%Y')
+            if prog >= 100: return date_str
+            days_left = (row['Deadline'] - today).days
+            if days_left < 0: return f"🔴 {date_str} (Trễ {abs(days_left)} ngày)"
+            elif days_left == 0: return f"⏳ {date_str} (Hạn hôm nay)"
+            elif 1 <= days_left <= 3: return f"⚠️ {date_str} (Còn {days_left} ngày)"
+            else: return date_str
+        df_display['Hạn chót'] = table_df.apply(format_dl, axis=1)
+        
+        df_display['Tiến độ'] = table_df['PhanTramHoanThanh']
+        
+        def format_status(row):
+            prog = int(row['PhanTramHoanThanh'])
+            if prog >= 100: return "✅ Đã xong"
+            if row['Deadline'] < today: return "⚠️ Trễ hạn"
+            if row['TrangThai'] == 'Có vướng mắc': return "🔴 Vướng mắc"
+            if prog == 0 and row['NgayBatDau'] > today: return "❌ Chưa bắt đầu"
+            if today >= row['NgayBatDau']: return "⏳ Đang thực hiện"
+            return "❌ Chưa bắt đầu"
+        df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
+        
+        ordered_cols = ['Ngày bắt đầu', 'Hạn chót', 'Tiến độ', 'Trạng thái', 'Người thực hiện', 'Phòng ban', 'Dự án / Hạng mục', 'Tên công việc']
+        df_display = df_display[ordered_cols]
+        
+        st.dataframe(
+            df_display,
+            column_config={
+                "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
+                "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
+                "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
+                "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
+                "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
+                "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
+                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
+                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
+            },
+            use_container_width=True,
+            hide_index=True,
+            height=700
+        )
+
+# ----------------- 3. THÊM / CẬP NHẬT CÔNG VIỆC -----------------
 
 
 elif menu == "➕ Thêm / Cập Nhật Công Việc":
