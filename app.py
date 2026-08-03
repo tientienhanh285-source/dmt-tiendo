@@ -1133,7 +1133,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Main Header Title with DMT branding
-st.markdown('<div class="main-title">⚓ DMT GROUP — QUẢN LÝ TIẾN ĐỘ</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title">DMT GROUP — QUẢN LÝ TIẾN ĐỘ</div>', unsafe_allow_html=True)
 
 # Sidebar layout with logo image and fallback
 logo_path = "logo.png" if os.path.exists("logo.png") else ("INPUT/logo.png" if os.path.exists("INPUT/logo.png") else None)
@@ -1141,7 +1141,7 @@ if logo_path:
     st.sidebar.image(logo_path, use_column_width=True)
 else:
     st.sidebar.warning("💡 Vui lòng đặt file logo.png vào thư mục gốc của dự án để hiển thị logo.")
-    st.sidebar.markdown("### ⚓ DMT GROUP")
+    st.sidebar.markdown("### DMT GROUP")
 st.sidebar.markdown("---")
 
 # Link Google Sheets Config
