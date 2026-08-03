@@ -66,9 +66,9 @@ st.set_page_config(
 
 # Standardized companies based on CIENCO, DMT Group, and DMT Marina documents
 COMPANIES = {
-    "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {},
-    "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {},
-    "CÔNG TY CP DMT - MARINA (Du thuyền Happy Yacht)": {}
+    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {},
+    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {},
+    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {}
 }
 
 # Configuration JSON logic for dynamic Projects and Departments
@@ -235,7 +235,7 @@ OFFICIAL_DEPARTMENTS = config.get("departments", [])
 
 # Default owners by department and company for autofill
 DEPT_LEADS = {
-    "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
+    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
         "Ban Lãnh đạo": "Trần Quốc Thể",
         "Ban Hành chính Nhân sự": "Nguyễn Thị Hạnh Tiên",
         "Ban Tài chính Kế toán": "Đồng Thị Nguyệt Nga",
@@ -248,7 +248,7 @@ DEPT_LEADS = {
         "Sàn GDBĐS": "Ngô Thị Tâm",
         "Tổ KPI": ""
     },
-    "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "Ban Lãnh đạo": "Thái Văn Thành",
         "Ban Hành chính Nhân sự": "Nguyễn Thị Mỹ Phương",
         "Ban Tài chính Kế toán": "Nguyễn Thị Ngọc Hà",
@@ -257,7 +257,7 @@ DEPT_LEADS = {
         "Xí nghiệp xe máy thiết bị": "Đặng Hiền",
         "Tổ KPI": ""
     },
-    "CÔNG TY CP DMT - MARINA (Du thuyền Happy Yacht)": {
+    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
         "Ban Lãnh đạo": "Trần Cường",
         "Ban Hành chính Nhân sự": "Nguyễn Thị Hạnh Tiên",
         "Ban Tài chính Kế toán": "Lê Thị Hải",
@@ -273,7 +273,7 @@ def get_personnel_for_company_dept(company, dept, config):
     is_marina = False
     is_traffic = False
     if isinstance(company, str):
-        is_marina = "CÔNG TY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
+        is_marina = "CTY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
         is_traffic = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in company
         
     if is_marina:
@@ -315,7 +315,7 @@ def get_departments_for_company(company, all_departments):
     is_marina = False
     is_traffic = False
     if isinstance(company, str):
-        is_marina = "CÔNG TY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
+        is_marina = "CTY CP DMT - MARINA" in company or "Du thuyền Happy Yacht" in company
         is_traffic = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in company
     if is_marina:
         # Chỉ hiển thị 3 ban, ẩn tất cả các ban còn lại
@@ -336,7 +336,7 @@ def get_filtered_projects(company_name, all_projs, db_projs):
     if not isinstance(company_name, str):
         return sorted(merged)
     
-    is_marina = "CÔNG TY CP DMT - MARINA" in company_name or "Du thuyền Happy Yacht" in company_name
+    is_marina = "CTY CP DMT - MARINA" in company_name or "Du thuyền Happy Yacht" in company_name
     marina_only_projs = ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
     happy_yacht_projs = ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht"]
     
@@ -694,7 +694,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             
             new_doc_row = {
                 "ID": doc_id,
-                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
                 "SoKyHieu": so_ky_hieu,
                 "NgayBanHanh": ngay_ban_hanh,
                 "CoQuanGui": co_quan_gui,
@@ -746,7 +746,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             
             new_task_row = {
                 "ID": task_id,
-                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
                 "PhongBan": ban_chu_tri,
                 "NguoiChuTri": "Ban Lãnh đạo",
                 "TenDuAn": "Quản lý Công văn đến",
@@ -957,7 +957,7 @@ def read_db():
     df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], errors='coerce').dt.date
     df['Deadline'] = pd.to_datetime(df['Deadline'], errors='coerce').dt.date
     df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
-    df['DonVi'] = df['DonVi'].fillna('CÔNG TY CP DMT - MARINA (Du thuyền Happy Yacht)')
+    df['DonVi'] = df['DonVi'].fillna('CTY CP DMT - MARINA (Du thuyền Happy Yacht)')
     df['TenDuAn'] = df['TenDuAn'].fillna('')
     df['MocTienDo'] = df['MocTienDo'].fillna('Tự do')
     df['SanPhamBanGiao'] = df['SanPhamBanGiao'].fillna('Xem chi tiết')
@@ -1798,7 +1798,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 task_owner = sel_owner_opt
             
             # 2. Project selection (Categorized dropdown or custom)
-            is_marina_co = "CÔNG TY CP DMT - MARINA" in entry_company or "Du thuyền Happy Yacht" in entry_company
+            is_marina_co = "CTY CP DMT - MARINA" in entry_company or "Du thuyền Happy Yacht" in entry_company
             if False:
                 proj_options_with_custom = ["➕ Tạo / Nhập Dự án mới..."]
             else:
@@ -2304,7 +2304,7 @@ elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
     
     
     # 1. Select project (alphabetical order A-Z with default projects)
-    is_marina_gantt = "CÔNG TY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
+    is_marina_gantt = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
     
     if is_marina_gantt:
         gantt_project_options = ["➕ Tạo / Nhập Dự án mới..."]
