@@ -1453,6 +1453,24 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
 
     st.markdown("---")
     
+    st.markdown("""
+        <style>
+        button[data-baseweb="tab"] {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            padding: 1rem !important;
+        }
+        button[data-baseweb="tab"] span {
+            font-size: 18px !important;
+            font-weight: 800 !important;
+            color: #555555 !important;
+        }
+        button[data-baseweb="tab"][aria-selected="true"] span {
+            color: #1976d2 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     tab_report, tab_data = st.tabs(["📊 CÔNG VIỆC TỚI HẠN", "📋 BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC"])
     
     with tab_report:
