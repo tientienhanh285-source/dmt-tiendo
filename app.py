@@ -1183,8 +1183,8 @@ selected_company = st.sidebar.selectbox(
 menu = st.sidebar.radio(
     "PHÂN HỆ CHỨC NĂNG",
     [
-        "🚀 Bảng theo dõi tiến độ công việc",
         "👀 BẢNG TỔNG QUAN (View)",
+        "🚀 Bảng theo dõi tiến độ công việc",
         "➕ Thêm / Cập Nhật Công Việc",
         "🏆 Đánh giá KPI & Xếp loại",
         "✅ Duyệt việc Khách quan",
