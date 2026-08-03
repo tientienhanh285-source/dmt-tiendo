@@ -3680,8 +3680,10 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - Bạn xem xét lý do giải trình, click trực tiếp vào ô *Mức độ KPI ghi nhận* để chọn mức điểm phù hợp (Miễn trừ, 50%, 80%, 90%...).
         - Sau khi chọn xong tất cả, bấm nút **💾 Lưu toàn bộ phê duyệt** ở cuối danh sách.
         
-        ### 2. Xem Báo cáo Xếp loại KPI
-        - Vào mục **🏆 Đánh giá KPI & Xếp loại**.
+        ### 2. Xem Báo cáo Xếp loại KPI (Ngày 1-3 đầu tháng)
+        - **Thời gian:** Từ ngày 1 đến ngày 3 hàng tháng.
+        - **Mục đích:** Theo dõi và xác nhận điểm số KPI của tháng trước để Phòng HCNS có căn cứ lưu lại kết quả.
+        - **Thao tác:** Vào mục **🏆 Đánh giá KPI & Xếp loại**.
         - Xem biểu đồ tổng quan về tỷ lệ hoàn thành KPI của toàn bộ nhân sự trong phòng ban.
         - Bảng dữ liệu chi tiết sẽ tính toán ra điểm KPI cuối cùng và tự động Xếp loại (Xuất sắc, Tốt, Khá, Kém...) cho từng nhân sự dựa trên trọng số công việc.
         
