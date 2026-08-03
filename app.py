@@ -1605,7 +1605,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         st.markdown(f"### 📋 Bảng Tiến Độ Công Việc Chi Tiết — {selected_company}")
     
         # Filter tools for Boss
-        col_filter1, col_filter2, col_filter3 = st.columns(3)
+        col_filter1, col_filter2, col_filter3, col_filter4 = st.columns(4)
     
         with col_filter1:
             db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
@@ -1619,6 +1619,10 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             sel_dept_filter = st.selectbox("Lọc nhanh theo Phòng ban", dept_options)
         
         with col_filter3:
+            owners = ["Tất cả"] + sorted(list(display_df['NguoiChuTri'].dropna().astype(str).unique())) if not display_df.empty else ["Tất cả"]
+            sel_owner_filter = st.selectbox("Lọc theo Người phụ trách", owners)
+            
+        with col_filter4:
             months = set()
             if not display_df.empty:
                 for _, row in display_df.iterrows():
@@ -1637,6 +1641,9 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         
         if sel_dept_filter != "Tất cả phòng ban":
             table_df = table_df[table_df['PhongBan'] == sel_dept_filter]
+            
+        if sel_owner_filter != "Tất cả":
+            table_df = table_df[table_df['NguoiChuTri'] == sel_owner_filter]
         
         if sel_month_filter != "Tất cả các tháng":
             target_month = sel_month_filter
