@@ -1877,15 +1877,14 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         st.markdown("---")
         if mobile_mode:
             for idx, row in df_display.iterrows():
-                # Build a simple progress bar string
                 prog = int(row['Tiến độ'])
-                bars = "■" * (prog // 10) + "□" * (10 - prog // 10)
                 
                 with st.container():
                     st.markdown(f"**📌 {row['Tên công việc']}**")
                     st.markdown(f"📁 *{row['Dự án / Hạng mục']}* | 👤 *{row['Người thực hiện']}*")
-                    st.markdown(f"⏳ **Hạn chót:** {row['Hạn chót']} | **Tiến độ:** {bars} {prog}%")
-                    st.markdown(f"Trạng thái: **{row['Trạng thái']}**")
+                    st.markdown(f"⏳ **Hạn chót:** {row['Hạn chót']} | Trạng thái: **{row['Trạng thái']}**")
+                    st.caption(f"Tiến độ: {prog}%")
+                    st.progress(prog)
                     st.markdown("---")
         else:
             st.dataframe(
