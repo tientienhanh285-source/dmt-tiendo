@@ -3652,42 +3652,51 @@ elif menu == "📖 Sổ tay Hướng dẫn":
     tab_nv, tab_ql = st.tabs(["👨‍💼 Hướng dẫn dành cho Nhân viên", "👔 Hướng dẫn dành cho Quản lý"])
     
     with tab_nv:
-        st.markdown("""
-        ### 1. Đăng ký công việc (Đầu tháng)
-        - **Thời gian:** Từ ngày 30 tháng trước đến ngày 3 tháng này.
-        - **Thao tác:** Vào mục **Thêm / Cập nhật công việc**.
-        - **Nội dung:** Tự khai báo các đầu việc chính trong tháng. Bạn có thể tự điền *Tỷ trọng KPI* (%). Nếu để trống hoặc bằng 0, hệ thống sẽ tự động tính toán và chia đều tỷ trọng còn lại cho các đầu việc đó.
+        st.info("""
+        **1️⃣ Đăng ký công việc (Đầu tháng)**
+        - 🕒 **Thời gian:** Từ ngày 30 tháng trước đến ngày 3 tháng này.
+        - 🖱️ **Thao tác:** Vào mục **Thêm / Cập nhật công việc**.
+        - 📝 **Nội dung:** Tự khai báo các đầu việc chính trong tháng. Bạn có thể tự điền *Tỷ trọng KPI* (%). Nếu để trống hoặc bằng 0, hệ thống sẽ tự động tính toán và chia đều tỷ trọng còn lại cho các đầu việc đó.
+        """)
         
-        ### 2. Báo cáo tiến độ và Hoàn thành
-        - Khi thực hiện xong công việc, vào mục **Thêm / Cập nhật công việc**, đánh dấu tick vào ô **☑️ Công việc đã hoàn thành**.
-        - **Lưu ý quan trọng:** Bạn cần dán kèm Link minh chứng kết quả (từ Google Drive, OneDrive...) hoặc ghi tên/số hiệu văn bản vào ô khai báo kết quả.
+        st.success("""
+        **2️⃣ Báo cáo tiến độ và Hoàn thành**
+        - 🖱️ Khi thực hiện xong công việc, vào mục **Thêm / Cập nhật công việc**, đánh dấu tick vào ô **☑️ Công việc đã hoàn thành**.
+        - 📌 **Lưu ý quan trọng:** Bạn cần dán kèm Link minh chứng kết quả (từ Google Drive, OneDrive...) hoặc ghi tên/số hiệu văn bản vào ô khai báo kết quả.
+        """)
         
-        ### 3. Xử lý Trễ hạn / Có vướng mắc
-        - Nếu công việc gặp rủi ro trễ hạn, đổi trạng thái thành **Có vướng mắc** và ghi rõ lý do tại ô *Giải trình / Đề xuất*.
-        - Phân loại **Do khách quan**: Hệ thống sẽ gửi yêu cầu chờ Quản lý duyệt để chấm điểm châm chước (ví dụ: 50%, 80%, 90%...).
-        - Phân loại **Do chủ quan**: Công việc sẽ bị tính là chưa hoàn thành và nhận 0 điểm KPI cho phần việc đó.
+        st.warning("""
+        **3️⃣ Xử lý Trễ hạn / Có vướng mắc**
+        - Nếu rủi ro trễ hạn, đổi trạng thái thành **Có vướng mắc** và ghi rõ lý do tại ô *Giải trình / Đề xuất*.
+        - 🌍 **Do khách quan**: Hệ thống gửi yêu cầu chờ Quản lý duyệt để chấm điểm châm chước (50%, 80%, 90%...).
+        - 🌧️ **Do chủ quan**: Công việc bị tính là chưa hoàn thành và nhận 0 điểm KPI.
+        """)
         
-        ### 4. Theo dõi công việc hàng ngày
-        - Vào mục **Bảng theo dõi tiến độ công việc**.
+        st.error("""
+        **4️⃣ Theo dõi công việc hàng ngày**
+        - 🖱️ Vào mục **Bảng theo dõi tiến độ công việc**.
         - Xem thẻ **CÔNG VIỆC TỚI HẠN** để biết việc nào sắp đến hạn (màu vàng) hoặc đã trễ hạn (màu đỏ) để ưu tiên xử lý.
         """)
         
     with tab_ql:
-        st.markdown("""
-        ### 1. Duyệt việc Khách quan (Chấm điểm châm chước)
-        - Vào mục **✅ Duyệt việc Khách quan**.
-        - Hệ thống sẽ liệt kê các công việc mà nhân viên báo cáo trễ hạn với lý do **Khách quan**.
-        - Bạn xem xét lý do giải trình, click trực tiếp vào ô *Mức độ KPI ghi nhận* để chọn mức điểm phù hợp (Miễn trừ, 50%, 80%, 90%...).
-        - Sau khi chọn xong tất cả, bấm nút **💾 Lưu toàn bộ phê duyệt** ở cuối danh sách.
+        st.success("""
+        **1️⃣ Duyệt việc Khách quan (Chấm điểm châm chước)**
+        - 🖱️ Vào mục **✅ Duyệt việc Khách quan**.
+        - Hệ thống liệt kê các công việc nhân viên báo cáo trễ hạn với lý do **Khách quan**.
+        - Bạn xem xét giải trình, click trực tiếp vào ô *Mức độ KPI ghi nhận* để chọn điểm phù hợp (Miễn trừ, 50%, 80%, 90%...).
+        - Nhấn **💾 Lưu toàn bộ phê duyệt** ở cuối danh sách.
+        """)
         
-        ### 2. Xem Báo cáo Xếp loại KPI (Ngày 1-3 đầu tháng)
-        - **Thời gian:** Từ ngày 1 đến ngày 3 hàng tháng.
-        - **Mục đích:** Theo dõi và xác nhận điểm số KPI của tháng trước để Phòng HCNS có căn cứ lưu lại kết quả.
-        - **Thao tác:** Vào mục **🏆 Đánh giá KPI & Xếp loại**.
-        - Xem biểu đồ tổng quan về tỷ lệ hoàn thành KPI của toàn bộ nhân sự trong phòng ban.
-        - Bảng dữ liệu chi tiết sẽ tính toán ra điểm KPI cuối cùng và tự động Xếp loại (Xuất sắc, Tốt, Khá, Kém...) cho từng nhân sự dựa trên trọng số công việc.
+        st.info("""
+        **2️⃣ Xem Báo cáo Xếp loại KPI (Ngày 1-3 đầu tháng)**
+        - 🕒 **Thời gian:** Từ ngày 1 đến ngày 3 hàng tháng.
+        - 🎯 **Mục đích:** Xác nhận điểm số KPI của tháng trước để Phòng HCNS lưu kết quả.
+        - 🖱️ **Thao tác:** Vào mục **🏆 Đánh giá KPI & Xếp loại**.
+        - Xem biểu đồ tổng quan và Bảng dữ liệu tự động Xếp loại (Xuất sắc, Tốt, Khá, Kém...) cho từng nhân sự.
+        """)
         
-        ### 3. Xem Tiến độ Tổng thể (Gantt)
-        - Vào mục **📊 SƠ ĐỒ GANTT DỰ ÁN DMT**.
+        st.warning("""
+        **3️⃣ Xem Tiến độ Tổng thể (Gantt)**
+        - 🖱️ Vào mục **📊 SƠ ĐỒ GANTT DỰ ÁN DMT**.
         - Xem tiến độ của tất cả dự án/công việc trực quan theo dòng thời gian thực để dễ dàng điều phối nguồn lực.
         """)
