@@ -3276,6 +3276,15 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 for dept in valid_depts:
                     persons = get_personnel_for_company_dept(selected_company, dept, config)
                     all_p_list.extend(persons)
+                    
+                is_marina_co = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
+                is_traffic_co = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in selected_company
+                if not is_marina_co and not is_traffic_co:
+                    c_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+                    leads = DEPT_LEADS.get(selected_company, {}).values()
+                    valid_people = c_personnel.union(set(leads))
+                    all_p_list = [p for p in all_p_list if p in valid_people]
+                    
             all_p_list = sorted(list(set(all_p_list)))
             if not all_p_list:
                 all_p_list = ["(Chưa có nhân sự)"]
