@@ -1175,7 +1175,7 @@ menu = st.sidebar.radio(
         "➕ Thêm / Cập Nhật Công Việc",
         "🏆 Đánh giá KPI & Xếp loại",
         "✅ Duyệt việc Khách quan",
-        "⚙️ Quản Lý Cấu HÌnh",
+        "⚙️ Quản Lý Cấu Hình",
         "📖 Sổ tay Hướng dẫn"
     ],
     index=0
@@ -3202,7 +3202,7 @@ elif menu == "✅ Duyệt việc Khách quan":
                     else:
                         st.info("Chưa có thay đổi nào cần lưu.")
 
-elif menu == "⚙️ Quản Lý Cấu HÌnh":
+elif menu == "⚙️ Quản Lý Cấu Hình":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
     
     tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
