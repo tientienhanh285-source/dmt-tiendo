@@ -1803,6 +1803,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             # 3. Task details
             task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
             task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'Công việc trong "Giao ban"'])
+            st.caption("💡 **Định kỳ:** Đăng ký đầu tháng / quản lý giao. **Giao ban:** Phát sinh sau khi họp giao ban.")
             
         with col2:
             # 6. Dates
@@ -2004,6 +2005,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     current_nguon = task_data.get('NguonGiaoViec', 'Công việc được giao / định kì')
                     u_nguon_idx = u_nguon_opts.index(current_nguon) if current_nguon in u_nguon_opts else 0
                     u_nguon = st.selectbox("Nguồn giao việc", u_nguon_opts, index=u_nguon_idx, key=f"u_nguon_{task_data['ID']}")
+                    st.caption("💡 **Định kỳ:** Đăng ký đầu tháng. **Giao ban:** Phát sinh sau khi họp giao ban.")
                     
                     # Owner selection based on configuration
                     u_dept = task_data['PhongBan']
