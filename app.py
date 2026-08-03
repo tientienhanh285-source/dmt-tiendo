@@ -1662,6 +1662,22 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
                 return row['GiaiTrinhDeXuat'] if (isinstance(row['GiaiTrinhDeXuat'], str) and row['GiaiTrinhDeXuat']) else "--"
         df_display['Kết quả / File đính kèm'] = table_df.apply(format_notes, axis=1)
         
+        # Reorder columns
+        ordered_cols = [
+            'Ngày bắt đầu',
+            'Hạn chót',
+            'Tiến độ',
+            'Trạng thái',
+            'Người thực hiện',
+            'Phòng ban',
+            'Dự án / Hạng mục',
+            'Tên công việc',
+            'Tỷ trọng KPI',
+            'Nguyên nhân trễ hạn',
+            'Kết quả / File đính kèm'
+        ]
+        df_display = df_display[ordered_cols]
+        
         # Render clean st.dataframe
         st.dataframe(
             df_display,
