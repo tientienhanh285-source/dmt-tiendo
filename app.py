@@ -664,7 +664,12 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
         trich_yeu = str(row[content_col]).strip()
         
         ban_chu_tri_raw = str(row[mapping["Người/ Ban thực hiện"]]).strip() if mapping["Người/ Ban thực hiện"] and not pd.isna(row[mapping["Người/ Ban thực hiện"]]) else ""
-        if ban_chu_tri_raw in OFFICIAL_DEPARTMENTS:
+        config = load_settings()
+        all_depts = set(config.get("departments", []))
+        for comp_data in config.get("companies", {}).values():
+            all_depts.update(comp_data.get("departments", []))
+            
+        if ban_chu_tri_raw in all_depts:
             ban_chu_tri = ban_chu_tri_raw
         else:
             ban_chu_tri = "Ban Lãnh đạo"
@@ -3117,7 +3122,9 @@ elif menu == "✅ Duyệt việc Khách quan":
                 nam_opts = [today.year - 1, today.year, today.year + 1]
                 sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
             with col_phong:
-                phong_opts = ["Tất cả"] + OFFICIAL_DEPARTMENTS
+                config = load_settings()
+                valid_depts = get_departments_for_company(selected_company, config)
+                phong_opts = ["Tất cả"] + valid_depts
                 sel_phong = st.selectbox("Lọc theo Phòng/Ban", phong_opts)
                 
             st.markdown("---")
