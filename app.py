@@ -2987,9 +2987,29 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     },
                     use_container_width=True, hide_index=True
                 )
+                
+                st.markdown("---")
+                with st.expander("🔍 Tra cứu chi tiết điểm KPI của từng nhân sự", expanded=False):
+                    st.info("💡 Tính năng này giúp Quản lý đối chiếu các đầu việc và mức độ hoàn thành của nhân sự để xác minh tính chính xác của điểm số.")
+                    valid_people = sorted(list(kpi_month_df['Người thực hiện'].unique()))
+                    if valid_people:
+                        det_p = st.selectbox("👤 Chọn nhân sự cần tra cứu", valid_people, key="detail_person_kpi")
+                        if det_p:
+                            st.markdown(f"**📝 Danh sách công việc của {det_p}:**")
+                            p_tasks = kpi_df[kpi_df['NguoiChuTri'] == det_p][['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI']]
+                            if p_tasks.empty:
+                                st.warning("Không có đầu việc nào được ghi nhận trong tháng.")
+                            else:
+                                st.dataframe(p_tasks, use_container_width=True, hide_index=True)
+                                
+                            st.markdown(f"**⚖️ Lịch sử Thưởng/Phạt của {det_p}:**")
+                            p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LyDo', 'DiemDieuChinh', 'GhiChu']]
+                            if p_adjs.empty:
+                                st.success("Không có ghi nhận thưởng/phạt nào.")
+                            else:
+                                st.dataframe(p_adjs, use_container_width=True, hide_index=True)
             else:
                 st.info("Không có dữ liệu cá nhân hợp lệ.")
-
     with kpi_tab2:
         st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
         col_y1, col_y2 = st.columns(2)
