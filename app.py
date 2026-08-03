@@ -3408,32 +3408,46 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             st.markdown("##### Lịch sử Thưởng / Phạt")
             hist_df = read_kpi_adjustments()
             if not hist_df.empty:
-                def _get_pb(name):
-                    for d, p_list in config.get("personnel_by_department", {}).items():
-                        if name in p_list: return d
-                    return "Khác"
-                hist_df["Phòng ban"] = hist_df["TenNhanVien"].apply(_get_pb)
+                # Filter out personnel not belonging to the current company
+                hist_df = hist_df[hist_df["TenNhanVien"].isin(all_p_list)]
                 
-                # Reorder columns to put Phòng ban next to TenNhanVien
-                cols = list(hist_df.columns)
-                if "Phòng ban" in cols:
-                    cols.insert(cols.index("TenNhanVien") + 1, cols.pop(cols.index("Phòng ban")))
-                    hist_df = hist_df[cols]
-                
-                # Lọc (Filter)
-                col_flt1, col_flt2 = st.columns(2)
-                with col_flt1:
-                    f_pb = st.selectbox("Lọc Phòng Ban", ["Tất cả"] + sorted(list(set(hist_df["Phòng ban"]))), key="flt_adj_pb")
-                with col_flt2:
-                    f_thang = st.selectbox("Lọc Tháng", ["Tất cả"] + sorted(list(set(hist_df["Thang"])), reverse=True), key="flt_adj_thang")
-                
-                display_df = hist_df.copy()
-                if f_pb != "Tất cả":
-                    display_df = display_df[display_df["Phòng ban"] == f_pb]
-                if f_thang != "Tất cả":
-                    display_df = display_df[display_df["Thang"] == f_thang]
-                
-                st.dataframe(display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False]), use_container_width=True, hide_index=True)
+                if hist_df.empty:
+                    st.info("Chưa có lịch sử điều chỉnh cho đơn vị này.")
+                else:
+                    def _get_pb(name):
+                        # Try to find from current company's departments
+                        if selected_company != "Tất cả đơn vị":
+                            depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+                            for d in depts:
+                                p_list = get_personnel_for_company_dept(selected_company, d, config)
+                                if name in p_list: return d
+                        # Fallback to global config
+                        for d, p_list in config.get("personnel_by_department", {}).items():
+                            if name in p_list: return d
+                        return "Khác"
+                        
+                    hist_df["Phòng ban"] = hist_df["TenNhanVien"].apply(_get_pb)
+                    
+                    # Reorder columns to put Phòng ban next to TenNhanVien
+                    cols = list(hist_df.columns)
+                    if "Phòng ban" in cols:
+                        cols.insert(cols.index("TenNhanVien") + 1, cols.pop(cols.index("Phòng ban")))
+                        hist_df = hist_df[cols]
+                    
+                    # Lọc (Filter)
+                    col_flt1, col_flt2 = st.columns(2)
+                    with col_flt1:
+                        f_pb = st.selectbox("Lọc Phòng Ban", ["Tất cả"] + sorted(list(set(hist_df["Phòng ban"]))), key="flt_adj_pb")
+                    with col_flt2:
+                        f_thang = st.selectbox("Lọc Tháng", ["Tất cả"] + sorted(list(set(hist_df["Thang"])), reverse=True), key="flt_adj_thang")
+                    
+                    hist_display_df = hist_df.copy()
+                    if f_pb != "Tất cả":
+                        hist_display_df = hist_display_df[hist_display_df["Phòng ban"] == f_pb]
+                    if f_thang != "Tất cả":
+                        hist_display_df = hist_display_df[hist_display_df["Thang"] == f_thang]
+                    
+                    st.dataframe(hist_display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False]), use_container_width=True, hide_index=True)
 
             else:
                 st.info("Chưa có lịch sử điều chỉnh.")
