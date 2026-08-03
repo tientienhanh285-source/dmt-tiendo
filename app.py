@@ -1165,7 +1165,12 @@ if gsheet_url_input != st.session_state["gsheet_url"]:
 
 
 company_options = ["Tất cả đơn vị"] + list(COMPANIES.keys())
-selected_company = st.sidebar.selectbox("CHỌN CÔNG TY / THÀNH VIÊN", company_options, index=1)
+selected_company = st.sidebar.selectbox(
+    "CHỌN CÔNG TY / THÀNH VIÊN", 
+    company_options, 
+    index=1,
+    format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
+)
 
 menu = st.sidebar.radio(
     "PHÂN HỆ CHỨC NĂNG",
@@ -1775,7 +1780,12 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             default_company_idx = 0
             if selected_company in company_list:
                 default_company_idx = company_list.index(selected_company)
-            entry_company = st.selectbox("Đơn vị / Công ty thành viên", company_list, index=default_company_idx)
+            entry_company = st.selectbox(
+                "Đơn vị / Công ty thành viên", 
+                company_list, 
+                index=default_company_idx,
+                format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
+            )
             
             # 4. Department
             allowed_depts = get_departments_for_company(entry_company, OFFICIAL_DEPARTMENTS)
