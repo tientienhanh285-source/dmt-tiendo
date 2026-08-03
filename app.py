@@ -1007,6 +1007,10 @@ st.markdown("""
     html, body, [class*="css"], .stApp {
         font-family: 'Be Vietnam Pro', sans-serif !important;
     }
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
     .main-title {
         font-size: 28px;
         font-weight: 800;
@@ -1391,14 +1395,14 @@ def clean_proj_name(name):
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
 if menu == "🚀 Bảng theo dõi tiến độ công việc":
     st.info("""📘 **Sổ tay Hướng dẫn KPI dành cho Nhân sự - DMT-Group**
-*Đây là cẩm nang hành động trực quan, ngắn gọn giúp nhân viên (đặc biệt là nhân sự mới) làm quen với hệ thống chỉ trong 2 phút.*
+*Đây là cẩm nang hành động trực quan, ngắn gọn giúp nhân viên làm quen với hệ thống chỉ trong 2 phút.*
 
-1. **Đăng ký đầu tháng (Từ ngày 30 đến ngày 3):** Tự chủ khai báo 3 - 5 đầu việc chủ chốt. Hệ thống tự động chia đều tỷ trọng mặc định, bạn có thể tự điều chỉnh (giới hạn từ 10% đến 50%/việc) sao cho tổng luôn bằng 100%.
-2. **Báo cáo Đã hoàn thành (100%):** Bắt buộc dán kèm Link minh chứng Drive/OneDrive dẫn đến kết quả thực tế. *(Nếu để trống link, hệ thống sẽ tính là 0 điểm)*.
-3. **Báo cáo Có vướng mắc (Trễ hạn):** Cần viết giải trình cụ thể.
-   - Lý do **khách quan & có giải trình**: Hệ thống sẽ gửi yêu cầu duyệt châm chước tới Quản lý.
-   - Lý do **chủ quan / không giải trình**: Công việc bị tính là chưa hoàn thành (0 điểm).
-4. **Theo dõi:** Kiểm soát hạn chót tại thẻ *CÔNG VIỆC TỚI HẠN* trên Dashboard để chủ động điều phối tiến độ.""")
+1. **Đăng ký đầu tháng (Từ ngày 30 đến ngày 3):** Tự khai báo các đầu việc. Bạn có thể tự điền "Tỷ trọng KPI" cho từng việc. Nếu để trống (hoặc 0), hệ thống sẽ tự động chia đều tỷ trọng còn lại cho các công việc này.
+2. **Báo cáo Đã hoàn thành:** Khi hoàn thành, đổi trạng thái thành **Đã hoàn thành** (tiến độ 100%). Cần dán kèm Link minh chứng kết quả (Drive/OneDrive) vào ô tương ứng.
+3. **Báo cáo Có vướng mắc (Trễ hạn):** Chuyển trạng thái thành **Có vướng mắc** và viết giải trình cụ thể.
+   - Phân loại **Do khách quan**: Hệ thống sẽ gửi chờ Quản lý duyệt để chấm điểm châm chước (50%, 80%, 90%...).
+   - Phân loại **Do chủ quan**: Công việc bị tính là chưa hoàn thành (0 điểm).
+4. **Theo dõi:** Kiểm soát hạn chót tại thẻ *CÔNG VIỆC TỚI HẠN* để chủ động điều phối tiến độ.""")
     
     st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_company}")
 
