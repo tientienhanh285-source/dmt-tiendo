@@ -1007,6 +1007,12 @@ st.markdown("""
     html, body, [class*="css"], .stApp {
         font-family: 'Be Vietnam Pro', sans-serif !important;
     }
+    
+    /* Hide Streamlit top-right icons */
+    .stDeployButton {display:none !important;}
+    .viewerBadge_container__1QSob {display: none !important;}
+    .viewerBadge_link__1S137 {display: none !important;}
+    header {visibility: hidden !important;}
     .block-container {
         padding-top: 4rem !important;
         padding-bottom: 3rem !important;
