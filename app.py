@@ -3724,4 +3724,9 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - Tổng điểm **> 81**: Xếp loại **B** (Tốt)
         - Tổng điểm **> 71**: Xếp loại **C** (Khá)
         - Tổng điểm **<= 71**: Xếp loại **D** (Kém)
+        
+        ⚖️ **3. Về Điểm Thưởng / Phạt:**
+        - **Cộng điểm (+):** Áp dụng cho các công việc phát sinh ngoài kế hoạch (chưa đăng ký đầu tháng), hoàn thành xuất sắc vượt tiến độ, hoặc có sáng kiến mang lại hiệu quả cao.
+        - **Trừ điểm (-):** Áp dụng khi vi phạm nội quy, chậm trễ báo cáo, hoặc có sai sót nghiệp vụ gây ảnh hưởng.
+        - *Quản lý trực tiếp hoặc HCNS sẽ rà soát và cập nhật quỹ điểm Thưởng/Phạt này trước thời điểm chốt sổ cuối tháng.*
         """)
