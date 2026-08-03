@@ -1147,7 +1147,7 @@ selected_company = st.sidebar.selectbox("CHỌN CÔNG TY / THÀNH VIÊN", compan
 menu = st.sidebar.radio(
     "PHÂN HỆ CHỨC NĂNG",
     [
-        "🚀 Trạm Điều Hành",
+        "🚀 Bảng theo dõi tiến độ công việc",
         "➕ Thêm / Cập Nhật Công Việc",
         "📊 SƠ ĐỒ GANTT DỰ ÁN DMT",
         "🏆 Đánh giá KPI & Xếp loại",
@@ -1389,10 +1389,10 @@ def clean_proj_name(name):
     return name.strip()
 
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
-if menu == "🚀 Trạm Điều Hành":
+if menu == "🚀 Bảng theo dõi tiến độ công việc":
     st.info("💡 **Dành cho người mới:**\n1. Vào mục Thêm công việc để ghi nhận việc mới 👉\n2. Khi làm xong, vào mục Cập nhật tiến độ để kéo lên 100% 👉\n3. Theo dõi hạn chót ở Dashboard.")
     
-    st.markdown(f"### 🚀 Trạm Điều Hành — {selected_company}")
+    st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_company}")
 
     
     # Calculate stats based on filtered dash_df
