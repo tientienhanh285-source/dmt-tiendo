@@ -3659,8 +3659,8 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - **Nội dung:** Tự khai báo các đầu việc chính trong tháng. Bạn có thể tự điền *Tỷ trọng KPI* (%). Nếu để trống hoặc bằng 0, hệ thống sẽ tự động tính toán và chia đều tỷ trọng còn lại cho các đầu việc đó.
         
         ### 2. Báo cáo tiến độ và Hoàn thành
-        - Khi thực hiện xong công việc, vào mục **Thêm / Cập nhật công việc**, kéo thanh tiến độ lên 100% hoặc đổi Trạng thái thành **Đã hoàn thành**.
-        - **Lưu ý quan trọng:** Bạn cần dán kèm Link minh chứng kết quả (từ Google Drive, OneDrive...) vào ô *Link Kết Quả*.
+        - Khi thực hiện xong công việc, vào mục **Thêm / Cập nhật công việc**, đánh dấu tick vào ô **☑️ Công việc đã hoàn thành**.
+        - **Lưu ý quan trọng:** Bạn cần dán kèm Link minh chứng kết quả (từ Google Drive, OneDrive...) hoặc ghi tên/số hiệu văn bản vào ô khai báo kết quả.
         
         ### 3. Xử lý Trễ hạn / Có vướng mắc
         - Nếu công việc gặp rủi ro trễ hạn, đổi trạng thái thành **Có vướng mắc** và ghi rõ lý do tại ô *Giải trình / Đề xuất*.
