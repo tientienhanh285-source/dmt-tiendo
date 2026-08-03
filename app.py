@@ -1184,7 +1184,7 @@ menu = st.sidebar.radio(
     "PHÂN HỆ CHỨC NĂNG",
     [
         "🚀 Bảng theo dõi tiến độ công việc",
-        "👀 Dashboard Lãnh Đạo (TV Mode)",
+        "👀 BẢNG TỔNG QUAN (View)",
         "➕ Thêm / Cập Nhật Công Việc",
         "🏆 Đánh giá KPI & Xếp loại",
         "✅ Duyệt việc Khách quan",
@@ -1768,7 +1768,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                 hide_index=True
             )
 
-elif menu == "👀 Dashboard Lãnh Đạo (TV Mode)":
+elif menu == "👀 BẢNG TỔNG QUAN (View)":
     # 1. Hide Streamlit UI elements for a clean dashboard view
     st.markdown("""
         <style>
@@ -1779,7 +1779,7 @@ elif menu == "👀 Dashboard Lãnh Đạo (TV Mode)":
         </style>
     """, unsafe_allow_html=True)
     
-    st.markdown(f"### 📊 Dashboard Lãnh Đạo — {selected_company}")
+    st.markdown(f"### 📊 Bảng Tổng Quan (View) — {selected_company}")
     
     col_f1, col_f2, col_f3, col_auto = st.columns([2, 2, 2, 1])
     with col_f1:
