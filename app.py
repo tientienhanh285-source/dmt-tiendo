@@ -3649,7 +3649,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
     st.markdown("## 📖 Sổ tay Hướng dẫn sử dụng phần mềm KPI")
     st.markdown("Chọn vai trò của bạn để xem hướng dẫn chi tiết:")
     
-    tab_nv, tab_ql = st.tabs(["👨‍💼 Hướng dẫn dành cho Nhân viên", "👔 Hướng dẫn dành cho Quản lý"])
+    tab_nv, tab_ql, tab_tc = st.tabs(["👨‍💼 Hướng dẫn Nhân viên", "👔 Hướng dẫn Quản lý", "🌟 Tiêu chí Đánh giá & Xếp loại"])
     
     with tab_nv:
         st.info("""
@@ -3691,14 +3691,27 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         **2️⃣ Xem Báo cáo Xếp loại KPI (Ngày 1-3 đầu tháng)**
         - 🕒 **Thời gian:** Từ ngày 1 đến ngày 3 hàng tháng.
         - 🎯 **Mục đích:** Xác nhận điểm số KPI của tháng trước để Phòng HCNS lưu kết quả.
-        - 🖱️ **Thao tác:** Vào mục **🏆 Đánh giá KPI & Xếp loại**.
         - Xem biểu đồ tổng quan và Bảng dữ liệu tự động Xếp loại cho từng nhân sự.
-        - 🧮 **Cách tính điểm:** Điểm KPI = (Điểm việc Định kỳ × 70%) + (Điểm việc Giao ban × 30%) + Điểm thưởng/phạt.
-        - 📊 **Tiêu chí Xếp loại:** Điểm > 91 (Loại A), Điểm > 81 (Loại B), Điểm > 71 (Loại C), Điểm <= 71 (Loại D).
         """)
         
         st.warning("""
         **3️⃣ Xem Tiến độ Tổng thể (Gantt)**
         - 🖱️ Vào mục **📊 SƠ ĐỒ GANTT DỰ ÁN DMT**.
         - Xem tiến độ của tất cả dự án/công việc trực quan theo dòng thời gian thực để dễ dàng điều phối nguồn lực.
+        """)
+
+    with tab_tc:
+        st.info("""
+        **🌟 TIÊU CHÍ ĐÁNH GIÁ VÀ XẾP LOẠI KPI**
+        
+        🧮 **1. Công thức tính điểm KPI Tổng:**
+        > **Điểm KPI** = (Điểm trung bình công việc **Định kỳ** × 70%) + (Điểm trung bình công việc **Giao ban** × 30%) + Điểm thưởng/phạt.
+        
+        *(Lưu ý: Nếu không có công việc Giao ban, hệ thống sẽ tự động điều chỉnh 100% trọng số cho công việc Định kỳ).*
+        
+        📊 **2. Phân loại và Quy đổi Điểm Xếp loại:**
+        - Tổng điểm **> 91**: Xếp loại **A** (Xuất sắc)
+        - Tổng điểm **> 81**: Xếp loại **B** (Tốt)
+        - Tổng điểm **> 71**: Xếp loại **C** (Khá)
+        - Tổng điểm **<= 71**: Xếp loại **D** (Kém)
         """)
