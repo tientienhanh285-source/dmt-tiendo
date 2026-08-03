@@ -3564,19 +3564,17 @@ elif menu == "✅ Duyệt việc Khách quan":
 elif menu == "⚙️ Quản Lý Cấu HÌnh":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
     
-    if selected_company == "Tất cả đơn vị":
-        st.warning("⚠️ Vui lòng chọn cụ thể một **Công ty / Đơn vị** ở menu bên trái để tiến hành cấu hình (Không áp dụng cho 'Tất cả đơn vị').")
-    else:
-        st.info(f"Đang cấu hình dữ liệu cho: **{selected_company}**")
-        tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
-        
-        # Load current company's config
-        comp_config = config.get("companies", {}).get(selected_company, {})
-        comp_projects_by_cat = comp_config.get("projects_by_category", {})
-        comp_depts = comp_config.get("departments", [])
-        comp_personnel = comp_config.get("personnel_by_department", {})
-        
-        with tab_proj:
+    tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
+    
+    with tab_proj:
+        if selected_company == "Tất cả đơn vị":
+            st.warning("⚠️ Vui lòng chọn cụ thể một **Công ty / Đơn vị** ở menu bên trái để tiến hành cấu hình (Không áp dụng cho 'Tất cả đơn vị').")
+        else:
+            st.info(f"Đang cấu hình dữ liệu cho: **{selected_company}**")
+            # Load current company's config
+            comp_config = config.get("companies", {}).get(selected_company, {})
+            comp_projects_by_cat = comp_config.get("projects_by_category", {})
+            
             st.markdown(f"#### Quản lý Danh mục Dự án - {selected_company}")
             
             cats = list(comp_projects_by_cat.keys())
@@ -3640,7 +3638,14 @@ elif menu == "⚙️ Quản Lý Cấu HÌnh":
                     else:
                         st.write("Không có dự án để xóa.")
     
-        with tab_dept:
+    with tab_dept:
+        if selected_company == "Tất cả đơn vị":
+            st.warning("⚠️ Vui lòng chọn cụ thể một **Công ty / Đơn vị** ở menu bên trái để tiến hành cấu hình (Không áp dụng cho 'Tất cả đơn vị').")
+        else:
+            comp_config = config.get("companies", {}).get(selected_company, {})
+            comp_depts = comp_config.get("departments", [])
+            comp_personnel = comp_config.get("personnel_by_department", {})
+            
             st.markdown(f"#### Quản lý Danh sách Phòng ban - {selected_company}")
             st.markdown(f"**Danh sách phòng ban hiện tại ({len(comp_depts)} phòng ban):**")
             st.write(", ".join(comp_depts) if comp_depts else "Chưa có phòng ban nào")
