@@ -1638,8 +1638,8 @@ elif menu == "📋 Bảng Tiến Độ Chi Tiết":
                 return "🔴 [Do chủ quan]"
             elif "khách quan" in str(val).lower():
                 explain = row.get('GiaiTrinhDeXuat', '')
-                if explain and explain.strip():
-                    return f"⚠️ [Do khách quan] - {explain.strip()}"
+                if pd.notna(explain) and str(explain).strip():
+                    return f"⚠️ [Do khách quan] - {str(explain).strip()}"
                 return "⚠️ [Do khách quan]"
             else:
                 return "--"
