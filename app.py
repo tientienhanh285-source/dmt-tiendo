@@ -2874,8 +2874,14 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             from datetime import datetime, date
             personnel_kpi = []
             
+            # Find all personnel relevant to THIS company
+            company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+            
             all_p = set(kpi_df['NguoiChuTri'].dropna().unique())
             all_p.update(adj_df['TenNhanVien'].dropna().unique())
+            
+            # Filter to only keep those who belong to the selected company
+            all_p = all_p.intersection(company_personnel)
             
             for person in all_p:
                 if not str(person).strip(): continue
