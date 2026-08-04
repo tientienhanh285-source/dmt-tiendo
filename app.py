@@ -1725,17 +1725,16 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             st.markdown("#### 📋 Danh sách chi tiết:")
             
             # Formatting the table for Giao ban
-            gb_display = gb_df[['ID', 'TenCongViec', 'NguoiChuTri', 'TrangThai', 'PhanTramHoanThanh', 'GiaiTrinhDeXuat', 'Deadline']]
+            gb_display = gb_df[['Deadline', 'NguoiChuTri', 'TenCongViec', 'PhanTramHoanThanh', 'TrangThai', 'GiaiTrinhDeXuat']]
             st.dataframe(
                 gb_display,
                 column_config={
-                    "ID": "Mã CV",
-                    "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
+                    "Deadline": st.column_config.DateColumn("Hạn chót", format="DD/MM/YYYY"),
                     "NguoiChuTri": "Người phụ trách",
-                    "TrangThai": "Trạng thái",
+                    "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
                     "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100),
-                    "GiaiTrinhDeXuat": st.column_config.TextColumn("Vướng mắc / Giải trình", width="medium"),
-                    "Deadline": st.column_config.DateColumn("Hạn chót", format="DD/MM/YYYY")
+                    "TrangThai": "Trạng thái",
+                    "GiaiTrinhDeXuat": st.column_config.TextColumn("Vướng mắc / Giải trình", width="medium")
                 },
                 use_container_width=True,
                 hide_index=True
