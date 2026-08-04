@@ -90,6 +90,36 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Chống dịch tự động của Google (gây lỗi chính tả) và chuẩn hóa Font chữ tiếng Việt
+st.markdown("""
+    <style>
+        /* Cố định Font chuẩn hỗ trợ đầy đủ tiếng Việt để tránh lỗi hiển thị ô vuông/dấu */
+        html, body, [class*="css"] {
+            font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+        }
+        /* Ngăn Google Translate tự động dịch làm hỏng văn bản tiếng Việt */
+        html {
+            translate: no;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+import streamlit.components.v1 as components
+components.html(
+    """
+    <script>
+        // Set ngôn ngữ trang thành tiếng Việt và gắn thẻ meta chống dịch
+        window.parent.document.documentElement.lang = 'vi';
+        const meta = window.parent.document.createElement('meta');
+        meta.name = 'google';
+        meta.content = 'notranslate';
+        window.parent.document.getElementsByTagName('head')[0].appendChild(meta);
+    </script>
+    """,
+    height=0,
+    width=0,
+)
+
 # Standardized companies based on CIENCO, DMT Group, and DMT Marina documents
 COMPANIES = {
     "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {},
