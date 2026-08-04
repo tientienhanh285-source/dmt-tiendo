@@ -141,12 +141,22 @@ def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
     kwargs = {"worksheet": worksheet, "ttl": ttl}
     
     import streamlit as st
+    import time
+    
     url = st.session_state.get("gsheet_url", "").strip()
     if url:
         kwargs["spreadsheet"] = url
         
     cache_key = f"cached_df_{worksheet}"
     
+    # Workaround for Google Sheets eventual consistency:
+    # If we just updated this worksheet within the last 10 seconds, trust the local state
+    last_update = st.session_state.get(cache_key + "_time", 0)
+    if time.time() - last_update < 10:
+        local_df = st.session_state.get(cache_key)
+        if local_df is not None:
+            return local_df
+            
     try:
         df = conn.read(**kwargs)
         if df is not None:
@@ -161,7 +171,6 @@ def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e) or "Spreadsheet must not be None" in str(e):
             st.session_state["show_gsheet_input"] = True
         else:
-            # We don't want to show toast on every network glitch if it's running in background, but keeping silent is fine too.
             pass
         return st.session_state.get(cache_key, fallback_df)
 
@@ -177,15 +186,31 @@ def safe_gsheets_update(conn, worksheet, data):
         cache_key = f"cached_df_{worksheet}"
         orig_data = st.session_state.get(cache_key)
         
+        import pandas as pd
+        pad_len = 20 # Luôn thêm 20 dòng trống để đè lên các dòng thừa (tránh lỗi zombie data khi xóa)
         if orig_data is not None and len(orig_data) > len(data):
-            import pandas as pd
-            pad_len = len(orig_data) - len(data)
-            pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
-            write_data = pd.concat([data, pad_df], ignore_index=True)
-            kwargs["data"] = write_data
+            pad_len = max(20, len(orig_data) - len(data))
+            
+        pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
+        write_data = pd.concat([data, pad_df], ignore_index=True)
+        kwargs["data"] = write_data
             
         conn.update(**kwargs)
         st.session_state[cache_key] = data
+        import time
+        st.session_state[cache_key + "_time"] = time.time()
+        st.cache_data.clear() # Xóa toàn bộ cache (kể cả cache của conn.read) để UI cập nhật ngay lập tức
+        
+        # Xóa cache của các hàm đọc dữ liệu tương ứng
+        if worksheet == "Sheet1":
+            if hasattr(read_db, "clear"): read_db.clear()
+        elif worksheet == "GANTT_KHDT":
+            if hasattr(read_gantt_db, "clear"): read_gantt_db.clear()
+        elif worksheet == "KPI_ADJUSTMENTS":
+            if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+        elif worksheet == "VAN_BAN_DEN":
+            if hasattr(read_incoming_docs_db, "clear"): read_incoming_docs_db.clear()
+            
         return True
     except Exception as e:
         import streamlit as st
@@ -391,6 +416,7 @@ DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 # Gantt DB Configuration
 GANTT_DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 
+@st.cache_data(ttl=600, show_spinner=False)
 def read_gantt_db():
     required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "QuanTrong", "KhanCap", "NgayCapNhat"]
     conn = get_gsheets_conn()
@@ -471,6 +497,7 @@ def read_gantt_db():
 
 
 
+@st.cache_data(ttl=600, show_spinner=False)
 def read_kpi_adjustments():
     import pandas as pd
     conn = get_gsheets_conn()
@@ -478,7 +505,7 @@ def read_kpi_adjustments():
     if conn is None:
         return empty_df
     try:
-        df = safe_gsheets_read(conn, worksheet="KPI_ADJUSTMENTS", ttl=0)
+        df = safe_gsheets_read(conn, worksheet="KPI_ADJUSTMENTS", ttl=600)
         if df is None or df.empty:
             return empty_df
         for col in ["ID", "Thang", "Nam", "DiemDieuChinh"]:
@@ -580,6 +607,7 @@ def save_gantt_db(df):
     except Exception as e:
         st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
+@st.cache_data(ttl=600, show_spinner=False)
 def read_sqlite_table(table_name):
     try:
         conn = sqlite3.connect("database.db")
@@ -594,6 +622,10 @@ def save_sqlite_table(df, table_name):
         conn = sqlite3.connect("database.db")
         df.to_sql(table_name, conn, if_exists="replace", index=False)
         conn.close()
+        
+        if hasattr(read_sqlite_table, "clear"): 
+            read_sqlite_table.clear()
+            
         return True
     except Exception:
         return False
@@ -822,6 +854,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
         else:
             return False, "Không thể lưu dữ liệu vào cơ sở dữ liệu."
 
+@st.cache_data(ttl=600, show_spinner=False)
 def read_incoming_docs_db():
     required_cols = [
         "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
@@ -918,6 +951,7 @@ def save_incoming_docs_db(df):
         st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
+@st.cache_data(ttl=600, show_spinner=False)
 def read_db():
     # Force cache clear for new progress calculation rules
     required_cols = [
@@ -1007,6 +1041,14 @@ def read_db():
     df['ChuKyTheoDoi'] = df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
     df['PhanLoaiTreHan'] = df['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
     df['ID'] = df['ID'].astype(str)
+    
+    # 🧹 Auto-healing: Dọn dẹp hoàn toàn các công việc trùng lặp do lỗi mạng / click đúp (nếu có)
+    dup_cols = ['TenCongViec', 'NguoiChuTri', 'TenDuAn', 'NgayBatDau', 'Deadline']
+    if all(col in df.columns for col in dup_cols):
+        df['TenCongViec'] = df['TenCongViec'].astype(str).str.strip()
+        df['NguoiChuTri'] = df['NguoiChuTri'].astype(str).str.strip()
+        df['TenDuAn'] = df['TenDuAn'].astype(str).str.strip()
+        df = df.drop_duplicates(subset=dup_cols, keep='last').reset_index(drop=True)
     
     for idx, row in df.iterrows():
         is_comp = str(row['TrangThai']).strip() == "Hoàn thành"
@@ -2077,7 +2119,13 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             task_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=0)
             st.caption("💡 **Lưu ý:** Bạn có thể để trống (0) để hệ thống tự chia đều tỷ trọng cho các đầu việc. Nếu có việc quan trọng, bạn có thể tự điền % cao hơn. Trường hợp chỉ điền tỷ trọng cho 1 vài việc, hệ thống sẽ tự lấy phần % còn lại chia đều cho các việc chưa điền.")
             
-        submit_new = st.button("💾 Lưu", type="primary")
+        if "is_saving_new" not in st.session_state:
+            st.session_state.is_saving_new = False
+            
+        def lock_save_new():
+            st.session_state.is_saving_new = True
+
+        submit_new = st.button("💾 Lưu", type="primary", key="btn_save_new_task", on_click=lock_save_new, disabled=st.session_state.is_saving_new)
         
         if submit_new:
             if not task_name.strip():
@@ -2120,78 +2168,86 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         has_error = True
                         
                 if not has_error:
-                    # Check for duplicate submission to prevent multiple clicks saving the same task
-                    is_duplicate = False
-                    if not df.empty:
-                        dup_df = df[
-                            (df['TenCongViec'].astype(str).str.strip() == task_name.strip()) & 
-                            (df['NguoiChuTri'].astype(str).str.strip() == task_owner.strip()) & 
-                            (df['TenDuAn'].astype(str).str.strip() == project_name) &
-                            (df['Deadline'].astype(str) == str(task_deadline)) &
-                            (df['NgayBatDau'].astype(str) == str(task_start))
-                        ]
-                        if not dup_df.empty:
-                            is_duplicate = True
-                            
-                    if is_duplicate:
-                        st.success("🎉 Đã lưu công việc thành công!")
-                    else:
-                        # Auto ID generator
-                        next_id = 1
-                        if not df.empty:
-                            ids = df['ID'].tolist()
-                            nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
-                            if nums:
-                                next_id = max(nums) + 1
-                    task_id = f"TSK-{next_id:03d}"
-                    
-                    saved_result = ""
-                    if calc_status == "Hoàn thành":
-                        if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                            saved_result = task_link_text.strip()
-                        elif result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and task_file is not None:
-                            upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
-                            if not os.path.exists(upload_dir):
-                                os.makedirs(upload_dir, exist_ok=True)
-                            safe_name = re.sub(r'[^\w\-_.]', '_', task_file.name)
-                            file_name = f"{task_id}_{safe_name}"
-                            file_path = os.path.join(upload_dir, file_name)
-                            with open(file_path, "wb") as f:
-                                f.write(task_file.getbuffer())
-                            saved_result = file_path
-                            
-                    new_row = {
-                        "ID": task_id,
-                        "DonVi": entry_company,
-                        "PhongBan": task_dept,
-                        "NguoiChuTri": task_owner.strip(),
-                        "TenDuAn": project_name,
-                        "MocTienDo": "Tự do",
-                        "SanPhamBanGiao": "Xem chi tiết",
-                        "TenCongViec": task_name.strip(),
-                        "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
-                        "NgayBatDau": task_start,
-                        "Deadline": task_deadline,
-                        "DoUuTien": "Trung bình",
-                        "PhanTramHoanThanh": task_progress,
-                        "TrangThai": calc_status,
-                        "LinkKetQua": saved_result,
-                        "GiaiTrinhDeXuat": task_explain.strip() if ((is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not is_late and calc_status == "Có vướng mắc")) else "",
-                        "NgayCapNhat": datetime.now(),
-                        "ChuKyTheoDoi": task_cycle,
-                        "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
-                        "TyTrongKPI": task_weight,
-                        "NguonGiaoViec": task_nguon,
-                        "MucDoGhiNhan": "0% (Không ghi nhận)"
-                    }
-                    
                     with acquire_db_lock():
                         st.cache_data.clear()
                         fresh_df = read_db()
-                        df_updated = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
-                        if save_db(df_updated):
-                            st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
-                            st.rerun()
+                        
+                        # Check for duplicate submission inside the lock
+                        is_duplicate = False
+                        if not fresh_df.empty:
+                            dup_df = fresh_df[
+                                (fresh_df['TenCongViec'].astype(str).str.strip() == task_name.strip()) & 
+                                (fresh_df['NguoiChuTri'].astype(str).str.strip() == task_owner.strip()) & 
+                                (fresh_df['TenDuAn'].astype(str).str.strip() == project_name) &
+                                (fresh_df['Deadline'].astype(str) == str(task_deadline)) &
+                                (fresh_df['NgayBatDau'].astype(str) == str(task_start))
+                            ]
+                            if not dup_df.empty:
+                                is_duplicate = True
+                                
+                        if is_duplicate:
+                            st.session_state.is_saving_new = False
+                            st.success("🎉 Đã lưu công việc thành công!")
+                        else:
+                            # Auto ID generator
+                            next_id = 1
+                            if not fresh_df.empty:
+                                ids = fresh_df['ID'].tolist()
+                                nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                                if nums:
+                                    next_id = max(nums) + 1
+                            task_id = f"TSK-{next_id:03d}"
+                            
+                            saved_result = ""
+                            if calc_status == "Hoàn thành":
+                                if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+                                    saved_result = task_link_text.strip()
+                                elif result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and task_file is not None:
+                                    upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
+                                    if not os.path.exists(upload_dir):
+                                        os.makedirs(upload_dir, exist_ok=True)
+                                    safe_name = re.sub(r'[^\w\-_.]', '_', task_file.name)
+                                    file_name = f"{task_id}_{safe_name}"
+                                    file_path = os.path.join(upload_dir, file_name)
+                                    with open(file_path, "wb") as f:
+                                        f.write(task_file.getbuffer())
+                                    saved_result = file_path
+                                    
+                            new_row = {
+                                "ID": task_id,
+                                "DonVi": entry_company,
+                                "PhongBan": task_dept,
+                                "NguoiChuTri": task_owner.strip(),
+                                "TenDuAn": project_name,
+                                "MocTienDo": "Tự do",
+                                "SanPhamBanGiao": "Xem chi tiết",
+                                "TenCongViec": task_name.strip(),
+                                "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+                                "NgayBatDau": task_start,
+                                "Deadline": task_deadline,
+                                "DoUuTien": "Trung bình",
+                                "PhanTramHoanThanh": task_progress,
+                                "TrangThai": calc_status,
+                                "LinkKetQua": saved_result,
+                                "GiaiTrinhDeXuat": task_explain.strip() if ((is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not is_late and calc_status == "Có vướng mắc")) else "",
+                                "NgayCapNhat": datetime.now(),
+                                "ChuKyTheoDoi": task_cycle,
+                                "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
+                                "TyTrongKPI": task_weight,
+                                "NguonGiaoViec": task_nguon,
+                                "MucDoGhiNhan": "0% (Không ghi nhận)"
+                            }
+                            
+                            df_updated = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
+                            if save_db(df_updated):
+                                st.session_state.is_saving_new = False
+                                st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
+                                st.rerun()
+                            else:
+                                st.session_state.is_saving_new = False
+                
+                if has_error:
+                    st.session_state.is_saving_new = False
 
     # Form: Update Progress
     with tab_update:
@@ -2360,14 +2416,20 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
                     
                 btn_save, btn_del = st.columns([3, 2])
+                
+                if "is_updating_task" not in st.session_state:
+                    st.session_state.is_updating_task = False
+                def lock_update_task():
+                    st.session_state.is_updating_task = True
+                    
                 with btn_save:
-                    save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}")
+                    save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}", on_click=lock_update_task, disabled=st.session_state.is_updating_task)
                 with btn_del:
                     del_click = False
                     if st.session_state.is_admin_authenticated:
                         confirm_del = st.checkbox("Xác nhận xóa dữ liệu này", key=f"confirm_del_{task_data['ID']}")
                         if confirm_del:
-                            del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}")
+                            del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}", on_click=lock_update_task, disabled=st.session_state.is_updating_task)
 
                 if save_click:
                     # Calculate status and progress automatically
@@ -2449,8 +2511,14 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
 
                             if save_db(fresh_df):
+                                st.session_state.is_updating_task = False
                                 st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
                                 st.rerun()
+                            else:
+                                st.session_state.is_updating_task = False
+                                
+                    if has_error:
+                        st.session_state.is_updating_task = False
                             
                 if del_click:
                     with acquire_db_lock():
@@ -2458,8 +2526,11 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         fresh_df = read_db()
                         df_after_del = fresh_df[fresh_df['ID'] != selected_id]
                         if save_db(df_after_del):
+                            st.session_state.is_updating_task = False
                             st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_id}!")
                             st.rerun()
+                        else:
+                            st.session_state.is_updating_task = False
 
                 st.markdown("---")
                 with st.expander("🔄 Tái tạo công việc định kỳ (Nhân bản cho kỳ sau)"):
