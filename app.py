@@ -987,7 +987,7 @@ def read_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan", "GiaoBan"
     ]
     conn = get_gsheets_conn()
     if conn is None:
@@ -1054,6 +1054,11 @@ def read_db():
             if "miễn" in val_str.lower() or "loại bỏ" in val_str.lower(): return "Miễn trừ (Loại bỏ KPI)"
             return "0% (Không ghi nhận)"
         df["MucDoGhiNhan"] = df["MucDoGhiNhan"].apply(clean_mucdo)
+    if "GiaoBan" not in df.columns:
+        df["GiaoBan"] = False
+    else:
+        df["GiaoBan"] = df["GiaoBan"].apply(lambda x: str(x).strip().lower() == "true")
+
     for col in required_cols:
         if col not in df.columns:
             df[col] = ""
@@ -1577,7 +1582,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         </style>
     """, unsafe_allow_html=True)
     
-    tab_report, tab_data = st.tabs(["📊 CÔNG VIỆC TỚI HẠN", "📋 BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC"])
+    tab_report, tab_giaoban, tab_data = st.tabs(["📊 CÔNG VIỆC TỚI HẠN", "📢 BÁO CÁO GIAO BAN", "📋 BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC"])
     
     with tab_report:
         st.markdown(f"### 📊 Dashboard Tổng Quan — {selected_company}")
@@ -1700,8 +1705,47 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         else:
             st.info("Chưa có dữ liệu để đánh giá hiệu suất.")
 
-    # ----------------- 2. BẢNG TIẾN ĐỘ CHI TIẾT -----------------
+    # ----------------- 1.5. BÁO CÁO GIAO BAN -----------------
+    with tab_giaoban:
+        st.markdown(f"### 📢 Báo cáo Giao ban — {selected_company}")
+        
+        # Lọc các công việc có đánh dấu Giao ban
+        gb_df = display_df[display_df['GiaoBan'] == True].copy()
+        
+        if gb_df.empty:
+            st.info("Chưa có công việc nào được chọn để đưa vào Báo cáo Giao ban.")
+            st.write("💡 Để thêm công việc vào Giao ban, hãy click vào nút ✏️ (Cập nhật) hoặc khi tạo công việc mới, tick chọn ô **'📢 Đưa vào báo cáo Giao ban'**.")
+        else:
+            total_gb = len(gb_df)
+            done_gb = len(gb_df[gb_df['TrangThai'] == 'Hoàn thành'])
+            issue_gb = len(gb_df[gb_df['TrangThai'] == 'Có vướng mắc'])
+            
+            gb_col1, gb_col2, gb_col3, gb_col4 = st.columns(4)
+            gb_col1.metric("📌 Tổng Số Việc Giao Ban", total_gb)
+            gb_col2.metric("✅ Đã Hoàn Thành", done_gb)
+            gb_col3.metric("🔥 Đang Vướng Mắc", issue_gb)
+            gb_col4.metric("⏳ Đang Thực Hiện", total_gb - done_gb - issue_gb)
+            
+            st.markdown("#### 📋 Danh sách chi tiết:")
+            
+            # Formatting the table for Giao ban
+            gb_display = gb_df[['ID', 'TenCongViec', 'NguoiChuTri', 'TrangThai', 'PhanTramHoanThanh', 'GiaiTrinhDeXuat', 'Deadline']]
+            st.dataframe(
+                gb_display,
+                column_config={
+                    "ID": "Mã CV",
+                    "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
+                    "NguoiChuTri": "Người phụ trách",
+                    "TrangThai": "Trạng thái",
+                    "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100),
+                    "GiaiTrinhDeXuat": st.column_config.TextColumn("Vướng mắc / Giải trình", width="medium"),
+                    "Deadline": st.column_config.DateColumn("Hạn chót", format="DD/MM/YYYY")
+                },
+                use_container_width=True,
+                hide_index=True
+            )
 
+    # ----------------- 2. BẢNG TIẾN ĐỘ CHI TIẾT -----------------
 
     with tab_data:
         st.markdown(f"### 📋 Bảng Tiến Độ Công Việc Chi Tiết — {selected_company}")
@@ -2112,6 +2156,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             # 8. Issue flag
             task_has_issue = st.checkbox("Công việc đang gặp vướng mắc, cần hỗ trợ", value=False)
             
+            # Giao ban flag
+            task_is_giaoban = st.checkbox("📢 Đưa vào báo cáo Giao ban", value=False)
+            
             # 9. Kết quả / File đính kèm
             st.markdown("**Kết quả / File đính kèm**")
             result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key="new_result_mode")
@@ -2265,7 +2312,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
                                 "TyTrongKPI": task_weight,
                                 "NguonGiaoViec": task_nguon,
-                                "MucDoGhiNhan": "0% (Không ghi nhận)"
+                                "MucDoGhiNhan": "0% (Không ghi nhận)",
+                                "GiaoBan": "TRUE" if task_is_giaoban else "FALSE"
                             }
                             
                             df_updated = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
@@ -2358,6 +2406,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     default_has_issue = task_data['TrangThai'] == 'Có vướng mắc'
                     u_has_issue = st.checkbox("Công việc gặp vướng mắc, cần hỗ trợ", value=default_has_issue, key=f"u_has_issue_{task_data['ID']}")
+                    
+                    default_is_giaoban = bool(task_data.get('GiaoBan', False))
+                    u_is_giaoban = st.checkbox("📢 Đưa vào báo cáo Giao ban", value=default_is_giaoban, key=f"u_is_giaoban_{task_data['ID']}")
                     
                     # 11. Chu kỳ theo dõi
                     current_cycle = task_data.get('ChuKyTheoDoi', 'Theo dự án / Tự do')
@@ -2539,6 +2590,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
                             else:
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
+                            
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaoBan'] = "TRUE" if u_is_giaoban else "FALSE"
 
                             if save_db(fresh_df):
                                 st.session_state.is_updating_task = False
