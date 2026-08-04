@@ -138,7 +138,7 @@ def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
-    kwargs = {"worksheet": worksheet, "ttl": ttl}
+    kwargs = {"worksheet": worksheet, "ttl": 0} # LUÔN dùng ttl=0 để bỏ qua cache ngầm của streamlit-gsheets, vì ta đã cache ở mức hàm read_db
     
     import streamlit as st
     import time
@@ -199,7 +199,7 @@ def safe_gsheets_update(conn, worksheet, data):
         st.session_state[cache_key] = data
         import time
         st.session_state[cache_key + "_time"] = time.time()
-        st.cache_data.clear() # Xóa toàn bộ cache (kể cả cache của conn.read) để UI cập nhật ngay lập tức
+         # Xóa toàn bộ cache (kể cả cache của conn.read) để UI cập nhật ngay lập tức
         
         # Xóa cache của các hàm đọc dữ liệu tương ứng
         if worksheet == "Sheet1":
@@ -541,7 +541,7 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
-                st.cache_data.clear()
+                
                 return True, ""
             else:
                 return False, "Không thể cập nhật lên Google Sheets (lỗi đã ghi log)"
@@ -567,7 +567,7 @@ def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
-                st.cache_data.clear()
+                
                 return True, ""
         except Exception as e:
             return False, str(e)
@@ -584,7 +584,7 @@ def delete_kpi_adjustment(adj_id):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
-                st.cache_data.clear()
+                
                 return True, ""
         except Exception as e:
             return False, str(e)
@@ -694,7 +694,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
         return False, "Không tìm thấy dòng hợp lệ nào chứa đầy đủ thông tin 'Thời hạn hoàn thành' và 'Nội dung'."
         
     with acquire_db_lock():
-        st.cache_data.clear()
+        
         docs_df = read_incoming_docs_db()
         tasks_df = read_db()
         
@@ -1284,7 +1284,7 @@ if role_mode == "Quản lý":
             settings = load_settings()
             settings["gsheet_url"] = gsheet_url_input
             save_settings(settings)
-            st.cache_data.clear()
+            
             st.rerun()
         if st.sidebar.button("Đăng xuất"):
             st.session_state.is_admin_authenticated = False
@@ -2169,7 +2169,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         
                 if not has_error:
                     with acquire_db_lock():
-                        st.cache_data.clear()
+                        
                         fresh_df = read_db()
                         
                         # Check for duplicate submission inside the lock
@@ -2489,7 +2489,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 final_link = file_path
                                 
                         with acquire_db_lock():
-                            st.cache_data.clear()
+                            
                             fresh_df = read_db()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
@@ -2522,7 +2522,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             
                 if del_click:
                     with acquire_db_lock():
-                        st.cache_data.clear()
+                        
                         fresh_df = read_db()
                         df_after_del = fresh_df[fresh_df['ID'] != selected_id]
                         if save_db(df_after_del):
@@ -2564,7 +2564,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         
                     if st.button("🔄 TẠO CÔNG VIỆC CHO KỲ SAU", type="primary", key=f"btn_rep_{task_data['ID']}"):
                         with acquire_db_lock():
-                            st.cache_data.clear()
+                            
                             fresh_df = read_db()
                             
                             next_id = 1
@@ -3315,7 +3315,7 @@ elif menu == "✅ Duyệt việc Khách quan":
                 
                 if st.button("💾 Lưu tất cả thay đổi", type="primary"):
                     with acquire_db_lock():
-                        st.cache_data.clear()
+                        
                         fresh_df = read_db()
                         changed = False
                         for idx, row in edited_df.iterrows():
@@ -3375,7 +3375,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                                 config["companies"][selected_company]["projects_by_category"][sel_cat].append(new_proj_name.strip())
                                 if save_config(config):
                                     st.success(f"Đã thêm dự án: {new_proj_name}")
-                                    st.cache_data.clear()
+                                    
                                     st.rerun()
                             else:
                                 st.error("Dự án đã tồn tại!")
@@ -3393,7 +3393,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                                 config["companies"][selected_company]["projects_by_category"][sel_cat][idx] = edited_proj_name.strip()
                                 if save_config(config):
                                     st.success(f"Đã đổi tên thành: {edited_proj_name}")
-                                    st.cache_data.clear()
+                                    
                                     st.rerun()
                             else:
                                 st.error("Tên mới không được để trống!")
@@ -3408,7 +3408,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                             config["companies"][selected_company]["projects_by_category"][sel_cat].remove(proj_to_del)
                             if save_config(config):
                                 st.success(f"Đã xóa dự án: {proj_to_del}")
-                                st.cache_data.clear()
+                                
                                 st.rerun()
                     else:
                         st.write("Không có dự án để xóa.")
@@ -3438,7 +3438,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                             config["companies"][selected_company]["departments"].append(new_dept_name.strip())
                             if save_config(config):
                                 st.success(f"Đã thêm phòng ban: {new_dept_name}")
-                                st.cache_data.clear()
+                                
                                 st.rerun()
                         else:
                             st.error("Phòng ban đã tồn tại!")
@@ -3459,7 +3459,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                                 config["companies"][selected_company]["personnel_by_department"][edited_dept_name.strip()] = config["companies"][selected_company]["personnel_by_department"].pop(dept_to_edit, [])
                             if save_config(config):
                                 st.success(f"Đã đổi tên thành: {edited_dept_name}")
-                                st.cache_data.clear()
+                                
                                 st.rerun()
                         else:
                             st.error("Tên mới không được để trống!")
@@ -3476,7 +3476,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                         config["companies"][selected_company]["personnel_by_department"].pop(dept_to_del, None)
                         if save_config(config):
                             st.success(f"Đã xóa phòng ban: {dept_to_del}")
-                            st.cache_data.clear()
+                            
                             st.rerun()
                 else:
                     st.write("Không có phòng ban để xóa.")
@@ -3508,7 +3508,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                                 config["companies"][selected_company]["personnel_by_department"][sel_dept_p].append(new_p_name.strip())
                                 if save_config(config):
                                     st.success(f"Đã thêm nhân sự: {new_p_name.strip()}")
-                                    st.cache_data.clear()
+                                    
                                     st.rerun()
                             else:
                                 st.error("Nhân sự đã tồn tại trong phòng ban này!")
@@ -3527,7 +3527,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                                     config["companies"][selected_company]["personnel_by_department"][sel_dept_p][idx] = edited_p_name.strip()
                                     if save_config(config):
                                         st.success(f"Đã cập nhật tên nhân sự thành: {edited_p_name.strip()}")
-                                        st.cache_data.clear()
+                                        
                                         st.rerun()
                                 else:
                                     st.error("Tên mới đã tồn tại trong phòng ban này!")
@@ -3544,7 +3544,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
                             config["companies"][selected_company]["personnel_by_department"][sel_dept_p].remove(p_to_del)
                             if save_config(config):
                                 st.success(f"Đã xóa nhân sự: {p_to_del}")
-                                st.cache_data.clear()
+                                
                                 st.rerun()
                     else:
                         st.write("Không có nhân sự để xóa.")
