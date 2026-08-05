@@ -1074,12 +1074,9 @@ def read_db():
     df['ID'] = df['ID'].astype(str)
     
     # 🧹 Auto-healing: Dọn dẹp hoàn toàn các công việc trùng lặp do lỗi mạng / click đúp (nếu có)
-    dup_cols = ['TenCongViec', 'NguoiChuTri', 'TenDuAn', 'NgayBatDau', 'Deadline']
-    if all(col in df.columns for col in dup_cols):
-        df['TenCongViec'] = df['TenCongViec'].astype(str).str.strip()
-        df['NguoiChuTri'] = df['NguoiChuTri'].astype(str).str.strip()
-        df['TenDuAn'] = df['TenDuAn'].astype(str).str.strip()
-        df = df.drop_duplicates(subset=dup_cols, keep='last').reset_index(drop=True)
+    if 'ID' in df.columns:
+        df['ID'] = df['ID'].astype(str).str.strip()
+        df = df.drop_duplicates(subset=['ID'], keep='last').reset_index(drop=True)
     
     for idx, row in df.iterrows():
         is_comp = str(row['TrangThai']).strip() == "Hoàn thành"
@@ -2245,18 +2242,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         
                         fresh_df = read_db()
                         
-                        # Check for duplicate submission inside the lock
+                        # Bỏ qua kiểm tra trùng lặp để cho phép tạo các công việc có nội dung giải trình/đính kèm khác nhau
                         is_duplicate = False
-                        if not fresh_df.empty:
-                            dup_df = fresh_df[
-                                (fresh_df['TenCongViec'].astype(str).str.strip() == task_name.strip()) & 
-                                (fresh_df['NguoiChuTri'].astype(str).str.strip() == task_owner.strip()) & 
-                                (fresh_df['TenDuAn'].astype(str).str.strip() == project_name) &
-                                (fresh_df['Deadline'].astype(str) == str(task_deadline)) &
-                                (fresh_df['NgayBatDau'].astype(str) == str(task_start))
-                            ]
-                            if not dup_df.empty:
-                                is_duplicate = True
                                 
                         if is_duplicate:
                             st.session_state.is_saving_new = False
