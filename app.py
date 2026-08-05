@@ -2259,10 +2259,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             task_id = f"TSK-{next_id:03d}"
                             
                             saved_result = ""
-                            if calc_status == "Hoàn thành":
-                                if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                                    saved_result = task_link_text.strip()
-                                elif result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and task_file is not None:
+                            
+                            if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+                                saved_result = task_link_text.strip()
+                            elif result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and task_file is not None:
                                     upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
                                     if not os.path.exists(upload_dir):
                                         os.makedirs(upload_dir, exist_ok=True)
@@ -2289,7 +2289,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 "PhanTramHoanThanh": task_progress,
                                 "TrangThai": calc_status,
                                 "LinkKetQua": saved_result,
-                                "GiaiTrinhDeXuat": task_explain.strip() if ((is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not is_late and calc_status == "Có vướng mắc")) else "",
+                                "GiaiTrinhDeXuat": task_explain.strip(),
                                 "NgayCapNhat": datetime.now(),
                                 "ChuKyTheoDoi": task_cycle,
                                 "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
@@ -2532,12 +2532,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     if not has_error:
                         # Determine final link value
                         final_link = current_link
-                        if u_status != "Hoàn thành":
-                            final_link = ""
-                        else:
-                            if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                                final_link = u_link_text.strip()
-                            elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is not None:
+                        
+                        if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+                            final_link = u_link_text.strip()
+                        elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is not None:
                                 upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
                                 if not os.path.exists(upload_dir):
                                     os.makedirs(upload_dir, exist_ok=True)
@@ -2559,7 +2557,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if ((u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not u_is_late and u_status == "Có vướng mắc")) else ""
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
