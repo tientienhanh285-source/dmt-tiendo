@@ -1794,6 +1794,10 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                 table_df['Deadline'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == target_month
             )
             table_df = table_df[mask]
+            
+        # Sắp xếp đưa công việc mới cập nhật / mới tạo lên đầu
+        if 'NgayCapNhat' in table_df.columns:
+            table_df = table_df.sort_values(by='NgayCapNhat', ascending=False)
         
         if table_df.empty:
             st.info("Không có công việc nào phù hợp với bộ lọc.")
