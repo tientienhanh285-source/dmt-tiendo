@@ -2189,13 +2189,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             task_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=0)
             st.caption("💡 **Lưu ý:** Bạn có thể để trống (0) để hệ thống tự chia đều tỷ trọng cho các đầu việc. Nếu có việc quan trọng, bạn có thể tự điền % cao hơn. Trường hợp chỉ điền tỷ trọng cho 1 vài việc, hệ thống sẽ tự lấy phần % còn lại chia đều cho các việc chưa điền.")
             
-        if "is_saving_new" not in st.session_state:
-            st.session_state.is_saving_new = False
-            
-        def lock_save_new():
-            st.session_state.is_saving_new = True
-
-        submit_new = st.button("💾 Lưu", type="primary", key="btn_save_new_task", on_click=lock_save_new, disabled=st.session_state.is_saving_new)
+        submit_new = st.button("💾 Lưu", type="primary", key="btn_save_new_task")
         
         if submit_new:
             if not task_name.strip():
@@ -2300,14 +2294,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             
                             df_updated = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
                             if save_db(df_updated):
-                                st.session_state.is_saving_new = False
                                 st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
                                 st.rerun()
-                            else:
-                                st.session_state.is_saving_new = False
-                
-                if has_error:
-                    st.session_state.is_saving_new = False
+
 
     # Form: Update Progress
     with tab_update:
@@ -2477,19 +2466,15 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                 btn_save, btn_del = st.columns([3, 2])
                 
-                if "is_updating_task" not in st.session_state:
-                    st.session_state.is_updating_task = False
-                def lock_update_task():
-                    st.session_state.is_updating_task = True
-                    
                 with btn_save:
-                    save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}", on_click=lock_update_task, disabled=st.session_state.is_updating_task)
+                    save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}")
                 with btn_del:
                     del_click = False
                     if st.session_state.is_admin_authenticated:
                         confirm_del = st.checkbox("Xác nhận xóa dữ liệu này", key=f"confirm_del_{task_data['ID']}")
                         if confirm_del:
-                            del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}", on_click=lock_update_task, disabled=st.session_state.is_updating_task)
+                            del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}")
+
 
                 if save_click:
                     # Calculate status and progress automatically
