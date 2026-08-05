@@ -2236,12 +2236,21 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         
                         fresh_df = read_db()
                         
-                        # Bỏ qua kiểm tra trùng lặp để cho phép tạo các công việc có nội dung giải trình/đính kèm khác nhau
+                        # Kiểm tra trùng lặp để cảnh báo người dùng (tránh click đúp)
                         is_duplicate = False
+                        if not fresh_df.empty:
+                            dup_df = fresh_df[
+                                (fresh_df['TenCongViec'].astype(str).str.strip() == task_name.strip()) & 
+                                (fresh_df['NguoiChuTri'].astype(str).str.strip() == task_owner.strip()) & 
+                                (fresh_df['TenDuAn'].astype(str).str.strip() == project_name) &
+                                (fresh_df['Deadline'].astype(str) == str(task_deadline)) &
+                                (fresh_df['NgayBatDau'].astype(str) == str(task_start))
+                            ]
+                            if not dup_df.empty:
+                                is_duplicate = True
                                 
                         if is_duplicate:
-                            st.session_state.is_saving_new = False
-                            st.success("🎉 Đã lưu công việc thành công!")
+                            st.error("⚠️ Công việc này đã tồn tại (trùng Tên công việc, Người thực hiện, Dự án và Thời gian)! Để tránh trùng lặp do bấm nhầm, hệ thống đã chặn lại. Nếu bạn thực sự muốn tạo 1 công việc giống hệt, vui lòng sửa lại Tên công việc (ví dụ: thêm số 2 vào cuối).")
                         else:
                             # Auto ID generator
                             next_id = 1
