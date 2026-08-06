@@ -200,9 +200,13 @@ def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
         import streamlit as st
         if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e) or "Spreadsheet must not be None" in str(e):
             st.session_state["show_gsheet_input"] = True
-        else:
-            pass
-        return st.session_state.get(cache_key, fallback_df)
+            return st.session_state.get(cache_key, fallback_df)
+        
+        if "WorksheetNotFound" in str(type(e)):
+            return fallback_df
+            
+        # For rate limits and other errors, we MUST raise it so st.cache_data does not cache an empty DataFrame
+        raise e
 
 def safe_gsheets_update(conn, worksheet, data):
     kwargs = {"worksheet": worksheet, "data": data}
@@ -487,8 +491,9 @@ def read_gantt_db():
                 df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
 
     except Exception as e:
-        pass
-        df = pd.DataFrame(columns=required_cols)
+        import streamlit as st
+        st.error(f"Lỗi khi đọc dữ liệu GANTT_KHDT: {e}")
+        raise e
         
     # Khởi tạo các cột thiếu
     for col in ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]:
@@ -545,7 +550,7 @@ def read_kpi_adjustments():
     except Exception as e:
         import streamlit as st
         st.error(f"Lỗi khi đọc trang tính KPI_ADJUSTMENTS: {e}")
-        return empty_df
+        raise e
 
 def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
     if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
@@ -1030,8 +1035,9 @@ def read_db():
                 df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
 
     except Exception as e:
-        pass
-        df = pd.DataFrame(columns=required_cols)
+        import streamlit as st
+        st.error(f"Lỗi khi đọc dữ liệu Sheet1: {e}")
+        raise e
 
     # Khởi tạo các cột thiếu để tránh KeyError
     for col in required_cols:
