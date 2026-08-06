@@ -548,6 +548,7 @@ def read_kpi_adjustments():
         return empty_df
 
 def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
+    if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
     import pandas as pd
     df = read_kpi_adjustments()
     if not df.empty:
@@ -571,7 +572,7 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
-                
+                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
             else:
                 return False, "Không thể cập nhật lên Google Sheets (lỗi đã ghi log)"
@@ -580,6 +581,7 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
     return False, "Không kết nối được Google Sheets"
 
 def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
+    if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
     import pandas as pd
     df = read_kpi_adjustments()
     if df.empty: return False, "Dữ liệu trống"
@@ -597,13 +599,14 @@ def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
-                
+                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
         except Exception as e:
             return False, str(e)
     return False, "Lỗi kết nối"
 
 def delete_kpi_adjustment(adj_id):
+    if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
     import pandas as pd
     df = read_kpi_adjustments()
     if df.empty: return False, "Dữ liệu trống"
@@ -614,7 +617,7 @@ def delete_kpi_adjustment(adj_id):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
-                
+                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
         except Exception as e:
             return False, str(e)
@@ -3282,6 +3285,23 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         hist_display_df = hist_display_df[hist_display_df["Thang"] == f_thang]
                     
                     st.dataframe(hist_display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False]), use_container_width=True, hide_index=True)
+                    
+                    st.markdown("---")
+                    st.markdown("##### 🗑️ Xóa Điều Chỉnh KPI")
+                    st.info("Nhập số ID tương ứng trong bảng trên để xóa dữ liệu.")
+                    col_del1, col_del2 = st.columns([1, 3])
+                    with col_del1:
+                        del_id = st.number_input("Nhập ID cần xóa", min_value=1, value=1)
+                    with col_del2:
+                        st.write("") # Spacer
+                        st.write("")
+                        if st.button("❌ Xóa dòng này", type="primary"):
+                            success, msg = delete_kpi_adjustment(del_id)
+                            if success:
+                                st.success(f"Đã xóa thành công điều chỉnh có ID: {del_id}")
+                                st.rerun()
+                            else:
+                                st.error(msg)
 
             else:
                 st.info("Chưa có lịch sử điều chỉnh.")
