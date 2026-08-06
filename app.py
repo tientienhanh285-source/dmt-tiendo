@@ -2695,7 +2695,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             if isinstance(d, date): return d.month == m and d.year == y
             return False
             
-        kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))]
+        kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))] if not kpi_df.empty else kpi_df
         
         adj_df = read_kpi_adjustments()
         adj_df = adj_df[(adj_df['Thang'] == selected_month) & (adj_df['Nam'] == selected_year)]
@@ -2970,7 +2970,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             if isinstance(d, date): return d.month == m and d.year == selected_year_full
                             return False
                             
-                        m_df = person_df[person_df['Deadline'].apply(is_in_m)]
+                        m_df = person_df[person_df['Deadline'].apply(is_in_m)] if not person_df.empty else person_df
                         m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)]
                         
                         if m_df.empty and m_adj_df.empty:
