@@ -3691,12 +3691,6 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - 🎯 **Mục đích:** Xác nhận điểm số KPI của tháng trước để Phòng HCNS lưu kết quả.
         - Xem biểu đồ tổng quan và Bảng dữ liệu tự động Xếp loại cho từng nhân sự.
         """)
-        
-        st.warning("""
-        **3️⃣ Xem Tiến độ Tổng thể (Gantt)**
-        - 🖱️ Vào mục **📊 SƠ ĐỒ GANTT DỰ ÁN DMT**.
-        - Xem tiến độ của tất cả dự án/công việc trực quan theo dòng thời gian thực để dễ dàng điều phối nguồn lực.
-        """)
 
     with tab_tc:
         st.info("""
