@@ -187,74 +187,104 @@ def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
         if local_df is not None:
             return local_df
             
-    try:
-        df = conn.read(**kwargs)
-        if df is not None:
-            import numpy as np
-            df = df.replace("", np.nan).dropna(how='all')
-            st.session_state[cache_key] = df
-            return df
-        else:
-            return st.session_state.get(cache_key, fallback_df)
-    except Exception as e:
-        import streamlit as st
-        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e) or "Spreadsheet must not be None" in str(e):
-            st.session_state["show_gsheet_input"] = True
-            return st.session_state.get(cache_key, fallback_df)
-        
-        if "WorksheetNotFound" in str(type(e)):
-            return fallback_df
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            df = conn.read(**kwargs)
+            if df is not None:
+                import numpy as np
+                df = df.replace("", np.nan).dropna(how='all')
+                st.session_state[cache_key] = df
+                return df
+            else:
+                return st.session_state.get(cache_key, fallback_df)
+        except Exception as e:
+            err_msg = str(e)
+            if "Spreadsheet must be specified" in err_msg or "Spreadsheet must be provided" in err_msg or "Spreadsheet must not be None" in err_msg:
+                st.session_state["show_gsheet_input"] = True
+                return st.session_state.get(cache_key, fallback_df)
             
-        # For rate limits and other errors, we MUST raise it so st.cache_data does not cache an empty DataFrame
-        raise e
+            if "WorksheetNotFound" in str(type(e)):
+                return fallback_df
+                
+            if "RATE_LIMIT_EXCEEDED" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "429" in err_msg:
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt) # Exponential backoff: 1s, 2s
+                    continue
+                else:
+                    st.warning("Đang có quá nhiều lượt truy cập cùng lúc. Đang sử dụng dữ liệu cũ tạm thời.")
+                    return st.session_state.get(cache_key, fallback_df)
+                
+            # For other unexpected errors
+            if attempt < max_retries - 1:
+                time.sleep(1)
+                continue
+            raise e
+
 
 def safe_gsheets_update(conn, worksheet, data):
     kwargs = {"worksheet": worksheet, "data": data}
     
     import streamlit as st
+    import time
     url = st.session_state.get("gsheet_url", "").strip()
     if url:
         kwargs["spreadsheet"] = url
         
-    try:
-        cache_key = f"cached_df_{worksheet}"
-        orig_data = st.session_state.get(cache_key)
+    cache_key = f"cached_df_{worksheet}"
+    orig_data = st.session_state.get(cache_key)
+    
+    import pandas as pd
+    pad_len = 20 # Luôn thêm 20 dòng trống để đè lên các dòng thừa (tránh lỗi zombie data khi xóa)
+    if orig_data is not None and len(orig_data) > len(data):
+        pad_len = max(20, len(orig_data) - len(data))
         
-        import pandas as pd
-        pad_len = 20 # Luôn thêm 20 dòng trống để đè lên các dòng thừa (tránh lỗi zombie data khi xóa)
-        if orig_data is not None and len(orig_data) > len(data):
-            pad_len = max(20, len(orig_data) - len(data))
-            
-        pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
-        write_data = pd.concat([data, pad_df], ignore_index=True)
-        kwargs["data"] = write_data
-            
-        conn.update(**kwargs)
-        st.session_state[cache_key] = data
-        import time
-        st.session_state[cache_key + "_time"] = time.time()
-         # Xóa toàn bộ cache (kể cả cache của conn.read) để UI cập nhật ngay lập tức
+    pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
+    write_data = pd.concat([data, pad_df], ignore_index=True)
+    kwargs["data"] = write_data
         
-        # Xóa cache của các hàm đọc dữ liệu tương ứng
-        if worksheet == "Sheet1":
-            if hasattr(read_db, "clear"): read_db.clear()
-        elif worksheet == "GANTT_KHDT":
-            if hasattr(read_gantt_db, "clear"): read_gantt_db.clear()
-        elif worksheet == "KPI_ADJUSTMENTS":
-            if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
-        elif worksheet == "VAN_BAN_DEN":
-            if hasattr(read_incoming_docs_db, "clear"): read_incoming_docs_db.clear()
+    max_retries = 6
+    for attempt in range(max_retries):
+        try:
+            conn.update(**kwargs)
+            st.session_state[cache_key] = data
+            st.session_state[cache_key + "_time"] = time.time()
+             # Xóa toàn bộ cache (kể cả cache của conn.read) để UI cập nhật ngay lập tức
             
-        return True
-    except Exception as e:
-        import streamlit as st
-        if "Spreadsheet must be specified" in str(e) or "Spreadsheet must be provided" in str(e) or "Spreadsheet must not be None" in str(e):
-            st.session_state["show_gsheet_input"] = True
-        else:
+            # Xóa cache của các hàm đọc dữ liệu tương ứng
+            if worksheet == "Sheet1":
+                if hasattr(read_db, "clear"): read_db.clear()
+            elif worksheet == "GANTT_KHDT":
+                if hasattr(read_gantt_db, "clear"): read_gantt_db.clear()
+            elif worksheet == "KPI_ADJUSTMENTS":
+                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+            elif worksheet == "VAN_BAN_DEN":
+                if hasattr(read_incoming_docs_db, "clear"): read_incoming_docs_db.clear()
+                
+            return True
+        except Exception as e:
+            err_msg = str(e) + " " + repr(e)
+            if "Spreadsheet must be specified" in err_msg or "Spreadsheet must be provided" in err_msg or "Spreadsheet must not be None" in err_msg:
+                st.session_state["show_gsheet_input"] = True
+                return False
+                
+            if "RATE_LIMIT_EXCEEDED" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "429" in err_msg:
+                if attempt < max_retries - 1:
+                    sleep_time = min(15, 2 ** attempt) # 1, 2, 4, 8, 15, 15... max 15s per wait
+                    with st.spinner(f"Đang đợi Google Sheets phản hồi (thử lại sau {sleep_time}s)..."):
+                        time.sleep(sleep_time)
+                    continue
+                else:
+                    st.error("Lỗi cập nhật: Quá nhiều lượt thao tác cùng lúc (Rate Limit). Vui lòng đợi khoảng 1 phút rồi thao tác lại.")
+                    return False
+                    
             # Ignore expected missing worksheets
             if str(e).strip("'\"") not in ["GANTT_KHDT", "VAN_BAN_DEN", "CONFIG"] and "WorksheetNotFound" not in str(type(e)):
+                if attempt < max_retries - 1:
+                    time.sleep(1)
+                    continue
                 st.error(f"Lỗi lưu dữ liệu GSheets ({worksheet}): {str(e)}")
-        return False
+            return False
 
 def save_config(config_data):
     conn = get_gsheets_conn()
