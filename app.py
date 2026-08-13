@@ -216,9 +216,9 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
             }
             df.rename(columns=col_mapping, inplace=True)
             if "NgayBatDau" in df.columns:
-                df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"]).dt.strftime('%d/%m/%Y')
+                df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"], dayfirst=True, errors="coerce").dt.strftime('%d/%m/%Y')
             if "Hạn chót" in df.columns:
-                df["Hạn chót"] = pd.to_datetime(df["Hạn chót"]).dt.strftime('%d/%m/%Y')
+                df["Hạn chót"] = pd.to_datetime(df["Hạn chót"], dayfirst=True, errors="coerce").dt.strftime('%d/%m/%Y')
                 
         elif worksheet == "KPI_ADJUSTMENTS":
             if "SoDiem" in df.columns:
@@ -583,9 +583,9 @@ def read_gantt_db():
             df[col] = ""
 
             
-    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], errors='coerce').dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline'], errors='coerce').dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
+    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], dayfirst=True, errors='coerce').dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline'], dayfirst=True, errors='coerce').dt.date
+    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
     df['ID'] = df['ID'].astype(str)
     df['TenDuAn'] = df['TenDuAn'].fillna('Dự án mặc định')
     df['TenCongViec'] = df['TenCongViec'].fillna('')
@@ -1026,8 +1026,8 @@ def read_incoming_docs_db():
 
         
     df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh'], errors='coerce').dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline'], errors='coerce').dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
+    df['Deadline'] = pd.to_datetime(df['Deadline'], dayfirst=True, errors='coerce').dt.date
+    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
     df['ID'] = df['ID'].astype(str)
     
     today_dt = date.today()
@@ -1147,9 +1147,9 @@ def read_db():
             df[col] = ""
 
     # Clean data formats
-    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], errors='coerce').dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline'], errors='coerce').dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
+    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], dayfirst=True, errors='coerce').dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline'], dayfirst=True, errors='coerce').dt.date
+    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
     df['DonVi'] = df['DonVi'].fillna('CTY CP DMT - MARINA (Du thuyền Happy Yacht)')
     df['TenDuAn'] = df['TenDuAn'].fillna('')
     df['MocTienDo'] = df['MocTienDo'].fillna('Tự do')
