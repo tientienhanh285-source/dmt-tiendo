@@ -263,7 +263,10 @@ def safe_gsheets_update(conn, worksheet, data):
     kwargs["data"] = write_data
         
     # Optimistic Concurrency Control (OCC)
-    if orig_data is not None:
+    # Nếu server này vừa lưu dữ liệu trong vòng 30s, bỏ qua OCC vì có thể Google Sheets trả về dữ liệu cũ do Eventual Consistency
+    last_update = st.session_state.get(cache_key + "_time", 0)
+    import time
+    if orig_data is not None and (time.time() - last_update > 30):
         try:
             current_db = conn.read(worksheet=worksheet, ttl=0)
             if current_db is not None:
