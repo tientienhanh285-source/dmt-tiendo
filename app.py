@@ -79,7 +79,6 @@ def acquire_db_lock(timeout=15):
     locked_remote = False
     conn = None
     try:
-        import streamlit as st
         from streamlit_gsheets import GSheetsConnection
         conn = st.connection("gsheets", type=GSheetsConnection)
         client = conn.client
