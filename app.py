@@ -157,233 +157,195 @@ def is_gsheets_configured():
     return False
 
 def get_gsheets_conn():
+    from supabase import create_client
+    SUPABASE_URL = 'https://xlfnxyerpcebqxgmfngd.supabase.co'
+    SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsZm54eWVycGNlYnF4Z21mbmdkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjYwNTAzNSwiZXhwIjoyMTAyMTgxMDM1fQ.qZsoZu8HaFpbvsG6siw76M5QXmX5bwipLV1qWeGG89s'
     try:
-        from streamlit_gsheets import GSheetsConnection
-        return st.connection("gsheets", type=GSheetsConnection)
+        return create_client(SUPABASE_URL, SUPABASE_KEY)
     except Exception as e:
-        st.warning(f"Chưa cấu hình Google Sheets Connection: {e}")
+        import streamlit as st
+        st.warning(f"Chưa cấu hình Supabase Connection: {e}")
         return None
+
+def _get_table_name(worksheet):
+    mapping = {
+        "Sheet1": "tasks",
+        "GANTT_KHDT": "gantt_tasks",
+        "VAN_BAN_DEN": "documents",
+        "CONFIG": "kpi_config",
+        "KPI_ADJUSTMENTS": "kpi_adjustments"
+    }
+    return mapping.get(worksheet, worksheet)
 
 @st.cache_resource
 def get_global_state():
-    # Sử dụng dictionary để lưu trữ state chung cho toàn bộ các tab / session
-    # Tránh lỗi ghi đè (race condition) và Google Sheets Eventual Consistency khi thao tác song song
     return {}
-
 
 def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
-    kwargs = {"worksheet": worksheet, "ttl": 0} # LUÔN dùng ttl=0 để bỏ qua cache ngầm của streamlit-gsheets, vì ta đã cache ở mức hàm read_db
     
     import streamlit as st
     import time
     
-    url = st.session_state.get("gsheet_url", "").strip()
-    if url:
-        kwargs["spreadsheet"] = url
-        
     cache_key = f"cached_df_{worksheet}"
     
-    # Sử dụng Global State để tránh lỗi Eventual Consistency của Google Sheets
-    # Nếu có bất kỳ Tab nào vừa thao tác Lưu (trong vòng 60 giây), 
-    # các Tab khác khi tải lại sẽ lập tức lấy dữ liệu mới nhất từ RAM server thay vì gọi API Google
     global_state = get_global_state()
     last_update = global_state.get(cache_key + "_time", 0)
     if time.time() - last_update < 60:
         global_df = global_state.get(cache_key)
         if global_df is not None:
-            # Sync session_state with global_state
             st.session_state[cache_key] = global_df.copy()
             st.session_state[cache_key + "_time"] = last_update
             return global_df.copy()
             
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            df = conn.read(**kwargs)
-            if df is not None:
-                import numpy as np
-                df = df.replace("", np.nan).dropna(how='all')
-                st.session_state[cache_key] = df
-                st.session_state[cache_key + "_time"] = time.time()
-                
-                # Update global state for other tabs
-                global_state = get_global_state()
-                global_state[cache_key] = df.copy()
-                global_state[cache_key + "_time"] = time.time()
-                
-                return df
-            else:
-                return st.session_state.get(cache_key, fallback_df)
-        except Exception as e:
-            err_msg = str(e)
-            if "Spreadsheet must be specified" in err_msg or "Spreadsheet must be provided" in err_msg or "Spreadsheet must not be None" in err_msg:
-                st.session_state["show_gsheet_input"] = True
-                return st.session_state.get(cache_key, fallback_df)
+    try:
+        table_name = _get_table_name(worksheet)
+        res = conn.table(table_name).select('*').execute()
+        data = res.data
+        if not data:
+            return fallback_df
             
-            if "WorksheetNotFound" in str(type(e)):
-                return fallback_df
+        import pandas as pd
+        df = pd.DataFrame(data)
+        
+        import numpy as np
+        df = df.replace("", np.nan).dropna(how='all')
+        
+        if worksheet == "Sheet1":
+            col_mapping = {
+                'ID': 'Mã CV',
+                'TenCongViec': 'Tên công việc',
+                'PhanTramHoanThanh': 'Tiến độ %',
+                'TrangThai': 'Trạng thái',
+                'Deadline': 'Hạn chót'
+            }
+            df.rename(columns=col_mapping, inplace=True)
+            if "NgayBatDau" in df.columns:
+                df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"]).dt.strftime('%d/%m/%Y')
+            if "Hạn chót" in df.columns:
+                df["Hạn chót"] = pd.to_datetime(df["Hạn chót"]).dt.strftime('%d/%m/%Y')
                 
-            if "RATE_LIMIT_EXCEEDED" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "429" in err_msg:
-                if attempt < max_retries - 1:
-                    time.sleep(2 ** attempt) # Exponential backoff: 1s, 2s
-                    continue
-                else:
-                    st.warning("Đang có quá nhiều lượt truy cập cùng lúc. Đang sử dụng dữ liệu cũ tạm thời.")
-                    return st.session_state.get(cache_key, fallback_df)
+        elif worksheet == "KPI_ADJUSTMENTS":
+            if "SoDiem" in df.columns:
+                df.rename(columns={"SoDiem": "DiemDieuChinh"}, inplace=True)
                 
-            # For other unexpected errors
-            if attempt < max_retries - 1:
-                time.sleep(1)
-                continue
-            raise e
-
+        st.session_state[cache_key] = df
+        st.session_state[cache_key + "_time"] = time.time()
+        
+        global_state[cache_key] = df.copy()
+        global_state[cache_key + "_time"] = time.time()
+        
+        return df
+    except Exception as e:
+        import streamlit as st
+        st.warning(f"Lỗi đọc Supabase ({worksheet}): {e}")
+        return fallback_df
 
 def safe_gsheets_update(conn, worksheet, data):
-    kwargs = {"worksheet": worksheet, "data": data}
-    
     import streamlit as st
     import time
-    url = st.session_state.get("gsheet_url", "").strip()
-    if url:
-        kwargs["spreadsheet"] = url
-        
-    cache_key = f"cached_df_{worksheet}"
-    orig_data = st.session_state.get(cache_key)
-    
     import pandas as pd
-    pad_len = 20 # Luôn thêm 20 dòng trống để đè lên các dòng thừa (tránh lỗi zombie data khi xóa)
-    if orig_data is not None and len(orig_data) > len(data):
-        pad_len = max(20, len(orig_data) - len(data))
-        
-    pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
-    write_data = pd.concat([data, pad_df], ignore_index=True)
-    kwargs["data"] = write_data
-        
-    # Optimistic Concurrency Control (OCC)
-    # Nếu server này vừa lưu dữ liệu trong vòng 30s, bỏ qua OCC vì có thể Google Sheets trả về dữ liệu cũ do Eventual Consistency
-    last_update = st.session_state.get(cache_key + "_time", 0)
-    import time
-    if orig_data is not None and (time.time() - last_update > 30):
-        try:
-            current_db = conn.read(worksheet=worksheet, ttl=0)
-            if current_db is not None:
-                import pandas as pd
-                import hashlib
-                import numpy as np
-                current_db = current_db.replace("", np.nan).dropna(how='all')
+    import numpy as np
+    import math
+    
+    cache_key = f"cached_df_{worksheet}"
+    table_name = _get_table_name(worksheet)
+    
+    try:
+        df = data.copy()
+        if worksheet == "Sheet1":
+            col_mapping = {
+                'Mã CV': 'ID', 'MaCV': 'ID',
+                'Tên công việc': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+                'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+                'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+                'Hạn chót': 'Deadline', 'Ngày hoàn thành': 'Deadline'
+            }
+            rename_dict = {k: v for k, v in col_mapping.items() if k in df.columns}
+            df.rename(columns=rename_dict, inplace=True)
+            
+            if "NgayBatDau" in df.columns:
+                df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
+            if "Deadline" in df.columns:
+                df["Deadline"] = pd.to_datetime(df["Deadline"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
                 
-                def get_df_hash(df):
-                    if 'NgayCapNhat' in df.columns:
-                        return hashlib.md5("".join(df['NgayCapNhat'].astype(str)).encode('utf-8')).hexdigest()
-                    return hashlib.md5(pd.util.hash_pandas_object(df).values).hexdigest()
-                    
-                if get_df_hash(current_db) != get_df_hash(orig_data):
-                    # Tự động gộp dữ liệu (Auto-Merge)
-                    if 'ID' in current_db.columns and 'ID' in data.columns and 'ID' in orig_data.columns:
-                        try:
-                            orig_ids = set(orig_data['ID'].astype(str).dropna())
-                            new_ids = set(data['ID'].astype(str).dropna())
-                            
-                            deleted_ids = orig_ids - new_ids
-                            added_ids = new_ids - orig_ids
-                            
-                            merged_db = current_db.copy()
-                            
-                            # Cân bằng số lượng cột để tránh lỗi ValueError khi Google Sheets tự động cắt các cột trống
-                            for col in data.columns:
-                                if col not in merged_db.columns:
-                                    merged_db[col] = ""
-                            merged_db = merged_db[data.columns]
-                            
-                            # 1. Xóa
-                            if deleted_ids:
-                                merged_db = merged_db[~merged_db['ID'].astype(str).isin(deleted_ids)]
-                                
-                            # 2. Cập nhật
-                            for uid in (orig_ids & new_ids):
-                                orig_row = orig_data[orig_data['ID'].astype(str) == uid]
-                                new_row = data[data['ID'].astype(str) == uid]
-                                if not orig_row.empty and not new_row.empty:
-                                    orig_date = str(orig_row.iloc[0].get('NgayCapNhat', ''))
-                                    new_date = str(new_row.iloc[0].get('NgayCapNhat', ''))
-                                    if orig_date != new_date: 
-                                        if uid in merged_db['ID'].astype(str).values:
-                                            merged_db.loc[merged_db['ID'].astype(str) == uid] = new_row.iloc[0].values
-                                            
-                            # 3. Thêm mới
-                            if added_ids:
-                                added_rows = data[data['ID'].astype(str).isin(added_ids)]
-                                merged_db = pd.concat([merged_db, added_rows], ignore_index=True)
-                                
-                            # Cập nhật biến data bằng dữ liệu đã gộp
-                            data = merged_db
-                            # Tính toán lại dòng trống (padding)
-                            pad_len = max(20, len(orig_data) - len(data)) if len(orig_data) > len(data) else 20
-                            pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
-                            kwargs["data"] = pd.concat([data, pad_df], ignore_index=True)
-                            
-                        except Exception as merge_err:
-                            import streamlit as st
-                            st.error(f"⚠️ Dữ liệu thay đổi quá phức tạp. Vui lòng tải lại trang!")
-                            return False
-                    else:
-                        import streamlit as st
-                        st.error("⚠️ Dữ liệu đã bị thay đổi bởi người khác (hoặc trên thiết bị khác). Vui lòng tải lại trang để lấy dữ liệu mới nhất trước khi lưu!")
-                        return False
-        except Exception as e:
-            pass # Ignore read errors for OCC
+            allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan']
+            df = df[[c for c in df.columns if c in allowed_cols]]
+            
+        elif worksheet == "KPI_ADJUSTMENTS":
+            if "DiemDieuChinh" in df.columns:
+                df.rename(columns={"DiemDieuChinh": "SoDiem"}, inplace=True)
+            allowed_cols = ['ID', 'NhanSu', 'Thang', 'Nam', 'LoaiDieuChinh', 'SoDiem', 'LyDo', 'NguoiCapNhat', 'ThoiGianCapNhat']
+            df = df[[c for c in df.columns if c in allowed_cols]]
+            
+        elif worksheet == "CONFIG":
+            allowed_cols = ['PhongBan', 'NhanSu', 'Role']
+            df = df[[c for c in df.columns if c in allowed_cols]]
+            
+        elif worksheet == "GANTT_KHDT":
+            allowed_cols = ['ID', 'TenDuAn', 'TenCongViec', 'GiaiDoan', 'NgayBatDau', 'Deadline', 'PhanTramHoanThanh', 'Milestone', 'NgayCapNhat']
+            df = df[[c for c in df.columns if c in allowed_cols]]
+            
+        elif worksheet == "VAN_BAN_DEN":
+            allowed_cols = ['ID', 'SoKyHieu', 'NgayBanHanh', 'CoQuanBanHanh', 'TrichYeu', 'NguoiChuTri', 'ThoiHanGiaiQuyet', 'TrangThai', 'GhiChu']
+            df = df[[c for c in df.columns if c in allowed_cols]]
 
-    max_retries = 6
-    for attempt in range(max_retries):
-        try:
-            conn.update(**kwargs)
-            st.session_state[cache_key] = data
-            st.session_state[cache_key + "_time"] = time.time()
+        pk = 'NhanSu' if worksheet == 'CONFIG' else 'ID'
+        if pk in df.columns:
+            df = df[df[pk].notna()]
+            df = df[df[pk] != '']
+
+        for col in df.columns:
+            if pd.api.types.is_datetime64_any_dtype(df[col]):
+                df[col] = df[col].dt.strftime('%Y-%m-%d %H:%M:%S')
             
-            # Sync to global state for other tabs
-            global_state = get_global_state()
-            global_state[cache_key] = data.copy()
-            global_state[cache_key + "_time"] = time.time()
-            
-             # Xóa toàn bộ cache (kể cả cache của conn.read) để UI cập nhật ngay lập tức
-            
-            # Xóa cache của các hàm đọc dữ liệu tương ứng
-            if worksheet == "Sheet1":
-                if hasattr(read_db, "clear"): read_db.clear()
-            elif worksheet == "GANTT_KHDT":
-                if hasattr(read_gantt_db, "clear"): read_gantt_db.clear()
-            elif worksheet == "KPI_ADJUSTMENTS":
-                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
-            elif worksheet == "VAN_BAN_DEN":
-                if hasattr(read_incoming_docs_db, "clear"): read_incoming_docs_db.clear()
-                
-            return True
-        except Exception as e:
-            err_msg = str(e) + " " + repr(e)
-            if "Spreadsheet must be specified" in err_msg or "Spreadsheet must be provided" in err_msg or "Spreadsheet must not be None" in err_msg:
-                st.session_state["show_gsheet_input"] = True
-                return False
-                
-            if "RATE_LIMIT_EXCEEDED" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "429" in err_msg:
-                if attempt < max_retries - 1:
-                    sleep_time = min(15, 2 ** attempt) # 1, 2, 4, 8, 15, 15... max 15s per wait
-                    with st.spinner(f"Đang đợi Google Sheets phản hồi (thử lại sau {sleep_time}s)..."):
-                        time.sleep(sleep_time)
-                    continue
-                else:
-                    st.error("Lỗi cập nhật: Quá nhiều lượt thao tác cùng lúc (Rate Limit). Vui lòng đợi khoảng 1 phút rồi thao tác lại.")
-                    return False
+        records = df.to_dict(orient='records')
+        for r in records:
+            for k, v in list(r.items()):
+                if isinstance(v, float) and math.isnan(v):
+                    r[k] = None
+                elif pd.isna(v):
+                    r[k] = None
                     
-            # Ignore expected missing worksheets
-            if str(e).strip("'\"") not in ["GANTT_KHDT", "VAN_BAN_DEN", "CONFIG"] and "WorksheetNotFound" not in str(type(e)):
-                if attempt < max_retries - 1:
-                    time.sleep(1)
-                    continue
-                st.error(f"Lỗi lưu dữ liệu GSheets ({worksheet}): {str(e)}")
-            return False
+        if records:
+            conn.table(table_name).upsert(records).execute()
+            
+            if pk in df.columns:
+                current_ids = df[pk].tolist()
+                if len(current_ids) > 0:
+                    res = conn.table(table_name).select(pk).execute()
+                    db_ids = [row[pk] for row in res.data]
+                    ids_to_delete = [i for i in db_ids if i not in current_ids]
+                    if ids_to_delete:
+                        for i in range(0, len(ids_to_delete), 100):
+                            batch_del = ids_to_delete[i:i+100]
+                            conn.table(table_name).delete().in_(pk, batch_del).execute()
+
+        st.session_state[cache_key] = data.copy()
+        st.session_state[cache_key + "_time"] = time.time()
+        
+        global_state = get_global_state()
+        global_state[cache_key] = data.copy()
+        global_state[cache_key + "_time"] = time.time()
+        
+        if worksheet == "Sheet1":
+            if hasattr(read_db, "clear"): read_db.clear()
+        elif worksheet == "GANTT_KHDT":
+            if hasattr(read_gantt_db, "clear"): read_gantt_db.clear()
+        elif worksheet == "KPI_ADJUSTMENTS":
+            if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+        elif worksheet == "VAN_BAN_DEN":
+            if hasattr(read_incoming_docs_db, "clear"): read_incoming_docs_db.clear()
+            
+        return True
+    except Exception as e:
+        err_msg = str(e)
+        import streamlit as st
+        st.error(f"Lỗi khi lưu vào Supabase ({worksheet}): {err_msg}")
+        return False
+
 
 def save_config(config_data):
     conn = get_gsheets_conn()
