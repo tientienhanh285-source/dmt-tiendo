@@ -281,9 +281,52 @@ def safe_gsheets_update(conn, worksheet, data):
                     return hashlib.md5(pd.util.hash_pandas_object(df).values).hexdigest()
                     
                 if get_df_hash(current_db) != get_df_hash(orig_data):
-                    import streamlit as st
-                    st.error("⚠️ Dữ liệu đã bị thay đổi bởi người khác (hoặc trên thiết bị khác). Vui lòng tải lại trang để lấy dữ liệu mới nhất trước khi lưu!")
-                    return False
+                    # Tự động gộp dữ liệu (Auto-Merge)
+                    if 'ID' in current_db.columns and 'ID' in data.columns and 'ID' in orig_data.columns:
+                        try:
+                            orig_ids = set(orig_data['ID'].astype(str).dropna())
+                            new_ids = set(data['ID'].astype(str).dropna())
+                            
+                            deleted_ids = orig_ids - new_ids
+                            added_ids = new_ids - orig_ids
+                            
+                            merged_db = current_db.copy()
+                            
+                            # 1. Xóa
+                            if deleted_ids:
+                                merged_db = merged_db[~merged_db['ID'].astype(str).isin(deleted_ids)]
+                                
+                            # 2. Cập nhật
+                            for uid in (orig_ids & new_ids):
+                                orig_row = orig_data[orig_data['ID'].astype(str) == uid]
+                                new_row = data[data['ID'].astype(str) == uid]
+                                if not orig_row.empty and not new_row.empty:
+                                    orig_date = str(orig_row.iloc[0].get('NgayCapNhat', ''))
+                                    new_date = str(new_row.iloc[0].get('NgayCapNhat', ''))
+                                    if orig_date != new_date: 
+                                        if uid in merged_db['ID'].astype(str).values:
+                                            merged_db.loc[merged_db['ID'].astype(str) == uid] = new_row.iloc[0].values
+                                            
+                            # 3. Thêm mới
+                            if added_ids:
+                                added_rows = data[data['ID'].astype(str).isin(added_ids)]
+                                merged_db = pd.concat([merged_db, added_rows], ignore_index=True)
+                                
+                            # Cập nhật biến data bằng dữ liệu đã gộp
+                            data = merged_db
+                            # Tính toán lại dòng trống (padding)
+                            pad_len = max(20, len(orig_data) - len(data)) if len(orig_data) > len(data) else 20
+                            pad_df = pd.DataFrame([[""] * len(data.columns)] * pad_len, columns=data.columns)
+                            kwargs["data"] = pd.concat([data, pad_df], ignore_index=True)
+                            
+                        except Exception as merge_err:
+                            import streamlit as st
+                            st.error(f"⚠️ Dữ liệu thay đổi quá phức tạp. Vui lòng tải lại trang!")
+                            return False
+                    else:
+                        import streamlit as st
+                        st.error("⚠️ Dữ liệu đã bị thay đổi bởi người khác (hoặc trên thiết bị khác). Vui lòng tải lại trang để lấy dữ liệu mới nhất trước khi lưu!")
+                        return False
         except Exception as e:
             pass # Ignore read errors for OCC
 
