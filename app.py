@@ -304,8 +304,11 @@ def safe_gsheets_update(conn, worksheet, data):
         records = df.to_dict(orient='records')
         for r in records:
             for k, v in list(r.items()):
-                if isinstance(v, float) and math.isnan(v):
-                    r[k] = None
+                if isinstance(v, float):
+                    if math.isnan(v):
+                        r[k] = None
+                    elif v.is_integer():
+                        r[k] = int(v)
                 elif pd.isna(v):
                     r[k] = None
                     
