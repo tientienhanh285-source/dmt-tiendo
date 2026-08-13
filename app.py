@@ -1786,8 +1786,6 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             st.success("🎉 Đảm bảo tiến độ: Không có công việc nào bị trễ hạn hoặc sắp đến hạn cần lưu ý!")
         
         st.markdown("---")
-
-
     
         # Performance Review Section
         st.markdown("### 📈 Bảng Đánh giá Hiệu suất (Performance Review)")
@@ -1868,7 +1866,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                     "NguoiChuTri": "Người phụ trách",
                     "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
                     "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100),
-                    "TrangThai": "Trạng thái",
+                    "Trạng thái": "Trạng thái",
                     "GiaiTrinhDeXuat": st.column_config.TextColumn("Vướng mắc / Giải trình", width="medium")
                 },
                 use_container_width=True,
@@ -2441,7 +2439,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             
                             df_updated = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
                             if save_db(df_updated):
-                                st.success(f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!")
+                                st.session_state["success_msg"] = f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!"
                                 st.rerun()
 
 
@@ -2701,12 +2699,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
 
                             if save_db(fresh_df):
-                                st.session_state.is_updating_task = False
-                                st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
+                                st.session_state["success_msg"] = f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!"
                                 st.rerun()
-                            else:
-                                st.session_state.is_updating_task = False
-                                
+                            
                     if has_error:
                         st.session_state.is_updating_task = False
                             
@@ -2716,11 +2711,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         fresh_df = read_db()
                         df_after_del = fresh_df[fresh_df['ID'] != selected_id]
                         if save_db(df_after_del):
-                            st.session_state.is_updating_task = False
-                            st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_id}!")
+                            st.session_state["success_msg"] = f"🗑️ Đã xóa thành công công việc mã: {selected_id}!"
                             st.rerun()
-                        else:
-                            st.session_state.is_updating_task = False
 
                 st.markdown("---")
                 with st.expander("🔄 Tái tạo công việc định kỳ (Nhân bản cho kỳ sau)"):
@@ -2790,12 +2782,16 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             
                             df_rep = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
                             if save_db(df_rep):
-                                st.success(f"🎉 Đã nhân bản thành công công việc mới mã: {new_id}!")
+                                st.session_state["success_msg"] = f"🎉 Đã nhân bản thành công công việc mới mã: {new_id}!"
                                 st.rerun()
 
 # ----------------- 5. ĐÁNH GIÁ KPI & XẾP LOẠI -----------------
 elif menu == "🏆 Đánh giá KPI & Xếp loại":
     st.markdown(f"### 🏆 Đánh giá KPI & Xếp loại Cá nhân — {selected_company}")
+    
+    if "success_msg" in st.session_state:
+        st.success(st.session_state["success_msg"])
+        del st.session_state["success_msg"]
     
     if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
         kpi_tab1, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
@@ -3313,7 +3309,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     else:
                         final_reason = adj_reason.strip()
                     add_kpi_adjustment(adj_person, adj_month, adj_year, adj_type, actual_val, final_reason)
-                    st.success("🎉 Đã lưu điều chỉnh điểm thành công!")
+                    st.session_state["success_msg"] = "🎉 Đã lưu điều chỉnh điểm thành công!"
                     st.rerun()
 
         with kpi_tab4:
