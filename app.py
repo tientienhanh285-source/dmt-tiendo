@@ -163,6 +163,12 @@ def get_gsheets_conn():
         st.warning(f"Chưa cấu hình Google Sheets Connection: {e}")
         return None
 
+@st.cache_resource
+def get_global_state():
+    # Sử dụng dictionary để lưu trữ state chung cho toàn bộ các tab / session
+    # Tránh lỗi ghi đè (race condition) và Google Sheets Eventual Consistency khi thao tác song song
+    return {}
+
 
 def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
     if fallback_df is None:
@@ -179,13 +185,18 @@ def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
         
     cache_key = f"cached_df_{worksheet}"
     
-    # Workaround for Google Sheets eventual consistency:
-    # If we just updated this worksheet within the last 10 seconds, trust the local state
-    last_update = st.session_state.get(cache_key + "_time", 0)
-    if time.time() - last_update < 10:
-        local_df = st.session_state.get(cache_key)
-        if local_df is not None:
-            return local_df
+    # Sử dụng Global State để tránh lỗi Eventual Consistency của Google Sheets
+    # Nếu có bất kỳ Tab nào vừa thao tác Lưu (trong vòng 60 giây), 
+    # các Tab khác khi tải lại sẽ lập tức lấy dữ liệu mới nhất từ RAM server thay vì gọi API Google
+    global_state = get_global_state()
+    last_update = global_state.get(cache_key + "_time", 0)
+    if time.time() - last_update < 60:
+        global_df = global_state.get(cache_key)
+        if global_df is not None:
+            # Sync session_state with global_state
+            st.session_state[cache_key] = global_df.copy()
+            st.session_state[cache_key + "_time"] = last_update
+            return global_df.copy()
             
     max_retries = 3
     for attempt in range(max_retries):
@@ -195,6 +206,13 @@ def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
                 import numpy as np
                 df = df.replace("", np.nan).dropna(how='all')
                 st.session_state[cache_key] = df
+                st.session_state[cache_key + "_time"] = time.time()
+                
+                # Update global state for other tabs
+                global_state = get_global_state()
+                global_state[cache_key] = df.copy()
+                global_state[cache_key + "_time"] = time.time()
+                
                 return df
             else:
                 return st.session_state.get(cache_key, fallback_df)
@@ -249,6 +267,12 @@ def safe_gsheets_update(conn, worksheet, data):
             conn.update(**kwargs)
             st.session_state[cache_key] = data
             st.session_state[cache_key + "_time"] = time.time()
+            
+            # Sync to global state for other tabs
+            global_state = get_global_state()
+            global_state[cache_key] = data.copy()
+            global_state[cache_key + "_time"] = time.time()
+            
              # Xóa toàn bộ cache (kể cả cache của conn.read) để UI cập nhật ngay lập tức
             
             # Xóa cache của các hàm đọc dữ liệu tương ứng
