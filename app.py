@@ -1427,7 +1427,7 @@ if 'NguoiChuTri' not in display_df.columns:
 total_v = len(display_df)
 done_v = len(display_df[display_df['TrangThai'] == 'Hoàn thành'])
 issue_v = len(display_df[display_df['TrangThai'] == 'Có vướng mắc'])
-overdue_v = len(display_df[(display_df['Deadline'] < today) & (display_df['TrangThai'] != 'Hoàn thành')])
+overdue_v = len(display_df[(pd.to_datetime(display_df['Deadline'], errors='coerce') < pd.Timestamp(today)) & (display_df['TrangThai'] != 'Hoàn thành')])
 doing_v = total_v - done_v - issue_v - overdue_v
 if doing_v < 0:
     doing_v = 0
@@ -1626,7 +1626,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
     total_dash = len(dash_df)
     done_dash = len(dash_df[dash_df['TrangThai'] == 'Hoàn thành'])
     issue_dash = len(dash_df[dash_df['TrangThai'] == 'Có vướng mắc'])
-    overdue_dash = len(dash_df[(dash_df['Deadline'] < today) & (dash_df['TrangThai'] != 'Hoàn thành')])
+    overdue_dash = len(dash_df[(pd.to_datetime(dash_df['Deadline'], errors='coerce') < pd.Timestamp(today)) & (dash_df['TrangThai'] != 'Hoàn thành')])
     doing_dash = total_dash - done_dash - issue_dash - overdue_dash
     if doing_dash < 0:
         doing_dash = 0
