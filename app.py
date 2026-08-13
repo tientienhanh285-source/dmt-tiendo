@@ -1671,6 +1671,8 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         
         # Overdue and due today/tomorrow alerts scanning (Group 1 & 2)
         def get_badge_and_urgency(deadline_val, today_dt):
+            if pd.isna(deadline_val):
+                return None, None
             if not isinstance(deadline_val, date):
                 if isinstance(deadline_val, datetime):
                     deadline_val = deadline_val.date()
