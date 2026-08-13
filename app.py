@@ -863,7 +863,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             if is_completed:
                 trang_thai = "✅ Đã xong"
             else:
-                if deadline_val < today:
+                if pd.notna(deadline_val) and deadline_val < today:
                     days_late = (today - deadline_val).days
                     trang_thai = f"⚠️ Trễ hạn xử lý CV (Trễ {days_late} ngày)"
                 else:
@@ -922,7 +922,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             task_status = "Đang thực hiện"
             if trang_thai == "✅ Đã xong":
                 task_status = "Hoàn thành"
-            elif deadline_val < today:
+            elif pd.notna(deadline_val) and deadline_val < today:
                 task_status = "Quá hạn"
                 
             if duplicate_task.empty:
@@ -1753,7 +1753,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             # Other tasks (objective or on time) that are late will be treated as 100% to avoid deduction.
             for idx, row in perf_df.iterrows():
                 is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
-                is_late = (row['Deadline'] < today) and not is_comp
+                is_late = (pd.notna(row['Deadline']) and row['Deadline'] < today) and not is_comp
                 if is_late:
                     if row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
                         perf_df.at[idx, 'PhanTramHoanThanh'] = 100
@@ -1927,13 +1927,13 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                     return "✅ Đã xong"
                 
                 # prog < 100
-                if row['Deadline'] < today:
+                if pd.notna(row['Deadline']) and row['Deadline'] < today:
                     return "⚠️ Trễ hạn"
                 
                 if is_issue:
                     return "🔴 Vướng mắc"
                 
-                if prog == 0 and row['NgayBatDau'] > today:
+                if prog == 0 and pd.notna(row['NgayBatDau']) and row['NgayBatDau'] > today:
                     return "❌ Chưa bắt đầu"
                 
                 # Default state based on start date
@@ -1946,7 +1946,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             # Format Nguyên nhân trễ hạn
             def format_late_cause(row):
                 is_comp = (row['TrangThai'] == 'Hoàn thành')
-                is_late = (row['Deadline'] < today) and not is_comp
+                is_late = (pd.notna(row['Deadline']) and row['Deadline'] < today) and not is_comp
                 if not is_late:
                     return "--"
             
@@ -2120,9 +2120,9 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         def format_status(row):
             prog = int(row['PhanTramHoanThanh'])
             if prog >= 100: return "✅ Đã xong"
-            if row['Deadline'] < today: return "⚠️ Trễ hạn"
+            if pd.notna(row['Deadline']) and row['Deadline'] < today: return "⚠️ Trễ hạn"
             if row['TrangThai'] == 'Có vướng mắc': return "🔴 Vướng mắc"
-            if prog == 0 and row['NgayBatDau'] > today: return "❌ Chưa bắt đầu"
+            if prog == 0 and pd.notna(row['NgayBatDau']) and row['NgayBatDau'] > today: return "❌ Chưa bắt đầu"
             if today >= row['NgayBatDau']: return "⏳ Đang thực hiện"
             return "❌ Chưa bắt đầu"
         df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
