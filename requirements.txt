@@ -2,7 +2,8 @@ streamlit
 pandas
 openpyxl
 st-gsheets-connection
-streamlit-option-menu
-streamlit-aggrid
 plotly
+google-generativeai
+pypdf
+python-docx
 supabase
