@@ -1897,6 +1897,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         
             # Format Hạn chót
             def format_dl(row):
+                if pd.isna(row['Deadline']) or not isinstance(row['Deadline'], (date, datetime)): return ""
                 prog = int(row['PhanTramHoanThanh'])
                 date_str = row['Deadline'].strftime('%d/%m/%Y')
             
@@ -2105,6 +2106,7 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         df_display['Tỷ trọng KPI'] = table_df.apply(lambda row: f"{int(float(str(row.get('TyTrongKPI', 0)).strip() or 0))}%" if pd.to_numeric(row.get('TyTrongKPI', 0), errors='coerce') > 0 else "Tự chia", axis=1)
         
         def format_dl(row):
+            if pd.isna(row['Deadline']) or not isinstance(row['Deadline'], (date, datetime)): return ""
             prog = int(row['PhanTramHoanThanh'])
             date_str = row['Deadline'].strftime('%d/%m/%Y')
             if prog >= 100: return date_str
