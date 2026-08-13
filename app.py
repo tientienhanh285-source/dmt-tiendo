@@ -171,7 +171,7 @@ def get_global_state():
     return {}
 
 
-def safe_gsheets_read(conn, worksheet, ttl=599, fallback_df=None):
+def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
@@ -581,7 +581,7 @@ def read_gantt_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=600)
+        df = safe_gsheets_read(conn, worksheet="GANTT_KHDT", ttl=15)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
         else:
@@ -1112,7 +1112,7 @@ def save_incoming_docs_db(df):
         st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
-@st.cache_data(ttl=600, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def read_db():
     # Force cache clear for new progress calculation rules
     required_cols = [
@@ -1125,7 +1125,7 @@ def read_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=600)
+        df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=15)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
         else:
