@@ -58,20 +58,70 @@ import time
 
 @contextmanager
 def acquire_db_lock(timeout=15):
+    # Lock local (cho cùng 1 container/server)
     lock_dir = "db_write.lock"
     start_time = time.time()
-    locked = False
+    locked_local = False
     
     while time.time() - start_time < timeout:
         try:
             os.mkdir(lock_dir)
-            locked = True
+            locked_local = True
             break
         except FileExistsError:
             time.sleep(0.5)
             
-    if not locked:
+    if not locked_local:
         st.error("⚠️ Hệ thống đang bận do có nhiều người cùng lưu dữ liệu. Vui lòng đợi vài giây và thử lại.")
+        st.stop()
+        
+    # Lock remote (cho nhiều server/replica khác nhau trên Streamlit Cloud)
+    locked_remote = False
+    conn = None
+    try:
+        import streamlit as st
+        from streamlit_gsheets import GSheetsConnection
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        client = conn.client
+        url = st.session_state.get("gsheet_url", "").strip()
+        if url:
+            sh = client.open_by_url(url)
+            try:
+                ws = sh.worksheet("SYSTEM_LOCK")
+            except:
+                ws = sh.add_worksheet(title="SYSTEM_LOCK", rows=1, cols=1)
+                ws.update_acell("A1", "FREE")
+                
+            remote_start = time.time()
+            while time.time() - remote_start < timeout:
+                try:
+                    val = ws.acell("A1").value
+                    is_free = False
+                    try:
+                        # Auto-unlock sau 45s nếu tiến trình trước đó bị crash (tránh dead-lock)
+                        if not val or val == "FREE" or time.time() - float(val) > 45:
+                            is_free = True
+                    except:
+                        is_free = True
+                        
+                    if is_free:
+                        ws.update_acell("A1", str(time.time()))
+                        locked_remote = True
+                        break
+                except:
+                    pass
+                time.sleep(1.5)
+        else:
+            locked_remote = True # Chưa có URL thì bỏ qua remote lock
+    except Exception as e:
+        locked_remote = True # Lỗi API hoặc chưa cấu hình xong thì bỏ qua remote lock để không chặn app
+        
+    if not locked_remote:
+        try:
+            os.rmdir(lock_dir)
+        except:
+            pass
+        st.error("⚠️ Máy chủ đang bận xử lý dữ liệu của người khác. Vui lòng đợi trong chốc lát rồi thao tác lại.")
         st.stop()
         
     try:
@@ -79,8 +129,13 @@ def acquire_db_lock(timeout=15):
     finally:
         try:
             os.rmdir(lock_dir)
-        except Exception:
+        except:
             pass
+        if locked_remote and conn and url:
+            try:
+                ws.update_acell("A1", "FREE")
+            except:
+                pass
 
 # Page config - Light Theme is handled natively by Streamlit's default settings
 st.set_page_config(
