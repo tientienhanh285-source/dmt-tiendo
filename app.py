@@ -191,14 +191,7 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
     
     cache_key = f"cached_df_{worksheet}"
     
-    global_state = get_global_state()
-    last_update = global_state.get(cache_key + "_time", 0)
-    if time.time() - last_update < 60:
-        global_df = global_state.get(cache_key)
-        if global_df is not None:
-            st.session_state[cache_key] = global_df.copy()
-            st.session_state[cache_key + "_time"] = last_update
-            return global_df.copy()
+
             
     try:
         table_name = _get_table_name(worksheet)
@@ -231,11 +224,7 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
             if "SoDiem" in df.columns:
                 df.rename(columns={"SoDiem": "DiemDieuChinh"}, inplace=True)
                 
-        st.session_state[cache_key] = df
-        st.session_state[cache_key + "_time"] = time.time()
-        
-        global_state[cache_key] = df.copy()
-        global_state[cache_key + "_time"] = time.time()
+
         
         return df
     except Exception as e:
@@ -544,7 +533,6 @@ DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 # Gantt DB Configuration
 GANTT_DB_FILE = os.path.join("OUTPUT", "DATA_TIEN_DO_KPI.xlsx")
 
-@st.cache_data(ttl=600, show_spinner=False)
 def read_gantt_db():
     required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "QuanTrong", "KhanCap", "NgayCapNhat"]
     conn = get_gsheets_conn()
@@ -626,7 +614,6 @@ def read_gantt_db():
 
 
 
-@st.cache_data(ttl=600, show_spinner=False)
 def read_kpi_adjustments():
     import pandas as pd
     conn = get_gsheets_conn()
@@ -739,7 +726,6 @@ def save_gantt_db(df):
     except Exception as e:
         st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
-@st.cache_data(ttl=600, show_spinner=False)
 def read_sqlite_table(table_name):
     try:
         conn = sqlite3.connect("database.db")
@@ -986,7 +972,6 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
         else:
             return False, "Không thể lưu dữ liệu vào cơ sở dữ liệu."
 
-@st.cache_data(ttl=600, show_spinner=False)
 def read_incoming_docs_db():
     required_cols = [
         "ID", "DonVi", "SoKyHieu", "NgayBanHanh", "CoQuanGui", "TrichYeu", 
@@ -1083,7 +1068,6 @@ def save_incoming_docs_db(df):
         st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
-@st.cache_data(ttl=15, show_spinner=False)
 def read_db():
     # Force cache clear for new progress calculation rules
     required_cols = [
