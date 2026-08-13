@@ -292,6 +292,12 @@ def safe_gsheets_update(conn, worksheet, data):
                             
                             merged_db = current_db.copy()
                             
+                            # Cân bằng số lượng cột để tránh lỗi ValueError khi Google Sheets tự động cắt các cột trống
+                            for col in data.columns:
+                                if col not in merged_db.columns:
+                                    merged_db[col] = ""
+                            merged_db = merged_db[data.columns]
+                            
                             # 1. Xóa
                             if deleted_ids:
                                 merged_db = merged_db[~merged_db['ID'].astype(str).isin(deleted_ids)]
