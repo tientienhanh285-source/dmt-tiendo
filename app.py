@@ -628,7 +628,7 @@ def read_kpi_adjustments():
         df = safe_gsheets_read(conn, worksheet="KPI_ADJUSTMENTS", ttl=600)
         if df is None or df.empty:
             return empty_df
-        for col in ["ID", "Thang", "Nam", "DiemDieuChinh"]:
+        for col in ["Thang", "Nam", "DiemDieuChinh"]:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
         return df
@@ -2892,7 +2892,17 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
 
                 
                 p_adj_df = adj_df[adj_df['TenNhanVien'] == person] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
-                adj_score = p_adj_df['DiemDieuChinh'].sum()
+                adj_score = 0
+                if not p_adj_df.empty:
+                    for _, r in p_adj_df.iterrows():
+                        loai = str(r.get('LoaiHanhVi', '')).lower()
+                        diem = int(r.get('DiemDieuChinh', 0))
+                        if 'thưởng' in loai:
+                            adj_score += diem
+                        elif 'phạt' in loai:
+                            adj_score -= diem
+                        else:
+                            adj_score += diem
                 
                 final_score = min(115, max(0, round(task_score + adj_score, 2)))
                 
