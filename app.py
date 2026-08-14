@@ -1383,20 +1383,6 @@ if role_mode == "Quản lý":
     if st.session_state.is_admin_authenticated:
         st.sidebar.success("Đã xác thực quyền Quản lý!")
         
-        st.sidebar.markdown("### 🔗 Kết Nối Google Sheets")
-        gsheet_url_input = st.sidebar.text_input(
-            "Link Google Sheets (DB chính)", 
-            value=st.session_state["gsheet_url"], 
-            placeholder="Dán link Google Sheets..."
-        )
-
-        if gsheet_url_input != st.session_state["gsheet_url"]:
-            st.session_state["gsheet_url"] = gsheet_url_input
-            settings = load_settings()
-            settings["gsheet_url"] = gsheet_url_input
-            save_settings(settings)
-            
-            st.rerun()
         if st.sidebar.button("Đăng xuất"):
             st.session_state.is_admin_authenticated = False
             st.rerun()
