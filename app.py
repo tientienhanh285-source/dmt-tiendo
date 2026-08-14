@@ -1471,10 +1471,31 @@ def generate_styled_excel(tasks_df, df):
         tasks_df_copy['PhanLoaiTreHan'] = formatted_causes
         tasks_df_copy = tasks_df_copy.rename(columns={'PhanLoaiTreHan': 'Nguyên nhân trễ hạn'})
         
-        if 'ID' in tasks_df_copy.columns:
-            tasks_df_copy = tasks_df_copy.drop(columns=['ID'])
-        if 'NgayCapNhat' in tasks_df_copy.columns:
-            tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+        # Column filtering and renaming
+        export_cols = {
+            'NgayBatDau': 'Ngày bắt đầu',
+            'Deadline': 'Hạn chót',
+            'TrangThai': 'Trạng thái thực hiện',
+            'NguoiChuTri': 'Người thực hiện',
+            'PhongBan': 'Phòng ban',
+            'TenDuAn': 'Dự án / Hạng mục',
+            'TenCongViec': 'Tên công việc',
+            'GiaiTrinhDeXuat': 'Ghi chú / Giải trình vướng mắc'
+        }
+        
+        cols_to_keep = [c for c in export_cols.keys() if c in tasks_df_copy.columns]
+        tasks_df_copy = tasks_df_copy[cols_to_keep]
+        tasks_df_copy = tasks_df_copy.rename(columns=export_cols)
+        tasks_df_copy.insert(0, 'STT', range(1, len(tasks_df_copy) + 1))
+        
+        desired_order = ['STT', 'Ngày bắt đầu', 'Hạn chót', 'Trạng thái thực hiện', 'Người thực hiện', 'Phòng ban', 'Dự án / Hạng mục', 'Tên công việc', 'Ghi chú / Giải trình vướng mắc']
+        final_cols = [c for c in desired_order if c in tasks_df_copy.columns]
+        tasks_df_copy = tasks_df_copy[final_cols]
+        
+        for col in ['Ngày bắt đầu', 'Hạn chót']:
+            if col in tasks_df_copy.columns:
+                tasks_df_copy[col] = pd.to_datetime(tasks_df_copy[col], errors='coerce').dt.strftime('%d/%m/%Y').fillna('')
+                
         tasks_df_copy.to_excel(writer, sheet_name="Sheet1", index=False)
         
         # Write GANTT_KHDT (Drop ID column if exists)
