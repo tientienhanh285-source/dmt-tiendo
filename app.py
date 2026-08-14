@@ -3327,7 +3327,9 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 kpi_score = p['Điểm công việc']
                                 break
                     
-                    e_kpi_df = kpi_df[kpi_df['NguoiChuTri'] == emp_to_export]
+                    e_kpi_df = kpi_df[kpi_df['NguoiChuTri'] == emp_to_export].copy()
+                    e_kpi_df['TyTrongKPI'] = pd.to_numeric(e_kpi_df['TyTrongKPI'], errors='coerce').fillna(0)
+                    e_kpi_df['PhanTramHoanThanh'] = pd.to_numeric(e_kpi_df['PhanTramHoanThanh'], errors='coerce').fillna(0)
                     # Calc weights again if needed, or just display raw tasks
                     explicit_weight_sum = e_kpi_df[e_kpi_df['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
                     unweighted_count = len(e_kpi_df[e_kpi_df['TyTrongKPI'] <= 0])
