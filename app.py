@@ -467,6 +467,20 @@ def load_config():
 config = load_config()
 
 # Default owners by department and company for autofill
+DEPT_ABBR = {
+    "Ban Lãnh đạo": "BLĐ",
+    "Ban Hành chính Nhân sự": "HCNS",
+    "Ban Tài chính Kế toán": "TCKT",
+    "Ban Kế hoạch Đầu tư": "KHĐT",
+    "Ban Chuẩn bị Đầu tư": "CBĐT",
+    "Ban Kỹ thuật": "KT",
+    "Ban Đền bù Giải tỏa": "ĐBGT",
+    "Ban Dự án": "DA",
+    "Xí nghiệp DTBD": "XN DTBD",
+    "Sàn GDBĐS": "Sàn GDBĐS",
+    "Tổ KPI": "Tổ KPI"
+}
+
 DEPT_LEADS = {
     "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
         "Ban Lãnh đạo": "Trần Quốc Thể",
@@ -2924,7 +2938,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 
                 personnel_kpi.append({
                     "Người thực hiện": person,
-                    "Phòng ban": pb,
+                    "Phòng ban": DEPT_ABBR.get(pb, pb),
                     "Số việc": total_tasks,
                     "Điểm công việc": round(task_score, 1),
                     "Thưởng/Phạt": adj_score,
@@ -2938,7 +2952,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             if personnel_kpi:
                 kpi_month_df = pd.DataFrame(personnel_kpi)
                 if selected_dept_m != "Tất cả phòng ban":
-                    kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == selected_dept_m]
+            kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_m, selected_dept_m)]
                 st.dataframe(
                     kpi_month_df[["Người thực hiện", "Phòng ban", "Số việc", "Điểm công việc", "Thưởng/Phạt", "TỔNG ĐIỂM", "Xếp loại"]],
                     column_config={
@@ -3205,7 +3219,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             
                     row_data = {
                         "Người thực hiện": person,
-                        "Phòng ban": person_df['PhongBan'].mode()[0] if not person_df.empty else ""
+                        "Phòng ban": DEPT_ABBR.get(person_df[\'PhongBan\'].mode()[0], person_df[\'PhongBan\'].mode()[0]) if not person_df.empty else ""
                     }
                     row_data.update(months_grades)
                     row_data["Xếp loại Năm"] = final_grade
@@ -3215,7 +3229,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 if yearly_data:
                     yearly_df = pd.DataFrame(yearly_data)
                     if selected_dept_y != "Tất cả phòng ban":
-                        yearly_df = yearly_df[yearly_df["Phòng ban"] == selected_dept_y]
+                yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
                     
                     excel_data = kpi_reports.generate_yearly_excel(yearly_df, selected_year_full)
