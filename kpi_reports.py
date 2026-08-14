@@ -124,10 +124,13 @@ def set_cell_center(cell):
 
 def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, penalties, chuc_danh='Nhân viên', phong_ban='Khác'):
     doc = Document()
+    from docx.shared import Inches, Pt, Mm
     
-    # Adjust margins
+    # Adjust margins and explicitly set to A4
     sections = doc.sections
     for section in sections:
+        section.page_width = Mm(210)
+        section.page_height = Mm(297)
         section.top_margin = Inches(0.5)
         section.bottom_margin = Inches(0.5)
         section.left_margin = Inches(0.5)
@@ -207,10 +210,10 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     t1.autofit = False
     for row in t1.rows:
         row.cells[0].width = Inches(0.4)
-        row.cells[1].width = Inches(3.1)
-        row.cells[2].width = Inches(1.2)
-        row.cells[3].width = Inches(1.2)
-        row.cells[4].width = Inches(1.2)
+        row.cells[1].width = Inches(3.0)
+        row.cells[2].width = Inches(1.0)
+        row.cells[3].width = Inches(1.0)
+        row.cells[4].width = Inches(1.0)
     
     cell_0_0 = t1.cell(0, 0)
     cell_0_0.merge(t1.cell(1, 0))
@@ -262,10 +265,10 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     t2.autofit = False
     for row in t2.rows:
         row.cells[0].width = Inches(0.4)
-        row.cells[1].width = Inches(3.1)
-        row.cells[2].width = Inches(1.2)
-        row.cells[3].width = Inches(1.2)
-        row.cells[4].width = Inches(1.2)
+        row.cells[1].width = Inches(3.0)
+        row.cells[2].width = Inches(1.0)
+        row.cells[3].width = Inches(1.0)
+        row.cells[4].width = Inches(1.0)
     
     cell2_0_0 = t2.cell(0, 0)
     cell2_0_0.merge(t2.cell(1, 0))
