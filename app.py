@@ -1934,14 +1934,18 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                 if is_issue:
                     return "🔴 Vướng mắc"
                 
-                if prog == 0 and pd.notna(row['NgayBatDau']) and row['NgayBatDau'] > today:
+                from datetime import date, datetime
+                if prog == 0 and pd.notna(row['NgayBatDau']) and isinstance(row['NgayBatDau'], (date, datetime)) and row['NgayBatDau'] > today:
                     return "❌ Chưa bắt đầu"
                 
                 # Default state based on start date
-                if today >= row['NgayBatDau']:
-                    return "⏳ Đang thực hiện"
+                if pd.notna(row['NgayBatDau']) and isinstance(row['NgayBatDau'], (date, datetime)):
+                    if today >= row['NgayBatDau']:
+                        return "⏳ Đang thực hiện"
+                    else:
+                        return "❌ Chưa bắt đầu"
                 else:
-                    return "❌ Chưa bắt đầu"
+                    return "⏳ Đang thực hiện"
             df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
         
             # Format Nguyên nhân trễ hạn
@@ -2124,8 +2128,10 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
             if prog >= 100: return "✅ Đã xong"
             if pd.notna(row['Deadline']) and row['Deadline'] < today: return "⚠️ Trễ hạn"
             if row['TrangThai'] == 'Có vướng mắc': return "🔴 Vướng mắc"
-            if prog == 0 and pd.notna(row['NgayBatDau']) and row['NgayBatDau'] > today: return "❌ Chưa bắt đầu"
-            if today >= row['NgayBatDau']: return "⏳ Đang thực hiện"
+            from datetime import date, datetime
+            if prog == 0 and pd.notna(row['NgayBatDau']) and isinstance(row['NgayBatDau'], (date, datetime)) and row['NgayBatDau'] > today: return "❌ Chưa bắt đầu"
+            if pd.notna(row['NgayBatDau']) and isinstance(row['NgayBatDau'], (date, datetime)):
+                if today >= row['NgayBatDau']: return "⏳ Đang thực hiện"
             return "❌ Chưa bắt đầu"
         df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
         
