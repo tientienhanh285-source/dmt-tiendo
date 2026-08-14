@@ -171,33 +171,26 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     c00 = sig_table.cell(0, 0)
     c00.text = "NHÂN VIÊN\n(Ký, ghi rõ họ tên)\n\n"
     c00.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    c00.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     c01 = sig_table.cell(0, 1)
     c01.text = "GIÁM ĐỐC BAN\n(Ký, ghi rõ họ tên)\n\n"
     c01.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    c01.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     c10 = sig_table.cell(1, 0)
     c10.text = "KIỂM TRA TỪ BAN HCNS\n(Ký, ghi rõ họ tên)\n\n"
     c10.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    c10.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     c11 = sig_table.cell(1, 1)
     c11.text = f"TỔNG ĐIỂM ĐỂ TÍNH LƯƠNG\n{round(final_score, 1)} % lương\n\n"
     c11.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    c11.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    c11.paragraphs[1].runs[0].bold = True
 
     c20 = sig_table.cell(2, 0)
     c20.text = "PHÊ DUYỆT CỦA TỔNG GIÁM ĐỐC\n(Ký, ghi rõ họ tên)\n\n"
     c20.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    c20.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     c21 = sig_table.cell(2, 1)
     c21.text = "PHÓ TỔNG GIÁM ĐỐC PHỤ TRÁCH\n(Ký, ghi rõ họ tên)\n\n"
     c21.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    c21.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     doc.add_paragraph()
     

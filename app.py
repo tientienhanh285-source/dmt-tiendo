@@ -3366,7 +3366,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
 
                     emp_pb = _get_pb(emp_to_export)
                     word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties, "Nhân viên", emp_pb)
-                    st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_Thang_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                     
             st.divider()
             st.info("Để xem Biểu đồ Phân tích, vui lòng qua tab 'Tổng kết KPI Cả Năm' và bấm 'Chạy / Cập nhật' trước.")
