@@ -704,7 +704,7 @@ def delete_kpi_adjustment(adj_id):
     import pandas as pd
     df = read_kpi_adjustments()
     if df.empty: return False, "Dữ liệu trống"
-    df = df[df['ID'] != adj_id]
+    df = df[df['ID'].astype(str).str.strip() != str(adj_id).strip()]
     conn = get_gsheets_conn()
     if conn is not None:
         try:
