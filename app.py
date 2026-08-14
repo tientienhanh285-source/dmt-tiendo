@@ -713,9 +713,9 @@ def save_gantt_db(df):
         return False
     try:
         df_save = df.copy()
-        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
-        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
-        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
         
         safe_gsheets_update(conn, worksheet="GANTT_KHDT", data=df_save)
         return True
@@ -1054,9 +1054,9 @@ def save_incoming_docs_db(df):
         return False
     try:
         df_save = df.copy()
-        df_save['NgayBanHanh'] = df_save['NgayBanHanh'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
-        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
-        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayBanHanh'] = df_save['NgayBanHanh'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
         
         safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df_save)
         return True
@@ -1176,9 +1176,9 @@ def save_db(df):
         return False
     try:
         df_save = df.copy()
-        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
-        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
-        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+        df_save['NgayBatDau'] = df_save['NgayBatDau'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+        df_save['Deadline'] = df_save['Deadline'].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+        df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
         df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
         df_save['PhanLoaiTreHan'] = df_save['PhanLoaiTreHan'].fillna('🟢 Không trễ hạn / Đúng tiến độ')
         if 'NguonGiaoViec' not in df_save.columns: df_save['NguonGiaoViec'] = 'Công việc được giao / định kì'
@@ -1186,7 +1186,7 @@ def save_db(df):
         if 'MucDoGhiNhan' not in df_save.columns: df_save['MucDoGhiNhan'] = '0% (Không ghi nhận)'
         df_save['MucDoGhiNhan'] = df_save['MucDoGhiNhan'].fillna('0% (Không ghi nhận)')
         
-        df_save = df_save.fillna("")
+        df_save = df_save.where(pd.notnull(df_save), None)
         return safe_gsheets_update(conn, worksheet="Sheet1", data=df_save)
     except Exception as e:
         st.error(f'Lỗi lưu Google Sheets: {e}')
@@ -1480,7 +1480,7 @@ def generate_styled_excel(tasks_df, df):
         if 'ID' in tasks_df_copy.columns:
             tasks_df_copy = tasks_df_copy.drop(columns=['ID'])
         if 'NgayCapNhat' in tasks_df_copy.columns:
-            tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+            tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
         tasks_df_copy.to_excel(writer, sheet_name="Sheet1", index=False)
         
         # Write GANTT_KHDT (Drop ID column if exists)
@@ -1488,7 +1488,7 @@ def generate_styled_excel(tasks_df, df):
         if 'ID' in df_copy.columns:
             df_copy = df_copy.drop(columns=['ID'])
         if 'NgayCapNhat' in df_copy.columns:
-            df_copy['NgayCapNhat'] = df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+            df_copy['NgayCapNhat'] = df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
         df_copy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
         
         # Write VAN_BAN_DEN (Drop ID column if exists)
@@ -1498,10 +1498,10 @@ def generate_styled_excel(tasks_df, df):
             if 'ID' in docs_df_copy.columns:
                 docs_df_copy = docs_df_copy.drop(columns=['ID'])
             if 'NgayCapNhat' in docs_df_copy.columns:
-                docs_df_copy['NgayCapNhat'] = docs_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+                docs_df_copy['NgayCapNhat'] = docs_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
             for col_name in ['NgayBanHanh', 'Deadline']:
                 if col_name in docs_df_copy.columns:
-                    docs_df_copy[col_name] = docs_df_copy[col_name].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+                    docs_df_copy[col_name] = docs_df_copy[col_name].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
             docs_df_copy = docs_df_copy.rename(columns={
                 'SoKyHieu': 'Số / Ký hiệu văn bản',
                 'NgayBanHanh': 'Ngày ban hành',
@@ -1703,8 +1703,8 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         if alert_list:
             alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
             crit_display = pd.DataFrame()
-            crit_display['Ngày bắt đầu'] = alert_df_show['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
-            crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+            crit_display['Ngày bắt đầu'] = alert_df_show['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+            crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
             crit_display['Tiến độ'] = alert_df_show['PhanTramHoanThanh'].apply(lambda x: f"{int(x)}%" if pd.notna(x) else "0%")
             crit_display['Trạng thái thực tế'] = alert_df_show['Badge']
             crit_display['Người thực hiện'] = alert_df_show['NguoiChuTri']
@@ -1887,7 +1887,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             df_display['Người thực hiện'] = table_df['NguoiChuTri']
             df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
             df_display['Tên công việc'] = table_df['TenCongViec']
-            df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+            df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
             import pandas as pd
             df_display['Tỷ trọng KPI'] = table_df.apply(lambda row: f"{int(float(str(row.get('TyTrongKPI', 0)).strip() or 0))}%" if pd.to_numeric(row.get('TyTrongKPI', 0), errors='coerce') > 0 else "Tự chia", axis=1)
         
@@ -2102,7 +2102,7 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         df_display['Người thực hiện'] = table_df['NguoiChuTri']
         df_display['Dự án / Hạng mục'] = table_df['TenDuAn']
         df_display['Tên công việc'] = table_df['TenCongViec']
-        df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else str(x))
+        df_display['Ngày bắt đầu'] = table_df['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
         df_display['Tỷ trọng KPI'] = table_df.apply(lambda row: f"{int(float(str(row.get('TyTrongKPI', 0)).strip() or 0))}%" if pd.to_numeric(row.get('TyTrongKPI', 0), errors='coerce') > 0 else "Tự chia", axis=1)
         
         def format_dl(row):
