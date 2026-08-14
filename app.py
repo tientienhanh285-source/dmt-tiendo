@@ -2473,8 +2473,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
-                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=task_data['NgayBatDau'], format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
-                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=task_data['Deadline'], format="DD/MM/YYYY", key=f"u_deadline_{task_data['ID']}")
+                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=task_data['NgayBatDau'] if pd.notna(task_data['NgayBatDau']) else None, format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
+                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=task_data['Deadline'] if pd.notna(task_data['Deadline']) else None, format="DD/MM/YYYY", key=f"u_deadline_{task_data['ID']}")
                     
                     default_is_completed = task_data['TrangThai'] == 'Hoàn thành'
                     u_is_completed = st.checkbox("Đã hoàn thành công việc", value=default_is_completed, key=f"u_is_completed_{task_data['ID']}")
