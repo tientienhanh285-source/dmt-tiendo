@@ -2630,14 +2630,14 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayBatDau'] = u_start
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'Deadline'] = u_deadline
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = str(u_progress)
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = u_weight
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = str(u_weight)
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
                             if u_is_late:
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
