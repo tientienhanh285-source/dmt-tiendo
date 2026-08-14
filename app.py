@@ -2914,7 +2914,11 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 if final_score > 91: grade = "A"
                 elif final_score > 81: grade = "B"
                 elif final_score > 71: grade = "C"
-                else: grade = "D"
+                else:
+                if selected_year == today.year and selected_month == today.month:
+                    grade = "-"
+                else:
+                    grade = "D"
                 
                 pb = group['PhongBan'].iloc[0] if not group.empty else ""
                 
