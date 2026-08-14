@@ -3316,7 +3316,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             
             with col_x2:
                 st.markdown("#### 2. Phiếu KPI Cá Nhân (Word)")
-                st.info(f"Đang xuất dữ liệu của: **Tháng {selected_month}/{selected_year}** (Để xuất tháng khác, vui lòng đổi Tháng/Năm ở trên cùng).")
+                st.info(f"Đang xuất dữ liệu của: **Tháng {selected_month}/{selected_year}** (1 quay lại tab 'Đánh giá theo Tháng' để chọn).")
                 emp_to_export = st.selectbox("Chọn nhân viên", all_p_list, key='emp_export')
                 if st.button("Tạo Phiếu Đánh Giá"):
                     # Collect real tasks and penalties
