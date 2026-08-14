@@ -645,7 +645,11 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
         dup = df[(df['TenNhanVien'] == ten) & (df['Thang'] == thang) & (df['Nam'] == nam) & (df['LoaiHanhVi'] == loai) & (df['DiemDieuChinh'] == diem) & (df['LyDo'] == lydo)]
         if not dup.empty:
             return True, ""
-    new_id = 1 if df.empty else int(pd.to_numeric(df['ID'], errors='coerce').max(skipna=True) + 1 if not df['ID'].empty else 1)
+    if df.empty:
+        new_id = 1
+    else:
+        max_id = pd.to_numeric(df['ID'], errors='coerce').max(skipna=True)
+        new_id = 1 if pd.isna(max_id) else int(max_id) + 1
     new_row = {
         "ID": new_id,
         "TenNhanVien": ten,
