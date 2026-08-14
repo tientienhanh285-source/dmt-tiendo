@@ -3219,7 +3219,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             
                     row_data = {
                         "Người thực hiện": person,
-                        "Phòng ban": DEPT_ABBR.get(person_df[\'PhongBan\'].mode()[0], person_df[\'PhongBan\'].mode()[0]) if not person_df.empty else ""
+                        "Phòng ban": DEPT_ABBR.get(person_df['PhongBan'].mode()[0], person_df['PhongBan'].mode()[0]) if not person_df.empty else ""
                     }
                     row_data.update(months_grades)
                     row_data["Xếp loại Năm"] = final_grade
