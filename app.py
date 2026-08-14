@@ -255,11 +255,7 @@ def safe_gsheets_update(conn, worksheet, data):
             rename_dict = {k: v for k, v in col_mapping.items() if k in df.columns}
             df.rename(columns=rename_dict, inplace=True)
             
-            if "NgayBatDau" in df.columns:
-                df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
-            if "Deadline" in df.columns:
-                df["Deadline"] = pd.to_datetime(df["Deadline"], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
-                
+            
             allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan']
             df = df[[c for c in df.columns if c in allowed_cols]]
             
