@@ -466,6 +466,34 @@ def load_config():
 # Load current config dynamically
 config = load_config()
 
+DEPT_ABBR = {
+    "Ban Lãnh đạo": "BLĐ",
+    "Lãnh đạo": "BLĐ",
+    "Ban Hành chính Nhân sự": "HCNS",
+    "Ban Tài chính Kế toán": "TCKT",
+    "Ban Kế hoạch Đầu tư": "KHĐT",
+    "Ban Chuẩn bị Đầu tư": "CBĐT",
+    "Ban Kỹ thuật": "KT",
+    "Ban Đền bù Giải tỏa": "ĐBGT",
+    "Ban Dự án": "DA",
+    "Xí nghiệp DTBD": "XN DTBD",
+    "Sàn GDBĐS": "Sàn GDBĐS",
+    "Tổ KPI": "Tổ KPI",
+    "Ban chỉ huy Công trường": "BCH CT",
+    "Xí nghiệp xe máy thiết bị": "XN XMTB",
+    "Xí nghiệp xe thiết bị": "XN XMTB"
+}
+
+for comp_name, comp_data in config.get("companies", {}).items():
+    if "departments" in comp_data:
+        comp_data["departments"] = [DEPT_ABBR.get(d, d) for d in comp_data["departments"]]
+    if "personnel_by_department" in comp_data:
+        new_personnel = {}
+        for d, p in comp_data["personnel_by_department"].items():
+            new_personnel[DEPT_ABBR.get(d, d)] = p
+        comp_data["personnel_by_department"] = new_personnel
+
+
 # Default owners by department and company for autofill
 DEPT_ABBR = {
     "Ban Lãnh đạo": "BLĐ",
@@ -483,35 +511,16 @@ DEPT_ABBR = {
 
 DEPT_LEADS = {
     "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
-        "Ban Lãnh đạo": "Trần Quốc Thể",
-        "Ban Hành chính Nhân sự": "Nguyễn Thị Hạnh Tiên",
-        "Ban Tài chính Kế toán": "Đồng Thị Nguyệt Nga",
-        "Ban Kế hoạch Đầu tư": "Nguyễn Trần Thức",
-        "Ban Chuẩn bị Đầu tư": "Hồ Văn Khoa",
-        "Ban Kỹ thuật": "Nguyễn Văn Bồn",
-        "Ban Đền bù Giải tỏa": "Nguyễn Ngọc Tôn",
-        "Ban Dự án": "Nguyễn Đình Thắng",
-        "Xí nghiệp DTBD": "Mai Văn Châu",
+        "BLĐ": "Trần Quốc Thể",
+        "HCNS": "Nguyễn Thị Hạnh Tiên",
+        "TCKT": "Đồng Thị Nguyệt Nga",
+        "KHĐT": "Nguyễn Trần Thức",
+        "CBĐT": "Hồ Văn Khoa",
+        "KT": "Nguyễn Văn Bồn",
+        "ĐBGT": "Nguyễn Ngọc Tôn",
+        "DA": "Nguyễn Đình Thắng",
+        "XN DTBD": "Mai Văn Châu",
         "Sàn GDBĐS": "Ngô Thị Tâm",
-        "Tổ KPI": ""
-    },
-    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "Ban Lãnh đạo": "Thái Văn Thành",
-        "Ban Hành chính Nhân sự": "Nguyễn Thị Mỹ Phương",
-        "Ban Tài chính Kế toán": "Nguyễn Thị Ngọc Hà",
-        "Ban Kỹ thuật": "Trần Văn Trọng",
-        "Ban chỉ huy Công trường": "Nguyễn Phong Trung",
-        "Xí nghiệp xe máy thiết bị": "Đặng Hiền",
-        "Tổ KPI": ""
-    },
-    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
-        "Ban Lãnh đạo": "Trần Cường",
-        "Ban Hành chính Nhân sự": "Nguyễn Thị Hạnh Tiên",
-        "Ban Tài chính Kế toán": "Lê Thị Hải",
-        "Ban Kế hoạch Đầu tư": "Trần Cường",
-        "Ban Chuẩn bị Đầu tư": "Lê Thị Hải",
-        "Ban Kỹ thuật": "Trương Ngọc Sỹ",
-        "Ban Đền bù Giải tỏa": "Thái Hữu Quý",
         "Tổ KPI": ""
     }
 }
@@ -1419,6 +1428,9 @@ st.sidebar.markdown("---")
 
 # Current date
 df = read_db()
+if not df.empty and "PhongBan" in df.columns:
+    df["PhongBan"] = df["PhongBan"].map(lambda x: DEPT_ABBR.get(x, x))
+
 gantt_df = read_gantt_db()
 today = date.today()
 
