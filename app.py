@@ -2952,7 +2952,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             if personnel_kpi:
                 kpi_month_df = pd.DataFrame(personnel_kpi)
                 if selected_dept_m != "Tất cả phòng ban":
-            kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_m, selected_dept_m)]
+                    kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_m, selected_dept_m)]
                 st.dataframe(
                     kpi_month_df[["Người thực hiện", "Phòng ban", "Số việc", "Điểm công việc", "Thưởng/Phạt", "TỔNG ĐIỂM", "Xếp loại"]],
                     column_config={
@@ -3229,7 +3229,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 if yearly_data:
                     yearly_df = pd.DataFrame(yearly_data)
                     if selected_dept_y != "Tất cả phòng ban":
-                yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
+                        yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
                     
                     excel_data = kpi_reports.generate_yearly_excel(yearly_df, selected_year_full)
