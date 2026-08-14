@@ -2094,6 +2094,9 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
     elif sel_status == "Vướng mắc":
         table_df = table_df[table_df['TrangThai'] == 'Có vướng mắc']
         
+    if 'NgayCapNhat' in table_df.columns:
+        table_df = table_df.sort_values(by='NgayCapNhat', ascending=False)
+        
     if table_df.empty:
         st.info("Không có công việc nào phù hợp với bộ lọc.")
     else:
