@@ -309,11 +309,11 @@ def safe_gsheets_update(conn, worksheet, data):
             conn.table(table_name).upsert(records).execute()
             
             if pk in df.columns:
-                current_ids = df[pk].tolist()
+                current_ids = [str(x) for x in df[pk].tolist()]
                 if len(current_ids) > 0:
                     res = conn.table(table_name).select(pk).execute()
-                    db_ids = [row[pk] for row in res.data]
-                    ids_to_delete = [i for i in db_ids if i not in current_ids]
+                    db_ids = [(row[pk], str(row[pk])) for row in res.data]
+                    ids_to_delete = [orig for orig, string_val in db_ids if string_val not in current_ids]
                     if ids_to_delete:
                         for i in range(0, len(ids_to_delete), 100):
                             batch_del = ids_to_delete[i:i+100]
