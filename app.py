@@ -1584,13 +1584,7 @@ except Exception as e:
                 key="btn_sidebar_excel_dl_fallback"
             )
 
-# Sidebar Cloud Sync Status
-st.sidebar.markdown("---")
-st.sidebar.markdown("### ☁️ ĐỒNG BỘ CLOUD")
-if is_gsheets_configured():
-    st.sidebar.success("🟢 Google Sheets: Đã kết nối")
-else:
-    st.sidebar.warning("⚠️ Google Sheets: Chạy Offline")
+
 
 # Helper function to clean project name whitespace
 def clean_proj_name(name):
