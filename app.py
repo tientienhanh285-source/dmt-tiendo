@@ -3352,7 +3352,20 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     e_adj_df = adj_df[adj_df['TenNhanVien'] == emp_to_export] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
                     penalties = e_adj_df.to_dict('records')
                     
-                    word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties)
+                    def _get_pb(name):
+                        # Try to find from current company's departments
+                        depts = get_departments_for_company(selected_company, config)
+                        if depts:
+                            for d in depts:
+                                p_list = get_personnel_for_company_dept(selected_company, d, config)
+                                if name in p_list: return d
+                        # Fallback to global config
+                        for d, p_list in config.get("personnel_by_department", {}).items():
+                            if name in p_list: return d
+                        return "Khác"
+
+                    emp_pb = _get_pb(emp_to_export)
+                    word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties, "Nhân viên", emp_pb)
                     st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                     
             st.divider()

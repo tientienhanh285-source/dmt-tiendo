@@ -122,7 +122,7 @@ def set_cell_center(cell):
     cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
     cell.vertical_alignment = 1 # Center
 
-def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, penalties):
+def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, penalties, chuc_danh='Nhân viên', phong_ban='Khác'):
     doc = Document()
     
     # Adjust margins
@@ -149,8 +149,9 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     r2.bold = True
     r2.font.size = Pt(14)
     
-    # --- Info ---
-    doc.add_paragraph(f"Họ và tên: {employee_name}       - Chức danh: .....................      - Ban: .....................")
+    p_info = doc.add_paragraph()
+    p_info.add_run(f"Họ và tên: {employee_name}").bold = True
+    p_info.add_run(f"\t\t- Chức danh: {chuc_danh}\t\t- Ban: {phong_ban}")
     
     # Calculate score
     total_penalty_c1 = sum(float(adj.get('DiemDieuChinh', 0)) for adj in penalties if 'chuyên cần' in adj.get('LoaiHanhVi', '').lower() or 'trễ' in adj.get('LoaiHanhVi', '').lower() or 'sớm' in adj.get('LoaiHanhVi', '').lower() or 'công' in adj.get('LoaiHanhVi', '').lower())
@@ -160,35 +161,43 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     total_penalty_all = abs(total_penalty_c1) + abs(total_penalty_c2) + abs(total_penalty_other)
     final_score = 100 - total_penalty_all
     
-    doc.add_paragraph(f"Số điểm trừ cả 2 tiêu chí : {round(total_penalty_all, 1)}            Số điểm hoàn thành cả 2 tiêu chí: {round(final_score, 1)}")
-    
+    p_score = doc.add_paragraph()
+    p_score.add_run(f"Số điểm trừ cả 2 tiêu chí: {round(total_penalty_all, 1)}").bold = True
+    p_score.add_run(f"\t\tSố điểm hoàn thành cả 2 tiêu chí: {round(final_score, 1)}").bold = True
     # --- Signatures (using invisible table for perfect alignment) ---
     sig_table = doc.add_table(rows=3, cols=2)
     sig_table.autofit = True
     
     c00 = sig_table.cell(0, 0)
-    c00.text = "NHÂN VIÊN:__________________"
+    c00.text = "NHÂN VIÊN\n(Ký, ghi rõ họ tên)\n\n"
     c00.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
+    c00.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     c01 = sig_table.cell(0, 1)
-    c01.text = "GIÁM ĐỐC BAN:_________________"
+    c01.text = "GIÁM ĐỐC BAN\n(Ký, ghi rõ họ tên)\n\n"
     c01.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
+    c01.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     c10 = sig_table.cell(1, 0)
-    c10.text = "Kiểm tra từ Ban HCNS: ____________"
+    c10.text = "KIỂM TRA TỪ BAN HCNS\n(Ký, ghi rõ họ tên)\n\n"
     c10.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
+    c10.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     c11 = sig_table.cell(1, 1)
-    c11.text = f"Tổng điểm để tính lương: {round(final_score, 1)} % lương"
+    c11.text = f"TỔNG ĐIỂM ĐỂ TÍNH LƯƠNG\n{round(final_score, 1)} % lương\n\n"
     c11.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
+    c11.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    c11.paragraphs[1].runs[0].bold = True
+
     c20 = sig_table.cell(2, 0)
-    c20.text = "Phê duyệt của Tổng giám đốc:_______"
+    c20.text = "PHÊ DUYỆT CỦA TỔNG GIÁM ĐỐC\n(Ký, ghi rõ họ tên)\n\n"
     c20.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
+    c20.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     c21 = sig_table.cell(2, 1)
-    c21.text = "Phó Tổng giám đốc phụ trách: _________"
+    c21.text = "PHÓ TỔNG GIÁM ĐỐC PHỤ TRÁCH\n(Ký, ghi rõ họ tên)\n\n"
     c21.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    c21.paragraphs[1].alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     doc.add_paragraph()
     
@@ -204,8 +213,8 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     t1.style = 'Table Grid'
     t1.autofit = False
     for row in t1.rows:
-        row.cells[0].width = Inches(0.5)
-        row.cells[1].width = Inches(3.5)
+        row.cells[0].width = Inches(0.4)
+        row.cells[1].width = Inches(3.1)
         row.cells[2].width = Inches(1.2)
         row.cells[3].width = Inches(1.2)
         row.cells[4].width = Inches(1.2)
@@ -259,8 +268,8 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     t2.style = 'Table Grid'
     t2.autofit = False
     for row in t2.rows:
-        row.cells[0].width = Inches(0.5)
-        row.cells[1].width = Inches(3.5)
+        row.cells[0].width = Inches(0.4)
+        row.cells[1].width = Inches(3.1)
         row.cells[2].width = Inches(1.2)
         row.cells[3].width = Inches(1.2)
         row.cells[4].width = Inches(1.2)
