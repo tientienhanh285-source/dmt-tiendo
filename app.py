@@ -216,9 +216,9 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
             }
             df.rename(columns=col_mapping, inplace=True)
             if "NgayBatDau" in df.columns:
-                df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"], dayfirst=True, errors="coerce").dt.strftime('%d/%m/%Y')
+                df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"], errors="coerce").dt.strftime('%d/%m/%Y')
             if "Hạn chót" in df.columns:
-                df["Hạn chót"] = pd.to_datetime(df["Hạn chót"], dayfirst=True, errors="coerce").dt.strftime('%d/%m/%Y')
+                df["Hạn chót"] = pd.to_datetime(df["Hạn chót"], errors="coerce").dt.strftime('%d/%m/%Y')
                 
         elif worksheet == "KPI_ADJUSTMENTS":
             if "SoDiem" in df.columns:
@@ -2528,7 +2528,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         u_file = st.file_uploader("Tải file đính kèm mới", key=f"u_result_file_{task_data['ID']}")
                         
                 with col_ub2:
-                    u_is_late = (u_deadline < today) and not u_is_completed
+                    u_is_late = (u_deadline is not None and u_deadline < today) and not u_is_completed
                     u_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
                     if u_is_late:
                         u_options = ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"]
