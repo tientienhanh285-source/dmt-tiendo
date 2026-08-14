@@ -223,6 +223,10 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
         elif worksheet == "KPI_ADJUSTMENTS":
             if "SoDiem" in df.columns:
                 df.rename(columns={"SoDiem": "DiemDieuChinh"}, inplace=True)
+            if "NhanSu" in df.columns:
+                df.rename(columns={"NhanSu": "TenNhanVien"}, inplace=True)
+            if "LoaiDieuChinh" in df.columns:
+                df.rename(columns={"LoaiDieuChinh": "LoaiHanhVi"}, inplace=True)
                 
 
         
@@ -262,6 +266,10 @@ def safe_gsheets_update(conn, worksheet, data):
         elif worksheet == "KPI_ADJUSTMENTS":
             if "DiemDieuChinh" in df.columns:
                 df.rename(columns={"DiemDieuChinh": "SoDiem"}, inplace=True)
+            if "TenNhanVien" in df.columns:
+                df.rename(columns={"TenNhanVien": "NhanSu"}, inplace=True)
+            if "LoaiHanhVi" in df.columns:
+                df.rename(columns={"LoaiHanhVi": "LoaiDieuChinh"}, inplace=True)
             allowed_cols = ['ID', 'NhanSu', 'Thang', 'Nam', 'LoaiDieuChinh', 'SoDiem', 'LyDo', 'NguoiCapNhat', 'ThoiGianCapNhat']
             df = df[[c for c in df.columns if c in allowed_cols]]
             
@@ -2780,7 +2788,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
             company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
             
             all_p = set(kpi_df['NguoiChuTri'].dropna().unique())
-            all_p.update(adj_df['TenNhanVien'].dropna().unique())
+            if 'TenNhanVien' in adj_df.columns:
+                all_p.update(adj_df['TenNhanVien'].dropna().unique())
             
             # Filter to only keep those who belong to the selected company
             all_p = all_p.intersection(company_personnel)
@@ -2861,7 +2870,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     task_score = calc_score_for_group(ke_hoach_tasks)
 
                 
-                p_adj_df = adj_df[adj_df['TenNhanVien'] == person]
+                p_adj_df = adj_df[adj_df['TenNhanVien'] == person] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
                 adj_score = p_adj_df['DiemDieuChinh'].sum()
                 
                 final_score = min(115, max(0, round(task_score + adj_score, 2)))
@@ -2983,7 +2992,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 st.dataframe(p_tasks_disp, use_container_width=True, hide_index=True)
                                 
                             st.markdown(f"**⚖️ Lịch sử Thưởng/Phạt của {det_p}:**")
-                            p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LoaiHanhVi', 'LyDo', 'DiemDieuChinh']]
+                            p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LoaiHanhVi', 'LyDo', 'DiemDieuChinh']] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
                             if p_adjs.empty:
                                 st.success("Không có ghi nhận thưởng/phạt nào.")
                             else:
@@ -3007,7 +3016,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 all_personnel = set(display_df['NguoiChuTri'].dropna().unique())
                 adj_year_df = read_kpi_adjustments()
                 adj_year_df = adj_year_df[adj_year_df['Nam'] == selected_year_full]
-                all_personnel.update(adj_year_df['TenNhanVien'].dropna().unique())
+                if 'TenNhanVien' in adj_year_df.columns:
+                    all_personnel.update(adj_year_df['TenNhanVien'].dropna().unique())
                 
                 # Filter to only keep those who belong to the selected company
                 company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
@@ -3040,7 +3050,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             return False
                             
                         m_df = person_df[person_df['Deadline'].apply(is_in_m)] if not person_df.empty else person_df
-                        m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)]
+                        m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)] if 'TenNhanVien' in adj_year_df.columns else pd.DataFrame()
                         
                         if m_df.empty and m_adj_df.empty:
                             months_grades[f"Tháng {m}"] = "-"
@@ -3301,7 +3311,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             'DiemTru': round(diem_tru, 1)
                         })
                         
-                    e_adj_df = adj_df[adj_df['TenNhanVien'] == emp_to_export]
+                    e_adj_df = adj_df[adj_df['TenNhanVien'] == emp_to_export] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
                     penalties = e_adj_df.to_dict('records')
                     
                     word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties)
