@@ -2630,7 +2630,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayBatDau'] = u_start
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'Deadline'] = u_deadline
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = str(u_progress)
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()
