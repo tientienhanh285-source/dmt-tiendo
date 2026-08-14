@@ -3165,12 +3165,15 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         elif f_score > 81: 
                             grade = "B"
                             count_b += 1
-                        elif f_score > 71: 
+                        elif f_score > 71:
                             grade = "C"
                             count_c += 1
-                        else: 
-                            grade = "D"
-                            count_d += 1
+                        else:
+                            if selected_year_full == today.year and m == today.month:
+                                grade = "-"
+                            else:
+                                grade = "D"
+                                count_d += 1
                             
                         months_grades[f"Tháng {m}"] = grade
                         
