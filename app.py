@@ -2988,7 +2988,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                             f"**2️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
                                             f"👉 **TỔNG ĐIỂM ({final_val})** = Điểm KH + Thưởng/Phạt = {kh_val} + ({adj_val})")
 
-                                p_tasks_disp = p_tasks[['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI', 'Tỷ trọng (Thực tế) %', 'Điểm quy đổi']]
+                                p_tasks_disp = p_tasks[['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI', 'Tỷ trọng (Thực tế) %', 'Điểm quy đổi']].copy()
+                                p_tasks_disp['Deadline'] = pd.to_datetime(p_tasks_disp['Deadline'], errors='coerce').dt.strftime('%d/%m/%Y').fillna('')
                                 st.dataframe(p_tasks_disp, use_container_width=True, hide_index=True)
                                 
                             st.markdown(f"**⚖️ Lịch sử Thưởng/Phạt của {det_p}:**")
