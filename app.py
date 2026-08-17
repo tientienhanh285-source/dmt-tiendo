@@ -3666,7 +3666,7 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                         pass
                                     
                                     if api_key:
-                                        genai.configure(api_key=api_key)
+                                        genai.configure(api_key=api_key, transport='rest')
                                         
                                     model = genai.GenerativeModel('gemini-1.5-flash')
                                     
