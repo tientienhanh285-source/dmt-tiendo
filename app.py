@@ -1393,6 +1393,7 @@ menu = st.sidebar.radio(
         "➕ Thêm / Cập Nhật Công Việc",
         "🏆 Đánh giá KPI & Xếp loại",
         "✅ Duyệt việc Khách quan",
+        "🤖 Quản lý & Đối chiếu JD",
         "⚙️ Quản Lý Cấu Hình",
         "📖 Sổ tay Hướng dẫn"
     ],
@@ -3571,6 +3572,184 @@ elif menu == "✅ Duyệt việc Khách quan":
                                 st.rerun()
                         else:
                             st.info("Chưa có thay đổi nào cần lưu.")
+
+elif menu == "🤖 Quản lý & Đối chiếu JD":
+    st.markdown("### 🤖 Quản lý & Đối chiếu JD (Trí tuệ nhân tạo)")
+    st.info("💡 Hệ thống sử dụng **Trí tuệ nhân tạo (Google Gemini)** để phân tích tự động việc nhân sự làm có đúng chuyên môn trong Bản Mô tả công việc (JD) hay không.")
+    
+    tab_hr, tab_ai = st.tabs(["📝 1. Cập nhật Mô tả công việc (Dành cho HR)", "🪄 2. AI Đối chiếu & Báo cáo (Dành cho Sếp)"])
+    
+    with tab_hr:
+        st.markdown("#### Khai báo JD nguyên bản cho Nhân sự")
+        st.write("Vui lòng mở file Word Mô tả công việc của nhân sự, copy phần **TRÁCH NHIỆM CÔNG VIỆC** và dán vào đây.")
+        
+        # Select personnel
+        if selected_company == "Tất cả đơn vị":
+            st.warning("⚠️ Vui lòng chọn cụ thể Công ty ở cột trái.")
+        else:
+            comp_data = config.get("companies", {}).get(selected_company, {})
+            all_depts = comp_data.get("departments", [])
+            sel_dept = st.selectbox("Chọn Phòng ban", all_depts, key="jd_dept")
+            
+            personnel = comp_data.get("personnel_by_department", {}).get(sel_dept, [])
+            if personnel:
+                sel_person = st.selectbox("Chọn Nhân sự", personnel, key="jd_person")
+                
+                # Get existing JD
+                if "job_descriptions" not in config:
+                    config["job_descriptions"] = {}
+                if selected_company not in config["job_descriptions"]:
+                    config["job_descriptions"][selected_company] = {}
+                    
+                existing_jd = config["job_descriptions"][selected_company].get(sel_person, "")
+                
+                jd_text = st.text_area("Nội dung Mô tả công việc (Dán từ Word):", value=existing_jd, height=300)
+                
+                if st.button("💾 Lưu Mô tả công việc", type="primary"):
+                    config["job_descriptions"][selected_company][sel_person] = jd_text
+                    if save_config(config):
+                        st.success(f"✅ Đã lưu Bản mô tả công việc (JD) thành công cho nhân sự **{sel_person}**!")
+            else:
+                st.warning("Phòng ban này chưa có nhân sự.")
+
+    with tab_ai:
+        st.markdown("#### 🪄 Phân tích độ phủ công việc thực tế với JD")
+        if selected_company == "Tất cả đơn vị":
+            st.warning("⚠️ Vui lòng chọn cụ thể Công ty ở cột trái.")
+        else:
+            comp_data = config.get("companies", {}).get(selected_company, {})
+            
+            months = set()
+            if not display_df.empty:
+                for _, row in display_df.iterrows():
+                    if pd.notna(row.get('NgayBatDau')) and hasattr(row['NgayBatDau'], 'strftime'):
+                        months.add(row['NgayBatDau'].strftime('%m/%Y'))
+            month_options = sorted(list(months), key=lambda x: datetime.strptime(x, '%m/%Y'), reverse=True)
+            if not month_options: month_options = [today.strftime('%m/%Y')]
+            
+            c1, c2, c3 = st.columns(3)
+            with c1: ai_month = st.selectbox("Tháng đánh giá", month_options, key="ai_month")
+            with c2: ai_dept = st.selectbox("Phòng ban", comp_data.get("departments", []), key="ai_dept")
+            
+            ai_personnel = comp_data.get("personnel_by_department", {}).get(ai_dept, [])
+            with c3:
+                if ai_personnel:
+                    ai_person = st.selectbox("Nhân sự", ai_personnel, key="ai_person")
+                else:
+                    ai_person = None
+                    st.warning("Trống")
+            
+            if ai_person:
+                jd_source = config.get("job_descriptions", {}).get(selected_company, {}).get(ai_person, "")
+                if not jd_source.strip():
+                    st.error(f"⚠️ Nhân sự **{ai_person}** chưa được khai báo Mô tả công việc. Vui lòng sang tab bên cạnh để cập nhật JD trước khi AI có thể quét.")
+                else:
+                    with st.expander("👀 Xem trước JD gốc (Làm cơ sở chấm)", expanded=False):
+                        st.text(jd_source)
+                        
+                    # Filter tasks for this person in this month
+                    ai_tasks = display_df[(display_df['NguoiChuTri'] == ai_person) & (display_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == ai_month)]
+                    
+                    if ai_tasks.empty:
+                        st.info(f"Không có công việc nào được đăng ký trong tháng {ai_month}.")
+                    else:
+                        st.write(f"Tìm thấy **{len(ai_tasks)}** đầu công việc do nhân sự đăng ký trong tháng.")
+                        
+                        if st.button("🪄 CHẠY AI QUÉT ĐỘ PHỦ (GEMINI)", type="primary"):
+                            with st.spinner("🧠 AI đang đọc JD và suy luận công việc... (Có thể mất 5-10 giây)"):
+                                try:
+                                    import google.generativeai as genai
+                                    # Cố gắng lấy key từ cấu hình Streamlit (secrets)
+                                    api_key = ""
+                                    try:
+                                        if "gemini" in st.secrets and "api_key" in st.secrets["gemini"]:
+                                            api_key = st.secrets["gemini"]["api_key"]
+                                    except:
+                                        pass
+                                    
+                                    if api_key:
+                                        genai.configure(api_key=api_key)
+                                        
+                                    model = genai.GenerativeModel('gemini-1.5-flash')
+                                    
+                                    # Rút gọn danh sách công việc
+                                    tasks_list = "\n".join([f"- {row['TenCongViec']}" for _, row in ai_tasks.iterrows()])
+                                    
+                                    prompt = f"""
+                                    Đóng vai một Giám đốc nhân sự cực kỳ tinh tế. 
+                                    Dưới đây là Bản Mô tả công việc (JD) của nhân viên {ai_person}:
+                                    
+                                    [BẢN MÔ TẢ CÔNG VIỆC]
+                                    {jd_source}
+                                    [KẾT THÚC JD]
+                                    
+                                    Và đây là danh sách công việc họ thực hiện trong tháng:
+                                    {tasks_list}
+                                    
+                                    NHIỆM VỤ CỦA BẠN:
+                                    1. Đối chiếu TỪNG công việc xem nó có KHỚP với chuyên môn quy định trong JD không. 
+                                    (Lưu ý: Tên công việc thực tế có thể chi tiết và từ ngữ khác biệt so với JD văn xuôi. Hãy dùng tư duy suy luận về bản chất và mục đích để phán đoán).
+                                    2. Nếu khớp, giải thích vì nó phục vụ cho mục nào trong JD. Nếu ngoài JD, ghi rõ là việc lặt vặt/phát sinh.
+                                    3. Format kết quả đầu ra thành đúng định dạng chuỗi JSON thô như sau (chỉ trả về JSON, không chứa dấu tick markdown ```json):
+                                    {{
+                                        "ty_le_khop": <số nguyên từ 0-100, ví dụ 80>,
+                                        "chi_tiet": [
+                                            {{
+                                                "ten_cong_viec": "<Tên công việc y nguyên trong danh sách>",
+                                                "phan_loai": "<Chỉ điền 'Khớp JD' hoặc 'Ngoài JD'>",
+                                                "nhan_xet": "<Phân tích ngắn gọn 1-2 câu>"
+                                            }}, ...
+                                        ]
+                                    }}
+                                    """
+                                    
+                                    response = model.generate_content(prompt)
+                                    raw_text = response.text
+                                    
+                                    import re
+                                    json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+                                    if json_match:
+                                        res_json = json.loads(json_match.group())
+                                        
+                                        st.markdown("### 📊 KẾT QUẢ ĐỐI CHIẾU TỪ TRÍ TUỆ NHÂN TẠO")
+                                        
+                                        # Pie chart
+                                        match_rate = res_json.get("ty_le_khop", 0)
+                                        m_data = pd.DataFrame({
+                                            "Phân loại": ["Khớp chuyên môn (JD)", "Công việc ngoài JD"],
+                                            "Tỷ lệ": [match_rate, 100 - match_rate]
+                                        })
+                                        fig = px.pie(m_data, values='Tỷ lệ', names='Phân loại', color='Phân loại',
+                                                     color_discrete_map={"Khớp chuyên môn (JD)": "#22c55e", "Công việc ngoài JD": "#f97316"},
+                                                     title=f"Độ phủ JD Tháng {ai_month}", hole=0.4)
+                                        st.plotly_chart(fig, use_container_width=True)
+                                        
+                                        # Table
+                                        res_df = pd.DataFrame(res_json.get("chi_tiet", []))
+                                        if not res_df.empty:
+                                            # Format columns for display
+                                            res_df = res_df.rename(columns={
+                                                "ten_cong_viec": "Công việc (Nhân sự báo cáo)",
+                                                "phan_loai": "Đánh giá của AI",
+                                                "nhan_xet": "Nhận xét chi tiết"
+                                            })
+                                            
+                                            def color_ph(val):
+                                                if "Khớp" in str(val):
+                                                    return 'color: #166534; background-color: #dcfce7; font-weight: bold; border-radius: 4px;'
+                                                else:
+                                                    return 'color: #9a3412; background-color: #ffedd5; font-weight: bold; border-radius: 4px;'
+                                                    
+                                            st.dataframe(res_df.style.map(color_ph, subset=['Đánh giá của AI']), use_container_width=True)
+                                    else:
+                                        st.error("Lỗi: AI trả về kết quả không mong muốn. Vui lòng thử lại.")
+                                        with st.expander("Dữ liệu thô AI trả về"):
+                                            st.write(raw_text)
+                                        
+                                except ImportError:
+                                    st.error("Chưa cài đặt thư viện `google-generativeai`. Vui lòng chạy `pip install google-generativeai`.")
+                                except Exception as e:
+                                    st.error(f"Lỗi hệ thống khi gọi AI: {e}")
 
 elif menu == "⚙️ Quản Lý Cấu Hình":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
