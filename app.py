@@ -3647,8 +3647,22 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                     with st.expander("👀 Xem trước JD gốc (Làm cơ sở chấm)", expanded=False):
                         st.text(jd_source)
                         
-                    # Filter tasks for this person in this month
-                    ai_tasks = display_df[(display_df['NguoiChuTri'] == ai_person) & (display_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == ai_month)]
+                    # Filter tasks for this person in this month flexibly to handle name changes (e.g. Lê Ngọc Tú Uyên vs Lê Thị Tú Uyên)
+                    def is_same_person(db_name, target_name):
+                        db_str = str(db_name).strip().lower()
+                        tgt_str = str(target_name).strip().lower()
+                        if db_str == tgt_str: return True
+                        
+                        # Match first and last name if exact match fails
+                        tgt_parts = tgt_str.split()
+                        if len(tgt_parts) >= 2:
+                            return tgt_parts[0] in db_str and tgt_parts[-1] in db_str
+                        return False
+                        
+                    ai_tasks = display_df[
+                        (display_df['NguoiChuTri'].apply(lambda x: is_same_person(x, ai_person))) & 
+                        (display_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == ai_month)
+                    ]
                     
                     if ai_tasks.empty:
                         st.info(f"Không có công việc nào được đăng ký trong tháng {ai_month}.")
