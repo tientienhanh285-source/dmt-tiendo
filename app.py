@@ -274,7 +274,7 @@ def safe_gsheets_update(conn, worksheet, data):
             df = df[[c for c in df.columns if c in allowed_cols]]
             
         elif worksheet == "CONFIG":
-            allowed_cols = ['PhongBan', 'NhanSu', 'Role']
+            allowed_cols = ['PhongBan', 'NhanSu', 'Role', 'config_json']
             df = df[[c for c in df.columns if c in allowed_cols]]
             
         elif worksheet == "GANTT_KHDT":
