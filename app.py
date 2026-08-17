@@ -351,18 +351,36 @@ def save_config(config_data):
     try:
         import json
         import pandas as pd
-        df_save = pd.DataFrame([{
+        
+        config_data_copy = config_data.copy()
+        job_descriptions = config_data_copy.pop("job_descriptions", {})
+        
+        rows = []
+        rows.append({
             "NhanSu": "APP_GLOBAL_CONFIG",
             "PhongBan": "SYSTEM",
             "Role": "SYSTEM",
-            "config_json": json.dumps(config_data, ensure_ascii=False)
-        }])
+            "config_json": json.dumps(config_data_copy, ensure_ascii=False)
+        })
+        
+        for company, personnel_dict in job_descriptions.items():
+            for person, jd_data in personnel_dict.items():
+                if jd_data:
+                    rows.append({
+                        "NhanSu": person,
+                        "PhongBan": company,
+                        "Role": "JD",
+                        "config_json": json.dumps(jd_data, ensure_ascii=False) if isinstance(jd_data, (dict, list)) else json.dumps({"jd_text": jd_data}, ensure_ascii=False)
+                    })
+                    
+        df_save = pd.DataFrame(rows)
         success = safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
         if not success:
             st.error("⚠️ Lỗi: Không tìm thấy trang tính 'CONFIG' trên Google Sheets! Vui lòng mở Google Sheets, tạo một Sheet mới đặt tên là 'CONFIG', sau đó lưu lại.")
             return False
-        # VITAL: Clear cache so load_config fetches the newly saved data!
+            
         st.cache_data.clear()
+        config_data["job_descriptions"] = job_descriptions
         return True
     except Exception as e:
         st.error(f'Lỗi lưu Google Sheets: {e}')
@@ -421,12 +439,37 @@ def load_config():
         if "config_json" in df.columns:
             config_rows = df[df["config_json"].notna()]
             if not config_rows.empty:
-                json_str = config_rows.iloc[0]["config_json"]
+                if "NhanSu" in df.columns:
+                    app_row = config_rows[config_rows["NhanSu"] == "APP_GLOBAL_CONFIG"]
+                    if not app_row.empty:
+                        json_str = app_row.iloc[0]["config_json"]
+                    else:
+                        json_str = config_rows.iloc[0]["config_json"]
+                else:
+                    json_str = config_rows.iloc[0]["config_json"]
             else:
                 json_str = df.iloc[0]["config_json"]
         else:
             json_str = df.iloc[0]["config_json"]
+            
         data = json.loads(json_str)
+        
+        if "NhanSu" in df.columns and "Role" in df.columns:
+            jd_rows = df[df["Role"] == "JD"]
+            if not jd_rows.empty:
+                if "job_descriptions" not in data:
+                    data["job_descriptions"] = {}
+                for _, row in jd_rows.iterrows():
+                    company = row.get("PhongBan", "")
+                    person = row.get("NhanSu", "")
+                    jd_json = row.get("config_json", "{}")
+                    try:
+                        jd_data = json.loads(jd_json)
+                        if company not in data["job_descriptions"]:
+                            data["job_descriptions"][company] = {}
+                        data["job_descriptions"][company][person] = jd_data
+                    except:
+                        pass
         
         needs_save = False
         if "personnel_by_department" not in data:
@@ -3545,18 +3588,54 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
             if personnel:
                 sel_person = st.selectbox("Chọn Nhân sự", personnel, key="jd_person")
                 
-                # Get existing JD
                 if "job_descriptions" not in config:
                     config["job_descriptions"] = {}
                 if selected_company not in config["job_descriptions"]:
                     config["job_descriptions"][selected_company] = {}
                     
-                existing_jd = config["job_descriptions"][selected_company].get(sel_person, "")
+                existing_jd_data = config["job_descriptions"][selected_company].get(sel_person, "")
+                if isinstance(existing_jd_data, str):
+                    existing_jd_text = existing_jd_data
+                else:
+                    existing_jd_text = existing_jd_data.get("jd_text", "")
+                    
+                st.write("---")
+                st.markdown("**Cách 1: Nhập văn bản hoặc dán (Copy/Paste)**")
+                jd_text = st.text_area("Nội dung Mô tả công việc:", value=existing_jd_text, height=200, key=f"jd_text_{sel_person}")
                 
-                jd_text = st.text_area("Nội dung Mô tả công việc (Dán từ Word):", value=existing_jd, height=300)
+                st.markdown("**Cách 2: Tải lên file Word/PDF (Tự động đọc nội dung)**")
+                uploaded_file = st.file_uploader("Kéo thả file JD vào đây", type=['docx', 'pdf'], key=f"jd_upload_{sel_person}")
+                
+                if uploaded_file is not None:
+                    if st.button("Trích xuất nội dung từ File"):
+                        with st.spinner("Đang đọc file..."):
+                            try:
+                                text = ""
+                                if uploaded_file.name.endswith(".docx"):
+                                    import docx
+                                    doc = docx.Document(uploaded_file)
+                                    text = "\n".join([p.text for p in doc.paragraphs])
+                                elif uploaded_file.name.endswith(".pdf"):
+                                    import pypdf
+                                    pdf = pypdf.PdfReader(uploaded_file)
+                                    text = "\n".join([page.extract_text() for page in pdf.pages if page.extract_text() if page.extract_text()])
+                                
+                                st.session_state[f"extracted_text_{sel_person}"] = text
+                            except Exception as e:
+                                st.error(f"Lỗi đọc file: {e}")
+                
+                if st.session_state.get(f"extracted_text_{sel_person}"):
+                    st.success("Đã trích xuất thành công! Bạn có thể xem và chỉnh sửa trước khi lưu:")
+                    jd_text = st.text_area("Nội dung trích xuất", value=st.session_state[f"extracted_text_{sel_person}"], height=200, key=f"jd_text_ext_{sel_person}")
                 
                 if st.button("💾 Lưu Mô tả công việc", type="primary"):
-                    config["job_descriptions"][selected_company][sel_person] = jd_text
+                    if isinstance(existing_jd_data, dict):
+                        new_data = existing_jd_data.copy()
+                        new_data["jd_text"] = jd_text
+                    else:
+                        new_data = {"jd_text": jd_text}
+                        
+                    config["job_descriptions"][selected_company][sel_person] = new_data
                     if save_config(config):
                         st.success(f"✅ Đã lưu Bản mô tả công việc (JD) thành công cho nhân sự **{sel_person}**!")
             else:
@@ -3590,7 +3669,12 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                     st.warning("Trống")
             
             if ai_person:
-                jd_source = config.get("job_descriptions", {}).get(selected_company, {}).get(ai_person, "")
+                jd_source_data = config.get("job_descriptions", {}).get(selected_company, {}).get(ai_person, "")
+                if isinstance(jd_source_data, str):
+                    jd_source = jd_source_data
+                else:
+                    jd_source = jd_source_data.get("jd_text", "")
+                    
                 if not jd_source.strip():
                     st.error(f"⚠️ Nhân sự **{ai_person}** chưa được khai báo Mô tả công việc. Vui lòng sang tab bên cạnh để cập nhật JD trước khi AI có thể quét.")
                 else:
