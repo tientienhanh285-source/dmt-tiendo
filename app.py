@@ -344,19 +344,14 @@ def safe_gsheets_update(conn, worksheet, data):
 
 
 def save_config(config_data):
-    conn = get_gsheets_conn()
-    if conn is None:
-        st.error("Chưa cấu hình Google Sheets (secrets.toml).")
-        return False
+    import json
     try:
-        df_save = pd.DataFrame([{"config_json": json.dumps(config_data, ensure_ascii=False)}])
-        success = safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
-        if not success:
-            st.error("⚠️ Lỗi: Không tìm thấy trang tính 'CONFIG' trên Google Sheets! Vui lòng mở Google Sheets, tạo một Sheet mới đặt tên là 'CONFIG', sau đó lưu lại.")
-            return False
+        with open("config_data.json", "w", encoding="utf-8") as f:
+            json.dump(config_data, f, ensure_ascii=False, indent=4)
         return True
     except Exception as e:
-        st.error(f'Lỗi lưu Google Sheets: {e}')
+        import streamlit as st
+        st.error(f"Lỗi khi lưu cấu hình local: {e}")
         return False
 
 def load_config():
@@ -399,6 +394,22 @@ def load_config():
         "cv_gsheet_url": ""
     }
     
+    import os
+    if os.path.exists("config_data.json"):
+        try:
+            with open("config_data.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                
+            # Merge logic for robustness
+            if "personnel_by_department" not in data:
+                data["personnel_by_department"] = DEFAULT_PERSONNEL.copy()
+            if "companies" not in data:
+                data["companies"] = default_config["companies"]
+                
+            return data
+        except Exception as e:
+            print("Error parsing local config:", e)
+            
     conn = get_gsheets_conn()
     if conn is None:
         return default_config
