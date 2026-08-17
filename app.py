@@ -3760,7 +3760,7 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                     }}
                                     """
                                     
-                                    response = model.generate_content(prompt)
+                                    response = model.generate_content(prompt, request_options={"retry": None, "timeout": 30.0})
                                     raw_text = response.text
                                     
                                     import re
