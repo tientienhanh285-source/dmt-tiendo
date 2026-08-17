@@ -3724,8 +3724,15 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                     except:
                                         pass
                                     
+                                    import os
+                                    if not api_key and not os.environ.get("GEMINI_API_KEY"):
+                                        st.error("⚠️ Hệ thống không tìm thấy khóa kết nối AI (API Key). Vui lòng kiểm tra lại cấu hình (ví dụ: thêm mục [gemini] api_key='...' trong Streamlit Secrets).")
+                                        st.stop()
+                                        
                                     if api_key:
                                         genai.configure(api_key=api_key, transport='rest')
+                                    else:
+                                        genai.configure(transport='rest') # use environment variable
                                         
                                     model = genai.GenerativeModel('gemini-1.5-flash')
                                     
