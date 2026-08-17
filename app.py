@@ -351,7 +351,12 @@ def save_config(config_data):
     try:
         import json
         import pandas as pd
-        df_save = pd.DataFrame([{"config_json": json.dumps(config_data, ensure_ascii=False)}])
+        df_save = pd.DataFrame([{
+            "NhanSu": "APP_GLOBAL_CONFIG",
+            "PhongBan": "SYSTEM",
+            "Role": "SYSTEM",
+            "config_json": json.dumps(config_data, ensure_ascii=False)
+        }])
         success = safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
         if not success:
             st.error("⚠️ Lỗi: Không tìm thấy trang tính 'CONFIG' trên Google Sheets! Vui lòng mở Google Sheets, tạo một Sheet mới đặt tên là 'CONFIG', sau đó lưu lại.")
@@ -413,7 +418,14 @@ def load_config():
         if df is None or df.empty:
             return default_config
             
-        json_str = df.iloc[0]["config_json"]
+        if "config_json" in df.columns:
+            config_rows = df[df["config_json"].notna()]
+            if not config_rows.empty:
+                json_str = config_rows.iloc[0]["config_json"]
+            else:
+                json_str = df.iloc[0]["config_json"]
+        else:
+            json_str = df.iloc[0]["config_json"]
         data = json.loads(json_str)
         
         needs_save = False
