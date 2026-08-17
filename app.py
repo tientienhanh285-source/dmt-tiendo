@@ -1369,22 +1369,6 @@ selected_company = st.sidebar.selectbox(
     format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
 )
 
-menu = st.sidebar.radio(
-    "PHÂN HỆ CHỨC NĂNG",
-    [
-        "👀 BẢNG TỔNG QUAN (View)",
-        "🚀 Bảng theo dõi tiến độ công việc",
-        "➕ Thêm / Cập Nhật Công Việc",
-        "🏆 Đánh giá KPI & Xếp loại",
-        "✅ Duyệt việc Khách quan",
-        "🤖 Quản lý & Đối chiếu JD",
-        "⚙️ Quản Lý Cấu Hình",
-        "📖 Sổ tay Hướng dẫn"
-    ],
-    index=0
-)
-
-st.sidebar.markdown("---")
 role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý"], index=0)
 
 if "is_admin_authenticated" not in st.session_state:
@@ -1408,6 +1392,33 @@ if role_mode == "Quản lý":
             st.rerun()
 else:
     st.session_state.is_admin_authenticated = False
+
+st.sidebar.markdown("---")
+
+menu_options = [
+    "👀 BẢNG TỔNG QUAN (View)",
+    "🚀 Bảng theo dõi tiến độ công việc",
+    "➕ Thêm / Cập Nhật Công Việc",
+    "📖 Sổ tay Hướng dẫn"
+]
+
+if st.session_state.is_admin_authenticated:
+    menu_options = [
+        "👀 BẢNG TỔNG QUAN (View)",
+        "🚀 Bảng theo dõi tiến độ công việc",
+        "➕ Thêm / Cập Nhật Công Việc",
+        "🏆 Đánh giá KPI & Xếp loại",
+        "✅ Duyệt việc Khách quan",
+        "🤖 Quản lý & Đối chiếu JD",
+        "⚙️ Quản Lý Cấu Hình",
+        "📖 Sổ tay Hướng dẫn"
+    ]
+
+menu = st.sidebar.radio(
+    "PHÂN HỆ CHỨC NĂNG",
+    menu_options,
+    index=0
+)
 
 st.sidebar.markdown("---")
 
