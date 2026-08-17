@@ -1758,52 +1758,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
         
         st.markdown("---")
     
-        # Performance Review Section
-        st.markdown("### 📈 Bảng Đánh giá Hiệu suất (Performance Review)")
-        st.markdown("*Hiệu suất trung bình (%) hoàn thành công việc theo từng Phòng ban:*")
-    
-        if not display_df.empty:
-            perf_df = display_df.copy()
-        
-            # Ensure ChuKyTheoDoi has valid values
-            perf_df['ChuKyTheoDoi'] = perf_df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
-        
-            # Adjust progress for objective delay / on track so it doesn't deduct points
-            # Only tasks with PhanLoaiTreHan == "👤 Do chủ quan" will keep their real (deducted) progress.
-            # Other tasks (objective or on time) that are late will be treated as 100% to avoid deduction.
-            for idx, row in perf_df.iterrows():
-                is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
-                is_late = (pd.notna(row['Deadline']) and row['Deadline'] < today) and not is_comp
-                if is_late:
-                    if row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
-                        perf_df.at[idx, 'PhanTramHoanThanh'] = 100
-        
-            # Calculate summary table
-            try:
-                perf_summary = perf_df.groupby("PhongBan").agg(
-                    Tổng_Việc=("ID", "count"),
-                    Đã_Xong=("TrangThai", lambda x: (x == "Hoàn thành").sum()),
-                    Hiệu_Suất=("PhanTramHoanThanh", "mean")
-                ).fillna(0)
-                perf_summary["Hiệu_Suất"] = perf_summary["Hiệu_Suất"].astype(int)
-                perf_summary = perf_summary.reset_index()
-                perf_summary.columns = ["Phòng ban", "Tổng số việc", "Số việc đã xong", "Hiệu suất Trung bình (%)"]
-            
-                st.dataframe(
-                    perf_summary,
-                    column_config={
-                        "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
-                        "Tổng số việc": st.column_config.NumberColumn("Tổng số việc", width="small"),
-                        "Số việc đã xong": st.column_config.NumberColumn("Số việc đã xong", width="small"),
-                        "Hiệu suất Trung bình (%)": st.column_config.ProgressColumn("Hiệu suất Trung bình", format="%d%%", min_value=0, max_value=100)
-                    },
-                    use_container_width=True,
-                    hide_index=True
-                )
-            except Exception as pe:
-                st.info(f"Không thể hiển thị bảng hiệu suất: {pe}")
-        else:
-            st.info("Chưa có dữ liệu để đánh giá hiệu suất.")
+
 
     # ----------------- 1.5. BÁO CÁO GIAO BAN -----------------
     with tab_giaoban:
