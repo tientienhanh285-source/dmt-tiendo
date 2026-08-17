@@ -3618,9 +3618,12 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                 elif uploaded_file.name.endswith(".pdf"):
                                     import pypdf
                                     pdf = pypdf.PdfReader(uploaded_file)
-                                    text = "\n".join([page.extract_text() for page in pdf.pages if page.extract_text() if page.extract_text()])
+                                    text = "\n".join([page.extract_text() for page in pdf.pages if page.extract_text()])
                                 
-                                st.session_state[f"extracted_text_{sel_person}"] = text
+                                if not text.strip():
+                                    st.warning("⚠️ Không thể đọc được chữ từ file này (có thể đây là file scan/ảnh). Vui lòng copy và dán văn bản thủ công vào ô phía trên.")
+                                else:
+                                    st.session_state[f"extracted_text_{sel_person}"] = text
                             except Exception as e:
                                 st.error(f"Lỗi đọc file: {e}")
                 
@@ -3629,15 +3632,21 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                     jd_text = st.text_area("Nội dung trích xuất", value=st.session_state[f"extracted_text_{sel_person}"], height=200, key=f"jd_text_ext_{sel_person}")
                 
                 if st.button("💾 Lưu Mô tả công việc", type="primary"):
-                    if isinstance(existing_jd_data, dict):
-                        new_data = existing_jd_data.copy()
-                        new_data["jd_text"] = jd_text
+                    if not jd_text.strip():
+                        st.error("⚠️ Nội dung Mô tả công việc đang trống! Vui lòng nhập nội dung hoặc trích xuất từ file trước khi lưu.")
                     else:
-                        new_data = {"jd_text": jd_text}
-                        
-                    config["job_descriptions"][selected_company][sel_person] = new_data
-                    if save_config(config):
-                        st.success(f"✅ Đã lưu Bản mô tả công việc (JD) thành công cho nhân sự **{sel_person}**!")
+                        if isinstance(existing_jd_data, dict):
+                            new_data = existing_jd_data.copy()
+                            new_data["jd_text"] = jd_text
+                        else:
+                            new_data = {"jd_text": jd_text}
+                            
+                        config["job_descriptions"][selected_company][sel_person] = new_data
+                        if save_config(config):
+                            st.success(f"✅ Đã lưu Bản mô tả công việc (JD) thành công cho nhân sự **{sel_person}**!")
+                            import time
+                            time.sleep(1)
+                            st.rerun()
             else:
                 st.warning("Phòng ban này chưa có nhân sự.")
 
