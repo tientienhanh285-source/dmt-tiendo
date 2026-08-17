@@ -344,14 +344,23 @@ def safe_gsheets_update(conn, worksheet, data):
 
 
 def save_config(config_data):
-    import json
+    conn = get_gsheets_conn()
+    if conn is None:
+        st.error("Chưa cấu hình Google Sheets (secrets.toml).")
+        return False
     try:
-        with open("config_data.json", "w", encoding="utf-8") as f:
-            json.dump(config_data, f, ensure_ascii=False, indent=4)
+        import json
+        import pandas as pd
+        df_save = pd.DataFrame([{"config_json": json.dumps(config_data, ensure_ascii=False)}])
+        success = safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+        if not success:
+            st.error("⚠️ Lỗi: Không tìm thấy trang tính 'CONFIG' trên Google Sheets! Vui lòng mở Google Sheets, tạo một Sheet mới đặt tên là 'CONFIG', sau đó lưu lại.")
+            return False
+        # VITAL: Clear cache so load_config fetches the newly saved data!
+        st.cache_data.clear()
         return True
     except Exception as e:
-        import streamlit as st
-        st.error(f"Lỗi khi lưu cấu hình local: {e}")
+        st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
 def load_config():
@@ -394,27 +403,12 @@ def load_config():
         "cv_gsheet_url": ""
     }
     
-    import os
-    if os.path.exists("config_data.json"):
-        try:
-            with open("config_data.json", "r", encoding="utf-8") as f:
-                data = json.load(f)
-                
-            # Merge logic for robustness
-            if "personnel_by_department" not in data:
-                data["personnel_by_department"] = DEFAULT_PERSONNEL.copy()
-            if "companies" not in data:
-                data["companies"] = default_config["companies"]
-                
-            return data
-        except Exception as e:
-            print("Error parsing local config:", e)
-            
     conn = get_gsheets_conn()
     if conn is None:
         return default_config
         
     try:
+        import json
         df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=600)
         if df is None or df.empty:
             return default_config
@@ -432,47 +426,14 @@ def load_config():
             needs_save = True
             
         if "companies" not in data:
-            # Perform migration from legacy format
-            data["companies"] = {
-                "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
-                    "projects_by_category": data.get("projects_by_category", {}).copy(),
-                    "departments": data.get("departments", []).copy(),
-                    "personnel_by_department": data.get("personnel_by_department", {}).copy()
-                },
-                "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
-                    "projects_by_category": {
-                        "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
-                    },
-                    "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
-                    "personnel_by_department": {
-                        "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
-                        "Ban Tài chính Kế toán": ["Lê Thị Hải"],
-                        "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
-                        "Tổ KPI": []
-                    }
-                },
-                "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-                    "projects_by_category": {},
-                    "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
-                    "personnel_by_department": {
-                        "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                        "Ban Kỹ thuật": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
-                        "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
-                        "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
-                        "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
-                        "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"]
-                    }
-                }
-            }
+            data["companies"] = default_config["companies"]
             needs_save = True
             
-        if needs_save:
-            save_config(data)
-        
         return data
     except Exception as e:
-        pass
+        print("Error parsing DB config:", e)
         return default_config
+
 
 # Load current config dynamically
 config = load_config()
