@@ -3033,20 +3033,28 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                         
                                     tasks_list = "\n".join([f"- {r['TenCongViec']}" for _, r in ai_tasks.iterrows()])
                                     
-                                    prompt = f"""Đóng vai Giám đốc nhân sự tinh tế.
-                                    Mô tả công việc của {p_name}:
-                                    {jd_source}
+                                    prompt = f"""
+                                    Đóng vai một Giám đốc nhân sự cực kỳ tinh tế. 
+                                    Dưới đây là Bản Mô tả công việc (JD) của nhân viên {p_name}:
                                     
-                                    Công việc thực hiện:
+                                    [BẢN MÔ TẢ CÔNG VIỆC]
+                                    {jd_source}
+                                    [KẾT THÚC JD]
+                                    
+                                    Và đây là danh sách công việc họ thực hiện trong tháng:
                                     {tasks_list}
                                     
-                                    1. Đối chiếu từng công việc xem có khớp với chuyên môn trong JD không.
-                                    2. Format kết quả đầu ra thành JSON thô (chỉ trả về JSON, không markdown ```json):
+                                    NHIỆM VỤ CỦA BẠN:
+                                    1. Đối chiếu TỪNG công việc xem nó có KHỚP với chuyên môn quy định trong JD không. 
+                                    (Lưu ý: Tên công việc thực tế có thể chi tiết và từ ngữ khác biệt so với JD văn xuôi. Hãy dùng tư duy suy luận về bản chất và mục đích để phán đoán).
+                                    2. Nếu khớp, giải thích vì nó phục vụ cho mục nào trong JD. Nếu ngoài JD, ghi rõ là công việc phát sinh.
+                                    3. Format kết quả đầu ra thành đúng định dạng chuỗi JSON thô như sau (chỉ trả về JSON, không chứa dấu tick markdown ```json):
                                     {{
                                         "chi_tiet": [
                                             {{
-                                                "ten_cong_viec": "<Tên>",
-                                                "phan_loai": "<Chỉ điền 'Khớp JD' hoặc 'Ngoài JD'>"
+                                                "ten_cong_viec": "<Tên công việc y nguyên trong danh sách>",
+                                                "phan_loai": "<Chỉ điền 'Khớp JD' hoặc 'Ngoài JD'>",
+                                                "nhan_xet": "<Phân tích ngắn gọn 1-2 câu>"
                                             }}
                                         ]
                                     }}
