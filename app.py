@@ -94,9 +94,10 @@ st.set_page_config(
 # Chống dịch tự động của Google (gây lỗi chính tả) và chuẩn hóa Font chữ tiếng Việt
 st.markdown("""
     <style>
-        /* Cố định Font chuẩn hỗ trợ đầy đủ tiếng Việt để tránh lỗi hiển thị ô vuông/dấu */
-        html, body, [class*="css"] {
+        /* Cố định Font chuẩn hỗ trợ đầy đủ tiếng Việt và tăng kích thước chữ */
+        html, body, [class*="css"], p, span, label, div.stMarkdown {
             font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif !important;
+            font-size: 1.08rem !important;
         }
         /* Ngăn Google Translate tự động dịch làm hỏng văn bản tiếng Việt */
         html {
