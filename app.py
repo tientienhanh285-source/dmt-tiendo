@@ -2969,7 +2969,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 )
                 st.markdown("---")
                 with st.expander("🤖 AI Phân tích Độ chuẩn xác JD (Quét Hàng Loạt Phòng Ban)", expanded=False):
-                    st.info("💡 Tính năng này sẽ quét qua toàn bộ các nhân viên trong phòng ban trên để đối chiếu công việc với JD, nhằm tự động lọc ra những người có **tỷ lệ làm việc lặt vặt/ngoài lề cao**.")
+                    st.info("💡 Tính năng này sẽ quét qua toàn bộ các nhân viên trong phòng ban trên để đối chiếu công việc với JD, nhằm tự động lọc ra những người làm các công việc chưa khớp với JD.")
                     
                     import os
                     api_key = ""
