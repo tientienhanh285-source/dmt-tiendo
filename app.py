@@ -3008,11 +3008,10 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                     progress_bar.progress((i) / total_p)
                                     
                                     # Get JD
-                                    jd_df = db.get("jd") if isinstance(db.get("jd"), pd.DataFrame) else pd.DataFrame([db.get("jd")] if db.get("jd") else [])
-                                    if jd_df.empty:
-                                        try:
-                                            jd_df = pd.read_json("jd_db.json") if os.path.exists("jd_db.json") else pd.DataFrame()
-                                        except: pass
+                                    try:
+                                        jd_df = pd.read_json("jd_db.json") if os.path.exists("jd_db.json") else pd.DataFrame()
+                                    except: 
+                                        jd_df = pd.DataFrame()
                                     
                                     p_jd = jd_df[jd_df['TenNhanVien'].str.lower() == p_name.lower()] if not jd_df.empty and 'TenNhanVien' in jd_df.columns else pd.DataFrame()
                                     if p_jd.empty:
