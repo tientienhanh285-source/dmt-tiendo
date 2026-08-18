@@ -1796,7 +1796,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                 crit_display,
                 column_config={
                     "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
-                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=90),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=150),
                     "Tiến độ": st.column_config.TextColumn("Tiến độ", width=80),
                     "Trạng thái thực tế": st.column_config.TextColumn("Trạng thái thực tế", width=120),
                     "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
@@ -2035,7 +2035,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                 df_display,
                 column_config={
                     "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
-                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=90),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=150),
                     "Tiến độ": st.column_config.ProgressColumn(
                         "Tiến độ",
                         format="%d%%",
@@ -2188,7 +2188,7 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
                 df_display,
                 column_config={
                     "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
-                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=90),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=150),
                     "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
                     "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
                     "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
