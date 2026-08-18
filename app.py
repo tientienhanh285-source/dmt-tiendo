@@ -3782,20 +3782,32 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
                                         }}
                                         """
                                     
-                                        # Ép temperature=0.0 để AI phân tích logic nhất quán (không bị sáng tạo ngẫu nhiên sau mỗi lần quét)
-                                        response = model.generate_content(
-                                            prompt, 
-                                            generation_config={"temperature": 0.0},
-                                            request_options={"retry": None, "timeout": 30.0}
-                                        )
-                                        raw_text = response.text
+                                        import hashlib
+                                        import os
+                                        
+                                        prompt_hash = hashlib.md5(prompt.encode('utf-8')).hexdigest()
+                                        cache_file = f".ai_cache_{prompt_hash}.txt"
+                                        
+                                        if os.path.exists(cache_file):
+                                            with open(cache_file, "r", encoding="utf-8") as f:
+                                                raw_text = f.read()
+                                        else:
+                                            # Ép temperature=0.0 để AI phân tích logic nhất quán (không bị sáng tạo ngẫu nhiên sau mỗi lần quét)
+                                            response = model.generate_content(
+                                                prompt, 
+                                                generation_config={"temperature": 0.0},
+                                                request_options={"retry": None, "timeout": 30.0}
+                                            )
+                                            raw_text = response.text
+                                            with open(cache_file, "w", encoding="utf-8") as f:
+                                                f.write(raw_text)
                                     
                                         import re
                                         json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
                                         if json_match:
                                             res_json = json.loads(json_match.group())
                                         
-                                            st.markdown("### 📊 KẾT QUẢ ĐỐI CHIẾU TỪ TRÍ TUỆ NHÂN TẠO")
+                                            st.markdown("### 📊 KẾT QUẢ ĐỐI CHIẾU JD VÀ CÔNG VIỆC ĐĂNG KÝ")
                                         
                                             # Pie chart
                                             match_rate = res_json.get("ty_le_khop", 0)
