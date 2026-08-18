@@ -3023,9 +3023,18 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                         continue
                                         
                                     # Get tasks
+                                    def is_same_person_local(db_name, target_name):
+                                        db_str = str(db_name).strip().lower()
+                                        tgt_str = str(target_name).strip().lower()
+                                        if db_str == tgt_str: return True
+                                        tgt_parts = tgt_str.split()
+                                        if len(tgt_parts) >= 2:
+                                            return tgt_parts[0] in db_str and tgt_parts[-1] in db_str
+                                        return False
+                                        
                                     ai_tasks = display_df[
-                                        (display_df['NguoiChuTri'].str.lower() == p_name.lower()) & 
-                                        (display_df['Deadline'].apply(lambda x: x.month == selected_month and x.year == selected_year if pd.notna(x) and hasattr(x, 'month') else False))
+                                        (display_df['NguoiChuTri'].apply(lambda x: is_same_person_local(x, p_name))) & 
+                                        (display_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year)))
                                     ]
                                     
                                     if ai_tasks.empty:
@@ -3067,6 +3076,9 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                             request_options={"retry": None, "timeout": 30.0}
                                         )
                                         raw_text = response.text
+                                        print(f"--- DEBUG AI FOR {p_name} ---")
+                                        print("RAW TEXT:")
+                                        print(raw_text)
                                         import re
                                         json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
                                         if json_match:
@@ -3078,6 +3090,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                                 return not is_match
                                                 
                                             out_of_jd_tasks = [t for t in ai_result.get("chi_tiet", []) if is_out_of_jd(t)]
+                                            print("OUT OF JD TASKS DETECTED:", out_of_jd_tasks)
                                             
                                             if out_of_jd_tasks:
                                                 red_flag_reports.append({
