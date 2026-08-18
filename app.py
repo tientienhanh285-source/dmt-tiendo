@@ -3782,7 +3782,12 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
                                         }}
                                         """
                                     
-                                        response = model.generate_content(prompt, request_options={"retry": None, "timeout": 30.0})
+                                        # Ép temperature=0.0 để AI phân tích logic nhất quán (không bị sáng tạo ngẫu nhiên sau mỗi lần quét)
+                                        response = model.generate_content(
+                                            prompt, 
+                                            generation_config={"temperature": 0.0},
+                                            request_options={"retry": None, "timeout": 30.0}
+                                        )
                                         raw_text = response.text
                                     
                                         import re
