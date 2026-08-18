@@ -3788,8 +3788,8 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
             months = set()
             if not display_df.empty:
                 for _, row in display_df.iterrows():
-                    if pd.notna(row.get('NgayBatDau')) and hasattr(row['NgayBatDau'], 'strftime'):
-                        months.add(row['NgayBatDau'].strftime('%m/%Y'))
+                    if pd.notna(row.get('Deadline')) and hasattr(row['Deadline'], 'strftime'):
+                        months.add(row['Deadline'].strftime('%m/%Y'))
             month_options = sorted(list(months), key=lambda x: datetime.strptime(x, '%m/%Y'), reverse=True)
             if not month_options: month_options = [today.strftime('%m/%Y')]
             
@@ -3832,7 +3832,7 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
                         
                     ai_tasks = display_df[
                         (display_df['NguoiChuTri'].apply(lambda x: is_same_person(x, ai_person))) & 
-                        (display_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == ai_month)
+                        (display_df['Deadline'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == ai_month)
                     ]
                     
                     if ai_tasks.empty:
