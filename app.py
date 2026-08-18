@@ -3667,13 +3667,13 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
             if not month_options: month_options = [today.strftime('%m/%Y')]
             
             c1, c2, c3 = st.columns(3)
-            with c1: ai_month = st.selectbox("Tháng đánh giá", month_options, key=f"ai_month_{selected_company}")
-            with c2: ai_dept = st.selectbox("Phòng ban", comp_data.get("departments", []), key=f"ai_dept_{selected_company}")
+            with c1: ai_month = st.selectbox("Tháng đánh giá", month_options, key="ai_month_select")
+            with c2: ai_dept = st.selectbox("Phòng ban", comp_data.get("departments", []), key="ai_dept_select")
             
             ai_personnel = comp_data.get("personnel_by_department", {}).get(ai_dept, [])
             with c3:
                 if ai_personnel:
-                    ai_person = st.selectbox("Nhân sự", ai_personnel, key=f"ai_person_{selected_company}_{ai_dept}")
+                    ai_person = st.selectbox("Nhân sự", ai_personnel, key="ai_person_select")
                 else:
                     ai_person = None
                     st.warning("Trống")
