@@ -3688,7 +3688,7 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                 if not jd_source.strip():
                     st.error(f"⚠️ Nhân sự **{ai_person}** chưa được khai báo Mô tả công việc. Vui lòng sang tab bên cạnh để cập nhật JD trước khi AI có thể quét.")
                 else:
-                    with st.expander("👀 Xem trước JD gốc (Làm cơ sở chấm)", expanded=False):
+                    with st.expander("Xem trước JD gốc (Làm cơ sở chấm) 👀", expanded=False):
                         st.text(jd_source)
                         
                     # Filter tasks for this person in this month flexibly to handle name changes (e.g. Lê Ngọc Tú Uyên vs Lê Thị Tú Uyên)
@@ -3713,29 +3713,30 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                     else:
                         st.write(f"Tìm thấy **{len(ai_tasks)}** đầu công việc do nhân sự đăng ký trong tháng.")
                         
-                        if st.button("🪄 CHẠY AI QUÉT ĐỘ PHỦ (GEMINI)", type="primary"):
-                            with st.spinner("🧠 AI đang đọc JD và suy luận công việc... (Có thể mất 5-10 giây)"):
-                                try:
-                                    import google.generativeai as genai
-                                    # Cố gắng lấy key từ cấu hình Streamlit (secrets)
-                                    api_key = ""
+                        import os
+                        api_key = ""
+                        try:
+                            if "gemini" in st.secrets and "api_key" in st.secrets["gemini"]:
+                                api_key = st.secrets["gemini"]["api_key"]
+                        except:
+                            pass
+                            
+                        if not api_key:
+                            api_key = os.environ.get("GEMINI_API_KEY", "")
+                            
+                        if not api_key:
+                            api_key = st.text_input("🔑 Nhập khóa API Gemini (API Key) của bạn để tiếp tục:", type="password")
+                            
+                        if not api_key:
+                            st.warning("⚠️ Vui lòng cấu hình API Key hoặc nhập vào ô trống bên trên để sử dụng AI.")
+                        else:
+                            if st.button("🪄 CHẠY AI QUÉT ĐỘ PHỦ (GEMINI)", type="primary"):
+                                with st.spinner("🧠 AI đang đọc JD và suy luận công việc... (Có thể mất 5-10 giây)"):
                                     try:
-                                        if "gemini" in st.secrets and "api_key" in st.secrets["gemini"]:
-                                            api_key = st.secrets["gemini"]["api_key"]
-                                    except:
-                                        pass
-                                    
-                                    import os
-                                    if not api_key and not os.environ.get("GEMINI_API_KEY"):
-                                        st.error("⚠️ Hệ thống không tìm thấy khóa kết nối AI (API Key). Vui lòng kiểm tra lại cấu hình (ví dụ: thêm mục [gemini] api_key='...' trong Streamlit Secrets).")
-                                        st.stop()
-                                        
-                                    if api_key:
+                                        import google.generativeai as genai
                                         genai.configure(api_key=api_key, transport='rest')
-                                    else:
-                                        genai.configure(transport='rest') # use environment variable
                                         
-                                    model = genai.GenerativeModel('gemini-1.5-flash')
+                                        model = genai.GenerativeModel('gemini-1.5-flash')
                                     
                                     # Rút gọn danh sách công việc
                                     tasks_list = "\n".join([f"- {row['TenCongViec']}" for _, row in ai_tasks.iterrows()])
