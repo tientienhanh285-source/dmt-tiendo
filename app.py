@@ -3730,7 +3730,7 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                         if not api_key:
                             st.warning("⚠️ Vui lòng cấu hình API Key hoặc nhập vào ô trống bên trên để sử dụng AI.")
                         else:
-                            if st.button("🤖 CHẠY AI QUÉT ĐỘ PHỦ (GEMINI)", type="primary"):
+                            if st.button("🔍 CHẠY AI QUÉT ĐỘ PHỦ (GEMINI)", type="primary"):
                                 with st.spinner("🧠 AI đang đọc JD và suy luận công việc... (Có thể mất 5-10 giây)"):
                                     try:
                                         import google.generativeai as genai
