@@ -1453,7 +1453,7 @@ if st.session_state.is_admin_authenticated:
         "➕ Thêm / Cập Nhật Công Việc",
         "🏆 Đánh giá KPI & Xếp loại",
         "✅ Duyệt việc Khách quan",
-        "🤖 Quản lý & Đối chiếu JD",
+        "🔍 Quản lý & Đối chiếu JD",
         "⚙️ Quản Lý Cấu Hình",
         "📖 Sổ tay Hướng dẫn"
     ]
@@ -3567,11 +3567,11 @@ elif menu == "✅ Duyệt việc Khách quan":
                         else:
                             st.info("Chưa có thay đổi nào cần lưu.")
 
-elif menu == "🤖 Quản lý & Đối chiếu JD":
-    st.markdown("### 🤖 Quản lý & Đối chiếu JD (Trí tuệ nhân tạo)")
+elif menu == "🔍 Quản lý & Đối chiếu JD":
+    st.markdown("### 🔍 Quản lý & Đối chiếu JD (Trí tuệ nhân tạo)")
     st.info("💡 Hệ thống sử dụng **Trí tuệ nhân tạo (Google Gemini)** để phân tích tự động việc nhân sự làm có đúng chuyên môn trong Bản Mô tả công việc (JD) hay không.")
     
-    tab_hr, tab_ai = st.tabs(["📝 1. Cập nhật Mô tả công việc (Dành cho HR)", "🪄 2. AI Đối chiếu & Báo cáo (Dành cho Sếp)"])
+    tab_hr, tab_ai = st.tabs(["📝 1. Cập nhật Mô tả công việc (Dành cho HR)", "🔍 2. AI Đối chiếu & Báo cáo (Dành cho Sếp)"])
     
     with tab_hr:
         st.markdown("#### Khai báo JD nguyên bản cho Nhân sự")
