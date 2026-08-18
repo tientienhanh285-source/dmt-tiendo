@@ -1805,12 +1805,12 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             st.dataframe(
                 crit_display,
                 column_config={
-                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
-                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
+                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=90),
                     "Tiến độ": st.column_config.TextColumn("Tiến độ", width=80),
                     "Trạng thái thực tế": st.column_config.TextColumn("Trạng thái thực tế", width=120),
                     "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
+                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=80),
                     "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
                     "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                     "Ghi chú / Giải trình vướng mắc": st.column_config.TextColumn("Ghi chú / Giải trình vướng mắc", width="large")
@@ -2044,8 +2044,8 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             st.dataframe(
                 df_display,
                 column_config={
-                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
-                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
+                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=90),
                     "Tiến độ": st.column_config.ProgressColumn(
                         "Tiến độ",
                         format="%d%%",
@@ -2055,7 +2055,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                     ),
                     "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
                     "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
+                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=80),
                     "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
                     "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large"),
                     "Nguyên nhân trễ hạn": st.column_config.TextColumn("Nguyên nhân trễ hạn", width=150),
@@ -2197,12 +2197,12 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
             st.dataframe(
                 df_display,
                 column_config={
-                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=100),
-                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=100),
+                    "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
+                    "Hạn chót": st.column_config.TextColumn("Hạn chót", width=90),
                     "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
                     "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
                     "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=150),
+                    "Phòng ban": st.column_config.TextColumn("Phòng ban", width=80),
                     "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
                     "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
                 },
