@@ -3652,7 +3652,7 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                 st.warning("Phòng ban này chưa có nhân sự.")
 
     with tab_ai:
-        st.markdown("#### 🪄 Phân tích độ phủ công việc thực tế với JD")
+        st.markdown("#### 🔍 Phân tích độ phủ công việc thực tế với JD")
         if selected_company == "Tất cả đơn vị":
             st.warning("⚠️ Vui lòng chọn cụ thể Công ty ở cột trái.")
         else:
