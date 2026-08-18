@@ -3768,7 +3768,7 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                         NHIỆM VỤ CỦA BẠN:
                                         1. Đối chiếu TỪNG công việc xem nó có KHỚP với chuyên môn quy định trong JD không. 
                                         (Lưu ý: Tên công việc thực tế có thể chi tiết và từ ngữ khác biệt so với JD văn xuôi. Hãy dùng tư duy suy luận về bản chất và mục đích để phán đoán).
-                                        2. Nếu khớp, giải thích vì nó phục vụ cho mục nào trong JD. Nếu ngoài JD, ghi rõ là việc lặt vặt/phát sinh.
+                                        2. Nếu khớp, giải thích vì nó phục vụ cho mục nào trong JD. Nếu ngoài JD, ghi rõ là công việc phát sinh.
                                         3. Format kết quả đầu ra thành đúng định dạng chuỗi JSON thô như sau (chỉ trả về JSON, không chứa dấu tick markdown ```json):
                                         {{
                                             "ty_le_khop": <số nguyên từ 0-100, ví dụ 80>,
