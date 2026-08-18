@@ -3071,7 +3071,14 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                         json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
                                         if json_match:
                                             ai_result = json.loads(json_match.group(0))
-                                            out_of_jd_tasks = [t for t in ai_result.get("chi_tiet", []) if t.get("phan_loai", "") == "Ngoài JD"]
+                                            
+                                            def is_out_of_jd(item):
+                                                pl = item.get("phan_loai", "").lower()
+                                                is_match = "khớp" in pl and "không" not in pl and "ngoài" not in pl
+                                                return not is_match
+                                                
+                                            out_of_jd_tasks = [t for t in ai_result.get("chi_tiet", []) if is_out_of_jd(t)]
+                                            
                                             if out_of_jd_tasks:
                                                 red_flag_reports.append({
                                                     "Tên nhân viên": p_name,
