@@ -103,16 +103,6 @@ st.markdown("""
         html {
             translate: no;
         }
-        /* Làm mờ nút BẢNG TỔNG QUAN trong sidebar */
-        [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:nth-child(1) {
-            opacity: 0.2 !important;
-            filter: blur(2px) !important;
-            transition: all 0.3s ease !important;
-        }
-        [data-testid="stSidebar"] [data-testid="stRadio"] div[role="radiogroup"] label:nth-child(1):hover {
-            opacity: 1 !important;
-            filter: blur(0px) !important;
-        }
     </style>
 """, unsafe_allow_html=True)
 
