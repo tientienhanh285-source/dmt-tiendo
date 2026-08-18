@@ -3738,84 +3738,84 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                         
                                         model = genai.GenerativeModel('gemini-1.5-flash')
                                     
-                                    # Rút gọn danh sách công việc
-                                    tasks_list = "\n".join([f"- {row['TenCongViec']}" for _, row in ai_tasks.iterrows()])
+                                        # Rút gọn danh sách công việc
+                                        tasks_list = "\n".join([f"- {row['TenCongViec']}" for _, row in ai_tasks.iterrows()])
                                     
-                                    prompt = f"""
-                                    Đóng vai một Giám đốc nhân sự cực kỳ tinh tế. 
-                                    Dưới đây là Bản Mô tả công việc (JD) của nhân viên {ai_person}:
+                                        prompt = f"""
+                                        Đóng vai một Giám đốc nhân sự cực kỳ tinh tế. 
+                                        Dưới đây là Bản Mô tả công việc (JD) của nhân viên {ai_person}:
                                     
-                                    [BẢN MÔ TẢ CÔNG VIỆC]
-                                    {jd_source}
-                                    [KẾT THÚC JD]
+                                        [BẢN MÔ TẢ CÔNG VIỆC]
+                                        {jd_source}
+                                        [KẾT THÚC JD]
                                     
-                                    Và đây là danh sách công việc họ thực hiện trong tháng:
-                                    {tasks_list}
+                                        Và đây là danh sách công việc họ thực hiện trong tháng:
+                                        {tasks_list}
                                     
-                                    NHIỆM VỤ CỦA BẠN:
-                                    1. Đối chiếu TỪNG công việc xem nó có KHỚP với chuyên môn quy định trong JD không. 
-                                    (Lưu ý: Tên công việc thực tế có thể chi tiết và từ ngữ khác biệt so với JD văn xuôi. Hãy dùng tư duy suy luận về bản chất và mục đích để phán đoán).
-                                    2. Nếu khớp, giải thích vì nó phục vụ cho mục nào trong JD. Nếu ngoài JD, ghi rõ là việc lặt vặt/phát sinh.
-                                    3. Format kết quả đầu ra thành đúng định dạng chuỗi JSON thô như sau (chỉ trả về JSON, không chứa dấu tick markdown ```json):
-                                    {{
-                                        "ty_le_khop": <số nguyên từ 0-100, ví dụ 80>,
-                                        "chi_tiet": [
-                                            {{
-                                                "ten_cong_viec": "<Tên công việc y nguyên trong danh sách>",
-                                                "phan_loai": "<Chỉ điền 'Khớp JD' hoặc 'Ngoài JD'>",
-                                                "nhan_xet": "<Phân tích ngắn gọn 1-2 câu>"
-                                            }}, ...
-                                        ]
-                                    }}
-                                    """
+                                        NHIỆM VỤ CỦA BẠN:
+                                        1. Đối chiếu TỪNG công việc xem nó có KHỚP với chuyên môn quy định trong JD không. 
+                                        (Lưu ý: Tên công việc thực tế có thể chi tiết và từ ngữ khác biệt so với JD văn xuôi. Hãy dùng tư duy suy luận về bản chất và mục đích để phán đoán).
+                                        2. Nếu khớp, giải thích vì nó phục vụ cho mục nào trong JD. Nếu ngoài JD, ghi rõ là việc lặt vặt/phát sinh.
+                                        3. Format kết quả đầu ra thành đúng định dạng chuỗi JSON thô như sau (chỉ trả về JSON, không chứa dấu tick markdown ```json):
+                                        {{
+                                            "ty_le_khop": <số nguyên từ 0-100, ví dụ 80>,
+                                            "chi_tiet": [
+                                                {{
+                                                    "ten_cong_viec": "<Tên công việc y nguyên trong danh sách>",
+                                                    "phan_loai": "<Chỉ điền 'Khớp JD' hoặc 'Ngoài JD'>",
+                                                    "nhan_xet": "<Phân tích ngắn gọn 1-2 câu>"
+                                                }}, ...
+                                            ]
+                                        }}
+                                        """
                                     
-                                    response = model.generate_content(prompt, request_options={"retry": None, "timeout": 30.0})
-                                    raw_text = response.text
+                                        response = model.generate_content(prompt, request_options={"retry": None, "timeout": 30.0})
+                                        raw_text = response.text
                                     
-                                    import re
-                                    json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
-                                    if json_match:
-                                        res_json = json.loads(json_match.group())
+                                        import re
+                                        json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+                                        if json_match:
+                                            res_json = json.loads(json_match.group())
                                         
-                                        st.markdown("### 📊 KẾT QUẢ ĐỐI CHIẾU TỪ TRÍ TUỆ NHÂN TẠO")
+                                            st.markdown("### 📊 KẾT QUẢ ĐỐI CHIẾU TỪ TRÍ TUỆ NHÂN TẠO")
                                         
-                                        # Pie chart
-                                        match_rate = res_json.get("ty_le_khop", 0)
-                                        m_data = pd.DataFrame({
-                                            "Phân loại": ["Khớp chuyên môn (JD)", "Công việc ngoài JD"],
-                                            "Tỷ lệ": [match_rate, 100 - match_rate]
-                                        })
-                                        fig = px.pie(m_data, values='Tỷ lệ', names='Phân loại', color='Phân loại',
-                                                     color_discrete_map={"Khớp chuyên môn (JD)": "#22c55e", "Công việc ngoài JD": "#f97316"},
-                                                     title=f"Độ phủ JD Tháng {ai_month}", hole=0.4)
-                                        st.plotly_chart(fig, use_container_width=True)
-                                        
-                                        # Table
-                                        res_df = pd.DataFrame(res_json.get("chi_tiet", []))
-                                        if not res_df.empty:
-                                            # Format columns for display
-                                            res_df = res_df.rename(columns={
-                                                "ten_cong_viec": "Công việc (Nhân sự báo cáo)",
-                                                "phan_loai": "Đánh giá của AI",
-                                                "nhan_xet": "Nhận xét chi tiết"
+                                            # Pie chart
+                                            match_rate = res_json.get("ty_le_khop", 0)
+                                            m_data = pd.DataFrame({
+                                                "Phân loại": ["Khớp chuyên môn (JD)", "Công việc ngoài JD"],
+                                                "Tỷ lệ": [match_rate, 100 - match_rate]
                                             })
-                                            
-                                            def color_ph(val):
-                                                if "Khớp" in str(val):
-                                                    return 'color: #166534; background-color: #dcfce7; font-weight: bold; border-radius: 4px;'
-                                                else:
-                                                    return 'color: #9a3412; background-color: #ffedd5; font-weight: bold; border-radius: 4px;'
-                                                    
-                                            st.dataframe(res_df.style.map(color_ph, subset=['Đánh giá của AI']), use_container_width=True)
-                                    else:
-                                        st.error("Lỗi: AI trả về kết quả không mong muốn. Vui lòng thử lại.")
-                                        with st.expander("Dữ liệu thô AI trả về"):
-                                            st.write(raw_text)
+                                            fig = px.pie(m_data, values='Tỷ lệ', names='Phân loại', color='Phân loại',
+                                                         color_discrete_map={"Khớp chuyên môn (JD)": "#22c55e", "Công việc ngoài JD": "#f97316"},
+                                                         title=f"Độ phủ JD Tháng {ai_month}", hole=0.4)
+                                            st.plotly_chart(fig, use_container_width=True)
                                         
-                                except ImportError:
-                                    st.error("Chưa cài đặt thư viện `google-generativeai`. Vui lòng chạy `pip install google-generativeai`.")
-                                except Exception as e:
-                                    st.error(f"Lỗi hệ thống khi gọi AI: {e}")
+                                            # Table
+                                            res_df = pd.DataFrame(res_json.get("chi_tiet", []))
+                                            if not res_df.empty:
+                                                # Format columns for display
+                                                res_df = res_df.rename(columns={
+                                                    "ten_cong_viec": "Công việc (Nhân sự báo cáo)",
+                                                    "phan_loai": "Đánh giá của AI",
+                                                    "nhan_xet": "Nhận xét chi tiết"
+                                                })
+                                            
+                                                def color_ph(val):
+                                                    if "Khớp" in str(val):
+                                                        return 'color: #166534; background-color: #dcfce7; font-weight: bold; border-radius: 4px;'
+                                                    else:
+                                                        return 'color: #9a3412; background-color: #ffedd5; font-weight: bold; border-radius: 4px;'
+                                                    
+                                                st.dataframe(res_df.style.map(color_ph, subset=['Đánh giá của AI']), use_container_width=True)
+                                        else:
+                                            st.error("Lỗi: AI trả về kết quả không mong muốn. Vui lòng thử lại.")
+                                            with st.expander("Dữ liệu thô AI trả về"):
+                                                st.write(raw_text)
+                                        
+                                    except ImportError:
+                                        st.error("Chưa cài đặt thư viện `google-generativeai`. Vui lòng chạy `pip install google-generativeai`.")
+                                    except Exception as e:
+                                        st.error(f"Lỗi hệ thống khi gọi AI: {e}")
 
 elif menu == "⚙️ Quản Lý Cấu Hình":
     st.markdown("### ⚙️ Quản Lý Cấu Hình Hệ Thống")
