@@ -3736,8 +3736,22 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                         import google.generativeai as genai
                                         genai.configure(api_key=api_key, transport='rest')
                                         
-                                        model = genai.GenerativeModel('gemini-1.5-flash')
-                                    
+                                        # Tự động dò model khả dụng cho API Key này
+                                        valid_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+                                        model_name = 'gemini-1.5-flash'
+                                        if 'models/gemini-1.5-flash' in valid_models:
+                                            model_name = 'gemini-1.5-flash'
+                                        elif 'models/gemini-1.5-flash-latest' in valid_models:
+                                            model_name = 'gemini-1.5-flash-latest'
+                                        elif 'models/gemini-1.5-pro' in valid_models:
+                                            model_name = 'gemini-1.5-pro'
+                                        elif 'models/gemini-pro' in valid_models:
+                                            model_name = 'gemini-pro'
+                                        elif valid_models:
+                                            model_name = valid_models[0].replace('models/', '')
+                                            
+                                        model = genai.GenerativeModel(model_name)
+                                        
                                         # Rút gọn danh sách công việc
                                         tasks_list = "\n".join([f"- {row['TenCongViec']}" for _, row in ai_tasks.iterrows()])
                                     
