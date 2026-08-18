@@ -3090,8 +3090,10 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                                 return not is_match
                                                 
                                             out_of_jd_tasks = [t for t in ai_result.get("chi_tiet", []) if is_out_of_jd(t)]
-                                            print("OUT OF JD TASKS DETECTED:", out_of_jd_tasks)
                                             
+                                            with open("ai_debug.txt", "a", encoding="utf-8") as f:
+                                                f.write(f"--- {p_name} ---\nRAW: {raw_text}\nOUT: {out_of_jd_tasks}\n")
+                                                
                                             if out_of_jd_tasks:
                                                 red_flag_reports.append({
                                                     "Tên nhân viên": p_name,
@@ -3100,7 +3102,9 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                                     "Chi tiết": "\n".join([f"- {t['ten_cong_viec']}" for t in out_of_jd_tasks])
                                                 })
                                     except Exception as e:
-                                        print(f"Error AI cho {p_name}: {e}")
+                                        st.error(f"Lỗi khi AI phân tích {p_name}: {e}")
+                                        with open("ai_debug.txt", "a", encoding="utf-8") as f:
+                                            f.write(f"Error for {p_name}: {e}\n")
                                         pass
                                 
                                 progress_bar.progress(1.0)
