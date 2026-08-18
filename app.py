@@ -3738,17 +3738,16 @@ elif menu == "🤖 Quản lý & Đối chiếu JD":
                                         
                                         # Tự động dò model khả dụng cho API Key này
                                         valid_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-                                        model_name = 'gemini-1.5-flash'
-                                        if 'models/gemini-1.5-flash' in valid_models:
+                                        model_name = 'gemini-3.6-flash'
+                                        if 'models/gemini-3.6-flash' in valid_models:
+                                            model_name = 'gemini-3.6-flash'
+                                        elif 'models/gemini-1.5-flash' in valid_models:
                                             model_name = 'gemini-1.5-flash'
-                                        elif 'models/gemini-1.5-flash-latest' in valid_models:
-                                            model_name = 'gemini-1.5-flash-latest'
-                                        elif 'models/gemini-1.5-pro' in valid_models:
-                                            model_name = 'gemini-1.5-pro'
                                         elif 'models/gemini-pro' in valid_models:
                                             model_name = 'gemini-pro'
                                         elif valid_models:
-                                            model_name = valid_models[0].replace('models/', '')
+                                            # Tránh chọn các model cũ hoặc bị deprecate nằm ở đầu danh sách
+                                            model_name = valid_models[-1].replace('models/', '')
                                             
                                         model = genai.GenerativeModel(model_name)
                                         
