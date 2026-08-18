@@ -3825,10 +3825,11 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
                                             if not res_df.empty:
                                                 # Format columns for display
                                                 res_df = res_df.rename(columns={
-                                                    "ten_cong_viec": "Công việc (Nhân sự báo cáo)",
+                                                    "ten_cong_viec": "Công việc",
                                                     "phan_loai": "Đánh giá của AI",
                                                     "nhan_xet": "Nhận xét chi tiết"
                                                 })
+                                                res_df.insert(0, 'STT', range(1, len(res_df) + 1))
                                             
                                                 def color_ph(val):
                                                     if "Khớp" in str(val):
@@ -3836,7 +3837,7 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
                                                     else:
                                                         return 'color: #9a3412; background-color: #ffedd5; font-weight: bold; border-radius: 4px;'
                                                     
-                                                st.dataframe(res_df.style.map(color_ph, subset=['Đánh giá của AI']), use_container_width=True)
+                                                st.dataframe(res_df.style.map(color_ph, subset=['Đánh giá của AI']), use_container_width=True, hide_index=True)
                                         else:
                                             st.error("Lỗi: AI trả về kết quả không mong muốn. Vui lòng thử lại.")
                                             with st.expander("Dữ liệu thô AI trả về"):
