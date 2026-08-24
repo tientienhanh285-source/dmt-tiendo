@@ -2440,7 +2440,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         st.markdown("#### Cập nhật tiến độ công việc đang chạy")
         
         # Display only items matching selected company
-        avail_update_df = display_df
+        avail_update_df = display_df.copy()
+        if 'NgayCapNhat' in avail_update_df.columns:
+            avail_update_df = avail_update_df.sort_values(by='NgayCapNhat', ascending=False)
         
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
@@ -2555,7 +2557,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     st.markdown("---")
                     st.markdown("**Cập nhật Kết quả / File đính kèm**")
-                    u_result_mode = st.radio("Hình thức nộp", ["Giữ nguyên hiện tại", "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
+                    u_result_mode = st.radio("Hình thức nộp", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
                     
                     u_link_text = ""
                     u_file = None
@@ -2631,13 +2633,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     # Constraints validation
                     has_error = False
                     if u_status == "Hoàn thành":
-                        if u_result_mode == "Giữ nguyên hiện tại" and not current_link:
+                        if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not u_link_text.strip() and not current_link:
                             st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
                             has_error = True
-                        elif u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not u_link_text.strip():
-                            st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
-                            has_error = True
-                        elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is None:
+                        elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is None and not current_link:
                             st.error("⚠️ Bắt buộc tải file đính kèm để hoàn thành công việc!")
                             has_error = True
                             
@@ -2656,7 +2655,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         final_link = current_link
                         
                         if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                            final_link = u_link_text.strip()
+                            if u_link_text.strip():
+                                final_link = u_link_text.strip()
                         elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is not None:
                                 upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
                                 if not os.path.exists(upload_dir):
