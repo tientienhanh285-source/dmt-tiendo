@@ -3783,17 +3783,26 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
                                             with open(cache_file, "r", encoding="utf-8") as f:
                                                 raw_text = f.read()
                                         else:
-                                            # Gọi API
-                                            response = model.generate_content(
-                                                prompt, 
-                                                generation_config={"temperature": 0.0},
-                                                request_options={"retry": None, "timeout": 30.0}
-                                            )
-                                            raw_text = response.text
+                                            max_retries = 3
+                                            for attempt in range(max_retries):
+                                                try:
+                                                    response = model.generate_content(
+                                                        prompt, 
+                                                        generation_config={"temperature": 0.0},
+                                                        request_options={"timeout": 60.0}
+                                                    )
+                                                    raw_text = response.text
+                                                    break
+                                                except Exception as api_err:
+                                                    if attempt == max_retries - 1:
+                                                        raise api_err
+                                                    time.sleep(3 * (attempt + 1))
+                                                    
                                             if raw_text:
                                                 with open(cache_file, "w", encoding="utf-8") as f:
                                                     f.write(raw_text)
-                                            time.sleep(2) # Tránh rate limit
+                                            time.sleep(3) # Tránh rate limit
+
                                             
                                         cleaned = raw_text.strip()
                                         if cleaned.startswith("```json"):
@@ -3942,15 +3951,25 @@ elif menu == "🔍 Quản lý & Đối chiếu JD":
                                             with open(cache_file, "r", encoding="utf-8") as f:
                                                 raw_text = f.read()
                                         else:
-                                            # Ép temperature=0.0 để AI phân tích logic nhất quán (không bị sáng tạo ngẫu nhiên sau mỗi lần quét)
-                                            response = model.generate_content(
-                                                prompt, 
-                                                generation_config={"temperature": 0.0},
-                                                request_options={"retry": None, "timeout": 30.0}
-                                            )
-                                            raw_text = response.text
-                                            with open(cache_file, "w", encoding="utf-8") as f:
-                                                f.write(raw_text)
+                                            max_retries = 3
+                                            for attempt in range(max_retries):
+                                                try:
+                                                    response = model.generate_content(
+                                                        prompt, 
+                                                        generation_config={"temperature": 0.0},
+                                                        request_options={"timeout": 60.0}
+                                                    )
+                                                    raw_text = response.text
+                                                    break
+                                                except Exception as api_err:
+                                                    if attempt == max_retries - 1:
+                                                        raise api_err
+                                                    import time
+                                                    time.sleep(4 * (attempt + 1))
+                                                    
+                                            if raw_text:
+                                                with open(cache_file, "w", encoding="utf-8") as f:
+                                                    f.write(raw_text)
                                     
                                         import re
                                         json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
