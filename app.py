@@ -898,7 +898,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
             except Exception:
                 continue
                 
-            so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetime.now().strftime('%M%S')}"
+            so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{(datetime.utcnow() + timedelta(hours=7)).strftime('%M%S')}"
             co_quan_gui = str(row[mapping["ĐƠN VỊ"]]).strip() if mapping["ĐƠN VỊ"] and not pd.isna(row[mapping["ĐƠN VỊ"]]) else ""
             trich_yeu = str(row[content_col]).strip()
             
@@ -954,7 +954,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                     "Deadline": deadline_val,
                     "LinkFile": "",
                     "TrangThai": trang_thai,
-                    "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "NgayCapNhat": (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'),
                     "GhiChu": ghi_chu
                 }
                 docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
@@ -970,7 +970,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                 docs_df.at[idx, "BanChuTri"] = ban_chu_tri
                 docs_df.at[idx, "Deadline"] = deadline_val
                 docs_df.at[idx, "TrangThai"] = trang_thai
-                docs_df.at[idx, "NgayCapNhat"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                docs_df.at[idx, "NgayCapNhat"] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
                 docs_df.at[idx, "GhiChu"] = ghi_chu
                 update_count += 1
                 
@@ -1010,7 +1010,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                     "TrangThai": task_status,
                     "LinkKetQua": "",
                     "GiaiTrinhDeXuat": "",
-                    "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "NgayCapNhat": (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'),
                     "ChuKyTheoDoi": "Theo dự án / Tự do",
                     "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ" if task_status != "Quá hạn" else "👤 Do chủ quan"
                 }
@@ -1024,7 +1024,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                 tasks_df.at[t_idx, "Deadline"] = deadline_val
                 tasks_df.at[t_idx, "TrangThai"] = task_status
                 tasks_df.at[t_idx, "PhanTramHoanThanh"] = 100 if task_status == "Hoàn thành" else 99
-            tasks_df.at[t_idx, "NgayCapNhat"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            tasks_df.at[t_idx, "NgayCapNhat"] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
             
         if save_incoming_docs_db(docs_df) and save_db(tasks_df):
             return True, f"Đồng bộ thành công! Đã thêm mới {success_count} văn bản và cập nhật {update_count} văn bản."
@@ -2421,7 +2421,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 "TrangThai": calc_status,
                                 "LinkKetQua": saved_result,
                                 "GiaiTrinhDeXuat": task_explain.strip(),
-                                "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                                "NgayCapNhat": (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'),
                                 "ChuKyTheoDoi": task_cycle,
                                 "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
                                 "TyTrongKPI": task_weight,
@@ -2680,7 +2680,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = str(u_weight)
@@ -2767,7 +2767,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 "TrangThai": "Chưa bắt đầu" if today < rep_start else "Đang thực hiện",
                                 "LinkKetQua": "",
                                 "GiaiTrinhDeXuat": "",
-                                "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                                "NgayCapNhat": (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'),
                                 "ChuKyTheoDoi": task_data['ChuKyTheoDoi'],
                                 "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
                             }
