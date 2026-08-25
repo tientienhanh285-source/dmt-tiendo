@@ -638,9 +638,9 @@ def read_gantt_db():
             df[col] = ""
 
             
-    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], dayfirst=True, errors='coerce').dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline'], dayfirst=True, errors='coerce').dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
+    df['NgayBatDau'] = df['NgayBatDau'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['Deadline'] = df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['NgayCapNhat'] = df['NgayCapNhat'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))
     df['ID'] = df['ID'].astype(str)
     df['TenDuAn'] = df['TenDuAn'].fillna('Dự án mặc định')
     df['TenCongViec'] = df['TenCongViec'].fillna('')
@@ -1084,9 +1084,9 @@ def read_incoming_docs_db():
             df[col] = ""
 
         
-    df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh'], errors='coerce').dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline'], dayfirst=True, errors='coerce').dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
+    df['NgayBanHanh'] = df['NgayBanHanh'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, errors='coerce')).dt.date
+    df['Deadline'] = df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['NgayCapNhat'] = df['NgayCapNhat'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))
     df['ID'] = df['ID'].astype(str)
     
     today_dt = date.today()
@@ -1206,9 +1206,9 @@ def read_db():
             df[col] = ""
 
     # Clean data formats
-    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'], dayfirst=True, errors='coerce').dt.date
-    df['Deadline'] = pd.to_datetime(df['Deadline'], dayfirst=True, errors='coerce').dt.date
-    df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
+    df['NgayBatDau'] = df['NgayBatDau'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['Deadline'] = df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['NgayCapNhat'] = df['NgayCapNhat'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))
     df['DonVi'] = df['DonVi'].fillna('CTY CP DMT - MARINA (Du thuyền Happy Yacht)')
     df['TenDuAn'] = df['TenDuAn'].fillna('')
     df['MocTienDo'] = df['MocTienDo'].fillna('Tự do')
@@ -1909,9 +1909,18 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             )
             table_df = table_df[mask]
             
-        # Sắp xếp đưa công việc mới cập nhật / mới tạo lên đầu
+        # Sắp xếp: Ghim Trễ hạn/Vướng mắc lên đầu, sau đó mới đến công việc mới cập nhật
+        def _get_priority(row):
+            st_val = str(row.get('TrangThai', ''))
+            if 'Trễ hạn' in st_val or 'Vướng mắc' in st_val or '🔴' in st_val or '⚠️' in st_val:
+                return 0
+            return 1
+            
+        table_df['SortPriority'] = table_df.apply(_get_priority, axis=1)
         if 'NgayCapNhat' in table_df.columns:
-            table_df = table_df.sort_values(by=['NgayCapNhat', 'ID'], ascending=[False, False]).reset_index(drop=True)
+            table_df = table_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
+        else:
+            table_df = table_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
         if table_df.empty:
             st.info("Không có công việc nào phù hợp với bộ lọc.")
@@ -2128,8 +2137,17 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
     elif sel_status == "Vướng mắc":
         table_df = table_df[table_df['TrangThai'] == 'Có vướng mắc']
         
+    def _get_priority(row):
+        st_val = str(row.get('TrangThai', ''))
+        if 'Trễ hạn' in st_val or 'Vướng mắc' in st_val or '🔴' in st_val or '⚠️' in st_val:
+            return 0
+        return 1
+        
+    table_df['SortPriority'] = table_df.apply(_get_priority, axis=1)
     if 'NgayCapNhat' in table_df.columns:
-        table_df = table_df.sort_values(by=['NgayCapNhat', 'ID'], ascending=[False, False]).reset_index(drop=True)
+        table_df = table_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
+    else:
+        table_df = table_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
     if table_df.empty:
         st.info("Không có công việc nào phù hợp với bộ lọc.")
