@@ -1911,7 +1911,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
             
         # Sắp xếp đưa công việc mới cập nhật / mới tạo lên đầu
         if 'NgayCapNhat' in table_df.columns:
-            table_df = table_df.sort_values(by='NgayCapNhat', ascending=False)
+            table_df = table_df.sort_values(by=['NgayCapNhat', 'ID'], ascending=[False, False]).reset_index(drop=True)
         
         if table_df.empty:
             st.info("Không có công việc nào phù hợp với bộ lọc.")
@@ -2129,7 +2129,7 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
         table_df = table_df[table_df['TrangThai'] == 'Có vướng mắc']
         
     if 'NgayCapNhat' in table_df.columns:
-        table_df = table_df.sort_values(by='NgayCapNhat', ascending=False)
+        table_df = table_df.sort_values(by=['NgayCapNhat', 'ID'], ascending=[False, False]).reset_index(drop=True)
         
     if table_df.empty:
         st.info("Không có công việc nào phù hợp với bộ lọc.")
@@ -2442,7 +2442,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         # Display only items matching selected company
         avail_update_df = display_df.copy()
         if 'NgayCapNhat' in avail_update_df.columns:
-            avail_update_df = avail_update_df.sort_values(by='NgayCapNhat', ascending=False)
+            avail_update_df = avail_update_df.sort_values(by=['NgayCapNhat', 'ID'], ascending=[False, False]).reset_index(drop=True)
         
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
