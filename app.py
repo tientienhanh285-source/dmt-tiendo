@@ -2668,14 +2668,21 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         st.write("*(Chưa có kết quả/file đính kèm)*")
                     
                     st.markdown("---")
-                    st.markdown("**Cập nhật Kết quả / File đính kèm**")
+                    if u_is_completed and not current_link:
+                        st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC CẬP NHẬT KẾT QUẢ DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
+                    else:
+                        st.markdown("**Cập nhật Kết quả / File đính kèm**")
+                        
                     u_result_mode = st.radio("Hình thức nộp", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
                     
                     u_link_text = ""
                     u_file = None
                     if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                        st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
-                        u_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", label_visibility="collapsed", placeholder="Ví dụ: Đã hoàn thành 50%, trình ký sếp...", key=f"u_result_text_{task_data['ID']}")
+                        if u_is_completed and not current_link:
+                            st.warning("⚠️ **VUI LÒNG NHẬP NỘI DUNG KẾT QUẢ / BÁO CÁO VÀO Ô BÊN DƯỚI:**")
+                        else:
+                            st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
+                        u_link_text = st.text_area("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", height=100, label_visibility="collapsed", placeholder="Ví dụ: Đã hoàn thành 50%, trình ký sếp...", key=f"u_result_text_{task_data['ID']}")
                     elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)":
                         u_file = st.file_uploader("Tải file đính kèm mới", key=f"u_result_file_{task_data['ID']}")
                         
