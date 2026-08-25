@@ -638,8 +638,8 @@ def read_gantt_db():
             df[col] = ""
 
             
-    df['NgayBatDau'] = df['NgayBatDau'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
-    df['Deadline'] = df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))).dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))).dt.date
     df['NgayCapNhat'] = df['NgayCapNhat'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))
     df['ID'] = df['ID'].astype(str)
     df['TenDuAn'] = df['TenDuAn'].fillna('Dự án mặc định')
@@ -1084,8 +1084,8 @@ def read_incoming_docs_db():
             df[col] = ""
 
         
-    df['NgayBanHanh'] = df['NgayBanHanh'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, errors='coerce')).dt.date
-    df['Deadline'] = df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['NgayBanHanh'] = pd.to_datetime(df['NgayBanHanh'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, errors='coerce'))).dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))).dt.date
     df['NgayCapNhat'] = df['NgayCapNhat'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))
     df['ID'] = df['ID'].astype(str)
     
@@ -1206,8 +1206,8 @@ def read_db():
             df[col] = ""
 
     # Clean data formats
-    df['NgayBatDau'] = df['NgayBatDau'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
-    df['Deadline'] = df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce')).dt.date
+    df['NgayBatDau'] = pd.to_datetime(df['NgayBatDau'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))).dt.date
+    df['Deadline'] = pd.to_datetime(df['Deadline'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))).dt.date
     df['NgayCapNhat'] = df['NgayCapNhat'].astype(str).str.replace('T', ' ', regex=False).str.slice(0, 19).apply(lambda x: pd.to_datetime(x, dayfirst=True, errors='coerce'))
     df['DonVi'] = df['DonVi'].fillna('CTY CP DMT - MARINA (Du thuyền Happy Yacht)')
     df['TenDuAn'] = df['TenDuAn'].fillna('')
