@@ -28,6 +28,5 @@ jobs:
         env:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
-          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
         run: |
           python daily_reminder.py
