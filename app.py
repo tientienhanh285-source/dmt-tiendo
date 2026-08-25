@@ -2390,7 +2390,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             st.markdown("**Kết quả / File đính kèm**")
             result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key="new_result_mode")
             if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                task_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link", placeholder="https://... hoặc Báo cáo số 01/BC-DMT", key="new_result_text")
+                st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
+                task_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link", label_visibility="collapsed", placeholder="Ví dụ: Báo cáo số 01/BC-DMT, đã trình sếp, hoặc dán link Google Drive...", key="new_result_text")
                 task_file = None
             else:
                 task_file = st.file_uploader("Tải file đính kèm (PDF, Word, Excel, Ảnh...)", key="new_result_file")
@@ -2673,7 +2674,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     u_link_text = ""
                     u_file = None
                     if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                        u_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", key=f"u_result_text_{task_data['ID']}")
+                        st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
+                        u_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", label_visibility="collapsed", placeholder="Ví dụ: Đã hoàn thành 50%, trình ký sếp...", key=f"u_result_text_{task_data['ID']}")
                     elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)":
                         u_file = st.file_uploader("Tải file đính kèm mới", key=f"u_result_file_{task_data['ID']}")
                         
