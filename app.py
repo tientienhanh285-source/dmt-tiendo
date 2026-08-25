@@ -2336,11 +2336,16 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             if dept_lead in dept_personnel:
                 default_lead_idx = dept_personnel.index(dept_lead)
             
-            sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", owner_options, index=default_lead_idx)
-            if sel_owner_opt == "✍️ Nhập tên người khác...":
-                task_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="")
+            is_personal = (role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
+            if is_personal:
+                sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", [st.session_state.personal_user], index=0, disabled=True)
+                task_owner = st.session_state.personal_user
             else:
-                task_owner = sel_owner_opt
+                sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", owner_options, index=default_lead_idx)
+                if sel_owner_opt == "✍️ Nhập tên người khác...":
+                    task_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="")
+                else:
+                    task_owner = sel_owner_opt
             
             # 2. Project selection (Categorized dropdown or custom)
             is_marina_co = "CTY CP DMT - MARINA" in entry_company or "Du thuyền Happy Yacht" in entry_company
@@ -2589,17 +2594,22 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     u_owner_options = list(u_dept_personnel) + ["✍️ Nhập tên người khác..."]
                     
                     current_owner = task_data['NguoiChuTri']
-                    if current_owner in u_dept_personnel:
-                        u_default_index = u_dept_personnel.index(current_owner)
-                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
-                        if u_sel_owner_opt == "✍️ Nhập tên người khác...":
-                            u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="", key=f"u_owner_custom_{task_data['ID']}")
-                        else:
-                            u_owner = u_sel_owner_opt
+                    is_personal = (role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
+                    if is_personal:
+                        st.selectbox("Người thực hiện / Phụ trách", [st.session_state.personal_user], index=0, disabled=True, key=f"u_owner_sel_{task_data['ID']}")
+                        u_owner = st.session_state.personal_user
                     else:
-                        u_default_index = len(u_owner_options) - 1
-                        u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
-                        u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
+                        if current_owner in u_dept_personnel:
+                            u_default_index = u_dept_personnel.index(current_owner)
+                            u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
+                            if u_sel_owner_opt == "✍️ Nhập tên người khác...":
+                                u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value="", key=f"u_owner_custom_{task_data['ID']}")
+                            else:
+                                u_owner = u_sel_owner_opt
+                        else:
+                            u_default_index = len(u_owner_options) - 1
+                            u_sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", u_owner_options, index=u_default_index, key=f"u_owner_sel_{task_data['ID']}")
+                            u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
                     u_start = st.date_input("Ngày bắt đầu thực hiện", value=task_data['NgayBatDau'] if pd.notna(task_data['NgayBatDau']) else None, format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
