@@ -1413,12 +1413,18 @@ selected_company = st.sidebar.selectbox(
     format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
 )
 
-role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý"], index=0)
+role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "Cá nhân (Thử nghiệm)"], index=0)
 
 if "is_admin_authenticated" not in st.session_state:
     st.session_state.is_admin_authenticated = False
+if "is_personal_authenticated" not in st.session_state:
+    st.session_state.is_personal_authenticated = False
+if "personal_user" not in st.session_state:
+    st.session_state.personal_user = None
 
 if role_mode == "Quản lý":
+    st.session_state.is_personal_authenticated = False
+    st.session_state.personal_user = None
     if not st.session_state.is_admin_authenticated:
         admin_pwd = st.sidebar.text_input("Nhập Mật khẩu Quản lý", type="password")
         if admin_pwd:
@@ -1434,8 +1440,29 @@ if role_mode == "Quản lý":
         if st.sidebar.button("Đăng xuất"):
             st.session_state.is_admin_authenticated = False
             st.rerun()
+
+elif role_mode == "Cá nhân (Thử nghiệm)":
+    st.session_state.is_admin_authenticated = False
+    if not st.session_state.is_personal_authenticated:
+        pers_pwd = st.sidebar.text_input("Nhập Mã PIN cá nhân (Mặc định: 1234)", type="password")
+        if pers_pwd:
+            if pers_pwd == "1234":
+                st.session_state.is_personal_authenticated = True
+                st.rerun()
+            else:
+                st.sidebar.error("Mã PIN không đúng!")
+    
+    if st.session_state.is_personal_authenticated:
+        st.sidebar.success("Đã xác thực quyền Cá nhân!")
+        
+        if st.sidebar.button("Đăng xuất"):
+            st.session_state.is_personal_authenticated = False
+            st.session_state.personal_user = None
+            st.rerun()
 else:
     st.session_state.is_admin_authenticated = False
+    st.session_state.is_personal_authenticated = False
+    st.session_state.personal_user = None
 
 st.sidebar.markdown("---")
 
@@ -1482,6 +1509,53 @@ else:
     
 if 'NguoiChuTri' not in display_df.columns:
     display_df['NguoiChuTri'] = ''
+
+# -------- LỌC CÁ NHÂN ---------
+if role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_authenticated:
+    all_owners = sorted(list(display_df['NguoiChuTri'].dropna().astype(str).unique()))
+    
+    # Render selectbox in sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("**Cấu hình Cá nhân**")
+    
+    current_idx = 0
+    if st.session_state.personal_user in all_owners:
+        current_idx = all_owners.index(st.session_state.personal_user)
+        
+    selected_user = st.sidebar.selectbox("Bạn là ai?", all_owners, index=current_idx)
+    st.session_state.personal_user = selected_user
+    
+    # Filter display_df
+    if st.session_state.personal_user:
+        display_df = display_df[display_df['NguoiChuTri'] == st.session_state.personal_user].copy()
+        
+    # Nút gửi email nhắc nhở
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("**Gửi Email Nhắc Nhở**")
+    sender_email = st.sidebar.text_input("Email gửi (Trạm phát):")
+    sender_pwd = st.sidebar.text_input("App Password:", type="password")
+    test_email = st.sidebar.text_input("Nhập Email nhận thông báo:", value="")
+    if st.sidebar.button("📩 Gửi nhắc nhở (Test)"):
+        if test_email and sender_email and sender_pwd:
+            if not display_df.empty:
+                late_df = display_df[(display_df['TrangThai'] == 'Quá hạn') | (display_df['TrangThai'] == 'Có vướng mắc') | (display_df['TrangThai'].str.contains('Trễ hạn', na=False))]
+                if late_df.empty:
+                    st.sidebar.success("Bạn không có công việc nào trễ hạn/vướng mắc!")
+                else:
+                    try:
+                        from mailer import send_reminder_email
+                        success, msg = send_reminder_email(sender_email, sender_pwd, test_email, late_df)
+                        if success:
+                            st.sidebar.success(msg)
+                        else:
+                            st.sidebar.error(msg)
+                    except Exception as e:
+                        st.sidebar.error(f"Lỗi hệ thống: {e}")
+            else:
+                st.sidebar.warning("Không có dữ liệu công việc!")
+        else:
+            st.sidebar.error("Vui lòng điền đủ thông tin Email trạm phát, App Password và Email nhận!")
+# ------------------------------
 
 # Statistics helpers
 total_v = len(display_df)
