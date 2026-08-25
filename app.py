@@ -2314,7 +2314,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             if is_late:
                 task_late_cause = st.selectbox(
                     "Phân loại nguyên nhân trễ hạn",
-                    ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"],
+                    ["🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"],
                     index=0,
                     key="new_task_late_cause"
                 )
@@ -2588,7 +2588,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     u_is_late = (u_deadline is not None and u_deadline < today) and not u_is_completed
                     u_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
                     if u_is_late:
-                        u_options = ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"]
+                        u_options = ["🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"]
                         u_current_val = task_data.get('PhanLoaiTreHan', "🟢 Không trễ hạn / Đúng tiến độ")
                         u_default_idx = u_options.index(u_current_val) if u_current_val in u_options else 0
                         u_late_cause = st.selectbox(
