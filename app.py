@@ -2395,7 +2395,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 if task_has_issue:
                     task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", key="new_task_explain")
                 else:
-                    task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", placeholder="Mô tả chi tiết khó khăn...", key="new_task_explain")
+                    task_explain = ""
             
             # 11. Chu kỳ theo dõi
             task_cycle = "Theo dự án / Tự do"
@@ -2701,7 +2701,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         if u_has_issue:
                             u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
                         else:
-                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+                            u_explain = ""
                     
                 btn_save, btn_del = st.columns([3, 2])
                 
