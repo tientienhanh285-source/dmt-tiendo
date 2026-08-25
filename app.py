@@ -1521,6 +1521,8 @@ if role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_au
     current_idx = 0
     if st.session_state.personal_user in all_owners:
         current_idx = all_owners.index(st.session_state.personal_user)
+    elif "Nguyễn Thị Hạnh Tiên" in all_owners:
+        current_idx = all_owners.index("Nguyễn Thị Hạnh Tiên")
         
     selected_user = st.sidebar.selectbox("Bạn là ai?", all_owners, index=current_idx)
     st.session_state.personal_user = selected_user
