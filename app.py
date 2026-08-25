@@ -1531,32 +1531,6 @@ if role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_au
     if st.session_state.personal_user:
         display_df = display_df[display_df['NguoiChuTri'] == st.session_state.personal_user].copy()
         
-    # Nút gửi email nhắc nhở
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Gửi Email Nhắc Nhở**")
-    sender_email = st.sidebar.text_input("Email gửi (Trạm phát):")
-    sender_pwd = st.sidebar.text_input("App Password:", type="password")
-    test_email = st.sidebar.text_input("Nhập Email nhận thông báo:", value="")
-    if st.sidebar.button("📩 Gửi nhắc nhở (Test)"):
-        if test_email and sender_email and sender_pwd:
-            if not display_df.empty:
-                late_df = display_df[(display_df['TrangThai'] == 'Quá hạn') | (display_df['TrangThai'] == 'Có vướng mắc') | (display_df['TrangThai'].str.contains('Trễ hạn', na=False))]
-                if late_df.empty:
-                    st.sidebar.success("Bạn không có công việc nào trễ hạn/vướng mắc!")
-                else:
-                    try:
-                        from mailer import send_reminder_email
-                        success, msg = send_reminder_email(sender_email, sender_pwd, test_email, late_df)
-                        if success:
-                            st.sidebar.success(msg)
-                        else:
-                            st.sidebar.error(msg)
-                    except Exception as e:
-                        st.sidebar.error(f"Lỗi hệ thống: {e}")
-            else:
-                st.sidebar.warning("Không có dữ liệu công việc!")
-        else:
-            st.sidebar.error("Vui lòng điền đủ thông tin Email trạm phát, App Password và Email nhận!")
 # ------------------------------
 
 # Statistics helpers
