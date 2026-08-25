@@ -2361,11 +2361,17 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             task_has_issue = st.checkbox("Công việc đang gặp vướng mắc, cần hỗ trợ", value=False)
             
             # 9. Kết quả / File đính kèm
-            st.markdown("**Kết quả / File đính kèm**")
+            if task_is_completed:
+                st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC NHẬP BÁO CÁO HOẶC TẢI FILE DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
+            else:
+                st.markdown("**Kết quả / File đính kèm**")
             result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key="new_result_mode")
             if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
-                task_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link", label_visibility="collapsed", placeholder="Ví dụ: Báo cáo số 01/BC-DMT, đã trình sếp, hoặc dán link Google Drive...", key="new_result_text")
+                if task_is_completed:
+                    st.warning("⚠️ **VUI LÒNG NHẬP NỘI DUNG KẾT QUẢ / BÁO CÁO VÀO Ô BÊN DƯỚI:**")
+                else:
+                    st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
+                task_link_text = st.text_area("Nhập tên Báo cáo / Số hiệu Văn bản / Link", height=100, label_visibility="collapsed", placeholder="Ví dụ: Báo cáo số 01/BC-DMT, đã trình sếp, hoặc dán link Google Drive...", key="new_result_text")
                 task_file = None
             else:
                 task_file = st.file_uploader("Tải file đính kèm (PDF, Word, Excel, Ảnh...)", key="new_result_file")
