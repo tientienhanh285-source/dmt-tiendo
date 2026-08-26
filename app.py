@@ -2392,7 +2392,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             task_is_completed = st.checkbox("Đã hoàn thành công việc", value=False)
             
             # 8. Issue flag
-            task_has_issue = st.checkbox("Công việc đang gặp vướng mắc, cần hỗ trợ", value=False)
+            task_has_issue = st.checkbox("Công việc chưa hoàn thành, đang vướng mắc", value=False)
             
             # 9. Kết quả / File đính kèm
             if task_is_completed:
@@ -2641,7 +2641,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     u_is_completed = st.checkbox("Đã hoàn thành công việc", value=default_is_completed, key=f"u_is_completed_{task_data['ID']}")
                     
                     default_has_issue = task_data['TrangThai'] == 'Có vướng mắc'
-                    u_has_issue = st.checkbox("Công việc gặp vướng mắc, cần hỗ trợ", value=default_has_issue, key=f"u_has_issue_{task_data['ID']}")
+                    u_has_issue = st.checkbox("Công việc chưa hoàn thành, đang vướng mắc", value=default_has_issue, key=f"u_has_issue_{task_data['ID']}")
                     
                     # 11. Chu kỳ theo dõi
                     current_cycle = task_data.get('ChuKyTheoDoi', 'Theo dự án / Tự do')
