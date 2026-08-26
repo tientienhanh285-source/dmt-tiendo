@@ -1558,6 +1558,7 @@ menu = st.sidebar.radio(
     menu_options,
     index=0
 )
+st.write("DEBUG MENU VALUE:", [menu])
 
 st.sidebar.markdown("---")
 
@@ -3655,7 +3656,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 st.info("Chưa có lịch sử điều chỉnh.")
 
 # ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------
-elif menu == "✅ Duyệt việc Khách quan":
+elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách quan"]:
     st.header("✅ Duyệt lý do trễ hạn khách quan")
     
     if not (st.session_state.is_admin_authenticated or st.session_state.get("is_manager_authenticated", False)):
