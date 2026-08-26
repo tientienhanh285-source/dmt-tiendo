@@ -1447,7 +1447,7 @@ selected_company = st.sidebar.selectbox(
     format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
 )
 
-role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "Cá nhân (Thử nghiệm)"], index=0)
+role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "HR", "Cá nhân (Thử nghiệm)"], index=0)
 
 if "is_admin_authenticated" not in st.session_state:
     st.session_state.is_admin_authenticated = False
@@ -2709,7 +2709,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     if u_is_late or u_has_issue:
                         u_explain = st.text_area("📝 Chi tiết vướng mắc / Giải trình nguyên nhân (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Mô tả chi tiết nguyên nhân trễ hạn hoặc vướng mắc gặp phải...", height=120, key=f"u_explain_txt_{task_data['ID']}")
                         if u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                            if st.session_state.is_admin_authenticated:
+                            if st.session_state.is_admin_authenticated or st.session_state.get('is_manager_authenticated', False):
                                 current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
                                 chamchuoc_opts = ["0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"]
                                 idx_cc = chamchuoc_opts.index(current_chamchuoc) if current_chamchuoc in chamchuoc_opts else 0
@@ -3399,7 +3399,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 else:
                     st.info("Không có dữ liệu.")
 
-    if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
+    if st.session_state.is_admin_authenticated:
         with kpi_tab3:
             st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
             all_p_list = []
