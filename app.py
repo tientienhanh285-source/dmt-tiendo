@@ -2396,10 +2396,14 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     st.markdown("<div style='padding: 15px; border-radius: 8px; border: 1px dashed #ccc; background-color: #f9f9f9; margin-bottom: 20px;'>", unsafe_allow_html=True)
                     # 7 & 8. Status radio
                     st.markdown("<p style='font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0;'>📌 Trạng thái công việc</p>", unsafe_allow_html=True)
-                    status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc", "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC"]
+                    is_late_for_status = (task_deadline < today)
+                    if is_late_for_status:
+                        status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc", "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC"]
+                    else:
+                        status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc"]
                     task_status_choice = st.radio("Trạng thái công việc", status_opts, index=None, label_visibility="collapsed", key="new_status_choice")
-                    task_is_completed = (task_status_choice == status_opts[0])
-                    task_has_issue = (task_status_choice == status_opts[1])
+                    task_is_completed = (task_status_choice == "✅ Xác nhận ĐÃ HOÀN THÀNH công việc")
+                    task_has_issue = (task_status_choice == "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC")
                     
                     if task_status_choice is not None:
                         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
@@ -2669,9 +2673,13 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=pd.to_datetime(task_data['Deadline']).date() if pd.notna(task_data['Deadline']) and str(task_data['Deadline']).strip() else today, format="DD/MM/YYYY", key=f"u_deadline_{task_data['ID']}")
                     
                     st.markdown("<p style='font-size: 1.1rem; font-weight: 600; color: #1e3a8a;'>📌 Trạng thái công việc</p>", unsafe_allow_html=True)
-                    u_status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc", "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC"]
-                    
                     u_current_status = task_data.get('TrangThai', 'Đang thực hiện')
+                    u_is_late_for_status = (u_deadline is not None and u_deadline < today)
+                    if u_is_late_for_status or u_current_status == 'Có vướng mắc':
+                        u_status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc", "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC"]
+                    else:
+                        u_status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc"]
+                    
                     if u_current_status == 'Hoàn thành':
                         u_status_idx = 0
                     elif u_current_status == 'Có vướng mắc':
@@ -2680,8 +2688,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         u_status_idx = None
                         
                     u_status_choice = st.radio("Trạng thái công việc", u_status_opts, index=u_status_idx, label_visibility="collapsed", key=f"u_status_choice_{task_data['ID']}")
-                    u_is_completed = (u_status_choice == u_status_opts[0])
-                    u_has_issue = (u_status_choice == u_status_opts[1])
+                    u_is_completed = (u_status_choice == "✅ Xác nhận ĐÃ HOÀN THÀNH công việc")
+                    u_has_issue = (u_status_choice == "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC")
                     
                     # 11. Chu kỳ theo dõi
                     current_cycle = task_data.get('ChuKyTheoDoi', 'Theo dự án / Tự do')
