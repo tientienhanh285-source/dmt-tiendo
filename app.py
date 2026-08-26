@@ -2422,7 +2422,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     key="new_task_late_cause"
                 )
                 if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                    task_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", placeholder="Mô tả chi tiết khó khăn, nguyên nhân khách quan và phương án xử lý...", key="new_task_explain")
+                    task_explain = st.text_area("📝 Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý (Bắt buộc)", placeholder="Ví dụ: Bị vướng pháp lý do đối tác chậm cung cấp hồ sơ. Đề xuất xin dời sang tuần sau...", height=120, key="new_task_explain")
                 else:
                     task_explain = ""
             else:
@@ -2473,7 +2473,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 if is_late:
                     if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
                         if not task_explain.strip() or len(task_explain.strip()) < 5:
-                            st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+                            st.error("⚠️ Bắt buộc nhập 'Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý' (tối thiểu 5 ký tự)!")
                             has_error = True
                 elif calc_status == "Có vướng mắc":
                     if not task_explain.strip() or len(task_explain.strip()) < 5:
@@ -2687,7 +2687,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             key=f"u_late_cause_sel_{task_data['ID']}"
                         )
                         if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                            u_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+                            u_explain = st.text_area("📝 Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Ví dụ: Bị vướng pháp lý do đối tác chậm cung cấp hồ sơ. Đề xuất xin dời sang tuần sau...", height=120, key=f"u_explain_txt_{task_data['ID']}")
                             
                             if st.session_state.is_admin_authenticated:
                                 current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
@@ -2750,7 +2750,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     if u_is_late:
                         if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
                             if not u_explain.strip() or len(u_explain.strip()) < 5:
-                                st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+                                st.error("⚠️ Bắt buộc nhập 'Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý' (tối thiểu 5 ký tự)!")
                                 has_error = True
                     elif u_status == "Có vướng mắc":
                         if not u_explain.strip() or len(u_explain.strip()) < 5:
