@@ -1,7 +1,5 @@
 import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
-
 # Force calendar header visible to fix caching issues
 st.markdown('''
     <style>
@@ -180,7 +178,7 @@ def get_gsheets_conn():
     except Exception as e:
         import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
         st.warning(f"Chưa cấu hình Supabase Connection: {e}")
         return None
 
@@ -205,7 +203,7 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
     
     import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
     import time
     
     cache_key = f"cached_df_{worksheet}"
@@ -253,14 +251,14 @@ st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠ
     except Exception as e:
         import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
         st.warning(f"Lỗi đọc Supabase ({worksheet}): {e}")
         return fallback_df
 
 def safe_gsheets_update(conn, worksheet, data):
     import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
     import time
     import pandas as pd
     import numpy as np
@@ -363,7 +361,7 @@ st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠ
         err_msg = str(e)
         import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
         st.error(f"Lỗi khi lưu vào Supabase ({worksheet}): {err_msg}")
         return False
 
@@ -654,7 +652,7 @@ def read_gantt_db():
     except Exception as e:
         import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
         st.error(f"Lỗi khi đọc dữ liệu GANTT_KHDT: {e}")
         raise e
         
@@ -712,7 +710,7 @@ def read_kpi_adjustments():
     except Exception as e:
         import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
         st.error(f"Lỗi khi đọc trang tính KPI_ADJUSTMENTS: {e}")
         raise e
 
@@ -746,7 +744,7 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
             if success:
                 import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
                 if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
             else:
@@ -775,7 +773,7 @@ def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
             if success:
                 import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
                 if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
         except Exception as e:
@@ -795,7 +793,7 @@ def delete_kpi_adjustment(adj_id):
             if success:
                 import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
                 if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
         except Exception as e:
@@ -1208,7 +1206,7 @@ def read_db():
     except Exception as e:
         import streamlit as st
 
-st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
         st.error(f"Lỗi khi đọc dữ liệu Sheet1: {e}")
         raise e
 
