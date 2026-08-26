@@ -2407,15 +2407,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     label_visibility="collapsed",
                     key="new_task_late_cause"
                 )
-                if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                    task_explain = st.text_area("📝 Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý (Bắt buộc)", placeholder="Ví dụ: Bị vướng pháp lý do đối tác chậm cung cấp hồ sơ. Đề xuất xin dời sang tuần sau...", height=120, key="new_task_explain")
-                else:
-                    task_explain = ""
+            if (is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or task_has_issue:
+                task_explain = st.text_area("📝 Chi tiết vướng mắc / Nguyên nhân khách quan (Bắt buộc)", placeholder="Mô tả chi tiết nguyên nhân khách quan hoặc vướng mắc gặp phải...", height=120, key="new_task_explain")
             else:
-                if task_has_issue:
-                    task_explain = st.text_area("📝 Chi tiết vướng mắc & Đề xuất hỗ trợ (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", height=120, key="new_task_explain")
-                else:
-                    task_explain = ""
+                task_explain = ""
             
 
             # 9. Kết quả / File đính kèm
@@ -2685,9 +2680,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         label_visibility="collapsed",
                         key=f"u_late_cause_sel_{task_data['ID']}"
                     )
-                    if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                        u_explain = st.text_area("📝 Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Ví dụ: Bị vướng pháp lý do đối tác chậm cung cấp hồ sơ. Đề xuất xin dời sang tuần sau...", height=120, key=f"u_explain_txt_{task_data['ID']}")
-                        
+                if (u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or u_has_issue:
+                    u_explain = st.text_area("📝 Chi tiết vướng mắc / Nguyên nhân khách quan (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Mô tả chi tiết nguyên nhân khách quan hoặc vướng mắc gặp phải...", height=120, key=f"u_explain_txt_{task_data['ID']}")
+                    if u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
                         if st.session_state.is_admin_authenticated:
                             current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
                             chamchuoc_opts = ["0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"]
@@ -2699,15 +2694,10 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             if current_chamchuoc != '0% (Không ghi nhận)':
                                 st.info(f"Đã được Quản lý ghi nhận mức độ KPI: **{current_chamchuoc}**")
                     else:
-                        u_explain = ""
                         u_chamchuoc = '0% (Không ghi nhận)'
                 else:
+                    u_explain = ""
                     u_chamchuoc = '0% (Không ghi nhận)'
-
-                    if u_has_issue:
-                        u_explain = st.text_area("📝 Chi tiết vướng mắc & Đề xuất hỗ trợ (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Mô tả chi tiết vướng mắc...", height=120, key=f"u_explain_txt_{task_data['ID']}")
-                    else:
-                        u_explain = ""
                 
 
                 current_link = task_data['LinkKetQua']
