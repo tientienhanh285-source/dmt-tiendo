@@ -2385,8 +2385,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
         with col2:
             # 6. Dates
-            task_start = st.date_input("Ngày bắt đầu thực hiện", today)
-            task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today)
+            task_start = st.date_input("Ngày bắt đầu thực hiện", today, format="DD/MM/YYYY")
+            task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today, format="DD/MM/YYYY")
             
             # 7. Completed flag instead of manual progress slider
             task_is_completed = st.checkbox("Đã hoàn thành công việc", value=False)
@@ -2634,8 +2634,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
-                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=pd.to_datetime(task_data['NgayBatDau']).date() if pd.notna(task_data['NgayBatDau']) and str(task_data['NgayBatDau']).strip() else today, key=f"u_start_{task_data['ID']}")
-                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=pd.to_datetime(task_data['Deadline']).date() if pd.notna(task_data['Deadline']) and str(task_data['Deadline']).strip() else today, key=f"u_deadline_{task_data['ID']}")
+                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=pd.to_datetime(task_data['NgayBatDau']).date() if pd.notna(task_data['NgayBatDau']) and str(task_data['NgayBatDau']).strip() else today, format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
+                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=pd.to_datetime(task_data['Deadline']).date() if pd.notna(task_data['Deadline']) and str(task_data['Deadline']).strip() else today, format="DD/MM/YYYY", key=f"u_deadline_{task_data['ID']}")
                     
                     default_is_completed = task_data['TrangThai'] == 'Hoàn thành'
                     u_is_completed = st.checkbox("Đã hoàn thành công việc", value=default_is_completed, key=f"u_is_completed_{task_data['ID']}")
@@ -2839,9 +2839,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     col_rep1, col_rep2 = st.columns(2)
                     with col_rep1:
-                        rep_start = st.date_input("Ngày bắt đầu mới", value=default_start, key=f"rep_start_{task_data['ID']}")
+                        rep_start = st.date_input("Ngày bắt đầu mới", value=default_start, format="DD/MM/YYYY", key=f"rep_start_{task_data['ID']}")
                     with col_rep2:
-                        rep_deadline = st.date_input("Hạn chót mới", value=default_deadline, key=f"rep_deadline_{task_data['ID']}")
+                        rep_deadline = st.date_input("Hạn chót mới", value=default_deadline, format="DD/MM/YYYY", key=f"rep_deadline_{task_data['ID']}")
                         
                     if st.button("🔄 TẠO CÔNG VIỆC CHO KỲ SAU", type="primary", key=f"btn_rep_{task_data['ID']}"):
                         with acquire_db_lock():
