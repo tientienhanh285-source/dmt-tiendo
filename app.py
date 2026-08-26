@@ -2399,7 +2399,6 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             is_late = (task_deadline < today) and not task_is_completed
             task_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
             if is_late:
-                st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("**⚠️ Phân loại nguyên nhân trễ hạn**")
                 task_late_cause = st.radio(
                     "Phân loại nguyên nhân trễ hạn",
