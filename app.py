@@ -2649,7 +2649,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
                     u_cycle = current_cycle
                     
-                    u_weight = current_weight
+                    u_weight = task_data.get('TyTrongKPI', '')
                     
                 col_ub1, col_ub2 = st.columns(2)
                 
