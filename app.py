@@ -2427,7 +2427,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     task_explain = ""
             else:
                 if task_has_issue:
-                    task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", key="new_task_explain")
+                    task_explain = st.text_area("📝 Chi tiết vướng mắc & Đề xuất hỗ trợ (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", height=120, key="new_task_explain")
                 else:
                     task_explain = ""
             
@@ -2477,7 +2477,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             has_error = True
                 elif calc_status == "Có vướng mắc":
                     if not task_explain.strip() or len(task_explain.strip()) < 5:
-                        st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
+                        st.error("⚠️ Bắt buộc nhập 'Chi tiết vướng mắc & Đề xuất hỗ trợ'!")
                         has_error = True
                         
                 if not has_error:
@@ -2655,23 +2655,24 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                 
                 with col_ub1:
                     current_link = task_data['LinkKetQua']
-                    if u_is_completed:
-                        st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC NHẬP BÁO CÁO HOẶC TẢI FILE DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
-                    else:
-                        st.markdown("**Cập nhật Kết quả / File đính kèm**")
-                        
-                    u_result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
-                    
                     u_link_text = ""
                     u_file = None
-                    if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+                    if not u_has_issue:
                         if u_is_completed:
-                            st.warning("⚠️ **VUI LÒNG NHẬP NỘI DUNG KẾT QUẢ / BÁO CÁO VÀO Ô BÊN DƯỚI:**")
+                            st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC NHẬP BÁO CÁO HOẶC TẢI FILE DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
                         else:
-                            st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
-                        u_link_text = st.text_area("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", height=100, label_visibility="collapsed", placeholder="Ví dụ: Đã hoàn thành 50%, trình ký sếp...", key=f"u_result_text_{task_data['ID']}")
-                    elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)":
-                        u_file = st.file_uploader("Tải file đính kèm mới", key=f"u_result_file_{task_data['ID']}")
+                            st.markdown("**Cập nhật Kết quả / File đính kèm**")
+                            
+                        u_result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
+                        
+                        if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+                            if u_is_completed:
+                                st.warning("⚠️ **VUI LÒNG NHẬP NỘI DUNG KẾT QUẢ / BÁO CÁO VÀO Ô BÊN DƯỚI:**")
+                            else:
+                                st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
+                            u_link_text = st.text_area("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", height=100, label_visibility="collapsed", placeholder="Ví dụ: Đã hoàn thành 50%, trình ký sếp...", key=f"u_result_text_{task_data['ID']}")
+                        elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)":
+                            u_file = st.file_uploader("Tải file đính kèm mới", key=f"u_result_file_{task_data['ID']}")
                         
                 with col_ub2:
                     u_is_late = (u_deadline is not None and u_deadline < today) and not u_is_completed
@@ -2706,7 +2707,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         u_chamchuoc = '0% (Không ghi nhận)'
 
                         if u_has_issue:
-                            u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+                            u_explain = st.text_area("📝 Chi tiết vướng mắc & Đề xuất hỗ trợ (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Mô tả chi tiết vướng mắc...", height=120, key=f"u_explain_txt_{task_data['ID']}")
                         else:
                             u_explain = ""
                     
@@ -2754,7 +2755,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 has_error = True
                     elif u_status == "Có vướng mắc":
                         if not u_explain.strip() or len(u_explain.strip()) < 5:
-                            st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
+                            st.error("⚠️ Bắt buộc nhập 'Chi tiết vướng mắc & Đề xuất hỗ trợ'!")
                             has_error = True
                             
                     if not has_error:
