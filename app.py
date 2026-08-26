@@ -2380,7 +2380,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
             # 3. Task details
             task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
-            task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'Công việc trong "Giao ban"'])
+            task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'CV giao ban / VB đến'])
             st.caption("💡 **Định kỳ:** Đăng ký đầu tháng / quản lý giao. **Giao ban:** Phát sinh sau khi họp giao ban.")
             
         with col2:
@@ -2616,7 +2616,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     
                     u_proj = st.text_input("Dự án / Hạng mục", value=task_data['TenDuAn'], key=f"u_proj_{task_data['ID']}")
                     u_name = st.text_input("Tên công việc", value=task_data['TenCongViec'], key=f"u_name_{task_data['ID']}")
-                    u_nguon_opts = ["Công việc được giao / định kì", 'Công việc trong "Giao ban"']
+                    u_nguon_opts = ["Công việc được giao / định kì", 'CV giao ban / VB đến']
                     current_nguon = task_data.get('NguonGiaoViec', 'Công việc được giao / định kì')
                     u_nguon_idx = u_nguon_opts.index(current_nguon) if current_nguon in u_nguon_opts else 0
                     u_nguon = st.selectbox("Nguồn giao việc", u_nguon_opts, index=u_nguon_idx, key=f"u_nguon_{task_data['ID']}")
@@ -2999,8 +2999,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
                 if 'NguonGiaoViec' not in group_copy.columns:
                     group_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
-                ke_hoach_tasks = group_copy[group_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
-                giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+                ke_hoach_tasks = group_copy[~group_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
+                giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
                 
                 def calc_score_for_group(grp):
                     if grp.empty: return 0
@@ -3148,7 +3148,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                     w_round = round(w, 2)
                                     w_thuctes.append(w_round)
                                     
-                                    if row.get('NguonGiaoViec', '') == 'Công việc trong "Giao ban"':
+                                    if row.get('NguonGiaoViec', '') in ['Công việc trong "Giao ban"', 'CV giao ban / VB đến']:
                                         if w_round > 0:
                                             gb_parts.append(f"({p} × {w_round}%)")
                                             gb_tw += w_round
@@ -3266,8 +3266,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         
                         if 'NguonGiaoViec' not in m_df_copy.columns:
                             m_df_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
-                        ke_hoach_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
-                        giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+                        ke_hoach_tasks_y = m_df_copy[~m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
+                        giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
                         
                         def calc_score_for_group_y(grp, auto_w):
                             if grp.empty: return 0
