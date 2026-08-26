@@ -2389,9 +2389,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today, format="DD/MM/YYYY")
             
             st.markdown("<br>", unsafe_allow_html=True)
-            quick_complete = st.checkbox("🚀 Tiến hành cập nhật trạng thái / nộp kết quả ngay (Quick Complete)", value=False, key="quick_complete")
-            
-            if quick_complete:
+            with st.expander("🔽 Tùy chọn nâng cao: Ghi nhận trạng thái / Nộp kết quả ngay", expanded=False):
                 with st.container():
                     st.markdown("<div style='padding: 15px; border-radius: 8px; border: 1px dashed #ccc; background-color: #f9f9f9; margin-bottom: 20px;'>", unsafe_allow_html=True)
                     # 7 & 8. Status radio
@@ -2456,14 +2454,6 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                         task_file = None
                         
                     st.markdown("</div>", unsafe_allow_html=True)
-            else:
-                task_is_completed = False
-                task_has_issue = False
-                task_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
-                task_explain = ""
-                result_mode = "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)"
-                task_link_text = ""
-                task_file = None
                 
 
             # 11. Chu kỳ theo dõi
