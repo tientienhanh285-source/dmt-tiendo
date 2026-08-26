@@ -1,4 +1,18 @@
 import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
+
+# Force calendar header visible to fix caching issues
+st.markdown('''
+    <style>
+        div[data-baseweb="calendar"] header {
+            visibility: visible !important;
+            display: flex !important;
+        }
+    </style>
+''', unsafe_allow_html=True)
+
+from datetime import date
 import kpi_reports
 import pandas as pd
 import os
@@ -111,7 +125,7 @@ components.html(
     """
     <script>
         // Set ngôn ngữ trang thành tiếng Việt và gắn thẻ meta chống dịch
-        window.parent.document.documentElement.lang = 'vi';
+        
         const meta = window.parent.document.createElement('meta');
         meta.name = 'google';
         meta.content = 'notranslate';
@@ -165,6 +179,8 @@ def get_gsheets_conn():
         return create_client(SUPABASE_URL, SUPABASE_KEY)
     except Exception as e:
         import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
         st.warning(f"Chưa cấu hình Supabase Connection: {e}")
         return None
 
@@ -188,6 +204,8 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
         fallback_df = pd.DataFrame()
     
     import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
     import time
     
     cache_key = f"cached_df_{worksheet}"
@@ -234,11 +252,15 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
         return df
     except Exception as e:
         import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
         st.warning(f"Lỗi đọc Supabase ({worksheet}): {e}")
         return fallback_df
 
 def safe_gsheets_update(conn, worksheet, data):
     import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
     import time
     import pandas as pd
     import numpy as np
@@ -340,6 +362,8 @@ def safe_gsheets_update(conn, worksheet, data):
     except Exception as e:
         err_msg = str(e)
         import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
         st.error(f"Lỗi khi lưu vào Supabase ({worksheet}): {err_msg}")
         return False
 
@@ -629,6 +653,8 @@ def read_gantt_db():
 
     except Exception as e:
         import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
         st.error(f"Lỗi khi đọc dữ liệu GANTT_KHDT: {e}")
         raise e
         
@@ -685,6 +711,8 @@ def read_kpi_adjustments():
         return df
     except Exception as e:
         import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
         st.error(f"Lỗi khi đọc trang tính KPI_ADJUSTMENTS: {e}")
         raise e
 
@@ -717,6 +745,8 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
                 if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
             else:
@@ -744,6 +774,8 @@ def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
                 if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
         except Exception as e:
@@ -762,6 +794,8 @@ def delete_kpi_adjustment(adj_id):
             success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
             if success:
                 import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
                 if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
                 return True, ""
         except Exception as e:
@@ -1173,6 +1207,8 @@ def read_db():
 
     except Exception as e:
         import streamlit as st
+
+st.warning("BẢN CẬP NHẬT MỚI NHẤT ĐÃ ĐƯỢC ÁP DỤNG. NẾU BẠN THẤY DÒNG NÀY, APP ĐÃ REFRESH.")
         st.error(f"Lỗi khi đọc dữ liệu Sheet1: {e}")
         raise e
 
@@ -1282,7 +1318,7 @@ st.markdown("""
     .stDeployButton {display:none !important;}
     .viewerBadge_container__1QSob {display: none !important;}
     .viewerBadge_link__1S137 {display: none !important;}
-    header {visibility: hidden !important;}
+    
     .block-container {
         padding-top: 4rem !important;
         padding-bottom: 3rem !important;
@@ -2122,9 +2158,9 @@ elif menu == "👀 BẢNG TỔNG QUAN (View)":
     # 1. Hide Streamlit UI elements for a clean dashboard view
     st.markdown("""
         <style>
-            header {visibility: hidden;}
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
+            
+            
+            
             .block-container {padding-top: 1rem; padding-bottom: 0rem;}
         </style>
     """, unsafe_allow_html=True)
@@ -2351,8 +2387,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
         with col2:
             # 6. Dates
-            task_start = st.date_input("Ngày bắt đầu thực hiện", today, format="DD/MM/YYYY")
-            task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today + timedelta(days=7), format="DD/MM/YYYY")
+            task_start = st.date_input("Ngày bắt đầu thực hiện", today)
+            task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today)
             
             # 7. Completed flag instead of manual progress slider
             task_is_completed = st.checkbox("Đã hoàn thành công việc", value=False)
@@ -2401,7 +2437,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             task_cycle = "Theo dự án / Tự do"
             
             # 12. Tỷ trọng KPI
-            task_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=0)
+            task_weight = 0
             st.caption("💡 **Lưu ý:** Bạn có thể để trống (0) để hệ thống tự chia đều tỷ trọng cho các đầu việc. Nếu có việc quan trọng, bạn có thể tự điền % cao hơn. Trường hợp chỉ điền tỷ trọng cho 1 vài việc, hệ thống sẽ tự lấy phần % còn lại chia đều cho các việc chưa điền.")
             
         submit_new = st.button("💾 Lưu", type="primary", key="btn_save_new_task")
@@ -2600,8 +2636,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
-                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=task_data['NgayBatDau'] if pd.notna(task_data['NgayBatDau']) else None, format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
-                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=task_data['Deadline'] if pd.notna(task_data['Deadline']) else None, format="DD/MM/YYYY", key=f"u_deadline_{task_data['ID']}")
+                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=pd.to_datetime(task_data['NgayBatDau']).date() if pd.notna(task_data['NgayBatDau']) and str(task_data['NgayBatDau']).strip() else today, key=f"u_start_{task_data['ID']}")
+                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=pd.to_datetime(task_data['Deadline']).date() if pd.notna(task_data['Deadline']) and str(task_data['Deadline']).strip() else today, key=f"u_deadline_{task_data['ID']}")
                     
                     default_is_completed = task_data['TrangThai'] == 'Hoàn thành'
                     u_is_completed = st.checkbox("Đã hoàn thành công việc", value=default_is_completed, key=f"u_is_completed_{task_data['ID']}")
@@ -2613,52 +2649,25 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     current_cycle = task_data.get('ChuKyTheoDoi', 'Theo dự án / Tự do')
                     cycle_list = ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"]
                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
-                    u_cycle = st.selectbox("Chu kỳ theo dõi", cycle_list, index=default_cycle_idx, key=f"u_cycle_sel_{task_data['ID']}")
+                    u_cycle = current_cycle
                     
-                    try:
-                        current_weight = int(float(str(task_data.get('TyTrongKPI', 0)).strip() or 0))
-                    except:
-                        current_weight = 0
-                    u_weight = st.number_input("Tỷ trọng KPI (%) (0 = Tự chia đều)", min_value=0, max_value=100, value=current_weight, key=f"u_weight_{task_data['ID']}")
-                    st.caption("💡 **Lưu ý:** Bạn có thể để trống (0) để hệ thống tự chia đều tỷ trọng cho các đầu việc. Nếu có việc quan trọng, bạn có thể tự điền % cao hơn. Trường hợp chỉ điền tỷ trọng cho 1 vài việc, hệ thống sẽ tự lấy phần % còn lại chia đều cho các việc chưa điền.")
+                    u_weight = current_weight
                     
-                st.markdown("#### ⚓ THÔNG TIN RÀNG BUỘC KẾT QUẢ & GIẢI TRÌNH")
                 col_ub1, col_ub2 = st.columns(2)
                 
                 with col_ub1:
-                    st.markdown("**Kết quả / File đính kèm hiện tại**")
                     current_link = task_data['LinkKetQua']
-                    if current_link:
-                        if isinstance(current_link, str) and current_link.startswith("OUTPUT") and os.path.exists(current_link):
-                            display_name = os.path.basename(current_link)
-                            if "_" in display_name:
-                                display_name = display_name.split("_", 1)[1]
-                            st.write(f"📁 **File:** `{display_name}`")
-                            with open(current_link, "rb") as f:
-                                st.download_button(
-                                    label="📥 Tải file kết quả hiện tại",
-                                    data=f.read(),
-                                    file_name=display_name,
-                                    mime="application/octet-stream",
-                                    key=f"btn_download_file_{task_data['ID']}"
-                                )
-                        else:
-                            st.write(f"✍️ **Nội dung:** `{current_link}`")
-                    else:
-                        st.write("*(Chưa có kết quả/file đính kèm)*")
-                    
-                    st.markdown("---")
-                    if u_is_completed and not current_link:
-                        st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC CẬP NHẬT KẾT QUẢ DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
+                    if u_is_completed:
+                        st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC NHẬP BÁO CÁO HOẶC TẢI FILE DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
                     else:
                         st.markdown("**Cập nhật Kết quả / File đính kèm**")
                         
-                    u_result_mode = st.radio("Hình thức nộp", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
+                    u_result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
                     
                     u_link_text = ""
                     u_file = None
                     if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                        if u_is_completed and not current_link:
+                        if u_is_completed:
                             st.warning("⚠️ **VUI LÒNG NHẬP NỘI DUNG KẾT QUẢ / BÁO CÁO VÀO Ô BÊN DƯỚI:**")
                         else:
                             st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
