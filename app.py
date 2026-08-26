@@ -1558,7 +1558,6 @@ menu = st.sidebar.radio(
     menu_options,
     index=0
 )
-st.write("DEBUG MENU VALUE:", [menu])
 
 st.sidebar.markdown("---")
 
@@ -1809,7 +1808,7 @@ def clean_proj_name(name):
     return name.strip()
 
 # ----------------- 1. DASHBOARD TỔNG QUAN -----------------
-if menu == "🚀 Bảng theo dõi tiến độ công việc":
+if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo dõi tiến độ công việc"]:
     st.info("💡 **Gợi ý:** Để xem chi tiết hướng dẫn sử dụng phần mềm, bạn hãy nhấp vào mục **📖 Sổ tay Hướng dẫn** ở thanh Menu bên trái nhé!")
     
     st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_company}")
@@ -2187,7 +2186,7 @@ if menu == "🚀 Bảng theo dõi tiến độ công việc":
                 hide_index=True
             )
 
-elif menu == "👀 BẢNG TỔNG QUAN (View)":
+elif menu in ["👀 BẢNG TỔNG QUAN (View)", "📊 BẢNG TỔNG QUAN (View)"]:
     # 1. Hide Streamlit UI elements for a clean dashboard view
     st.markdown("""
         <style>
