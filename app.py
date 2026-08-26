@@ -1507,6 +1507,15 @@ menu_options = [
     "📖 Sổ tay Hướng dẫn"
 ]
 
+if st.session_state.get('is_manager_authenticated', False):
+    menu_options = [
+        "📊 BẢNG TỔNG QUAN (View)",
+        "📋 Bảng theo dõi tiến độ công việc",
+        "➕ Thêm / Cập Nhật Công Việc",
+        "⚖️ Duyệt việc Khách quan",
+        "📖 Sổ tay Hướng dẫn"
+    ]
+
 if st.session_state.is_admin_authenticated:
     menu_options = [
         "👀 BẢNG TỔNG QUAN (View)",
@@ -3624,7 +3633,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
 elif menu == "✅ Duyệt việc Khách quan":
     st.header("✅ Duyệt lý do trễ hạn khách quan")
     
-    if not st.session_state.is_admin_authenticated:
+    if not (st.session_state.is_admin_authenticated or st.session_state.get("is_manager_authenticated", False)):
         st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")
     else:
         df = read_db()
