@@ -4489,7 +4489,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         **1️⃣ Đăng ký công việc (Đầu tháng)**
         - 🕒 **Thời gian:** Từ ngày 30 tháng trước đến ngày 3 tháng này.
         - 🖱️ **Thao tác:** Vào mục **Thêm / Cập nhật công việc**.
-        - 📝 **Nội dung:** Tự khai báo các đầu việc chính trong tháng. Bạn có thể tự điền *Tỷ trọng KPI* (%). Nếu để trống hoặc bằng 0, hệ thống sẽ tự động tính toán và chia đều tỷ trọng còn lại cho các đầu việc đó.
+        - 📝 **Nội dung:** Tự khai báo các đầu việc chính trong tháng. Hệ thống sẽ tự động tính toán và chia đều tỷ trọng KPI cho tất cả các công việc của bạn.
         """)
         
         st.success("""
