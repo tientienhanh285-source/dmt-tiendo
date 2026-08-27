@@ -2519,6 +2519,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     calc_status = "Chưa bắt đầu"
                     
                 task_progress = calculate_time_progress(task_start, task_deadline, task_is_completed)
+                
+                is_late = (task_deadline < today and not task_is_completed)
                     
                 # Constraints validation
                 has_error = False
