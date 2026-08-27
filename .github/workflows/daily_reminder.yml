@@ -2,8 +2,8 @@ name: Daily Task Reminder
 
 on:
   schedule:
-    # 1:00 AM UTC is 8:00 AM ICT (Indochina Time)
-    - cron: '0 1 * * *'
+    # 2:00 AM UTC is 9:00 AM ICT (Indochina Time)
+    - cron: '0 2 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
