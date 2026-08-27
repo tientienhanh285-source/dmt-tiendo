@@ -3433,7 +3433,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 else:
                     st.info("Không có dữ liệu.")
 
-    if st.session_state.is_admin_authenticated:
+    if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
         with kpi_tab3:
             st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
             all_p_list = []
