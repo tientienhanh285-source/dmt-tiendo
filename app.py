@@ -4469,7 +4469,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
     st.markdown("## 📖 Sổ tay Hướng dẫn sử dụng phần mềm KPI")
     st.markdown("Chọn vai trò của bạn để xem hướng dẫn chi tiết:")
     
-    tab_nv, tab_ql, tab_tc = st.tabs(["👨‍💼 Hướng dẫn Nhân viên", "👔 Hướng dẫn Quản lý", "🌟 Tiêu chí Đánh giá & Xếp loại"])
+    tab_nv, tab_ql, tab_tc, tab_dl = st.tabs(["👨‍💼 Hướng dẫn Nhân viên", "👔 Hướng dẫn Quản lý", "🌟 Tiêu chí Đánh giá & Xếp loại", "💾 Về Lưu trữ Dữ liệu"])
     
     with tab_nv:
         st.info("""
@@ -4533,5 +4533,22 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - **Cộng điểm (+):** Áp dụng cho các công việc hoàn thành xuất sắc vượt tiến độ, hoặc có sáng kiến mang lại hiệu quả cao.
         - **Trừ điểm (-):** Áp dụng khi vi phạm nội quy, chậm trễ báo cáo, hoặc có sai sót nghiệp vụ gây ảnh hưởng.
         - *Quản lý trực tiếp hoặc HCNS sẽ rà soát và cập nhật quỹ điểm Thưởng/Phạt này trước thời điểm chốt sổ cuối tháng.*
+        """)
+
+    with tab_dl:
+        st.info("""
+        **VỀ LƯU TRỮ DỮ LIỆU CỦA HỆ THỐNG**
+        
+        **1. Dữ liệu công việc (Tên dự án, tiến độ,…)**
+        - Loại dữ liệu này được lưu trữ độc lập tại **Supabase**.
+        - Supabase là một cơ sở dữ liệu chuyên nghiệp, họ có cơ chế tự động sao lưu (backup) thường xuyên. Dữ liệu công việc của bạn chỉ mất khi ai đó cố tình vào trang quản trị Supabase và bấm nút "Xóa toàn bộ dự án". Nếu không, nó sẽ vĩnh viễn nằm ở đó.
+        
+        **2. Dữ liệu Mã nguồn phần mềm (Toàn bộ các dòng code)**
+        - **GitHub** là mạng lưới lưu trữ mã nguồn lớn nhất thế giới thuộc sở hữu của Tập đoàn Microsoft. Hàng triệu tập đoàn lớn trên thế giới đều đang lưu mã nguồn ở đây.
+        - Khả năng máy chủ GitHub bị sập làm mất mã nguồn là **0%**.
+        - Hơn nữa, toàn bộ mã nguồn này hiện tại cũng đang nằm một bản sao lưu (backup) ngay trên máy tính cá nhân của HCNS (trong thư mục `Theodoitiendo`).
+        - Mã nguồn chỉ mất khi... tự tay vào GitHub bấm xóa kho lưu trữ (Delete repository) VÀ đồng thời xóa luôn thư mục trên máy tính.
+        
+        **Tóm lại:** Hệ thống này được xây dựng theo chuẩn công nghệ hiện đại. Toàn bộ tài sản kỹ thuật số (từ dữ liệu chữ tới mã nguồn code) đều được phân tán và bảo vệ an toàn.
         """)
 
