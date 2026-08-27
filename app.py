@@ -1537,8 +1537,8 @@ if st.session_state.get('is_manager_authenticated', False):
         "📊 BẢNG TỔNG QUAN (View)",
         "📋 Bảng theo dõi tiến độ công việc",
         "➕ Thêm / Cập Nhật Công Việc",
-        "🏆 Đánh giá KPI & Xếp loại",
         "⚖️ Duyệt việc Khách quan",
+        "🏆 Đánh giá KPI & Xếp loại",
         "📖 Sổ tay Hướng dẫn"
     ]
 
@@ -1547,8 +1547,8 @@ if st.session_state.is_admin_authenticated:
         "👀 BẢNG TỔNG QUAN (View)",
         "🚀 Bảng theo dõi tiến độ công việc",
         "➕ Thêm / Cập Nhật Công Việc",
-        "🏆 Đánh giá KPI & Xếp loại",
         "✅ Duyệt việc Khách quan",
+        "🏆 Đánh giá KPI & Xếp loại",
         "🔍 Quản lý & Đối chiếu JD",
         "⚙️ Quản Lý Cấu Hình",
         "📖 Sổ tay Hướng dẫn"
