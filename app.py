@@ -1525,22 +1525,33 @@ else:
     st.session_state.personal_user = None
 st.sidebar.markdown("---")
 
+is_mobile = False
+try:
+    if hasattr(st, "context") and hasattr(st.context, "headers"):
+        ua = st.context.headers.get("User-Agent", "").lower()
+        if "mobi" in ua or "android" in ua or "iphone" in ua:
+            is_mobile = True
+except Exception:
+    pass
+
 menu_options = [
-    "👀 BẢNG TỔNG QUAN (View)",
     "🚀 Bảng theo dõi tiến độ công việc",
     "➕ Thêm / Cập Nhật Công Việc",
     "📖 Sổ tay Hướng dẫn"
 ]
+if is_mobile:
+    menu_options.insert(0, "👀 BẢNG TỔNG QUAN (View)")
 
 if st.session_state.get('is_manager_authenticated', False):
     menu_options = [
-        "📊 BẢNG TỔNG QUAN (View)",
         "📋 Bảng theo dõi tiến độ công việc",
         "➕ Thêm / Cập Nhật Công Việc",
         "⚖️ Duyệt việc Khách quan",
         "🏆 Đánh giá KPI & Xếp loại",
         "📖 Sổ tay Hướng dẫn"
     ]
+    if is_mobile:
+        menu_options.insert(0, "📊 BẢNG TỔNG QUAN (View)")
 
 if st.session_state.is_admin_authenticated:
     menu_options = [
