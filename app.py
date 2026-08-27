@@ -1537,6 +1537,7 @@ if st.session_state.get('is_manager_authenticated', False):
         "📊 BẢNG TỔNG QUAN (View)",
         "📋 Bảng theo dõi tiến độ công việc",
         "➕ Thêm / Cập Nhật Công Việc",
+        "🏆 Đánh giá KPI & Xếp loại",
         "⚖️ Duyệt việc Khách quan",
         "📖 Sổ tay Hướng dẫn"
     ]
@@ -2976,6 +2977,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
     
     if role_mode in ["Quản lý", "HR"] and st.session_state.is_admin_authenticated:
         kpi_tab1, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
+    elif role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False):
+        kpi_tab1, = st.tabs(["📅 Đánh giá theo Tháng"])
     else:
         kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
     
@@ -3249,189 +3252,190 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 st.dataframe(p_adjs, use_container_width=True, hide_index=True)
             else:
                 st.info("Không có dữ liệu cá nhân hợp lệ.")
-    with kpi_tab2:
-        st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
-        col_y1, col_y2 = st.columns(2)
-        with col_y1:
-            selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
-        with col_y2:
-            allowed_depts_y = get_departments_for_company(selected_company, config)
-            dept_options_y = ["Tất cả phòng ban"] + allowed_depts_y
-            selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
+    if 'kpi_tab2' in locals():
+        with kpi_tab2:
+            st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
+            col_y1, col_y2 = st.columns(2)
+            with col_y1:
+                selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
+            with col_y2:
+                allowed_depts_y = get_departments_for_company(selected_company, config)
+                dept_options_y = ["Tất cả phòng ban"] + allowed_depts_y
+                selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
         
-        if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
-            with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
-                import pandas as pd
-                from datetime import datetime, date
-                all_personnel = set(display_df['NguoiChuTri'].dropna().unique())
-                adj_year_df = read_kpi_adjustments()
-                adj_year_df = adj_year_df[adj_year_df['Nam'] == selected_year_full]
-                if 'TenNhanVien' in adj_year_df.columns:
-                    all_personnel.update(adj_year_df['TenNhanVien'].dropna().unique())
+            if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
+                with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
+                    import pandas as pd
+                    from datetime import datetime, date
+                    all_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+                    adj_year_df = read_kpi_adjustments()
+                    adj_year_df = adj_year_df[adj_year_df['Nam'] == selected_year_full]
+                    if 'TenNhanVien' in adj_year_df.columns:
+                        all_personnel.update(adj_year_df['TenNhanVien'].dropna().unique())
                 
-                # Filter to only keep those who belong to the selected company
-                company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
-                all_personnel = all_personnel.intersection(company_personnel)
+                    # Filter to only keep those who belong to the selected company
+                    company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+                    all_personnel = all_personnel.intersection(company_personnel)
                 
-                all_personnel = list(all_personnel)
-                all_personnel = [p for p in all_personnel if str(p).strip()]
-                yearly_data = []
-                for person in all_personnel:
-                    person_df = display_df[display_df['NguoiChuTri'] == person].copy()
+                    all_personnel = list(all_personnel)
+                    all_personnel = [p for p in all_personnel if str(p).strip()]
+                    yearly_data = []
+                    for person in all_personnel:
+                        person_df = display_df[display_df['NguoiChuTri'] == person].copy()
                     
-                    months_grades = {}
-                    count_a = 0
-                    count_b = 0
-                    count_c = 0
-                    count_d = 0
+                        months_grades = {}
+                        count_a = 0
+                        count_b = 0
+                        count_c = 0
+                        count_d = 0
                     
-                    for m in range(1, 13):
-                        if selected_year_full > today.year or (selected_year_full == today.year and m > today.month):
-                            months_grades[f"Tháng {m}"] = "-"
-                            continue
+                        for m in range(1, 13):
+                            if selected_year_full > today.year or (selected_year_full == today.year and m > today.month):
+                                months_grades[f"Tháng {m}"] = "-"
+                                continue
                         
-                        def is_in_m(d):
-                            if pd.isna(d): return False
-                            if isinstance(d, str):
-                                try: d = datetime.strptime(d, "%Y-%m-%d").date()
-                                except: return False
-                            if isinstance(d, datetime): d = d.date()
-                            if isinstance(d, date): return d.month == m and d.year == selected_year_full
-                            return False
+                            def is_in_m(d):
+                                if pd.isna(d): return False
+                                if isinstance(d, str):
+                                    try: d = datetime.strptime(d, "%Y-%m-%d").date()
+                                    except: return False
+                                if isinstance(d, datetime): d = d.date()
+                                if isinstance(d, date): return d.month == m and d.year == selected_year_full
+                                return False
                             
-                        m_df = person_df[person_df['Deadline'].apply(is_in_m)] if not person_df.empty else person_df
-                        m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)] if 'TenNhanVien' in adj_year_df.columns else pd.DataFrame()
+                            m_df = person_df[person_df['Deadline'].apply(is_in_m)] if not person_df.empty else person_df
+                            m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)] if 'TenNhanVien' in adj_year_df.columns else pd.DataFrame()
                         
-                        if m_df.empty and m_adj_df.empty:
-                            months_grades[f"Tháng {m}"] = "-"
-                            continue
+                            if m_df.empty and m_adj_df.empty:
+                                months_grades[f"Tháng {m}"] = "-"
+                                continue
                             
-                        m_df_copy = m_df.copy()
-                        m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', pd.Series(0, index=m_df_copy.index)), errors='coerce').fillna(0)
+                            m_df_copy = m_df.copy()
+                            m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', pd.Series(0, index=m_df_copy.index)), errors='coerce').fillna(0)
                         
-                        for idx, row in m_df_copy.iterrows():
-                            is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
-                            is_late = False
-                            dl = row['Deadline']
-                            if isinstance(dl, str):
-                                try: dl = datetime.strptime(dl, "%Y-%m-%d").date()
-                                except: pass
-                            if isinstance(dl, datetime): dl = dl.date()
-                            if isinstance(dl, date): is_late = (dl < today) and not is_comp
-                            if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
-                                m_df_copy.at[idx, 'PhanTramHoanThanh'] = 100
-                                
-                        explicit_weight = m_df_copy[m_df_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
-                        uw_count = len(m_df_copy[m_df_copy['TyTrongKPI'] <= 0])
-                        if (selected_year_full > 2026) or (selected_year_full == 2026 and m >= 8):
-                            auto_w = 0
-                        else:
-                            auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
-                        
-                        if 'NguonGiaoViec' not in m_df_copy.columns:
-                            m_df_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
-                        ke_hoach_tasks_y = m_df_copy[~m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
-                        giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
-                        
-                        def calc_score_for_group_y(grp, auto_w):
-                            if grp.empty: return 0
-                            score = 0
-                            total_w = 0
-                            for idx, row in grp.iterrows():
+                            for idx, row in m_df_copy.iterrows():
                                 is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
-                                w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+                                is_late = False
+                                dl = row['Deadline']
+                                if isinstance(dl, str):
+                                    try: dl = datetime.strptime(dl, "%Y-%m-%d").date()
+                                    except: pass
+                                if isinstance(dl, datetime): dl = dl.date()
+                                if isinstance(dl, date): is_late = (dl < today) and not is_comp
+                                if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
+                                    m_df_copy.at[idx, 'PhanTramHoanThanh'] = 100
                                 
-                                if is_comp:
-                                    p = 100
-                                else:
-                                    if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
-                                        cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
-                                        if cc == "Miễn trừ (Loại bỏ KPI)":
-                                            w = 0
-                                            p = 0
-                                        elif cc == "50%": p = 50
-                                        elif cc == "80%": p = 80
-                                        elif cc == "90%": p = 90
-                                        else: p = 0
-                                    else:
-                                        p = 0
-                                        
-                                if pd.isna(p): p = 0
-                                score += (p / 100.0) * w
-                                total_w += w
-                                
-                            if total_w > 0:
-                                return (score / total_w) * 100
-                            return 0
-                            
-                        if len(giao_ban_tasks_y) > 0:
-                            kh_score_y = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
-                            gb_score_y = calc_score_for_group_y(giao_ban_tasks_y, auto_w)
-                            t_score = kh_score_y * 0.7 + gb_score_y * 0.3
-                        else:
-                            t_score = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
-                        
-                        f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
-                        
-                        if f_score > 91: 
-                            grade = "A"
-                            count_a += 1
-                        elif f_score > 81: 
-                            grade = "B"
-                            count_b += 1
-                        elif f_score > 71:
-                            grade = "C"
-                            count_c += 1
-                        else:
-                            if selected_year_full == today.year and m == today.month:
-                                grade = "-"
+                            explicit_weight = m_df_copy[m_df_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+                            uw_count = len(m_df_copy[m_df_copy['TyTrongKPI'] <= 0])
+                            if (selected_year_full > 2026) or (selected_year_full == 2026 and m >= 8):
+                                auto_w = 0
                             else:
-                                grade = "D"
-                                count_d += 1
-                            
-                        months_grades[f"Tháng {m}"] = grade
+                                auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
                         
-                    # Logic xếp loại năm mới
-                    evaluated = count_a + count_b + count_c + count_d
-                    if evaluated == 0:
-                        final_grade = "-"
-                        bonus = "-"
-                    elif evaluated < 12 and selected_year_full >= today.year:
-                        final_grade = "Đang tích lũy"
-                        bonus = "-"
-                    else:
-                        if count_c > 0 or count_d > 0:
-                            final_grade = "C"
-                            bonus = "60%"
-                        elif count_b >= 2:
-                            final_grade = "B"
-                            bonus = "80%"
-                        elif count_a >= 11:
-                            final_grade = "A"
-                            bonus = "100%"
-                        else:
-                            final_grade = "B"
-                            bonus = "80%"
+                            if 'NguonGiaoViec' not in m_df_copy.columns:
+                                m_df_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
+                            ke_hoach_tasks_y = m_df_copy[~m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
+                            giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
+                        
+                            def calc_score_for_group_y(grp, auto_w):
+                                if grp.empty: return 0
+                                score = 0
+                                total_w = 0
+                                for idx, row in grp.iterrows():
+                                    is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                                    w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+                                
+                                    if is_comp:
+                                        p = 100
+                                    else:
+                                        if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+                                            cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                                            if cc == "Miễn trừ (Loại bỏ KPI)":
+                                                w = 0
+                                                p = 0
+                                            elif cc == "50%": p = 50
+                                            elif cc == "80%": p = 80
+                                            elif cc == "90%": p = 90
+                                            else: p = 0
+                                        else:
+                                            p = 0
+                                        
+                                    if pd.isna(p): p = 0
+                                    score += (p / 100.0) * w
+                                    total_w += w
+                                
+                                if total_w > 0:
+                                    return (score / total_w) * 100
+                                return 0
                             
-                    row_data = {
-                        "Người thực hiện": person,
-                        "Phòng ban": DEPT_ABBR.get(person_df['PhongBan'].mode()[0], person_df['PhongBan'].mode()[0]) if not person_df.empty else ""
-                    }
-                    row_data.update(months_grades)
-                    row_data["Xếp loại Năm"] = final_grade
-                    row_data["Mức hưởng T13"] = bonus
-                    yearly_data.append(row_data)
+                            if len(giao_ban_tasks_y) > 0:
+                                kh_score_y = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
+                                gb_score_y = calc_score_for_group_y(giao_ban_tasks_y, auto_w)
+                                t_score = kh_score_y * 0.7 + gb_score_y * 0.3
+                            else:
+                                t_score = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
+                        
+                            f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
+                        
+                            if f_score > 91: 
+                                grade = "A"
+                                count_a += 1
+                            elif f_score > 81: 
+                                grade = "B"
+                                count_b += 1
+                            elif f_score > 71:
+                                grade = "C"
+                                count_c += 1
+                            else:
+                                if selected_year_full == today.year and m == today.month:
+                                    grade = "-"
+                                else:
+                                    grade = "D"
+                                    count_d += 1
+                            
+                            months_grades[f"Tháng {m}"] = grade
+                        
+                        # Logic xếp loại năm mới
+                        evaluated = count_a + count_b + count_c + count_d
+                        if evaluated == 0:
+                            final_grade = "-"
+                            bonus = "-"
+                        elif evaluated < 12 and selected_year_full >= today.year:
+                            final_grade = "Đang tích lũy"
+                            bonus = "-"
+                        else:
+                            if count_c > 0 or count_d > 0:
+                                final_grade = "C"
+                                bonus = "60%"
+                            elif count_b >= 2:
+                                final_grade = "B"
+                                bonus = "80%"
+                            elif count_a >= 11:
+                                final_grade = "A"
+                                bonus = "100%"
+                            else:
+                                final_grade = "B"
+                                bonus = "80%"
+                            
+                        row_data = {
+                            "Người thực hiện": person,
+                            "Phòng ban": DEPT_ABBR.get(person_df['PhongBan'].mode()[0], person_df['PhongBan'].mode()[0]) if not person_df.empty else ""
+                        }
+                        row_data.update(months_grades)
+                        row_data["Xếp loại Năm"] = final_grade
+                        row_data["Mức hưởng T13"] = bonus
+                        yearly_data.append(row_data)
                     
-                if yearly_data:
-                    yearly_df = pd.DataFrame(yearly_data)
-                    if selected_dept_y != "Tất cả phòng ban":
-                        yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
-                    st.dataframe(yearly_df, use_container_width=True, hide_index=True)
+                    if yearly_data:
+                        yearly_df = pd.DataFrame(yearly_data)
+                        if selected_dept_y != "Tất cả phòng ban":
+                            yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
+                        st.dataframe(yearly_df, use_container_width=True, hide_index=True)
                     
-                    excel_data = kpi_reports.generate_yearly_excel(yearly_df, selected_year_full)
-                    st.download_button("📥 Xuất Báo cáo Excel", data=excel_data, file_name=f"TongKet_KPI_{selected_year_full}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                else:
-                    st.info("Không có dữ liệu.")
+                        excel_data = kpi_reports.generate_yearly_excel(yearly_df, selected_year_full)
+                        st.download_button("📥 Xuất Báo cáo Excel", data=excel_data, file_name=f"TongKet_KPI_{selected_year_full}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    else:
+                        st.info("Không có dữ liệu.")
 
     if role_mode in ["Quản lý", "HR"] and st.session_state.is_admin_authenticated:
         with kpi_tab3:
@@ -4530,3 +4534,4 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         - **Trừ điểm (-):** Áp dụng khi vi phạm nội quy, chậm trễ báo cáo, hoặc có sai sót nghiệp vụ gây ảnh hưởng.
         - *Quản lý trực tiếp hoặc HCNS sẽ rà soát và cập nhật quỹ điểm Thưởng/Phạt này trước thời điểm chốt sổ cuối tháng.*
         """)
+
