@@ -1902,7 +1902,11 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
                 alert_list.append(row_copy)
 
         if alert_list:
-            alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+            alert_df_show = pd.DataFrame(alert_list)
+            if 'NgayCapNhat' in alert_df_show.columns:
+                alert_df_show = alert_df_show.sort_values(by=["Urgency", "NgayCapNhat", "ID"], ascending=[True, False, False])
+            else:
+                alert_df_show = alert_df_show.sort_values(by=["Urgency", "Deadline"])
             st.error(f"🚨 **CẢNH BÁO: DỰ ÁN CÓ {len(alert_df_show)} HẠNG MỤC CẦN LƯU Ý (TRỄ HẠN / SẮP ĐẾN HẠN)**")        
         st.markdown("---")
     
@@ -1910,7 +1914,11 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
         st.markdown("### ⚠️ Hạng mục cần lưu ý (Trễ hạn hoặc Sắp đến hạn)")
     
         if alert_list:
-            alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+            alert_df_show = pd.DataFrame(alert_list)
+            if 'NgayCapNhat' in alert_df_show.columns:
+                alert_df_show = alert_df_show.sort_values(by=["Urgency", "NgayCapNhat", "ID"], ascending=[True, False, False])
+            else:
+                alert_df_show = alert_df_show.sort_values(by=["Urgency", "Deadline"])
             crit_display = pd.DataFrame()
             crit_display['Ngày bắt đầu'] = alert_df_show['NgayBatDau'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else (str(x) if pd.notna(x) else None))
             crit_display['Hạn chót'] = alert_df_show['Deadline'].apply(lambda x: x.strftime('%d/%m/%Y') if pd.notna(x) and isinstance(x, (date, datetime)) else (str(x) if pd.notna(x) else None))
@@ -1951,6 +1959,18 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
         
         # Lọc các công việc có nguồn giao việc là "Giao ban"
         gb_df = display_df[display_df['NguonGiaoViec'].astype(str).str.contains("Giao ban", na=False, case=False)].copy()
+        
+        if not gb_df.empty:
+            def _get_priority_gb(row):
+                st_val = str(row.get('TrangThai', ''))
+                if 'Trễ hạn' in st_val or 'Vướng mắc' in st_val or '🔴' in st_val or '⚠️' in st_val:
+                    return 0
+                return 1
+            gb_df['SortPriority'] = gb_df.apply(_get_priority_gb, axis=1)
+            if 'NgayCapNhat' in gb_df.columns:
+                gb_df = gb_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
+            else:
+                gb_df = gb_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
         if gb_df.empty:
             st.info('Chưa có công việc nào có "Nguồn giao việc" là "Giao ban".')
