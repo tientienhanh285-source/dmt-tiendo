@@ -2779,6 +2779,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     current_link = task_data['LinkKetQua']
                     u_link_text = ""
                     u_file = None
+                    u_result_mode = None
                     if not u_has_issue:
                         if u_is_completed:
                             st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC NHẬP BÁO CÁO HOẶC TẢI FILE DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
