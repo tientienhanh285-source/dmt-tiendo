@@ -3186,7 +3186,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 st.dataframe(
                     kpi_month_df[["Người thực hiện", "Phòng ban", "Số việc", "Điểm công việc", "Thưởng/Phạt", "TỔNG ĐIỂM", "Xếp loại"]],
                     column_config={
-                        "TỔNG ĐIỂM": st.column_config.ProgressColumn("TỔNG ĐIỂM", format="%f", min_value=0, max_value=115),
+                        "TỔNG ĐIỂM": st.column_config.ProgressColumn("TỔNG ĐIỂM", format="%f", min_value=0, max_value=100),
                     },
                     use_container_width=True, hide_index=True
                 )
