@@ -3092,10 +3092,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 unweighted_count = len(group_copy[group_copy['TyTrongKPI'] <= 0])
                 
                 remaining_weight = max(0, 100 - explicit_weight_sum)
-                if (selected_year > 2026) or (selected_year == 2026 and selected_month >= 8):
-                    auto_weight = 0
-                else:
-                    auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
+                auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
                 
                 # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
                 if 'NguonGiaoViec' not in group_copy.columns:
