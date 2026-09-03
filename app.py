@@ -2658,7 +2658,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         if 'NgayCapNhat' in avail_update_df.columns:
             avail_update_df = avail_update_df.sort_values(by=['NgayCapNhat', 'ID'], ascending=[False, False]).reset_index(drop=True)
         
-        col_f1, col_f2, col_f3 = st.columns(3)
+        col_f1, col_f2, col_f3, col_f4 = st.columns(4)
         with col_f1:
             departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().astype(str).unique()))
             filter_dept = st.selectbox("Lọc theo Phòng ban", departments, key="filter_dept_update")
@@ -2668,6 +2668,16 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         with col_f3:
             projects = ["Tất cả"] + sorted(list(avail_update_df['TenDuAn'].dropna().astype(str).unique()))
             filter_proj = st.selectbox("Lọc theo Dự án", projects, key="filter_proj_update")
+        with col_f4:
+            months = set()
+            if not avail_update_df.empty:
+                for _, row in avail_update_df.iterrows():
+                    if pd.notna(row.get('NgayBatDau')) and hasattr(row['NgayBatDau'], 'strftime'):
+                        months.add(row['NgayBatDau'].strftime('%m/%Y'))
+                    if pd.notna(row.get('Deadline')) and hasattr(row['Deadline'], 'strftime'):
+                        months.add(row['Deadline'].strftime('%m/%Y'))
+            month_options = ["Tất cả"] + sorted(list(months), key=lambda x: datetime.strptime(x, '%m/%Y'), reverse=True)
+            filter_month = st.selectbox("Lọc theo Tháng", month_options, key="filter_month_update")
             
         if filter_dept != "Tất cả":
             avail_update_df = avail_update_df[avail_update_df['PhongBan'] == filter_dept]
@@ -2675,6 +2685,13 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             avail_update_df = avail_update_df[avail_update_df['NguoiChuTri'] == filter_owner]
         if filter_proj != "Tất cả":
             avail_update_df = avail_update_df[avail_update_df['TenDuAn'] == filter_proj]
+        if filter_month != "Tất cả":
+            mask = (
+                avail_update_df['NgayBatDau'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == filter_month
+            ) | (
+                avail_update_df['Deadline'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == filter_month
+            )
+            avail_update_df = avail_update_df[mask]
 
         if avail_update_df.empty:
             st.info("Chưa có công việc nào khả dụng.")
