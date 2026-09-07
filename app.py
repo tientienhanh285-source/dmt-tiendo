@@ -3113,10 +3113,11 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         st.success(st.session_state["success_msg"])
         del st.session_state["success_msg"]
     
-    if role_mode in ["Quản lý", "HR"] and st.session_state.is_admin_authenticated:
+    is_hr_view = role_mode == "HR" and st.session_state.get("is_admin_authenticated", False)
+    is_manager_view = role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False)
+    
+    if is_hr_view or is_manager_view:
         kpi_tab1, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
-    elif role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False):
-        kpi_tab1, = st.tabs(["📅 Đánh giá theo Tháng"])
     else:
         kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
     
