@@ -3783,7 +3783,7 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
     if not (st.session_state.is_admin_authenticated or st.session_state.get("is_manager_authenticated", False)):
         st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")
     else:
-        df = read_db()
+        # df is already loaded and mapped with DEPT_ABBR globally
         if df.empty:
             st.info("Chưa có dữ liệu công việc.")
         else:
