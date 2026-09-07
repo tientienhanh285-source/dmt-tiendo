@@ -281,7 +281,7 @@ def safe_gsheets_update(conn, worksheet, data):
             df.rename(columns=rename_dict, inplace=True)
             
             
-            allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan']
+            allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan', 'TrangThaiDuyetKQ', 'ThoiGianDuyetKQ']
             df = df[[c for c in df.columns if c in allowed_cols]]
             
         elif worksheet == "KPI_ADJUSTMENTS":
@@ -1572,7 +1572,7 @@ if st.session_state.is_admin_authenticated:
         "👀 BẢNG TỔNG QUAN (View)",
         "🚀 Bảng theo dõi tiến độ công việc",
         "➕ Thêm / Cập Nhật Công Việc",
-        "✅ Duyệt việc Khách quan",
+        "✅ Duyệt & Nghiệm thu công việc",
         "🏆 Đánh giá KPI & Xếp loại",
         "🔍 Quản lý & Đối chiếu JD",
         "⚙️ Quản Lý Cấu Hình",
@@ -2831,8 +2831,9 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
-                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=pd.to_datetime(task_data['NgayBatDau']).date() if pd.notna(task_data['NgayBatDau']) and str(task_data['NgayBatDau']).strip() else today, format="DD/MM/YYYY", key=f"u_start_{task_data['ID']}")
-                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=pd.to_datetime(task_data['Deadline']).date() if pd.notna(task_data['Deadline']) and str(task_data['Deadline']).strip() else today, format="DD/MM/YYYY", key=f"u_deadline_{task_data['ID']}")
+                    is_emp_locked = (role_mode == "Cá nhân (Thử nghiệm)")
+                    u_start = st.date_input("Ngày bắt đầu thực hiện", value=pd.to_datetime(task_data['NgayBatDau']).date() if pd.notna(task_data['NgayBatDau']) and str(task_data['NgayBatDau']).strip() else today, format="DD/MM/YYYY", disabled=is_emp_locked, key=f"u_start_{task_data['ID']}")
+                    u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=pd.to_datetime(task_data['Deadline']).date() if pd.notna(task_data['Deadline']) and str(task_data['Deadline']).strip() else today, format="DD/MM/YYYY", disabled=is_emp_locked, key=f"u_deadline_{task_data['ID']}")
                     
                     st.markdown("<p style='font-size: 1.1rem; font-weight: 600; color: #1e3a8a;'>📌 Trạng thái công việc</p>", unsafe_allow_html=True)
                     u_current_status = task_data.get('TrangThai', 'Đang thực hiện')
@@ -2859,7 +2860,12 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
                     u_cycle = current_cycle
                     
-                    u_weight = task_data.get('TyTrongKPI', '')
+                    is_emp_locked = (role_mode == "Cá nhân (Thử nghiệm)")
+                    if is_emp_locked:
+                        st.text_input("Tỷ trọng KPI (%)", value=str(task_data.get('TyTrongKPI', '')), disabled=True, key=f"u_weight_disp_{task_data['ID']}")
+                        u_weight = task_data.get('TyTrongKPI', '')
+                    else:
+                        u_weight = task_data.get('TyTrongKPI', '')
                     
                 
                 u_is_late = (u_deadline is not None and u_deadline < today) and not u_is_completed
@@ -2944,48 +2950,54 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
 
 
                 if save_click:
-                    # Calculate status and progress automatically
-                    if u_is_completed:
-                        u_status = "Hoàn thành"
-                    elif u_has_issue:
-                        u_status = "Có vướng mắc"
-                    elif u_deadline < today:
-                        u_status = "Quá hạn"
-                    elif today >= u_start:
-                        u_status = "Đang thực hiện"
-                    else:
-                        u_status = "Chưa bắt đầu"
-                        
-                    u_progress = calculate_time_progress(u_start, u_deadline, u_is_completed)
-                        
-                    # Constraints validation
                     has_error = False
-                    if u_status == "Hoàn thành":
-                        if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not u_link_text.strip() and not current_link:
-                            st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
-                            has_error = True
-                        elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is None and not current_link:
-                            st.error("⚠️ Bắt buộc tải file đính kèm để hoàn thành công việc!")
-                            has_error = True
+                    
+                    # Validate evidence if completed
+                    if u_is_completed and not u_link_text.strip() and not u_file:
+                        st.error("❌ Lỗi: Bạn phải nhập Link kết quả hoặc Tải file đính kèm để báo cáo Hoàn thành!")
+                        has_error = True
+                    else:
+                        # Calculate status and progress automatically
+                        if u_is_completed:
+                            u_status = "Chờ nghiệm thu"
+                        elif u_has_issue:
+                            u_status = "Có vướng mắc"
+                        elif u_deadline < today:
+                            u_status = "Quá hạn"
+                        elif today >= u_start:
+                            u_status = "Đang thực hiện"
+                        else:
+                            u_status = "Chưa bắt đầu"
                             
-                    if u_is_late:
-                        if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                            if not u_explain.strip() or len(u_explain.strip()) < 5:
-                                st.error("⚠️ Bắt buộc nhập 'Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý' (tối thiểu 5 ký tự)!")
+                        u_progress = calculate_time_progress(u_start, u_deadline, u_is_completed)
+                            
+                        # Constraints validation
+                        if u_status == "Chờ nghiệm thu":
+                            if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not u_link_text.strip() and not current_link:
+                                st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
                                 has_error = True
-                    elif u_status == "Có vướng mắc":
-                        if not u_explain.strip() or len(u_explain.strip()) < 5:
-                            st.error("⚠️ Bắt buộc nhập 'Chi tiết vướng mắc & Đề xuất hỗ trợ'!")
-                            has_error = True
+                            elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is None and not current_link:
+                                st.error("⚠️ Bắt buộc tải file đính kèm để hoàn thành công việc!")
+                                has_error = True
                             
-                    if not has_error:
-                        # Determine final link value
-                        final_link = current_link
-                        
-                        if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
-                            if u_link_text.strip():
-                                final_link = u_link_text.strip()
-                        elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is not None:
+                        if u_is_late:
+                            if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+                                if not u_explain.strip() or len(u_explain.strip()) < 5:
+                                    st.error("⚠️ Bắt buộc nhập 'Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý' (tối thiểu 5 ký tự)!")
+                                    has_error = True
+                        elif u_status == "Có vướng mắc":
+                            if not u_explain.strip() or len(u_explain.strip()) < 5:
+                                st.error("⚠️ Bắt buộc nhập 'Chi tiết vướng mắc & Đề xuất hỗ trợ'!")
+                                has_error = True
+                                
+                        if not has_error:
+                            # Determine final link value
+                            final_link = current_link
+                            
+                            if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+                                if u_link_text.strip():
+                                    final_link = u_link_text.strip()
+                            elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is not None:
                                 upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
                                 if not os.path.exists(upload_dir):
                                     os.makedirs(upload_dir, exist_ok=True)
@@ -2996,32 +3008,32 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                     f.write(u_file.getbuffer())
                                 final_link = file_path
                                 
-                        with acquire_db_lock():
-                            
-                            fresh_df = read_db()
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayBatDau'] = u_start
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'Deadline'] = u_deadline
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = str(u_weight)
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
-                            if u_is_late:
-                                fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
-                            else:
-                                fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
+                            with acquire_db_lock():
+                                
+                                fresh_df = read_db()
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayBatDau'] = u_start
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'Deadline'] = u_deadline
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = str(u_weight)
+                                fresh_df.loc[fresh_df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
+                                if u_is_late:
+                                    fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
+                                else:
+                                    fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
 
-                            if save_db(fresh_df):
-                                st.session_state["success_msg"] = f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!"
-                                st.rerun()
-                            
+                                if save_db(fresh_df):
+                                    st.session_state["success_msg"] = f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!"
+                                    st.rerun()
+                                
                     if has_error:
                         st.session_state.is_updating_task = False
                             
@@ -3838,14 +3850,84 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 st.info("Chưa có lịch sử điều chỉnh.")
 
 # ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------
-elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách quan"]:
-    st.header("✅ Duyệt lý do trễ hạn khách quan")
+elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc Khách quan", "✅ Duyệt việc Khách quan"]:
+    st.header("✅ Duyệt & Nghiệm thu công việc")
     
     if not (st.session_state.is_admin_authenticated or st.session_state.get("is_manager_authenticated", False)):
         st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")
     else:
         # df is already loaded and mapped with DEPT_ABBR globally
-        if display_df.empty:
+        
+        tab_nghiemthu, tab_khachquan = st.tabs(["📑 1. Nghiệm thu công việc (Checker)", "⚖️ 2. Duyệt lý do Khách quan"])
+        
+        with tab_nghiemthu:
+            st.markdown("### Nghiệm thu công việc")
+            st.info("Danh sách các công việc nhân viên đã báo cáo hoàn thành. Vui lòng kiểm tra Minh chứng và chọn Trạng thái duyệt.")
+            if display_df.empty:
+                st.info("Chưa có dữ liệu công việc.")
+            else:
+                nghiemthu_df = display_df[display_df['TrangThai'] == 'Chờ nghiệm thu'].copy()
+                if role_mode == "Quản lý":
+                    manager_dept = st.session_state.get("manager_dept", "Tất cả")
+                    if manager_dept != "Tất cả":
+                        nghiemthu_df = nghiemthu_df[nghiemthu_df['PhongBan'] == manager_dept]
+                        
+                if nghiemthu_df.empty:
+                    st.success("🎉 Hiện tại không có công việc nào chờ nghiệm thu!")
+                else:
+                    st.warning(f"Có **{len(nghiemthu_df)}** công việc đang chờ nghiệm thu.")
+                    nt_cols = ["ID", "NguoiChuTri", "TenCongViec", "Deadline", "LinkKetQua", "TrangThaiNghiemThu"]
+                    if "TrangThaiNghiemThu" not in nghiemthu_df.columns:
+                        nghiemthu_df["TrangThaiNghiemThu"] = "Chờ duyệt"
+                    disp_nt = nghiemthu_df[nt_cols].copy()
+                    
+                    nt_col_config = {
+                        "ID": st.column_config.TextColumn("Mã CV", disabled=True),
+                        "NguoiChuTri": st.column_config.TextColumn("Người Phụ Trách", disabled=True),
+                        "TenCongViec": st.column_config.TextColumn("Tên Công Việc", disabled=True),
+                        "Deadline": st.column_config.DateColumn("Hạn Chót", disabled=True, format="DD/MM/YYYY"),
+                        "LinkKetQua": st.column_config.LinkColumn("Minh Chứng", disabled=True),
+                        "TrangThaiNghiemThu": st.column_config.SelectboxColumn(
+                            "Trạng thái Duyệt",
+                            options=["Chờ duyệt", "✅ Duyệt (Hoàn thành)", "❌ Từ chối (Làm lại)"],
+                            required=True
+                        )
+                    }
+                    edited_nt = st.data_editor(
+                        disp_nt,
+                        column_config=nt_col_config,
+                        hide_index=True,
+                        use_container_width=True,
+                        num_rows="fixed",
+                        key="editor_nghiemthu"
+                    )
+                    
+                    if st.button("💾 Lưu kết quả Nghiệm thu", type="primary"):
+                        with acquire_db_lock():
+                            fresh_df = read_db()
+                            changed = False
+                            for idx, row in edited_nt.iterrows():
+                                task_id = row['ID']
+                                new_val = row['TrangThaiNghiemThu']
+                                if new_val == "✅ Duyệt (Hoàn thành)":
+                                    fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThai'] = 'Hoàn thành'
+                                    if 'TrangThaiNghiemThu' in fresh_df.columns:
+                                        fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThaiNghiemThu'] = 'Đã duyệt'
+                                    changed = True
+                                elif new_val == "❌ Từ chối (Làm lại)":
+                                    fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThai'] = 'Đang thực hiện'
+                                    fresh_df.loc[fresh_df['ID'] == task_id, 'PhanTramHoanThanh'] = 0
+                                    if 'TrangThaiNghiemThu' in fresh_df.columns:
+                                        fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThaiNghiemThu'] = 'Từ chối'
+                                    changed = True
+                            
+                            if changed:
+                                if save_db(fresh_df):
+                                    st.success("✅ Đã lưu kết quả nghiệm thu thành công!")
+                                    st.rerun()
+                                    
+        with tab_khachquan:
+            if display_df.empty:
             st.info("Chưa có dữ liệu công việc.")
         else:
             if role_mode == "Quản lý":
@@ -3897,7 +3979,12 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
                 st.info(f"Đang hiển thị **{len(filtered_df)}** công việc báo cáo lý do Khách quan.")
                 
                 # Setup Editor
-                edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "MucDoGhiNhan"]
+                if "TrangThaiDuyetKQ" not in filtered_df.columns:
+                    filtered_df["TrangThaiDuyetKQ"] = "🔴 Chưa duyệt"
+                # Evaluate existing
+                filtered_df["TrangThaiDuyetKQ"] = filtered_df["MucDoGhiNhan"].apply(lambda x: "🔴 Chưa duyệt" if str(x) == "nan" or str(x).strip() == "" else "🟢 Đã duyệt")
+
+                edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "TrangThaiDuyetKQ", "MucDoGhiNhan"]
                 disp_df = filtered_df[edit_cols].copy()
                 
                 # We need to make all columns disabled EXCEPT MucDoGhiNhan
@@ -3909,6 +3996,7 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
                     "Deadline": st.column_config.DateColumn("Hạn Chót", disabled=True, format="DD/MM/YYYY"),
                     "TrangThai": st.column_config.TextColumn("Trạng Thái", disabled=True),
                     "GiaiTrinhDeXuat": st.column_config.TextColumn("Giải Trình Khách Quan", disabled=True),
+                    "TrangThaiDuyetKQ": st.column_config.TextColumn("Trạng thái", disabled=True),
                     "MucDoGhiNhan": st.column_config.SelectboxColumn(
                         "Mức độ Ghi nhận KPI",
                         help="Chọn mức điểm đánh giá theo lý do khách quan (Chỉ dành cho Quản lý)",
@@ -3939,10 +4027,14 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
                                 old_val = fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'].values[0]
                                 if new_val != old_val:
                                     fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'] = new_val
+                                    if 'TrangThaiDuyetKQ' in fresh_df.columns:
+                                        fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThaiDuyetKQ'] = 'Đã duyệt'
+                                    if 'ThoiGianDuyetKQ' in fresh_df.columns:
+                                        fresh_df.loc[fresh_df['ID'] == task_id, 'ThoiGianDuyetKQ'] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
                                     changed = True
                                 
                         if changed:
-                            fresh_df = fresh_df.drop(columns=['is_in_month'], errors='ignore')
+                            fresh_df = fresh_df.drop(columns=['is_in_month', 'TrangThaiDuyetKQ_disp'], errors='ignore')
                             if save_db(fresh_df):
                                 st.success("✅ Đã lưu toàn bộ phê duyệt thành công!")
                                 st.rerun()
