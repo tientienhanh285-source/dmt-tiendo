@@ -3574,27 +3574,43 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     else:
                         st.info("Không có dữ liệu.")
 
-    if role_mode in ["Quản lý", "HR"] and st.session_state.is_admin_authenticated:
+    is_hr = role_mode == "HR" and st.session_state.get("is_admin_authenticated", False)
+    is_manager = role_mode == "Quản lý" and st.session_state.get("is_manager_authenticated", False)
+    
+    if is_hr or is_manager:
         with kpi_tab3:
             st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
             all_p_list = []
-            if selected_company == "Tất cả đơn vị":
-                for dept, persons in config.get("personnel_by_department", {}).items():
-                    all_p_list.extend(persons)
+            
+            if is_manager and st.session_state.get('manager_dept'):
+                dept = st.session_state.manager_dept
+                if selected_company == "Tất cả đơn vị":
+                    for comp, comp_data in config.get("companies", {}).items():
+                        all_p_list.extend(comp_data.get("personnel_by_department", {}).get(dept, []))
+                    all_p_list.extend(config.get("personnel_by_department", {}).get(dept, []))
+                else:
+                    all_p_list.extend(get_personnel_for_company_dept(selected_company, dept, config))
             else:
-                valid_depts = get_departments_for_company(selected_company, config)
-                for dept in valid_depts:
-                    persons = get_personnel_for_company_dept(selected_company, dept, config)
-                    all_p_list.extend(persons)
-                    
-                is_marina_co = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
-                is_traffic_co = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in selected_company
-                if not is_marina_co and not is_traffic_co:
-                    c_personnel = set(display_df['NguoiChuTri'].dropna().unique())
-                    leads = DEPT_LEADS.get(selected_company, {}).values()
-                    valid_people = c_personnel.union(set(leads))
-                    all_p_list = [p for p in all_p_list if p in valid_people]
-                    
+                if selected_company == "Tất cả đơn vị":
+                    for comp, comp_data in config.get("companies", {}).items():
+                        for dept, persons in comp_data.get("personnel_by_department", {}).items():
+                            all_p_list.extend(persons)
+                    for dept, persons in config.get("personnel_by_department", {}).items():
+                        all_p_list.extend(persons)
+                else:
+                    valid_depts = get_departments_for_company(selected_company, config)
+                    for dept in valid_depts:
+                        persons = get_personnel_for_company_dept(selected_company, dept, config)
+                        all_p_list.extend(persons)
+                        
+                    is_marina_co = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
+                    is_traffic_co = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in selected_company
+                    if not is_marina_co and not is_traffic_co:
+                        c_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+                        leads = DEPT_LEADS.get(selected_company, {}).values()
+                        valid_people = c_personnel.union(set(leads))
+                        all_p_list = [p for p in all_p_list if p in valid_people]
+                        
             all_p_list = sorted(list(set(all_p_list)))
             if not all_p_list:
                 all_p_list = ["(Chưa có nhân sự)"]
@@ -3606,7 +3622,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 adj_year = st.selectbox("Năm áp dụng", [today.year - 1, today.year, today.year + 1], index=1)
             
             with col_f2:
-                adj_template = st.selectbox("Lý do mẫu", ["Đi trễ, về sớm", "Quên chấm công", "Lý do khác"])
+                template_opts = ["Đi trễ, về sớm", "Quên chấm công", "Lý do khác"] if is_hr else ["Lý do khác"]
+                adj_template = st.selectbox("Lý do mẫu", template_opts)
                 
                 if adj_template == "Đi trễ, về sớm":
                     so_lan = st.number_input("Tổng số lần trong tháng", min_value=1, value=1)
@@ -3777,20 +3794,23 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     
                     st.markdown("---")
                     st.markdown("##### 🗑️ Xóa Điều Chỉnh KPI")
-                    st.info("Nhập số ID tương ứng trong bảng trên để xóa dữ liệu.")
-                    col_del1, col_del2 = st.columns([1, 3])
-                    with col_del1:
-                        del_id = st.number_input("Nhập ID cần xóa", min_value=1, value=1)
-                    with col_del2:
-                        st.write("") # Spacer
-                        st.write("")
-                        if st.button("❌ Xóa dòng này", type="primary"):
-                            success, msg = delete_kpi_adjustment(del_id)
-                            if success:
-                                st.success(f"Đã xóa thành công điều chỉnh có ID: {del_id}")
-                                st.rerun()
-                            else:
-                                st.error(msg)
+                    if is_hr:
+                        st.info("Nhập số ID tương ứng trong bảng trên để xóa dữ liệu.")
+                        col_del1, col_del2 = st.columns([1, 3])
+                        with col_del1:
+                            del_id = st.number_input("Nhập ID cần xóa", min_value=1, value=1)
+                        with col_del2:
+                            st.write("") # Spacer
+                            st.write("")
+                            if st.button("❌ Xóa dòng này", type="primary"):
+                                success, msg = delete_kpi_adjustment(del_id)
+                                if success:
+                                    st.success(f"Đã xóa thành công điều chỉnh có ID: {del_id}")
+                                    st.rerun()
+                                else:
+                                    st.error(msg)
+                    else:
+                        st.info("⚠️ Vui lòng liên hệ bộ phận HR nếu bạn nhập sai và cần xóa hoặc sửa điểm.")
 
             else:
                 st.info("Chưa có lịch sử điều chỉnh.")
