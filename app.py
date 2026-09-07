@@ -3172,7 +3172,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                 final_score = min(115, max(0, round(task_score + adj_score, 2)))
                 
                 # Xếp loại mới
-                if final_score > 91: grade = "A"
+                if final_score > 100: grade = "A*"
+                elif final_score > 91: grade = "A"
                 elif final_score > 81: grade = "B"
                 elif final_score > 71: grade = "C"
                 else:
@@ -3332,6 +3333,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         person_df = display_df[display_df['NguoiChuTri'] == person].copy()
                     
                         months_grades = {}
+                        count_a_star = 0
                         count_a = 0
                         count_b = 0
                         count_c = 0
@@ -3425,7 +3427,10 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         
                             f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
                         
-                            if f_score > 91: 
+                            if f_score > 100:
+                                grade = "A*"
+                                count_a_star += 1
+                            elif f_score > 91: 
                                 grade = "A"
                                 count_a += 1
                             elif f_score > 81: 
@@ -3444,7 +3449,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             months_grades[f"Tháng {m}"] = grade
                         
                         # Logic xếp loại năm mới
-                        evaluated = count_a + count_b + count_c + count_d
+                        evaluated = count_a_star + count_a + count_b + count_c + count_d
                         if evaluated == 0:
                             final_grade = "-"
                             bonus = "-"
@@ -3458,7 +3463,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             elif count_b >= 2:
                                 final_grade = "B"
                                 bonus = "80%"
-                            elif count_a >= 11:
+                            elif (count_a + count_a_star) >= 11:
                                 final_grade = "A"
                                 bonus = "100%"
                             else:
@@ -4572,6 +4577,7 @@ elif menu == "📖 Sổ tay Hướng dẫn":
         *(Lưu ý: Nếu không có công việc Giao ban, hệ thống sẽ tự động điều chỉnh 100% trọng số cho công việc Định kỳ).*
         
         📊 **2. Phân loại và Quy đổi Điểm Xếp loại:**
+        - Tổng điểm **> 100**: Xếp loại **A\*** (Xuất sắc - > 100 điểm): Đạt mức 110–120% lương, nhằm khích lệ tinh thần làm việc vượt trội.
         - Tổng điểm **> 91**: Xếp loại **A** (Xuất sắc)
         - Tổng điểm **> 81**: Xếp loại **B** (Tốt)
         - Tổng điểm **> 71**: Xếp loại **C** (Khá)

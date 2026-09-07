@@ -19,20 +19,20 @@ def render_analytics_dashboard(yearly_data_df):
     
     st.markdown("#### 1. Biểu đồ Tổng kết Phân bổ Xếp Loại (Toàn công ty)")
     # Group by grade
-    grade_cols = ['Loại A', 'Loại B', 'Loại C', 'Loại D']
+    grade_cols = ['Loại A*', 'Loại A', 'Loại B', 'Loại C', 'Loại D']
     grade_counts = yearly_data_df[grade_cols].sum().reset_index()
     grade_counts.columns = ['Xếp loại', 'Số lượng']
     
     fig1 = px.pie(grade_counts, names='Xếp loại', values='Số lượng', title="Tỷ lệ Xếp loại các tháng trong Năm", color='Xếp loại', 
-                 color_discrete_map={'Loại A':'#2ca02c', 'Loại B':'#1f77b4', 'Loại C':'#ff7f0e', 'Loại D':'#d62728'})
+                 color_discrete_map={'Loại A*':'#ffdf00', 'Loại A':'#2ca02c', 'Loại B':'#1f77b4', 'Loại C':'#ff7f0e', 'Loại D':'#d62728'})
     st.plotly_chart(fig1, use_container_width=True)
 
     st.markdown("#### 2. Biểu đồ So sánh Điểm Trung bình giữa các Nhân viên")
     # We don't have exact numerical scores in yearly_data_df (only grades). 
     # Let's approximate score: A=95, B=85, C=75, D=60
     def approx_score(row):
-        total = row['Loại A']*95 + row['Loại B']*85 + row['Loại C']*75 + row['Loại D']*60
-        count = row['Loại A'] + row['Loại B'] + row['Loại C'] + row['Loại D']
+        total = row.get('Loại A*', 0)*105 + row.get('Loại A', 0)*95 + row.get('Loại B', 0)*85 + row.get('Loại C', 0)*75 + row.get('Loại D', 0)*60
+        count = row.get('Loại A*', 0) + row.get('Loại A', 0) + row.get('Loại B', 0) + row.get('Loại C', 0) + row.get('Loại D', 0)
         return total / count if count > 0 else 0
     
     yearly_data_df['Điểm TB (Ước tính)'] = yearly_data_df.apply(approx_score, axis=1)
@@ -199,6 +199,7 @@ def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, 
     
     p_note = doc.add_paragraph()
     p_note.add_run("*Cơ sở đánh giá kết quả tính lương và xếp loại lao động hàng tháng:\n").bold = True
+    p_note.add_run("Mức Đặc biệt:Trên 100 điểm : 110–120% lương, xếp loại A* trong tháng.\n")
     p_note.add_run("Mức 1:Từ >91 – 100 điểm : 100% lương, xếp loại A trong tháng.\n")
     p_note.add_run("Mức 2:Từ >81 – 91 điểm : 90% lương, xếp loại B trong tháng.\n")
     p_note.add_run("Mức 3:Từ >71 – 81 điểm : 80% lương, xếp loại C trong tháng.\n")
