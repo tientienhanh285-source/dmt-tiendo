@@ -586,8 +586,14 @@ def get_departments_for_company(company, config):
     companies = config.get("companies", {})
     if company in companies:
         return companies[company].get("departments", [])
-    # Fallback to global departments
-    return config.get("departments", [])
+    
+    # Aggregate all departments from all companies
+    all_depts = set()
+    for comp_data in companies.values():
+        all_depts.update(comp_data.get("departments", []))
+    global_depts = config.get("departments", [])
+    all_depts.update(global_depts)
+    return sorted(list(all_depts))
 
 
 def get_filtered_projects(company_name, config, db_projs):
