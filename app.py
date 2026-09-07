@@ -1478,6 +1478,14 @@ if role_mode == "Quản lý":
         if st.sidebar.button("Đăng xuất"):
             st.session_state.is_manager_authenticated = False
             st.rerun()
+            
+        valid_depts = get_departments_for_company(selected_company, config)
+        st.sidebar.markdown("### 🏢 Phòng/Ban của bạn")
+        current_idx = 0
+        if st.session_state.get('manager_dept') in valid_depts:
+            current_idx = valid_depts.index(st.session_state.manager_dept)
+        if valid_depts:
+            st.session_state.manager_dept = st.sidebar.selectbox("Lọc dữ liệu theo Phòng/Ban:", valid_depts, index=current_idx, label_visibility="collapsed")
 
 elif role_mode == "HR":
     st.session_state.is_personal_authenticated = False
@@ -1613,23 +1621,8 @@ if role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_au
         
 # -------- LỌC QUẢN LÝ ---------
 if role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False):
-    valid_depts = get_departments_for_company(selected_company, config)
-    data_depts = [d for d in display_df['PhongBan'].dropna().unique() if str(d).strip() != "" and str(d).strip().lower() != "nan"]
-    all_depts = sorted(list(set(valid_depts + data_depts)))
-    
-    st.sidebar.markdown("### 🏢 Phòng/Ban của bạn")
-    
-    current_idx = 0
-    if st.session_state.get('manager_dept') in all_depts:
-        current_idx = all_depts.index(st.session_state.manager_dept)
-        
-    if all_depts:
-        selected_dept = st.sidebar.selectbox("Lọc dữ liệu theo Phòng/Ban:", all_depts, index=current_idx, label_visibility="collapsed")
-        st.session_state.manager_dept = selected_dept
-        
-        # Filter display_df
-        if st.session_state.manager_dept:
-            display_df = display_df[display_df['PhongBan'] == st.session_state.manager_dept].copy()
+    if st.session_state.get('manager_dept'):
+        display_df = display_df[display_df['PhongBan'] == st.session_state.manager_dept].copy()
 
 # ------------------------------
 
