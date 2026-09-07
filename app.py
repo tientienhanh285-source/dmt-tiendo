@@ -3796,11 +3796,15 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         hist_df = hist_df[cols]
                     
                     # Lọc (Filter)
-                    col_flt1, col_flt2 = st.columns(2)
-                    with col_flt1:
-                        f_pb = st.selectbox("Lọc Phòng Ban", ["Tất cả"] + sorted(list(set(hist_df["Phòng ban"]))), key="flt_adj_pb")
-                    with col_flt2:
+                    if is_manager:
+                        f_pb = "Tất cả"
                         f_thang = st.selectbox("Lọc Tháng", ["Tất cả"] + sorted(list(set(hist_df["Thang"])), reverse=True), key="flt_adj_thang")
+                    else:
+                        col_flt1, col_flt2 = st.columns(2)
+                        with col_flt1:
+                            f_pb = st.selectbox("Lọc Phòng Ban", ["Tất cả"] + sorted(list(set(hist_df["Phòng ban"]))), key="flt_adj_pb")
+                        with col_flt2:
+                            f_thang = st.selectbox("Lọc Tháng", ["Tất cả"] + sorted(list(set(hist_df["Thang"])), reverse=True), key="flt_adj_thang")
                     
                     hist_display_df = hist_df.copy()
                     if f_pb != "Tất cả":
