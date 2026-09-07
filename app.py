@@ -3116,23 +3116,33 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
     is_hr_view = role_mode == "HR" and st.session_state.get("is_admin_authenticated", False)
     is_manager_view = role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False)
     
-    if is_hr_view or is_manager_view:
+    if is_hr_view:
         kpi_tab1, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
+    elif is_manager_view:
+        kpi_tab1, kpi_tab2, kpi_tab3 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm"])
     else:
         kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
     
     with kpi_tab1:
         st.markdown("#### Đánh giá và Xếp loại KPI Tháng")
         
-        col_m1, col_m2, col_m3 = st.columns(3)
-        with col_m1:
-            selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
-        with col_m2:
-            selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
-        with col_m3:
-            allowed_depts_m = get_departments_for_company(selected_company, config)
-            dept_options_m = ["Tất cả phòng ban"] + allowed_depts_m
-            selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
+        if is_manager_view:
+            col_m1, col_m2 = st.columns(2)
+            with col_m1:
+                selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+            with col_m2:
+                selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
+            selected_dept_m = st.session_state.manager_dept if st.session_state.get('manager_dept') else "Tất cả phòng ban"
+        else:
+            col_m1, col_m2, col_m3 = st.columns(3)
+            with col_m1:
+                selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+            with col_m2:
+                selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
+            with col_m3:
+                allowed_depts_m = get_departments_for_company(selected_company, config)
+                dept_options_m = ["Tất cả phòng ban"] + allowed_depts_m
+                selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
             
         kpi_df = display_df.copy()
         if 'NguoiChuTri' not in kpi_df.columns:
@@ -3392,13 +3402,17 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
     if 'kpi_tab2' in locals():
         with kpi_tab2:
             st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
-            col_y1, col_y2 = st.columns(2)
-            with col_y1:
+            if is_manager_view:
                 selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
-            with col_y2:
-                allowed_depts_y = get_departments_for_company(selected_company, config)
-                dept_options_y = ["Tất cả phòng ban"] + allowed_depts_y
-                selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
+                selected_dept_y = st.session_state.manager_dept if st.session_state.get('manager_dept') else "Tất cả phòng ban"
+            else:
+                col_y1, col_y2 = st.columns(2)
+                with col_y1:
+                    selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
+                with col_y2:
+                    allowed_depts_y = get_departments_for_company(selected_company, config)
+                    dept_options_y = ["Tất cả phòng ban"] + allowed_depts_y
+                    selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
         
             if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
                 with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
@@ -3672,83 +3686,86 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     st.session_state["success_msg"] = "🎉 Đã lưu điều chỉnh điểm thành công!"
                     st.rerun()
 
-        with kpi_tab4:
-            st.markdown("### Tùy chọn Xuất Báo Cáo & Phân tích")
-            col_x1, col_x2 = st.columns(2)
+        if 'kpi_tab4' in locals():
+            with kpi_tab4:
+                st.markdown("### Tùy chọn Xuất Báo Cáo & Phân tích")
+                col_x1, col_x2 = st.columns(2)
             
-            with col_x1:
-                st.markdown("#### 1. Báo Cáo Phòng Ban (Excel)")
-                if st.button("Tải Báo cáo Phòng Ban"):
-                    data_rows = []
-                    for i, person in enumerate(all_p_list):
-                        data_rows.append({
-                            'HoTen': person, 'ChucVu': 'Nhân viên',
-                            'SoLanTre': 0, 'SoLanSom': 0, 'SoLanKhongCC': 0,
-                            'DiemTruTre': 0, 'DiemTruSom': 0, 'DiemTruKhongCC': 0,
-                            'TongTru': 0, 'DiemConLai': 100, 'XepLoai': 'A', 'GhiChu': ''
-                        })
-                    excel_data = kpi_reports.generate_department_excel(selected_company, selected_month, selected_year, data_rows)
-                    st.download_button("📥 Tải Báo Cáo Excel", data=excel_data, file_name=f"KPI_Thang_{selected_month}_{selected_year}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                with col_x1:
+                    st.markdown("#### 1. Báo Cáo Phòng Ban (Excel)")
+                    if st.button("Tải Báo cáo Phòng Ban"):
+                        data_rows = []
+                        for i, person in enumerate(all_p_list):
+                            data_rows.append({
+                                'HoTen': person, 'ChucVu': 'Nhân viên',
+                                'SoLanTre': 0, 'SoLanSom': 0, 'SoLanKhongCC': 0,
+                                'DiemTruTre': 0, 'DiemTruSom': 0, 'DiemTruKhongCC': 0,
+                                'TongTru': 0, 'DiemConLai': 100, 'XepLoai': 'A', 'GhiChu': ''
+                            })
+                        excel_data = kpi_reports.generate_department_excel(selected_company, selected_month, selected_year, data_rows)
+                        st.download_button("📥 Tải Báo Cáo Excel", data=excel_data, file_name=f"KPI_Thang_{selected_month}_{selected_year}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             
-            with col_x2:
-                st.markdown("#### 2. Phiếu KPI Cá Nhân (Word)")
-                st.info(f"Đang xuất dữ liệu của: **Tháng {selected_month}/{selected_year}** (Để xuất tháng khác, vui lòng quay lại tab 'Đánh giá theo Tháng' để chọn).")
-                emp_to_export = st.selectbox("Chọn nhân viên", all_p_list, key='emp_export')
-                if st.button("Tạo Phiếu Đánh Giá"):
-                    # Collect real tasks and penalties
-                    emp_tasks = []
-                    kpi_score = 100
-                    if personnel_kpi:
-                        for p in personnel_kpi:
-                            if p['Người thực hiện'] == emp_to_export:
-                                kpi_score = p['Điểm công việc']
-                                break
+                with col_x2:
+                    st.markdown("#### 2. Phiếu KPI Cá Nhân (Word)")
+                    st.info(f"Đang xuất dữ liệu của: **Tháng {selected_month}/{selected_year}** (Để xuất tháng khác, vui lòng quay lại tab 'Đánh giá theo Tháng' để chọn).")
+                    emp_to_export = st.selectbox("Chọn nhân viên", all_p_list, key='emp_export')
+                    if st.button("Tạo Phiếu Đánh Giá"):
+                        # Collect real tasks and penalties
+                        emp_tasks = []
+                        kpi_score = 100
+                        if personnel_kpi:
+                            for p in personnel_kpi:
+                                if p['Người thực hiện'] == emp_to_export:
+                                    kpi_score = p['Điểm công việc']
+                                    break
                     
-                    e_kpi_df = kpi_df[kpi_df['NguoiChuTri'] == emp_to_export].copy()
-                    e_kpi_df['TyTrongKPI'] = pd.to_numeric(e_kpi_df['TyTrongKPI'], errors='coerce').fillna(0)
-                    e_kpi_df['PhanTramHoanThanh'] = pd.to_numeric(e_kpi_df['PhanTramHoanThanh'], errors='coerce').fillna(0)
-                    # Calc weights again if needed, or just display raw tasks
-                    explicit_weight_sum = e_kpi_df[e_kpi_df['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
-                    unweighted_count = len(e_kpi_df[e_kpi_df['TyTrongKPI'] <= 0])
-                    remaining_weight = max(0, 100 - explicit_weight_sum)
-                    auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
+                        e_kpi_df = kpi_df[kpi_df['NguoiChuTri'] == emp_to_export].copy()
+                        e_kpi_df['TyTrongKPI'] = pd.to_numeric(e_kpi_df['TyTrongKPI'], errors='coerce').fillna(0)
+                        e_kpi_df['PhanTramHoanThanh'] = pd.to_numeric(e_kpi_df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+                        # Calc weights again if needed, or just display raw tasks
+                        explicit_weight_sum = e_kpi_df[e_kpi_df['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+                        unweighted_count = len(e_kpi_df[e_kpi_df['TyTrongKPI'] <= 0])
+                        remaining_weight = max(0, 100 - explicit_weight_sum)
+                        auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
                     
-                    for idx, row in e_kpi_df.iterrows():
-                        w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
-                        pt = row.get('PhanTramHoanThanh', 0)
-                        if pd.isna(pt): pt = 0
+                        for idx, row in e_kpi_df.iterrows():
+                            w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
+                            pt = row.get('PhanTramHoanThanh', 0)
+                            if pd.isna(pt): pt = 0
                         
-                        diem_tru = w - (pt / 100.0 * w)
-                        emp_tasks.append({
-                            'TenCV': row['TenCongViec'],
-                            'TgianYC': str(row['Deadline']),
-                            'KetQua': f"{pt}% (Tỷ trọng: {w:.1f}%)",
-                            'DiemTru': round(diem_tru, 1)
-                        })
+                            diem_tru = w - (pt / 100.0 * w)
+                            emp_tasks.append({
+                                'TenCV': row['TenCongViec'],
+                                'TgianYC': str(row['Deadline']),
+                                'KetQua': f"{pt}% (Tỷ trọng: {w:.1f}%)",
+                                'DiemTru': round(diem_tru, 1)
+                            })
                         
-                    e_adj_df = adj_df[adj_df['TenNhanVien'] == emp_to_export] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
-                    penalties = e_adj_df.to_dict('records')
+                        e_adj_df = adj_df[adj_df['TenNhanVien'] == emp_to_export] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
+                        penalties = e_adj_df.to_dict('records')
                     
-                    def _get_pb(name):
-                        # Try to find from current company's departments
-                        depts = get_departments_for_company(selected_company, config)
-                        if depts:
-                            for d in depts:
-                                p_list = get_personnel_for_company_dept(selected_company, d, config)
+                        def _get_pb(name):
+                            # Try to find from current company's departments
+                            depts = get_departments_for_company(selected_company, config)
+                            if depts:
+                                for d in depts:
+                                    p_list = get_personnel_for_company_dept(selected_company, d, config)
+                                    if name in p_list: return d
+                            # Fallback to global config
+                            for d, p_list in config.get("personnel_by_department", {}).items():
                                 if name in p_list: return d
-                        # Fallback to global config
-                        for d, p_list in config.get("personnel_by_department", {}).items():
-                            if name in p_list: return d
-                        return "Khác"
+                            return "Khác"
 
-                    emp_pb = _get_pb(emp_to_export)
-                    word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties, "Nhân viên", emp_pb)
-                    st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_Thang_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                        emp_pb = _get_pb(emp_to_export)
+                        word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties, "Nhân viên", emp_pb)
+                        st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_Thang_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                     
-            st.divider()
-            st.info("Để xem Biểu đồ Phân tích, vui lòng qua tab 'Tổng kết KPI Cả Năm' và bấm 'Chạy / Cập nhật' trước.")
+                st.divider()
+                st.info("Để xem Biểu đồ Phân tích, vui lòng qua tab 'Tổng kết KPI Cả Năm' và bấm 'Chạy / Cập nhật' trước.")
 
                         
+        with kpi_tab3:
+            st.divider()
             st.markdown("##### Lịch sử Thưởng / Phạt")
             hist_df = read_kpi_adjustments()
             if not hist_df.empty:
