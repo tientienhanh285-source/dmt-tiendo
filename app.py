@@ -3795,8 +3795,11 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
                 nam_opts = [today.year - 1, today.year, today.year + 1]
                 sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
             with col_phong:
-                config = load_settings()
-                valid_depts = get_departments_for_company(selected_company, config)
+                if selected_company != "Tất cả đơn vị":
+                    company_df = df[df['DonVi'] == selected_company]
+                else:
+                    company_df = df
+                valid_depts = sorted([d for d in company_df['PhongBan'].dropna().unique() if str(d).strip() != ""])
                 phong_opts = ["Tất cả"] + valid_depts
                 sel_phong = st.selectbox("Lọc theo Phòng/Ban", phong_opts)
                 
