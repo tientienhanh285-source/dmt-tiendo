@@ -1957,15 +1957,63 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
     with tab_giaoban:
         st.markdown(f"### 📢 Báo cáo Giao ban — {selected_company}")
         
+        # Thêm filters
+        col_f1, col_f2 = st.columns([1, 2.5])
+        with col_f1:
+            month_opts = ["Tất cả các tháng"] + [f"Tháng {i}" for i in range(1, 13)]
+            gb_month = st.selectbox("Lọc theo Tháng", month_opts, index=today.month)
+        with col_f2:
+            gb_status = st.radio("Lọc trạng thái", ["Tất cả", "🔴 Cần chú ý gấp", "🟡 Sắp tới hạn (≤3 ngày)", "🔵 Đang thực hiện", "✅ Hoàn thành"], horizontal=True)
+            
         # Lọc các công việc có nguồn giao việc là "Giao ban"
         gb_df = display_df[display_df['NguonGiaoViec'].astype(str).str.contains("Giao ban", na=False, case=False)].copy()
         
         if not gb_df.empty:
-            def _get_priority_gb(row):
+            def _get_deadline_status(row):
                 st_val = str(row.get('TrangThai', ''))
-                if 'Trễ hạn' in st_val or 'Vướng mắc' in st_val or '🔴' in st_val or '⚠️' in st_val:
-                    return 0
-                return 1
+                if st_val == 'Hoàn thành': return "✅ Hoàn thành"
+                if st_val == 'Có vướng mắc': return "🔥 Đang vướng mắc"
+                
+                dl = row.get('Deadline')
+                if pd.isna(dl) or dl == "": return "🔵 Đang thực hiện"
+                try:
+                    if isinstance(dl, str): dl_date = datetime.strptime(dl, "%Y-%m-%d").date()
+                    else: dl_date = dl.date() if isinstance(dl, datetime) else dl
+                    diff = (dl_date - today).days
+                    if diff < 0: return f"🔴 Quá hạn {-diff} ngày"
+                    if diff <= 3: return f"🟡 Sắp tới hạn ({diff} ngày)"
+                    return "🔵 Đang thực hiện"
+                except:
+                    return "🔵 Đang thực hiện"
+            
+            gb_df['Tình trạng'] = gb_df.apply(_get_deadline_status, axis=1)
+            
+            if gb_month != "Tất cả các tháng":
+                m_num = int(gb_month.replace("Tháng ", ""))
+                def _match_month(dl):
+                    if pd.isna(dl) or dl == "": return False
+                    try:
+                        if isinstance(dl, str): d = datetime.strptime(dl, "%Y-%m-%d").date()
+                        else: d = dl.date() if isinstance(dl, datetime) else dl
+                        return d.month == m_num
+                    except: return False
+                gb_df = gb_df[gb_df['Deadline'].apply(_match_month)]
+                
+            if gb_status == "🔴 Cần chú ý gấp":
+                gb_df = gb_df[gb_df['Tình trạng'].str.contains("🔴|🔥", na=False)]
+            elif gb_status == "🟡 Sắp tới hạn (≤3 ngày)":
+                gb_df = gb_df[gb_df['Tình trạng'].str.contains("🟡", na=False)]
+            elif gb_status == "🔵 Đang thực hiện":
+                gb_df = gb_df[gb_df['Tình trạng'].str.contains("🔵", na=False)]
+            elif gb_status == "✅ Hoàn thành":
+                gb_df = gb_df[gb_df['Tình trạng'].str.contains("✅", na=False)]
+
+            def _get_priority_gb(row):
+                st_val = str(row.get('Tình trạng', ''))
+                if '🔴' in st_val or '🔥' in st_val: return 0
+                if '🟡' in st_val: return 1
+                if '🔵' in st_val: return 2
+                return 3
             gb_df['SortPriority'] = gb_df.apply(_get_priority_gb, axis=1)
             if 'NgayCapNhat' in gb_df.columns:
                 gb_df = gb_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
@@ -1973,8 +2021,8 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
                 gb_df = gb_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
         if gb_df.empty:
-            st.info('Chưa có công việc nào có "Nguồn giao việc" là "Giao ban".')
-            st.write('💡 Để thêm công việc vào Giao ban, hãy chọn Nguồn giao việc là **Công việc trong "Giao ban"** khi tạo hoặc cập nhật công việc.')
+            st.info('Chưa có công việc nào có "Nguồn giao việc" là "Giao ban" phù hợp với bộ lọc.')
+            st.write('💡 Nếu chưa có công việc, hãy chọn Nguồn giao việc là **Công việc trong "Giao ban"** khi tạo hoặc cập nhật công việc.')
         else:
             total_gb = len(gb_df)
             done_gb = len(gb_df[gb_df['TrangThai'] == 'Hoàn thành'])
@@ -1989,7 +2037,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
             st.markdown("#### 📋 Danh sách chi tiết:")
             
             # Formatting the table for Giao ban
-            gb_display = gb_df[['Deadline', 'NguoiChuTri', 'TenCongViec', 'PhanTramHoanThanh', 'TrangThai', 'GiaiTrinhDeXuat']]
+            gb_display = gb_df[['Deadline', 'NguoiChuTri', 'TenCongViec', 'PhanTramHoanThanh', 'Tình trạng', 'GiaiTrinhDeXuat']]
             st.dataframe(
                 gb_display,
                 column_config={
@@ -1997,7 +2045,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
                     "NguoiChuTri": "Người phụ trách",
                     "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
                     "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100),
-                    "Trạng thái": "Trạng thái",
+                    "Tình trạng": st.column_config.TextColumn("Tình trạng"),
                     "GiaiTrinhDeXuat": st.column_config.TextColumn("Vướng mắc / Giải trình", width="medium")
                 },
                 use_container_width=True,
