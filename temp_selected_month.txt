@@ -1,0 +1,11 @@
+2777: selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+2800: kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))] if not kpi_df.empty else kpi_df
+2803: adj_df = adj_df[(adj_df['Thang'] == selected_month) & (adj_df['Nam'] == selected_year)]
+2806: st.info(f"Không có dữ liệu công việc hoặc điểm thưởng/phạt nào trong Tháng {selected_month}/{selected_year}.")
+2848: if (selected_year > 2026) or (selected_year == 2026 and selected_month >= 8):
+3314: excel_data = kpi_reports.generate_department_excel(selected_company, selected_month, selected_year, data_rows)
+3315: st.download_button("📥 Tải Báo Cáo Excel", data=excel_data, file_name=f"KPI_Thang_{selected_month}_{selected_year}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+3368: word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties, "Nhân viên", emp_pb)
+3369: st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_Thang_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+3466: def is_in_selected_month(d_str):
+3474: df['is_in_month'] = df['Deadline'].apply(is_in_selected_month)

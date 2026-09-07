@@ -1,0 +1,100 @@
+3051: from datetime import datetime, date
+3052: all_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+3053: adj_year_df = read_kpi_adjustments()
+3054: adj_year_df = adj_year_df[adj_year_df['Nam'] == selected_year_full]
+3055: if 'TenNhanVien' in adj_year_df.columns:
+3056: all_personnel.update(adj_year_df['TenNhanVien'].dropna().unique())
+3057: 
+3058: # Filter to only keep those who belong to the selected company
+3059: company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+3060: all_personnel = all_personnel.intersection(company_personnel)
+3061: 
+3062: all_personnel = list(all_personnel)
+3063: all_personnel = [p for p in all_personnel if str(p).strip()]
+3064: yearly_data = []
+3065: for person in all_personnel:
+3066: person_df = display_df[display_df['NguoiChuTri'] == person].copy()
+3067: 
+3068: months_grades = {}
+3069: count_a = 0
+3070: count_b = 0
+3071: count_c = 0
+3072: count_d = 0
+3073: 
+3074: for m in range(1, 13):
+3075: if selected_year_full > today.year or (selected_year_full == today.year and m > today.month):
+3076: months_grades[f"Tháng {m}"] = "-"
+3077: continue
+3078: 
+3079: def is_in_m(d):
+3080: if pd.isna(d): return False
+3081: if isinstance(d, str):
+3082: try: d = datetime.strptime(d, "%Y-%m-%d").date()
+3083: except: return False
+3084: if isinstance(d, datetime): d = d.date()
+3085: if isinstance(d, date): return d.month == m and d.year == selected_year_full
+3086: return False
+3087: 
+3088: m_df = person_df[person_df['Deadline'].apply(is_in_m)] if not person_df.empty else person_df
+3089: m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)] if 'TenNhanVien' in adj_year_df.columns else pd.DataFrame()
+3090: 
+3091: if m_df.empty and m_adj_df.empty:
+3092: months_grades[f"Tháng {m}"] = "-"
+3093: continue
+3094: 
+3095: m_df_copy = m_df.copy()
+3096: m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', pd.Series(0, index=m_df_copy.index)), errors='coerce').fillna(0)
+3097: 
+3098: for idx, row in m_df_copy.iterrows():
+3099: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+3100: is_late = False
+3101: dl = row['Deadline']
+3102: if isinstance(dl, str):
+3103: try: dl = datetime.strptime(dl, "%Y-%m-%d").date()
+3104: except: pass
+3105: if isinstance(dl, datetime): dl = dl.date()
+3106: if isinstance(dl, date): is_late = (dl < today) and not is_comp
+3107: if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
+3108: m_df_copy.at[idx, 'PhanTramHoanThanh'] = 100
+3109: 
+3110: explicit_weight = m_df_copy[m_df_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+3111: uw_count = len(m_df_copy[m_df_copy['TyTrongKPI'] <= 0])
+3112: if (selected_year_full > 2026) or (selected_year_full == 2026 and m >= 8):
+3113: auto_w = 0
+3114: else:
+3115: auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
+3116: 
+3117: if 'NguonGiaoViec' not in m_df_copy.columns:
+3118: m_df_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
+3119: ke_hoach_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+3120: giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+3121: 
+3122: def calc_score_for_group_y(grp, auto_w):
+3123: if grp.empty: return 0
+3124: score = 0
+3125: total_w = 0
+3126: for idx, row in grp.iterrows():
+3127: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+3128: w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+3129: 
+3130: if is_comp:
+3131: p = 100
+3132: else:
+3133: if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+3134: cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+3135: if cc == "Miễn trừ (Loại bỏ KPI)":
+3136: w = 0
+3137: p = 0
+3138: elif cc == "50%": p = 50
+3139: elif cc == "80%": p = 80
+3140: elif cc == "90%": p = 90
+3141: else: p = 0
+3142: else:
+3143: p = 0
+3144: 
+3145: if pd.isna(p): p = 0
+3146: score += (p / 100.0) * w
+3147: total_w += w
+3148: 
+3149: if total_w > 0:
+3150: return (score / total_w) * 100

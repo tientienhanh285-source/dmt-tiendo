@@ -1,0 +1,55 @@
+Line 2386:         with col2:
+Line 2387:             # 6. Dates
+Line 2388:             task_start = st.date_input("Ngày bắt đầu thực hiện", today, format="DD/MM/YYYY")
+Line 2389:             task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today, format="DD/MM/YYYY")
+Line 2390:             
+Line 2391:             # 7 & 8. Status checkboxes
+Line 2392:             st.markdown("<p style='font-size: 1.1rem; font-weight: 600; color: #1e3a8a;'>📌 Trạng thái công việc</p>", unsafe_allow_html=True)
+Line 2393:             task_is_completed = st.checkbox("✅ Xác nhận ĐÃ HOÀN THÀNH công việc", value=False)
+Line 2394:             task_has_issue = st.checkbox("⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC", value=False)
+Line 2395:             if task_is_completed and task_has_issue:
+Line 2396:                 st.error("⚠️ Không thể chọn cả 2 trạng thái cùng lúc! Vui lòng bỏ tick 1 ô.")
+Line 2397:                 st.stop()
+Line 2398:             
+Line 2399:             # 9. Kết quả / File đính kèm
+Line 2400:             if task_is_completed:
+Line 2401:                 st.markdown("🚨 **<span style='color:red; font-size: 17px;'>ĐỂ XÁC NHẬN HOÀN THÀNH, BẮT BUỘC NHẬP BÁO CÁO HOẶC TẢI FILE DƯỚI ĐÂY:</span>**", unsafe_allow_html=True)
+Line 2402:             else:
+Line 2403:                 st.markdown("**Kết quả / File đính kèm**")
+Line 2404:             result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key="new_result_mode")
+Line 2405:             if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+Line 2406:                 if task_is_completed:
+Line 2407:                     st.warning("⚠️ **VUI LÒNG NHẬP NỘI DUNG KẾT QUẢ / BÁO CÁO VÀO Ô BÊN DƯỚI:**")
+Line 2408:                 else:
+Line 2409:                     st.info("💡 **Ghi chú nội dung/tiến độ công việc vào ô bên dưới:**")
+Line 2410:                 task_link_text = st.text_area("Nhập tên Báo cáo / Số hiệu Văn bản / Link", height=100, label_visibility="collapsed", placeholder="Ví dụ: Báo cáo số 01/BC-DMT, đã trình sếp, hoặc dán link Google Drive...", key="new_result_text")
+Line 2411:                 task_file = None
+Line 2412:             else:
+Line 2413:                 task_file = st.file_uploader("Tải file đính kèm (PDF, Word, Excel, Ảnh...)", key="new_result_file")
+Line 2414:                 task_link_text = ""
+Line 2415:             
+Line 2416:             # 10. Ghi chú vướng mắc
+Line 2417:             is_late = (task_deadline < today) and not task_is_completed
+Line 2418:             task_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
+Line 2419:             if is_late:
+Line 2420:                 task_late_cause = st.selectbox(
+Line 2421:                     "Phân loại nguyên nhân trễ hạn",
+Line 2422:                     ["🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"],
+Line 2423:                     index=0,
+Line 2424:                     key="new_task_late_cause"
+Line 2425:                 )
+Line 2426:                 if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+Line 2427:                     task_explain = st.text_area("📝 Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý (Bắt buộc)", placeholder="Ví dụ: Bị vướng pháp lý do đối tác chậm cung cấp hồ sơ. Đề xuất xin dời sang tuần sau...", height=120, key="new_task_explain")
+Line 2428:                 else:
+Line 2429:                     task_explain = ""
+Line 2430:             else:
+Line 2431:                 if task_has_issue:
+Line 2432:                     task_explain = st.text_area("📝 Chi tiết vướng mắc & Đề xuất hỗ trợ (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", height=120, key="new_task_explain")
+Line 2433:                 else:
+Line 2434:                     task_explain = ""
+Line 2435:             
+Line 2436:             # 11. Chu kỳ theo dõi
+Line 2437:             task_cycle = "Theo dự án / Tự do"
+Line 2438:             
+Line 2439:             # 12. Tỷ trọng KPI
+Line 2440:             task_weight = 0

@@ -1,0 +1,125 @@
+1431: output = io.BytesIO()
+1432: with pd.ExcelWriter(output, engine="openpyxl") as writer:
+1433: # Write Sheet1 (Drop ID column if exists)
+1434: tasks_df_copy = tasks_df.copy()
+1435: 
+1436: # Format the PhanLoaiTreHan column for Excel
+1437: formatted_causes = []
+1438: for _, row in tasks_df_copy.iterrows():
+1439: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+1440: deadline = row.get('Deadline')
+1441: if isinstance(deadline, str):
+1442: try:
+1443: deadline = datetime.strptime(deadline, '%Y-%m-%d').date()
+1444: except Exception:
+1445: pass
+1446: ref_today = today
+1447: if isinstance(ref_today, datetime):
+1448: ref_today = ref_today.date()
+1449: if isinstance(deadline, datetime):
+1450: deadline = deadline.date()
+1451: 
+1452: is_late = False
+1453: if isinstance(deadline, date):
+1454: is_late = (deadline < ref_today) and not is_comp
+1455: 
+1456: if not is_late:
+1457: formatted_causes.append("")
+1458: else:
+1459: val = row.get('PhanLoaiTreHan', '')
+1460: if "chủ quan" in str(val).lower():
+1461: formatted_causes.append("[Do chủ quan]")
+1462: elif "khách quan" in str(val).lower():
+1463: explain = row.get('GiaiTrinhDeXuat', '')
+1464: if explain and explain != "--" and str(explain).strip():
+1465: formatted_causes.append(f"[Do khách quan] - {str(explain).strip()}")
+1466: else:
+1467: formatted_causes.append("[Do khách quan]")
+1468: else:
+1469: formatted_causes.append("")
+1470: 
+1471: tasks_df_copy['PhanLoaiTreHan'] = formatted_causes
+1472: tasks_df_copy = tasks_df_copy.rename(columns={'PhanLoaiTreHan': 'Nguyên nhân trễ hạn'})
+1473: 
+1474: if 'ID' in tasks_df_copy.columns:
+1475: tasks_df_copy = tasks_df_copy.drop(columns=['ID'])
+1476: if 'NgayCapNhat' in tasks_df_copy.columns:
+1477: tasks_df_copy['NgayCapNhat'] = tasks_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1478: tasks_df_copy.to_excel(writer, sheet_name="Sheet1", index=False)
+1479: 
+1480: # Write GANTT_KHDT (Drop ID column if exists)
+1481: df_copy = df.copy()
+1482: if 'ID' in df_copy.columns:
+1483: df_copy = df_copy.drop(columns=['ID'])
+1484: if 'NgayCapNhat' in df_copy.columns:
+1485: df_copy['NgayCapNhat'] = df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1486: df_copy.to_excel(writer, sheet_name="GANTT_KHDT", index=False)
+1487: 
+1488: # Write VAN_BAN_DEN (Drop ID column if exists)
+1489: try:
+1490: docs_df = read_incoming_docs_db()
+1491: docs_df_copy = docs_df.copy()
+1492: if 'ID' in docs_df_copy.columns:
+1493: docs_df_copy = docs_df_copy.drop(columns=['ID'])
+1494: if 'NgayCapNhat' in docs_df_copy.columns:
+1495: docs_df_copy['NgayCapNhat'] = docs_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1496: for col_name in ['NgayBanHanh', 'Deadline']:
+1497: if col_name in docs_df_copy.columns:
+1498: docs_df_copy[col_name] = docs_df_copy[col_name].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1499: docs_df_copy = docs_df_copy.rename(columns={
+1500: 'SoKyHieu': 'Số / Ký hiệu văn bản',
+1501: 'NgayBanHanh': 'Ngày ban hành',
+1502: 'CoQuanGui': 'Cơ quan / Đơn vị gửi',
+1503: 'TrichYeu': 'Trích yếu nội dung',
+1504: 'TenDuAn': 'Dự án liên quan',
+1505: 'GanttTaskId': 'Mã CV Gantt liên kết',
+1506: 'BanChuTri': 'Bộ phận chủ trì xử lý',
+1507: 'Deadline': 'Hạn xử lý / Phản hồi',
+1508: 'LinkFile': 'Đính kèm Link / File',
+1509: 'TrangThai': 'Trạng thái xử lý',
+1510: 'NgayCapNhat': 'Thời gian cập nhật'
+1511: })
+1512: docs_df_copy.to_excel(writer, sheet_name="VAN_BAN_DEN", index=False)
+1513: except Exception:
+1514: pass
+1515: 
+1516: workbook = writer.book
+1517: 
+1518: # Helper to style each worksheet
+1519: def style_worksheet(ws):
+1520: navy_fill = PatternFill(start_color="1E3A8A", end_color="1E3A8A", fill_type="solid")
+1521: white_bold_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+1522: normal_font = Font(name="Calibri", size=11)
+1523: 
+1524: center_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
+1525: left_align = Alignment(horizontal="left", vertical="center", wrap_text=True)
+1526: 
+1527: thin_border_side = Side(border_style="thin", color="CCCCCC")
+1528: thin_border = Border(left=thin_border_side, right=thin_border_side, top=thin_border_side, bottom=thin_border_side)
+1529: 
+1530: headers = [str(cell.value or '') for cell in ws[1]]
+1531: 
+1532: ws.row_dimensions[1].height = 28
+1533: for col_idx, cell in enumerate(ws[1], 1):
+1534: cell.fill = navy_fill
+1535: cell.font = white_bold_font
+1536: cell.alignment = center_align
+1537: cell.border = thin_border
+1538: 
+1539: for row in range(2, ws.max_row + 1):
+1540: ws.row_dimensions[row].height = 22
+1541: for col in range(1, ws.max_column + 1):
+1542: cell = ws.cell(row=row, column=col)
+1543: cell.font = normal_font
+1544: cell.border = thin_border
+1545: 
+1546: col_name = headers[col - 1]
+1547: if col_name in ["ID", "STT", "NgayBatDau", "Deadline", "Deadline", "PhanTramHoanThanh", "TrangThai", "NgayCapNhat"]:
+1548: cell.alignment = center_align
+1549: else:
+1550: cell.alignment = left_align
+1551: 
+1552: if col_name == "PhanTramHoanThanh":
+1553: cell.number_format = '0"%"'
+1554: 
+1555: # Autofit columns

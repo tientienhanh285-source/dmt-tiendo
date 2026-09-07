@@ -1,0 +1,2 @@
+2919: st.markdown(f"### 🧮 Diễn giải công thức tính điểm của **{det_p}**")
+2928: st.markdown(f"**📝 Danh sách công việc của {det_p}:**")

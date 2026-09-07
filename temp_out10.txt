@@ -1,0 +1,20 @@
+891: "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+892: "SoKyHieu": so_ky_hieu,
+893: "NgayBanHanh": ngay_ban_hanh,
+894: "CoQuanGui": co_quan_gui,
+895: "TrichYeu": trich_yeu,
+896: "TenDuAn": "Quản lý Công văn đến",
+897: "GanttTaskId": "",
+898: "BanChuTri": ban_chu_tri,
+899: "Deadline": deadline_val,
+900: "LinkFile": "",
+901: "TrangThai": trang_thai,
+902: "NgayCapNhat": datetime.now(),
+903: "GhiChu": ghi_chu
+904: }
+905: docs_df = pd.concat([docs_df, pd.DataFrame([new_doc_row])], ignore_index=True)
+906: success_count += 1
+907: else:
+908: # Update existing document
+909: doc_id = duplicate_doc.iloc[0]['ID']
+910: idx = docs_df[docs_df['ID'] == doc_id].index[0]

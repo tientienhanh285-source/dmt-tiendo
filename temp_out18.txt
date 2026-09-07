@@ -1,0 +1,70 @@
+2751: if save_db(df_rep):
+2752: st.session_state["success_msg"] = f"🎉 Đã nhân bản thành công công việc mới mã: {new_id}!"
+2753: st.rerun()
+2754: 
+2755: # ----------------- 5. ĐÁNH GIÁ KPI & XẾP LOẠI -----------------
+2756: elif menu == "🏆 Đánh giá KPI & Xếp loại":
+2757: st.markdown(f"### 🏆 Đánh giá KPI & Xếp loại Cá nhân — {selected_company}")
+2758: 
+2759: if "success_msg" in st.session_state:
+2760: st.success(st.session_state["success_msg"])
+2761: del st.session_state["success_msg"]
+2762: 
+2763: if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
+2764: kpi_tab1, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
+2765: else:
+2766: kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
+2767: 
+2768: with kpi_tab1:
+2769: st.markdown("#### Đánh giá và Xếp loại KPI Tháng")
+2770: 
+2771: col_m1, col_m2, col_m3 = st.columns(3)
+2772: with col_m1:
+2773: selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+2774: with col_m2:
+2775: selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
+2776: with col_m3:
+2777: allowed_depts_m = get_departments_for_company(selected_company, config)
+2778: dept_options_m = ["Tất cả phòng ban"] + allowed_depts_m
+2779: selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
+2780: 
+2781: kpi_df = display_df.copy()
+2782: if 'NguoiChuTri' not in kpi_df.columns:
+2783: kpi_df['NguoiChuTri'] = ''
+2784: 
+2785: def is_in_month(d, m, y):
+2786: import pandas as pd
+2787: from datetime import datetime, date
+2788: if pd.isna(d): return False
+2789: if isinstance(d, str):
+2790: try: d = datetime.strptime(d, "%Y-%m-%d").date()
+2791: except: return False
+2792: if isinstance(d, datetime): d = d.date()
+2793: if isinstance(d, date): return d.month == m and d.year == y
+2794: return False
+2795: 
+2796: kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))] if not kpi_df.empty else kpi_df
+2797: 
+2798: adj_df = read_kpi_adjustments()
+2799: adj_df = adj_df[(adj_df['Thang'] == selected_month) & (adj_df['Nam'] == selected_year)]
+2800: 
+2801: if kpi_df.empty and adj_df.empty:
+2802: st.info(f"Không có dữ liệu công việc hoặc điểm thưởng/phạt nào trong Tháng {selected_month}/{selected_year}.")
+2803: else:
+2804: import pandas as pd
+2805: from datetime import datetime, date
+2806: personnel_kpi = []
+2807: 
+2808: # Find all personnel relevant to THIS company
+2809: company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+2810: 
+2811: all_p = set(kpi_df['NguoiChuTri'].dropna().unique())
+2812: if 'TenNhanVien' in adj_df.columns:
+2813: all_p.update(adj_df['TenNhanVien'].dropna().unique())
+2814: 
+2815: # Filter to only keep those who belong to the selected company
+2816: all_p = all_p.intersection(company_personnel)
+2817: 
+2818: for person in all_p:
+2819: if not str(person).strip(): continue
+2820: group = kpi_df[kpi_df['NguoiChuTri'] == person]

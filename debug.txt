@@ -1,0 +1,16 @@
+0:     with kpi_tab4:
+1:         st.markdown("#### ⚙️ Cấu hình Tỷ trọng KPI (Hồ sơ KPI)")
+2:         if role_mode == "Nhân viên":
+3:             st.warning("Bạn không có quyền cấu hình Tỷ trọng KPI.")
+4:         else:
+5:             with st.form("kpi_profile_form"):
+6:                 
+7:                 # Lấy danh sách toàn bộ nhân sự từ cấu hình
+8:                 all_p_list_2 = []
+9:                 for dept, persons in config.get("personnel_by_department", {}).items():
+10:                     all_p_list_2.extend(persons)
+11:                 all_p_list_2 = sorted(list(set(all_p_list_2)))
+12:                 if not all_p_list_2:
+13:                     all_p_list_2 = ["(Chưa có danh sách)"]
+14:                 nv_prof = st.selectbox("Tên nhân viên", all_p_list_2)
+15:                 

@@ -1,0 +1,24 @@
+1185:     display_df = df[df['DonVi'] == selected_company].copy()
+1187:     display_df = df.copy()
+1189: if 'NguoiChuTri' not in display_df.columns:
+1190:     display_df['NguoiChuTri'] = ''
+1193: total_v = len(display_df)
+1194: done_v = len(display_df[display_df['TrangThai'] == 'Hoàn thành'])
+1195: issue_v = len(display_df[display_df['TrangThai'] == 'Có vướng mắc'])
+1196: overdue_v = len(display_df[(display_df['Deadline'] < today) & (display_df['TrangThai'] != 'Hoàn thành')])
+1387:     dash_df = display_df.copy()
+1479:     if not display_df.empty:
+1480:         perf_df = display_df.copy()
+1530:         db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
+1542:         if not display_df.empty:
+1543:             for _, row in display_df.iterrows():
+1552:     table_df = display_df.copy()
+1737:                 db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
+1918:         avail_update_df = display_df
+2770:         kpi_df = display_df.copy()
+2925:                 all_personnel = list(display_df['NguoiChuTri'].unique())
+2934:                     person_df = display_df[display_df['NguoiChuTri'] == person].copy()
+3239:                 display_df = hist_df.copy()
+3241:                     display_df = display_df[display_df["Phòng ban"] == f_pb]
+3243:                     display_df = display_df[display_df["Thang"] == f_thang]
+3245:                 st.dataframe(display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False]), use_container_width=True, hide_index=True)

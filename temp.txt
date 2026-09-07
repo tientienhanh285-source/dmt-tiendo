@@ -1,0 +1,2 @@
+'        "⚖️ Duyệt việc Khách quan",\n'
+'elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách quan"]:\n'

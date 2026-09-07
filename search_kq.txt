@@ -1,0 +1,25 @@
+Line 1616: elif "khách quan" in str(val).lower():
+Line 1619: formatted_causes.append(f"[Do khách quan] - {str(explain).strip()}")
+Line 1621: formatted_causes.append("[Do khách quan]")
+Line 2084: elif "khách quan" in str(val).lower():
+Line 2087: return f"⚠️ [Do khách quan] - {str(explain).strip()}"
+Line 2088: return "⚠️ [Do khách quan]"
+Line 2420: ["🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"],
+Line 2424: if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+Line 2425: task_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", placeholder="Mô tả chi tiết khó khăn, nguyên nhân khách quan và phương án xử lý...", key="new_task_explain")
+Line 2474: if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+Line 2476: st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+Line 2680: u_options = ["🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"]
+Line 2689: if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+Line 2690: u_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+Line 2751: if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+Line 2753: st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+Line 2969: if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
+Line 2998: if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+Line 3118: elif "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+Line 3239: if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
+Line 3265: if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+Line 3577: st.header("✅ Duyệt lý do trễ hạn khách quan")
+Line 3613: mask = df['is_in_month'] & df['PhanLoaiTreHan'].astype(str).str.lower().str.contains("khách quan")
+Line 3639: help="Chọn mức điểm đánh giá theo lý do khách quan (Chỉ dành cho Quản lý)",
+Line 4405: - 🌍 **Do khách quan**: Hệ thống gửi yêu cầu để Quản lý xem xét lý do và đánh giá lại mức điểm (50%, 80%, 90%...).

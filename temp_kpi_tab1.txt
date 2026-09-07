@@ -1,0 +1,280 @@
+2771: 
+2772: with kpi_tab1:
+2773: st.markdown("#### Đánh giá và Xếp loại KPI Tháng")
+2774: 
+2775: col_m1, col_m2, col_m3 = st.columns(3)
+2776: with col_m1:
+2777: selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+2778: with col_m2:
+2779: selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
+2780: with col_m3:
+2781: allowed_depts_m = get_departments_for_company(selected_company, config)
+2782: dept_options_m = ["Tất cả phòng ban"] + allowed_depts_m
+2783: selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
+2784: 
+2785: kpi_df = display_df.copy()
+2786: if 'NguoiChuTri' not in kpi_df.columns:
+2787: kpi_df['NguoiChuTri'] = ''
+2788: 
+2789: def is_in_month(d, m, y):
+2790: import pandas as pd
+2791: from datetime import datetime, date
+2792: if pd.isna(d): return False
+2793: if isinstance(d, str):
+2794: try: d = datetime.strptime(d, "%Y-%m-%d").date()
+2795: except: return False
+2796: if isinstance(d, datetime): d = d.date()
+2797: if isinstance(d, date): return d.month == m and d.year == y
+2798: return False
+2799: 
+2800: kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))] if not kpi_df.empty else kpi_df
+2801: 
+2802: adj_df = read_kpi_adjustments()
+2803: adj_df = adj_df[(adj_df['Thang'] == selected_month) & (adj_df['Nam'] == selected_year)]
+2804: 
+2805: if kpi_df.empty and adj_df.empty:
+2806: st.info(f"Không có dữ liệu công việc hoặc điểm thưởng/phạt nào trong Tháng {selected_month}/{selected_year}.")
+2807: else:
+2808: import pandas as pd
+2809: from datetime import datetime, date
+2810: personnel_kpi = []
+2811: 
+2812: # Find all personnel relevant to THIS company
+2813: company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+2814: 
+2815: all_p = set(kpi_df['NguoiChuTri'].dropna().unique())
+2816: if 'TenNhanVien' in adj_df.columns:
+2817: all_p.update(adj_df['TenNhanVien'].dropna().unique())
+2818: 
+2819: # Filter to only keep those who belong to the selected company
+2820: all_p = all_p.intersection(company_personnel)
+2821: 
+2822: for person in all_p:
+2823: if not str(person).strip(): continue
+2824: group = kpi_df[kpi_df['NguoiChuTri'] == person]
+2825: total_tasks = len(group)
+2826: done_tasks = len(group[group['TrangThai'] == 'Hoàn thành'])
+2827: 
+2828: group_copy = group.copy()
+2829: group_copy['TyTrongKPI'] = pd.to_numeric(group_copy.get('TyTrongKPI', pd.Series(0, index=group_copy.index)), errors='coerce').fillna(0)
+2830: 
+2831: for idx, row in group_copy.iterrows():
+2832: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2833: is_late = False
+2834: dl = row['Deadline']
+2835: if isinstance(dl, str):
+2836: try: dl = datetime.strptime(dl, "%Y-%m-%d").date()
+2837: except: pass
+2838: if isinstance(dl, datetime): dl = dl.date()
+2839: if isinstance(dl, date): is_late = (dl < today) and not is_comp
+2840: 
+2841: if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
+2842: group_copy.at[idx, 'PhanTramHoanThanh'] = 100
+2843: 
+2844: explicit_weight_sum = group_copy[group_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+2845: unweighted_count = len(group_copy[group_copy['TyTrongKPI'] <= 0])
+2846: 
+2847: remaining_weight = max(0, 100 - explicit_weight_sum)
+2848: if (selected_year > 2026) or (selected_year == 2026 and selected_month >= 8):
+2849: auto_weight = 0
+2850: else:
+2851: auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
+2852: 
+2853: # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
+2854: if 'NguonGiaoViec' not in group_copy.columns:
+2855: group_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
+2856: ke_hoach_tasks = group_copy[group_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+2857: giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+2858: 
+2859: def calc_score_for_group(grp):
+2860: if grp.empty: return 0
+2861: t_score = 0
+2862: total_w = 0
+2863: for idx, row in grp.iterrows():
+2864: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2865: w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
+2866: 
+2867: if is_comp:
+2868: p = 100
+2869: else:
+2870: if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+2871: cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+2872: if cc == "Miễn trừ (Loại bỏ KPI)":
+2873: w = 0
+2874: p = 0
+2875: elif cc == "50%": p = 50
+2876: elif cc == "80%": p = 80
+2877: elif cc == "90%": p = 90
+2878: else: p = 0
+2879: else:
+2880: p = 0
+2881: 
+2882: if pd.isna(p): p = 0
+2883: t_score += (p / 100.0) * w
+2884: total_w += w
+2885: 
+2886: if total_w > 0:
+2887: return (t_score / total_w) * 100
+2888: return 0
+2889: 
+2890: if len(giao_ban_tasks) > 0:
+2891: kh_score = calc_score_for_group(ke_hoach_tasks)
+2892: gb_score = calc_score_for_group(giao_ban_tasks)
+2893: task_score = kh_score * 0.7 + gb_score * 0.3
+2894: else:
+2895: task_score = calc_score_for_group(ke_hoach_tasks)
+2896: 
+2897: 
+2898: p_adj_df = adj_df[adj_df['TenNhanVien'] == person] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
+2899: adj_score = 0
+2900: if not p_adj_df.empty:
+2901: for _, r in p_adj_df.iterrows():
+2902: loai = str(r.get('LoaiHanhVi', '')).lower()
+2903: diem = int(r.get('DiemDieuChinh', 0))
+2904: if 'thưởng' in loai:
+2905: adj_score += diem
+2906: elif 'phạt' in loai:
+2907: adj_score -= diem
+2908: else:
+2909: adj_score += diem
+2910: 
+2911: final_score = min(115, max(0, round(task_score + adj_score, 2)))
+2912: 
+2913: # Xếp loại mới
+2914: if final_score > 91: grade = "A"
+2915: elif final_score > 81: grade = "B"
+2916: elif final_score > 71: grade = "C"
+2917: else: grade = "D"
+2918: 
+2919: pb = group['PhongBan'].iloc[0] if not group.empty else ""
+2920: 
+2921: personnel_kpi.append({
+2922: "Người thực hiện": person,
+2923: "Phòng ban": pb,
+2924: "Số việc": total_tasks,
+2925: "Điểm công việc": round(task_score, 1),
+2926: "Thưởng/Phạt": adj_score,
+2927: "TỔNG ĐIỂM": final_score,
+2928: "Xếp loại": grade,
+2929: "_kh_score": round(kh_score, 1) if len(giao_ban_tasks) > 0 else round(task_score, 1),
+2930: "_gb_score": round(gb_score, 1) if len(giao_ban_tasks) > 0 else 0,
+2931: "_has_gb": len(giao_ban_tasks) > 0
+2932: })
+2933: 
+2934: if personnel_kpi:
+2935: kpi_month_df = pd.DataFrame(personnel_kpi)
+2936: if selected_dept_m != "Tất cả phòng ban":
+2937: kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == selected_dept_m]
+2938: st.dataframe(
+2939: kpi_month_df[["Người thực hiện", "Phòng ban", "Số việc", "Điểm công việc", "Thưởng/Phạt", "TỔNG ĐIỂM", "Xếp loại"]],
+2940: column_config={
+2941: "TỔNG ĐIỂM": st.column_config.ProgressColumn("TỔNG ĐIỂM", format="%f", min_value=0, max_value=115),
+2942: },
+2943: use_container_width=True, hide_index=True
+2944: )
+2945: 
+2946: st.markdown("---")
+2947: with st.expander("🔍 Tra cứu chi tiết điểm KPI của từng nhân sự", expanded=False):
+2948: st.info("💡 Tính năng này giúp Quản lý đối chiếu các đầu việc và mức độ hoàn thành của nhân sự để xác minh tính chính xác của điểm số.")
+2949: valid_people = sorted(list(kpi_month_df['Người thực hiện'].unique()))
+2950: if valid_people:
+2951: det_p = st.selectbox("👤 Chọn nhân sự cần tra cứu", valid_people, key="detail_person_kpi")
+2952: if det_p:
+2953: p_info = kpi_month_df[kpi_month_df['Người thực hiện'] == det_p].iloc[0]
+2954: st.markdown(f"### 🧮 Diễn giải công thức tính điểm của **{det_p}**")
+2955: 
+2956: kh_val = p_info['_kh_score']
+2957: gb_val = p_info['_gb_score']
+2958: has_gb = p_info['_has_gb']
+2959: task_val = p_info['Điểm công việc']
+2960: adj_val = p_info['Thưởng/Phạt']
+2961: final_val = p_info['TỔNG ĐIỂM']
+2962: 
+2963: st.markdown(f"**📝 Danh sách công việc của {det_p}:**")
+2964: p_tasks = kpi_df[kpi_df['NguoiChuTri'] == det_p].copy()
+2965: if p_tasks.empty:
+2966: st.warning("Không có đầu việc nào được ghi nhận trong tháng.")
+2967: else:
+2968: p_tasks['TyTrongKPI'] = pd.to_numeric(p_tasks.get('TyTrongKPI', pd.Series(0, index=p_tasks.index)), errors='coerce').fillna(0)
+2969: explicit_w = p_tasks[p_tasks['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+2970: unweighted = len(p_tasks[p_tasks['TyTrongKPI'] <= 0])
+2971: auto_w = max(0, 100 - explicit_w) / unweighted if unweighted > 0 else 0
+2972: 
+2973: quy_dois = []
+2974: w_thuctes = []
+2975: kh_parts = []
+2976: gb_parts = []
+2977: kh_tw = 0.0
+2978: gb_tw = 0.0
+2979: 
+2980: for idx, row in p_tasks.iterrows():
+2981: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2982: w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+2983: if is_comp:
+2984: p = 100
+2985: p_tasks.at[idx, 'MucDoGhiNhan'] = "-"
+2986: elif "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+2987: cc = str(row.get('MucDoGhiNhan', '0%'))
+2988: if "Miễn trừ" in cc: w = 0; p = 0
+2989: elif "50%" in cc: p = 50
+2990: elif "80%" in cc: p = 80
+2991: elif "90%" in cc: p = 90
+2992: else: p = 0
+2993: else:
+2994: p = 0
+2995: p_tasks.at[idx, 'MucDoGhiNhan'] = "-"
+2996: 
+2997: quy_dois.append(p)
+2998: w_round = round(w, 2)
+2999: w_thuctes.append(w_round)
+3000: 
+3001: if row.get('NguonGiaoViec', '') == 'Công việc trong "Giao ban"':
+3002: if w_round > 0:
+3003: gb_parts.append(f"({p} × {w_round}%)")
+3004: gb_tw += w_round
+3005: else:
+3006: if w_round > 0:
+3007: kh_parts.append(f"({p} × {w_round}%)")
+3008: kh_tw += w_round
+3009: 
+3010: p_tasks['Tỷ trọng (Thực tế) %'] = w_thuctes
+3011: p_tasks['Điểm quy đổi'] = quy_dois
+3012: 
+3013: kh_math = f"[{' + '.join(kh_parts)}] / {round(kh_tw,2)}%" if kh_parts else "0"
+3014: gb_math = f"[{' + '.join(gb_parts)}] / {round(gb_tw,2)}%" if gb_parts else "0"
+3015: 
+3016: if has_gb:
+3017: st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
+3018: f"**2️⃣ Điểm Giao ban ({gb_val}):** = {gb_math}\n\n"
+3019: f"**3️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
+3020: f"👉 **TỔNG ĐIỂM ({final_val})** = (Điểm KH × 70% + Điểm GB × 30%) + Thưởng/Phạt = ({kh_val} × 0.7 + {gb_val} × 0.3) + ({adj_val})")
+3021: else:
+3022: st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
+3023: f"**2️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
+3024: f"👉 **TỔNG ĐIỂM ({final_val})** = Điểm KH + Thưởng/Phạt = {kh_val} + ({adj_val})")
+3025: 
+3026: p_tasks_disp = p_tasks[['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI', 'Tỷ trọng (Thực tế) %', 'Điểm quy đổi']].copy()
+3027: p_tasks_disp['Deadline'] = pd.to_datetime(p_tasks_disp['Deadline'], errors='coerce').dt.strftime('%d/%m/%Y').fillna('')
+3028: st.dataframe(p_tasks_disp, use_container_width=True, hide_index=True)
+3029: 
+3030: st.markdown(f"**⚖️ Lịch sử Thưởng/Phạt của {det_p}:**")
+3031: p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LoaiHanhVi', 'LyDo', 'DiemDieuChinh']] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
+3032: if p_adjs.empty:
+3033: st.success("Không có ghi nhận thưởng/phạt nào.")
+3034: else:
+3035: st.dataframe(p_adjs, use_container_width=True, hide_index=True)
+3036: else:
+3037: st.info("Không có dữ liệu cá nhân hợp lệ.")
+3038: with kpi_tab2:
+3039: st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
+3040: col_y1, col_y2 = st.columns(2)
+3041: with col_y1:
+3042: selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
+3043: with col_y2:
+3044: allowed_depts_y = get_departments_for_company(selected_company, config)
+3045: dept_options_y = ["Tất cả phòng ban"] + allowed_depts_y
+3046: selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
+3047: 
+3048: if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
+3049: with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
+3050: import pandas as pd

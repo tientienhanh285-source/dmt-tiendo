@@ -1,0 +1,75 @@
+1441: 
+1442: company_options = ["Tất cả đơn vị"] + list(COMPANIES.keys())
+1443: selected_company = st.sidebar.selectbox(
+1444:     "CHỌN CÔNG TY / THÀNH VIÊN", 
+1445:     company_options, 
+1446:     index=1,
+1447:     format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
+1448: )
+1449: 
+1450: role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "Cá nhân (Thử nghiệm)"], index=0)
+1451: 
+1452: if "is_admin_authenticated" not in st.session_state:
+1453:     st.session_state.is_admin_authenticated = False
+1454: if "is_personal_authenticated" not in st.session_state:
+1455:     st.session_state.is_personal_authenticated = False
+1456: if "personal_user" not in st.session_state:
+1457:     st.session_state.personal_user = None
+1458: 
+1459: if role_mode == "Quản lý":
+1460:     st.session_state.is_personal_authenticated = False
+1461:     st.session_state.personal_user = None
+1462:     if not st.session_state.is_admin_authenticated:
+1463:         admin_pwd = st.sidebar.text_input("Nhập Mật khẩu Quản lý", type="password")
+1464:         if admin_pwd:
+1465:             if admin_pwd == "admindmt123":
+1466:                 st.session_state.is_admin_authenticated = True
+1467:                 st.rerun()
+1468:             else:
+1469:                 st.sidebar.error("Mật khẩu không đúng!")
+1470:     
+1471:     if st.session_state.is_admin_authenticated:
+1472:         st.sidebar.success("Đã xác thực quyền Quản lý!")
+1473:         
+1474:         if st.sidebar.button("Đăng xuất"):
+1475:             st.session_state.is_admin_authenticated = False
+1476:             st.rerun()
+1477: 
+1478: elif role_mode == "Cá nhân (Thử nghiệm)":
+1479:     st.session_state.is_admin_authenticated = False
+1480:     if not st.session_state.is_personal_authenticated:
+1481:         pers_pwd = st.sidebar.text_input("Nhập Mã PIN cá nhân (Mặc định: 1234)", type="password")
+1482:         if pers_pwd:
+1483:             if pers_pwd == "1234":
+1484:                 st.session_state.is_personal_authenticated = True
+1485:                 st.rerun()
+1486:             else:
+1487:                 st.sidebar.error("Mã PIN không đúng!")
+1488:     
+1489:     if st.session_state.is_personal_authenticated:
+1490:         st.sidebar.success("Đã xác thực quyền Cá nhân!")
+1491:         
+1492:         if st.sidebar.button("Đăng xuất"):
+1493:             st.session_state.is_personal_authenticated = False
+1494:             st.session_state.personal_user = None
+1495:             st.rerun()
+1496: else:
+1497:     st.session_state.is_admin_authenticated = False
+1498:     st.session_state.is_personal_authenticated = False
+1499:     st.session_state.personal_user = None
+1500: 
+1501: st.sidebar.markdown("---")
+1502: 
+1503: menu_options = [
+1504:     "👀 BẢNG TỔNG QUAN (View)",
+1505:     "🚀 Bảng theo dõi tiến độ công việc",
+1506:     "➕ Thêm / Cập Nhật Công Việc",
+1507:     "📖 Sổ tay Hướng dẫn"
+1508: ]
+1509: 
+1510: if st.session_state.is_admin_authenticated:
+1511:     menu_options = [
+1512:         "👀 BẢNG TỔNG QUAN (View)",
+1513:         "🚀 Bảng theo dõi tiến độ công việc",
+1514:         "➕ Thêm / Cập Nhật Công Việc",
+1515:         "🏆 Đánh giá KPI & Xếp loại",

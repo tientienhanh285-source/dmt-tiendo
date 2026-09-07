@@ -1,0 +1,30 @@
+611: "Produce": "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+612: "Produce / Execute": "6. Thi công Xây lắp & Lắp đặt Thiết bị",
+613: "6. Triển khai & Thực thi": "6. Thi công Xây lắp & Lắp đặt Thiết bị"
+614: }
+615: df['GiaiDoan'] = df['GiaiDoan'].replace(phase_mapping)
+616: 
+617: return df
+618: 
+619: 
+620: 
+621: def read_kpi_adjustments():
+622: import pandas as pd
+623: conn = get_gsheets_conn()
+624: empty_df = pd.DataFrame(columns=["ID", "TenNhanVien", "Thang", "Nam", "LoaiHanhVi", "DiemDieuChinh", "LyDo"])
+625: if conn is None:
+626: return empty_df
+627: try:
+628: df = safe_gsheets_read(conn, worksheet="KPI_ADJUSTMENTS", ttl=600)
+629: if df is None or df.empty:
+630: return empty_df
+631: for col in ["ID", "Thang", "Nam", "DiemDieuChinh"]:
+632: if col in df.columns:
+633: df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+634: return df
+635: except Exception as e:
+636: import streamlit as st
+637: st.error(f"Lỗi khi đọc trang tính KPI_ADJUSTMENTS: {e}")
+638: raise e
+639: 
+640: def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):

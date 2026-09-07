@@ -1,0 +1,14 @@
+Line 1452: if "is_admin_authenticated" not in st.session_state:
+Line 1453: st.session_state.is_admin_authenticated = False
+Line 1462: if not st.session_state.is_admin_authenticated:
+Line 1466: st.session_state.is_admin_authenticated = True
+Line 1471: if st.session_state.is_admin_authenticated:
+Line 1475: st.session_state.is_admin_authenticated = False
+Line 1479: st.session_state.is_admin_authenticated = False
+Line 1497: st.session_state.is_admin_authenticated = False
+Line 1510: if st.session_state.is_admin_authenticated:
+Line 2712: if st.session_state.is_admin_authenticated:
+Line 2767: if st.session_state.is_admin_authenticated:
+Line 2943: if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
+Line 3402: if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
+Line 3627: if not st.session_state.is_admin_authenticated:

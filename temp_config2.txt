@@ -1,0 +1,25 @@
+367: "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
+368: "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
+369: "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group"]
+370: },
+371: "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
+372: "personnel_by_department": DEFAULT_PERSONNEL.copy()
+373: },
+374: "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
+375: "projects_by_category": {
+376: "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
+377: },
+378: "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+379: "personnel_by_department": {
+380: "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
+381: "Ban Tài chính Kế toán": ["Lê Thị Hải"],
+382: "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
+383: "Tổ KPI": []
+384: }
+385: },
+386: "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+387: "projects_by_category": {},
+388: "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+389: "personnel_by_department": {
+390: "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+391: "Ban Kỹ thuật": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],

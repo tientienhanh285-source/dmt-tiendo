@@ -1,0 +1,30 @@
+181: def get_global_state():
+182: return {}
+183: 
+184: def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
+185: if fallback_df is None:
+186: import pandas as pd
+187: fallback_df = pd.DataFrame()
+188: 
+189: import streamlit as st
+190: import time
+191: 
+192: cache_key = f"cached_df_{worksheet}"
+193: 
+194: 
+195: 
+196: try:
+197: table_name = _get_table_name(worksheet)
+198: res = conn.table(table_name).select('*').execute()
+199: data = res.data
+200: if not data:
+201: return fallback_df
+202: 
+203: import pandas as pd
+204: df = pd.DataFrame(data)
+205: 
+206: import numpy as np
+207: df = df.replace("", np.nan).dropna(how='all')
+208: 
+209: if worksheet == "Sheet1":
+210: col_mapping = {

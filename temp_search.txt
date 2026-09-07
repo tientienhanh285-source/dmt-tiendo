@@ -1,0 +1,9 @@
+1015: "ChuKyTheoDoi": "Theo dự án / Tự do",
+1188: df["ChuKyTheoDoi"] = "Theo dự án / Tự do"
+1219: df['ChuKyTheoDoi'] = df['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+1246: df_save['ChuKyTheoDoi'] = df_save['ChuKyTheoDoi'].fillna('Theo dự án / Tự do')
+2401: # 11. Chu kỳ theo dõi
+2402: task_cycle = "Theo dự án / Tự do"
+2613: # 11. Chu kỳ theo dõi
+2614: current_cycle = task_data.get('ChuKyTheoDoi', 'Theo dự án / Tự do')
+2615: cycle_list = ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"]

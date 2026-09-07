@@ -1,0 +1,8 @@
+901             so_ky_hieu = str(row[so_ky_hieu_col]).strip() if not pd.isna(row[so_ky_hieu_col]) else f"VB-{datetime.now().strftime('%M%S')}"
+957                     "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+973                 docs_df.at[idx, "NgayCapNhat"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+1013                     "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+1027             tasks_df.at[t_idx, "NgayCapNhat"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+2424                                 "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+2683                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+2770                                 "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),

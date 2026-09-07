@@ -1,0 +1,35 @@
+2821: total_tasks = len(group)
+2822: done_tasks = len(group[group['TrangThai'] == 'Hoàn thành'])
+2823: 
+2824: group_copy = group.copy()
+2825: group_copy['TyTrongKPI'] = pd.to_numeric(group_copy.get('TyTrongKPI', pd.Series(0, index=group_copy.index)), errors='coerce').fillna(0)
+2826: 
+2827: for idx, row in group_copy.iterrows():
+2828: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2829: is_late = False
+2830: dl = row['Deadline']
+2831: if isinstance(dl, str):
+2832: try: dl = datetime.strptime(dl, "%Y-%m-%d").date()
+2833: except: pass
+2834: if isinstance(dl, datetime): dl = dl.date()
+2835: if isinstance(dl, date): is_late = (dl < today) and not is_comp
+2836: 
+2837: if is_late and row.get('PhanLoaiTreHan') == "🌍 Do khách quan":
+2838: group_copy.at[idx, 'PhanTramHoanThanh'] = 100
+2839: 
+2840: explicit_weight_sum = group_copy[group_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+2841: unweighted_count = len(group_copy[group_copy['TyTrongKPI'] <= 0])
+2842: 
+2843: remaining_weight = max(0, 100 - explicit_weight_sum)
+2844: if (selected_year > 2026) or (selected_year == 2026 and selected_month >= 8):
+2845: auto_weight = 0
+2846: else:
+2847: auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
+2848: 
+2849: # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
+2850: if 'NguonGiaoViec' not in group_copy.columns:
+2851: group_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
+2852: ke_hoach_tasks = group_copy[group_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+2853: giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+2854: 
+2855: def calc_score_for_group(grp):

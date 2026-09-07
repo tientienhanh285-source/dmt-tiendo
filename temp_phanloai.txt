@@ -1,0 +1,5 @@
+756:                 "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+884:         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
+1884:                         "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+2177:                             "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
+3376:            `ID`, `DonVi`, `PhongBan`, `NguoiChuTri`, `TenDuAn`, `MocTienDo`, `SanPhamBanGiao`, `TenCongViec`, `PhanLoaiChiSo`, `NgayBatDau`, `Deadline`, `DoUuTien`, `PhanTramHoanThanh`, `TrangThai`, `LinkKetQua`, `GiaiTrinhDeXuat`, `NgayCapNhat`

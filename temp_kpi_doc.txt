@@ -1,0 +1,236 @@
+125: def generate_individual_docx(employee_name, month, year, kpi_score, list_tasks, penalties):
+126: doc = Document()
+127: 
+128: # Adjust margins
+129: sections = doc.sections
+130: for section in sections:
+131: section.top_margin = Inches(0.5)
+132: section.bottom_margin = Inches(0.5)
+133: section.left_margin = Inches(0.5)
+134: section.right_margin = Inches(0.5)
+135: 
+136: # --- Style definitions ---
+137: style = doc.styles['Normal']
+138: font = style.font
+139: font.name = 'Times New Roman'
+140: font.size = Pt(13)
+141: 
+142: # --- Title ---
+143: p = doc.add_paragraph()
+144: p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+145: r = p.add_run("BẢNG ĐÁNH GIÁ CÔNG VIỆC CỦA CBNV\n")
+146: r.bold = True
+147: r.font.size = Pt(14)
+148: r2 = p.add_run(f"THÁNG {month:02d}/{year}")
+149: r2.bold = True
+150: r2.font.size = Pt(14)
+151: 
+152: # --- Info ---
+153: doc.add_paragraph(f"Họ và tên: {employee_name}       - Chức danh: .....................      - Ban: .....................")
+154: 
+155: # Calculate score
+156: total_penalty_c1 = sum(float(adj.get('DiemDieuChinh', 0)) for adj in penalties if 'chuyên cần' in adj.get('LoaiHanhVi', '').lower() or 'trễ' in adj.get('LoaiHanhVi', '').lower() or 'sớm' in adj.get('LoaiHanhVi', '').lower() or 'công' in adj.get('LoaiHanhVi', '').lower())
+157: total_penalty_c2 = sum(float(t.get('DiemTru', 0)) for t in list_tasks)
+158: total_penalty_other = sum(float(adj.get('DiemDieuChinh', 0)) for adj in penalties) - total_penalty_c1
+159: 
+160: total_penalty_all = abs(total_penalty_c1) + abs(total_penalty_c2) + abs(total_penalty_other)
+161: final_score = 100 - total_penalty_all
+162: 
+163: doc.add_paragraph(f"Số điểm trừ cả 2 tiêu chí : {round(total_penalty_all, 1)}            Số điểm hoàn thành cả 2 tiêu chí: {round(final_score, 1)}")
+164: 
+165: # --- Signatures (using invisible table for perfect alignment) ---
+166: sig_table = doc.add_table(rows=3, cols=2)
+167: sig_table.autofit = True
+168: 
+169: c00 = sig_table.cell(0, 0)
+170: c00.text = "NHÂN VIÊN:__________________"
+171: c00.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+172: 
+173: c01 = sig_table.cell(0, 1)
+174: c01.text = "GIÁM ĐỐC BAN:_________________"
+175: c01.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+176: 
+177: c10 = sig_table.cell(1, 0)
+178: c10.text = "Kiểm tra từ Ban HCNS: ____________"
+179: c10.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+180: 
+181: c11 = sig_table.cell(1, 1)
+182: c11.text = f"Tổng điểm để tính lương: {round(final_score, 1)} % lương"
+183: c11.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+184: 
+185: c20 = sig_table.cell(2, 0)
+186: c20.text = "Phê duyệt của Tổng giám đốc:_______"
+187: c20.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+188: 
+189: c21 = sig_table.cell(2, 1)
+190: c21.text = "Phó Tổng giám đốc phụ trách: _________"
+191: c21.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+192: 
+193: doc.add_paragraph()
+194: 
+195: p_note = doc.add_paragraph()
+196: p_note.add_run("*Cơ sở đánh giá kết quả tính lương và xếp loại lao động hàng tháng:\n").bold = True
+197: p_note.add_run("Mức 1:Từ >91 – 100 điểm : 100% lương, xếp loại A trong tháng.\n")
+198: p_note.add_run("Mức 2:Từ >81 – 91 điểm : 90% lương, xếp loại B trong tháng.\n")
+199: p_note.add_run("Mức 3:Từ >71 – 81 điểm : 80% lương, xếp loại C trong tháng.\n")
+200: p_note.add_run("Mức 4: Dưới 71 điểm : 60% lương, xem xét kỷ luật.")
+201: 
+202: # --- TABLE 1 ---
+203: t1 = doc.add_table(rows=2, cols=5)
+204: t1.style = 'Table Grid'
+205: t1.autofit = False
+206: for row in t1.rows:
+207: row.cells[0].width = Inches(0.5)
+208: row.cells[1].width = Inches(3.5)
+209: row.cells[2].width = Inches(1.2)
+210: row.cells[3].width = Inches(1.2)
+211: row.cells[4].width = Inches(1.2)
+212: 
+213: cell_0_0 = t1.cell(0, 0)
+214: cell_0_0.merge(t1.cell(1, 0))
+215: cell_0_0.text = "TT"
+216: set_cell_center(cell_0_0)
+217: 
+218: cell_0_1 = t1.cell(0, 1)
+219: cell_0_1.merge(t1.cell(1, 1))
+220: cell_0_1.text = "Tiêu chí 1: Đánh giá việc thực hiện thời gian làm việc"
+221: set_cell_center(cell_0_1)
+222: 
+223: cell_0_2 = t1.cell(0, 2)
+224: cell_0_2.merge(t1.cell(0, 4))
+225: cell_0_2.text = "Chi tiết từ máy Chấm công"
+226: set_cell_center(cell_0_2)
+227: 
+228: t1.cell(1, 2).text = "Đi trễ về sớm (lần)"
+229: set_cell_center(t1.cell(1, 2))
+230: t1.cell(1, 3).text = "Quên bấm (lần)"
+231: set_cell_center(t1.cell(1, 3))
+232: t1.cell(1, 4).text = "Tổng điểm trừ đtc1"
+233: set_cell_center(t1.cell(1, 4))
+234: 
+235: row_cells = t1.add_row().cells
+236: row_cells[0].text = "1"
+237: set_cell_center(row_cells[0])
+238: row_cells[1].text = "Tổng số điểm bị trừ (đtc1) tối đa không quá 15 điểm."
+239: 
+240: # Count penalties for C1
+241: tre_som = 0
+242: quen_bam = 0
+243: for p in penalties:
+244: lv = p.get('LoaiHanhVi', '').lower()
+245: if 'trễ' in lv or 'sớm' in lv: tre_som += 1
+246: if 'công' in lv: quen_bam += 1
+247: 
+248: row_cells[2].text = str(tre_som)
+249: set_cell_center(row_cells[2])
+250: row_cells[3].text = str(quen_bam)
+251: set_cell_center(row_cells[3])
+252: row_cells[4].text = str(abs(total_penalty_c1))
+253: set_cell_center(row_cells[4])
+254: 
+255: doc.add_paragraph()
+256: 
+257: # --- TABLE 2 ---
+258: t2 = doc.add_table(rows=2, cols=5)
+259: t2.style = 'Table Grid'
+260: t2.autofit = False
+261: for row in t2.rows:
+262: row.cells[0].width = Inches(0.5)
+263: row.cells[1].width = Inches(3.5)
+264: row.cells[2].width = Inches(1.2)
+265: row.cells[3].width = Inches(1.2)
+266: row.cells[4].width = Inches(1.2)
+267: 
+268: cell2_0_0 = t2.cell(0, 0)
+269: cell2_0_0.merge(t2.cell(1, 0))
+270: cell2_0_0.text = "TT"
+271: set_cell_center(cell2_0_0)
+272: 
+273: cell2_0_1 = t2.cell(0, 1)
+274: cell2_0_1.merge(t2.cell(1, 1))
+275: cell2_0_1.text = "Tiêu chí 2: Đánh giá mức độ hoàn thành công việc"
+276: set_cell_center(cell2_0_1)
+277: 
+278: cell2_0_2 = t2.cell(0, 2)
+279: cell2_0_2.merge(t2.cell(0, 4))
+280: cell2_0_2.text = "Điểm trừ nhiệm vụ ko hoàn thành"
+281: set_cell_center(cell2_0_2)
+282: 
+283: t2.cell(1, 2).text = "Tgian y/c hoàn thành"
+284: set_cell_center(t2.cell(1, 2))
+285: t2.cell(1, 3).text = "Kết quả"
+286: set_cell_center(t2.cell(1, 3))
+287: t2.cell(1, 4).text = "Tổng điểm trừ đtc2"
+288: set_cell_center(t2.cell(1, 4))
+289: 
+290: for i, t in enumerate(list_tasks, 1):
+291: r_cells = t2.add_row().cells
+292: r_cells[0].text = str(i)
+293: set_cell_center(r_cells[0])
+294: r_cells[1].text = t.get('TenCV', '')
+295: r_cells[2].text = str(t.get('TgianYC', ''))
+296: set_cell_center(r_cells[2])
+297: r_cells[3].text = str(t.get('KetQua', ''))
+298: set_cell_center(r_cells[3])
+299: r_cells[4].text = str(t.get('DiemTru', '0'))
+300: set_cell_center(r_cells[4])
+301: 
+302: for i in range(3):
+303: r_cells = t2.add_row().cells
+304: 
+305: last_row = t2.add_row().cells
+306: last_row[0].merge(last_row[2])
+307: last_row[0].text = "Tổng điểm"
+308: set_cell_center(last_row[0])
+309: last_row[3].text = "100"
+310: set_cell_center(last_row[3])
+311: last_row[4].text = str(abs(total_penalty_c2))
+312: set_cell_center(last_row[4])
+313: 
+314: out = BytesIO()
+315: doc.save(out)
+316: return out.getvalue()
+317: def generate_yearly_excel(df, year):
+318: wb = openpyxl.Workbook()
+319: ws = wb.active
+320: ws.title = f"TongKet_{year}"
+321: 
+322: # Headers
+323: ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(df.columns))
+324: ws.cell(row=1, column=1, value=f"BẢNG TỔNG KẾT KPI CẢ NĂM {year}")
+325: 
+326: font_default = Font(name='Times New Roman', size=13)
+327: font_bold = Font(name='Times New Roman', size=13, bold=True)
+328: ws.cell(row=1, column=1).font = Font(name='Times New Roman', size=16, bold=True)
+329: ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
+330: 
+331: thin = Side(border_style="thin", color="000000")
+332: border = Border(top=thin, left=thin, right=thin, bottom=thin)
+333: 
+334: # Column headers
+335: for col_idx, col_name in enumerate(df.columns, 1):
+336: c = ws.cell(row=3, column=col_idx, value=col_name)
+337: c.font = font_bold
+338: c.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+339: c.border = border
+340: c.fill = PatternFill(start_color="C6E0B4", end_color="C6E0B4", fill_type="solid")
+341: 
+342: # Data rows
+343: for row_idx, row_data in enumerate(df.values, 4):
+344: for col_idx, val in enumerate(row_data, 1):
+345: c = ws.cell(row=row_idx, column=col_idx, value=val)
+346: c.font = font_default
+347: c.border = border
+348: c.alignment = Alignment(horizontal='center', vertical='center')
+349: 
+350: # Adjust column widths
+351: from openpyxl.utils import get_column_letter
+352: for col_idx in range(1, len(df.columns) + 1):
+353: col_letter = get_column_letter(col_idx)
+354: if col_idx == 1: ws.column_dimensions[col_letter].width = 25
+355: elif col_idx == 2: ws.column_dimensions[col_letter].width = 25
+356: else: ws.column_dimensions[col_letter].width = 12
+357: 
+358: out = BytesIO()
+359: wb.save(out)
+360: return out.getvalue()

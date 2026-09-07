@@ -1,0 +1,30 @@
+281: allowed_cols = ['ID', 'TenDuAn', 'TenCongViec', 'GiaiDoan', 'NgayBatDau', 'Deadline', 'PhanTramHoanThanh', 'Milestone', 'NgayCapNhat']
+282: df = df[[c for c in df.columns if c in allowed_cols]]
+283: 
+284: elif worksheet == "VAN_BAN_DEN":
+285: allowed_cols = ['ID', 'SoKyHieu', 'NgayBanHanh', 'CoQuanBanHanh', 'TrichYeu', 'NguoiChuTri', 'ThoiHanGiaiQuyet', 'TrangThai', 'GhiChu']
+286: df = df[[c for c in df.columns if c in allowed_cols]]
+287: 
+288: pk = 'NhanSu' if worksheet == 'CONFIG' else 'ID'
+289: if pk in df.columns:
+290: df = df[df[pk].notna()]
+291: df = df[df[pk] != '']
+292: 
+293: for col in df.columns:
+294: if pd.api.types.is_datetime64_any_dtype(df[col]):
+295: df[col] = df[col].dt.strftime('%Y-%m-%d %H:%M:%S')
+296: 
+297: records = df.to_dict(orient='records')
+298: for r in records:
+299: for k, v in list(r.items()):
+300: if isinstance(v, float):
+301: if math.isnan(v):
+302: r[k] = None
+303: elif v.is_integer():
+304: r[k] = int(v)
+305: elif pd.isna(v):
+306: r[k] = None
+307: 
+308: if records:
+309: conn.table(table_name).upsert(records).execute()
+310: 

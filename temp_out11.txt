@@ -1,0 +1,15 @@
+2631: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayBatDau'] = u_start\n"
+2632: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'Deadline'] = u_deadline\n"
+2633: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress\n"
+2634: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TrangThai'] = u_status\n"
+2635: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'LinkKetQua'] = final_link\n"
+2636: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()\n"
+2637: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')\n"
+2638: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle\n"
+2639: '                            fresh_df.loc[fresh_df[\'ID\'] == selected_id, \'PhanLoaiTreHan\'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"\n'
+2640: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = u_weight\n"
+2641: "                            fresh_df.loc[fresh_df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon\n"
+2642: '                            if u_is_late:\n'
+2643: "                                fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc\n"
+2644: '                            else:\n'
+2645: "                                fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'\n"

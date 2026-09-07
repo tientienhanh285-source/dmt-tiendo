@@ -1,0 +1,100 @@
+3151: return 0
+3152: 
+3153: if len(giao_ban_tasks_y) > 0:
+3154: kh_score_y = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
+3155: gb_score_y = calc_score_for_group_y(giao_ban_tasks_y, auto_w)
+3156: t_score = kh_score_y * 0.7 + gb_score_y * 0.3
+3157: else:
+3158: t_score = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
+3159: 
+3160: f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
+3161: 
+3162: if f_score > 91:
+3163: grade = "A"
+3164: count_a += 1
+3165: elif f_score > 81:
+3166: grade = "B"
+3167: count_b += 1
+3168: elif f_score > 71:
+3169: grade = "C"
+3170: count_c += 1
+3171: else:
+3172: grade = "D"
+3173: count_d += 1
+3174: 
+3175: months_grades[f"Tháng {m}"] = grade
+3176: 
+3177: # Logic xếp loại năm mới
+3178: evaluated = count_a + count_b + count_c + count_d
+3179: if evaluated == 0:
+3180: final_grade = "-"
+3181: bonus = "-"
+3182: elif evaluated < 12 and selected_year_full >= today.year:
+3183: final_grade = "Đang tích lũy"
+3184: bonus = "-"
+3185: else:
+3186: if count_c > 0 or count_d > 0:
+3187: final_grade = "C"
+3188: bonus = "60%"
+3189: elif count_b >= 2:
+3190: final_grade = "B"
+3191: bonus = "80%"
+3192: elif count_a >= 11:
+3193: final_grade = "A"
+3194: bonus = "100%"
+3195: else:
+3196: final_grade = "B"
+3197: bonus = "80%"
+3198: 
+3199: row_data = {
+3200: "Người thực hiện": person,
+3201: "Phòng ban": person_df['PhongBan'].mode()[0] if not person_df.empty else ""
+3202: }
+3203: row_data.update(months_grades)
+3204: row_data["Xếp loại Năm"] = final_grade
+3205: row_data["Mức hưởng T13"] = bonus
+3206: yearly_data.append(row_data)
+3207: 
+3208: if yearly_data:
+3209: yearly_df = pd.DataFrame(yearly_data)
+3210: if selected_dept_y != "Tất cả phòng ban":
+3211: yearly_df = yearly_df[yearly_df["Phòng ban"] == selected_dept_y]
+3212: st.dataframe(yearly_df, use_container_width=True, hide_index=True)
+3213: 
+3214: excel_data = kpi_reports.generate_yearly_excel(yearly_df, selected_year_full)
+3215: st.download_button("📥 Xuất Báo cáo Excel", data=excel_data, file_name=f"TongKet_KPI_{selected_year_full}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+3216: else:
+3217: st.info("Không có dữ liệu.")
+3218: 
+3219: if role_mode == "Quản lý" and st.session_state.is_admin_authenticated:
+3220: with kpi_tab3:
+3221: st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
+3222: all_p_list = []
+3223: if selected_company == "Tất cả đơn vị":
+3224: for dept, persons in config.get("personnel_by_department", {}).items():
+3225: all_p_list.extend(persons)
+3226: else:
+3227: valid_depts = get_departments_for_company(selected_company, config)
+3228: for dept in valid_depts:
+3229: persons = get_personnel_for_company_dept(selected_company, dept, config)
+3230: all_p_list.extend(persons)
+3231: 
+3232: is_marina_co = "CTY CP DMT - MARINA" in selected_company or "Du thuyền Happy Yacht" in selected_company
+3233: is_traffic_co = "XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in selected_company
+3234: if not is_marina_co and not is_traffic_co:
+3235: c_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+3236: leads = DEPT_LEADS.get(selected_company, {}).values()
+3237: valid_people = c_personnel.union(set(leads))
+3238: all_p_list = [p for p in all_p_list if p in valid_people]
+3239: 
+3240: all_p_list = sorted(list(set(all_p_list)))
+3241: if not all_p_list:
+3242: all_p_list = ["(Chưa có nhân sự)"]
+3243: 
+3244: col_f1, col_f2 = st.columns(2)
+3245: with col_f1:
+3246: adj_person = st.selectbox("Tên nhân viên", all_p_list)
+3247: adj_month = st.selectbox("Tháng áp dụng", list(range(1, 13)), index=today.month - 1)
+3248: adj_year = st.selectbox("Năm áp dụng", [today.year - 1, today.year, today.year + 1], index=1)
+3249: 
+3250: with col_f2:

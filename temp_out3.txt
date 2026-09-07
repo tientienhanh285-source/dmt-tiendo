@@ -1,0 +1,55 @@
+631: 
+632: def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
+633: if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+634: import pandas as pd
+635: df = read_kpi_adjustments()
+636: if not df.empty:
+637: dup = df[(df['TenNhanVien'] == ten) & (df['Thang'] == thang) & (df['Nam'] == nam) & (df['LoaiHanhVi'] == loai) & (df['DiemDieuChinh'] == diem) & (df['LyDo'] == lydo)]
+638: if not dup.empty:
+639: return True, ""
+640: new_id = 1 if df.empty else int(pd.to_numeric(df['ID'], errors='coerce').max(skipna=True) + 1 if not df['ID'].empty else 1)
+641: new_row = {
+642: "ID": new_id,
+643: "TenNhanVien": ten,
+644: "Thang": thang,
+645: "Nam": nam,
+646: "LoaiHanhVi": loai,
+647: "DiemDieuChinh": diem,
+648: "LyDo": lydo
+649: }
+650: df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+651: conn = get_gsheets_conn()
+652: if conn is not None:
+653: try:
+654: success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
+655: if success:
+656: import streamlit as st
+657: if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+658: return True, ""
+659: else:
+660: return False, "Không thể cập nhật lên Google Sheets (lỗi đã ghi log)"
+661: except Exception as e:
+662: return False, str(e)
+663: return False, "Không kết nối được Google Sheets"
+664: 
+665: def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
+666: if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+667: import pandas as pd
+668: df = read_kpi_adjustments()
+669: if df.empty: return False, "Dữ liệu trống"
+670: idx = df[df['ID'] == adj_id].index
+671: if len(idx) == 0: return False, "Không tìm thấy ID"
+672: df.loc[idx[0], 'TenNhanVien'] = ten
+673: df.loc[idx[0], 'Thang'] = thang
+674: df.loc[idx[0], 'Nam'] = nam
+675: df.loc[idx[0], 'LoaiHanhVi'] = loai
+676: df.loc[idx[0], 'DiemDieuChinh'] = diem
+677: df.loc[idx[0], 'LyDo'] = lydo
+678: conn = get_gsheets_conn()
+679: if conn is not None:
+680: try:
+681: success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
+682: if success:
+683: import streamlit as st
+684: if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+685: return True, ""

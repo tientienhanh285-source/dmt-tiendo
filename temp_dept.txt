@@ -1,0 +1,38 @@
+302: def get_departments_for_company(company, all_departments):
+738:                 "PhongBan": ban_chu_tri,
+760:             tasks_df.at[t_idx, "PhongBan"] = ban_chu_tri
+871:         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
+1428:         crit_display['Phòng ban'] = alert_df_show['PhongBan']
+1439:                 "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
+1459:     st.markdown("*Hiệu suất trung bình (%) hoàn thành công việc theo từng Phòng ban:*")
+1479:             perf_summary = perf_df.groupby("PhongBan").agg(
+1486:             perf_summary.columns = ["Phòng ban", "Tổng số việc", "Số việc đã xong", "Hiệu suất Trung bình (%)"]
+1491:                     "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
+1518:         allowed_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+1520:         sel_dept_filter = st.selectbox("Lọc nhanh theo Phòng ban", dept_options)
+1540:         table_df = table_df[table_df['PhongBan'] == sel_dept_filter]
+1555:         df_display['Phòng ban'] = table_df['PhongBan']
+1651:                 "Phòng ban": st.column_config.TextColumn("Phòng ban", width="medium"),
+1695:             allowed_depts = get_departments_for_company(entry_company, OFFICIAL_DEPARTMENTS)
+1696:             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", allowed_depts)
+1866:                         "PhongBan": task_dept,
+1900:         departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().unique()))
+1904:             avail_update_df = avail_update_df[avail_update_df['PhongBan'] == filter_dept]
+1923:                     st.markdown(f"**Phòng ban phụ trách:** {task_data['PhongBan']}")
+1929:                     u_dept = task_data['PhongBan']
+2159:                             "PhongBan": task_data['PhongBan'],
+2721:             allowed_depts_m = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+2723:             selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
+2805:                 pb = group['PhongBan'].iloc[0] if not group.empty else ""
+2809:                     "Phòng ban": pb,
+2820:                     kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == selected_dept_m]
+2837:             allowed_depts_y = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+2839:             selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
+2949:                         "Phòng ban": person_df['PhongBan'].mode()[0] if not person_df.empty else ""
+2959:                         yearly_df = yearly_df[yearly_df["Phòng ban"] == selected_dept_y]
+2975:                 valid_depts = get_departments_for_company(selected_company, OFFICIAL_DEPARTMENTS)
+3137:     tab_proj, tab_dept, tab_gsheets = st.tabs(["📁 Quản lý Dự án", "🏢 Quản lý Phòng ban", "📊 Đồng bộ Google Sheets"])
+3205:         st.markdown("#### Quản lý Danh sách Phòng ban")
+3226:                         st.error("Phòng ban đã tồn tại!")
+3270:         st.markdown("#### 👥 Quản lý Nhân sự theo Phòng ban")
+3360:            `ID`, `DonVi`, `PhongBan`, `NguoiChuTri`, `TenDuAn`, `MocTienDo`, `SanPhamBanGiao`, `TenCongViec`, `PhanLoaiChiSo`, `NgayBatDau`, `Deadline`, `DoUuTien`, `PhanTramHoanThanh`, `TrangThai`, `LinkKetQua`, `GiaiTrinhDeXuat`, `NgayCapNhat`

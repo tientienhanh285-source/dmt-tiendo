@@ -1,0 +1,20 @@
+256: df.rename(columns=rename_dict, inplace=True)
+257: 
+258: 
+259: allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan']
+260: df = df[[c for c in df.columns if c in allowed_cols]]
+261: 
+262: elif worksheet == "KPI_ADJUSTMENTS":
+263: if "DiemDieuChinh" in df.columns:
+264: df.rename(columns={"DiemDieuChinh": "SoDiem"}, inplace=True)
+265: allowed_cols = ['ID', 'NhanSu', 'Thang', 'Nam', 'LoaiDieuChinh', 'SoDiem', 'LyDo', 'NguoiCapNhat', 'ThoiGianCapNhat']
+266: df = df[[c for c in df.columns if c in allowed_cols]]
+267: 
+268: elif worksheet == "CONFIG":
+269: allowed_cols = ['PhongBan', 'NhanSu', 'Role']
+270: df = df[[c for c in df.columns if c in allowed_cols]]
+271: 
+272: elif worksheet == "GANTT_KHDT":
+273: allowed_cols = ['ID', 'TenDuAn', 'TenCongViec', 'GiaiDoan', 'NgayBatDau', 'Deadline', 'PhanTramHoanThanh', 'Milestone', 'NgayCapNhat']
+274: df = df[[c for c in df.columns if c in allowed_cols]]
+275: 

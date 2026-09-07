@@ -1,0 +1,375 @@
+0:         safe_gsheets_update(conn, worksheet="VAN_BAN_DEN", data=df_save)
+1:         return True
+2:     except Exception as e:
+3:         st.error(f'Lỗi lưu Google Sheets: {e}')
+4:         return False
+5: 
+6: def read_db():
+7:     required_cols = [
+8:         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
+9:         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
+10:         "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan"
+11:     ]
+12:     conn = get_gsheets_conn()
+13:     if conn is None:
+14:         return pd.DataFrame(columns=required_cols)
+15:                 
+16:             default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)
+17:             
+18:             if is_marina_co or default_proj_opt in ["✍️ Tự nhập Dự án / Hạng mục khác...", "➕ Tạo / Nhập Dự án mới..."]:
+19:                 project_name = st.text_input("Nhập tên Dự án / Hạng mục mới", value="")
+20:             else:
+21:                 project_name = clean_proj_name(default_proj_opt)
+22:             
+23:             # 3. Task details
+24:             task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
+25:             
+26:         with col2:
+27:             # 6. Dates
+28:             task_start = st.date_input("Ngày bắt đầu thực hiện", today, format="DD/MM/YYYY")
+29:             task_deadline = st.date_input("Hạn hoàn thành (Deadline)", today + timedelta(days=7), format="DD/MM/YYYY")
+30:             
+31:             # 7. Completed flag instead of manual progress slider
+32:             task_is_completed = st.checkbox("Đã hoàn thành công việc", value=False)
+33:             
+34:             # 8. Issue flag
+35:             task_has_issue = st.checkbox("Công việc đang gặp vướng mắc, cần hỗ trợ", value=False)
+36:             
+37:             # 9. Kết quả / File đính kèm
+38:             st.markdown("**Kết quả / File đính kèm**")
+39:             result_mode = st.radio("Hình thức nộp kết quả", ["✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key="new_result_mode")
+40:             if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+41:                 task_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link", placeholder="https://... hoặc Báo cáo số 01/BC-DMT", key="new_result_text")
+42:                 task_file = None
+43:             else:
+44:                 task_file = st.file_uploader("Tải file đính kèm (PDF, Word, Excel, Ảnh...)", key="new_result_file")
+45:                 task_link_text = ""
+46:             
+47:             # 10. Ghi chú vướng mắc
+48:             is_late = (task_deadline < today) and not task_is_completed
+49:             task_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
+50:             if is_late:
+51:                 task_late_cause = st.selectbox(
+52:                     "Phân loại nguyên nhân trễ hạn",
+53:                     ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"],
+54:                     index=0,
+55:                     key="new_task_late_cause"
+56:                 )
+57:                 if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+58:                     task_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", placeholder="Mô tả chi tiết khó khăn, nguyên nhân khách quan và phương án xử lý...", key="new_task_explain")
+59:                 else:
+60:                     task_explain = ""
+61:             else:
+62:                 if task_has_issue:
+63:                     task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", key="new_task_explain")
+64:                 else:
+65:                     task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", placeholder="Mô tả chi tiết khó khăn...", key="new_task_explain")
+66:             
+67:             # 11. Chu kỳ theo dõi
+68:             task_cycle = st.selectbox("Chu kỳ theo dõi", ["Hàng tuần", "Hàng tháng", "Hàng quý", "Theo dự án / Tự do"], index=3)
+69:             
+70:         submit_new = st.button("💾 THÊM CÔNG VIỆC MỚI", type="primary")
+71:         
+72:         if submit_new:
+73:             if not task_name.strip():
+74:                 st.error("⚠️ Vui lòng nhập Tên công việc!")
+75:             elif not task_owner.strip():
+76:                 st.error("⚠️ Vui lòng nhập Người thực hiện!")
+77:             else:
+78:                 # Calculate status and progress automatically
+79:                 if task_is_completed:
+80:                     calc_status = "Hoàn thành"
+81:                 elif task_has_issue:
+82:                     calc_status = "Có vướng mắc"
+83:                 elif task_deadline < today:
+84:                     calc_status = "Quá hạn"
+85:                 elif today >= task_start:
+86:                     calc_status = "Đang thực hiện"
+87:                 else:
+88:                     calc_status = "Chưa bắt đầu"
+89:                     
+90:                 task_progress = calculate_time_progress(task_start, task_deadline, task_is_completed)
+91:                     
+92:                 # Constraints validation
+93:                 has_error = False
+94:                 if calc_status == "Hoàn thành":
+95:                     if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not task_link_text.strip():
+96:                         st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm'!")
+97:                         has_error = True
+98:                     elif result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and task_file is None:
+99:                         st.error("⚠️ Bắt buộc tải file đính kèm!")
+100:                         has_error = True
+101:                         
+102:                 if is_late:
+103:                     if task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+104:                         if not task_explain.strip() or len(task_explain.strip()) < 5:
+105:                             st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+106:                             has_error = True
+107:                 elif calc_status == "Có vướng mắc":
+108:                     if not task_explain.strip() or len(task_explain.strip()) < 5:
+109:                         st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
+110:                         has_error = True
+111:                         
+112:                 if not has_error:
+113:                     # Auto ID generator
+114:                     next_id = 1
+115:                     if not df.empty:
+116:                         ids = df['ID'].tolist()
+117:                         nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+118:                         if nums:
+119:                             next_id = max(nums) + 1
+120:                     task_id = f"TSK-{next_id:03d}"
+121:                     
+122:                     saved_result = ""
+123:                     if calc_status == "Hoàn thành":
+124:                         if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+125:                             saved_result = task_link_text.strip()
+126:                         elif result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and task_file is not None:
+127:                             upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
+128:                             if not os.path.exists(upload_dir):
+129:                                 os.makedirs(upload_dir, exist_ok=True)
+130:                             safe_name = re.sub(r'[^\w\-_.]', '_', task_file.name)
+131:                             file_name = f"{task_id}_{safe_name}"
+132:                             file_path = os.path.join(upload_dir, file_name)
+133:                             with open(file_path, "wb") as f:
+134:                                 f.write(task_file.getbuffer())
+135:                             saved_result = file_path
+136:                             
+137:                     new_row = {
+138:                         "ID": task_id,
+139:                         "DonVi": entry_company,
+140:                         "PhongBan": task_dept,
+141:                         "NguoiChuTri": task_owner.strip(),
+142:                         "TenDuAn": project_name,
+143:                         "MocTienDo": "Tự do",
+144:                         "SanPhamBanGiao": "Xem chi tiết",
+145:                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
+146:                     u_cycle = st.selectbox("Chu kỳ theo dõi", cycle_list, index=default_cycle_idx, key=f"u_cycle_sel_{task_data['ID']}")
+147:                     
+148:                 st.markdown("#### ⚓ THÔNG TIN RÀNG BUỘC KẾT QUẢ & GIẢI TRÌNH")
+149:                 col_ub1, col_ub2 = st.columns(2)
+150:                 
+151:                 with col_ub1:
+152:                     st.markdown("**Kết quả / File đính kèm hiện tại**")
+153:                     current_link = task_data['LinkKetQua']
+154:                     if current_link:
+155:                         if isinstance(current_link, str) and current_link.startswith("OUTPUT") and os.path.exists(current_link):
+156:                             display_name = os.path.basename(current_link)
+157:                             if "_" in display_name:
+158:                                 display_name = display_name.split("_", 1)[1]
+159:                             st.write(f"📁 **File:** `{display_name}`")
+160:                             with open(current_link, "rb") as f:
+161:                                 st.download_button(
+162:                                     label="📥 Tải file kết quả hiện tại",
+163:                                     data=f.read(),
+164:                                     file_name=display_name,
+165:                                     mime="application/octet-stream",
+166:                                     key=f"btn_download_file_{task_data['ID']}"
+167:                                 )
+168:                         else:
+169:                             st.write(f"✍️ **Nội dung:** `{current_link}`")
+170:                     else:
+171:                         st.write("*(Chưa có kết quả/file đính kèm)*")
+172:                     
+173:                     st.markdown("---")
+174:                     st.markdown("**Cập nhật Kết quả / File đính kèm**")
+175:                     u_result_mode = st.radio("Hình thức nộp", ["Giữ nguyên hiện tại", "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)", "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)"], horizontal=True, key=f"u_result_mode_{task_data['ID']}")
+176:                     
+177:                     u_link_text = ""
+178:                     u_file = None
+179:                     if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+180:                         u_link_text = st.text_input("Nhập tên Báo cáo / Số hiệu Văn bản / Link mới", key=f"u_result_text_{task_data['ID']}")
+181:                     elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)":
+182:                         u_file = st.file_uploader("Tải file đính kèm mới", key=f"u_result_file_{task_data['ID']}")
+183:                         
+184:                 with col_ub2:
+185:                     u_is_late = (u_deadline < today) and not u_is_completed
+186:                     u_late_cause = "🟢 Không trễ hạn / Đúng tiến độ"
+187:                     if u_is_late:
+188:                         u_options = ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"]
+189:                         u_current_val = task_data.get('PhanLoaiTreHan', "🟢 Không trễ hạn / Đúng tiến độ")
+190:                         u_default_idx = u_options.index(u_current_val) if u_current_val in u_options else 0
+191:                         u_late_cause = st.selectbox(
+192:                             "Phân loại nguyên nhân trễ hạn",
+193:                             u_options,
+194:                             index=u_default_idx,
+195:                             key=f"u_late_cause_sel_{task_data['ID']}"
+196:                         )
+197:                         if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+198:                             u_explain = st.text_area("Nội dung nguyên nhân khách quan & Phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+199:                         else:
+200:                             u_explain = ""
+201:                     else:
+202:                         if u_has_issue:
+203:                             u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+204:                         else:
+205:                             u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Không bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+206:                     
+207:                 btn_save, btn_del = st.columns([4, 1])
+208:                 with btn_save:
+209:                     save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}")
+210:                 with btn_del:
+211:                     del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}")
+212:                     
+213:                 if save_click:
+214:                     # Calculate status and progress automatically
+215:                     if u_is_completed:
+216:                         u_status = "Hoàn thành"
+217:                     elif u_has_issue:
+218:                         u_status = "Có vướng mắc"
+219:                     elif u_deadline < today:
+220:                         u_status = "Quá hạn"
+221:                     elif today >= u_start:
+222:                         u_status = "Đang thực hiện"
+223:                     else:
+224:                         u_status = "Chưa bắt đầu"
+225:                         
+226:                     u_progress = calculate_time_progress(u_start, u_deadline, u_is_completed)
+227:                         
+228:                     # Constraints validation
+229:                     has_error = False
+230:                     if u_status == "Hoàn thành":
+231:                         if u_result_mode == "Giữ nguyên hiện tại" and not current_link:
+232:                             st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
+233:                             has_error = True
+234:                         elif u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not u_link_text.strip():
+235:                             st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
+236:                             has_error = True
+237:                         elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is None:
+238:                             st.error("⚠️ Bắt buộc tải file đính kèm để hoàn thành công việc!")
+239:                             has_error = True
+240:                             
+241:                     if u_is_late:
+242:                         if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+243:                             if not u_explain.strip() or len(u_explain.strip()) < 5:
+244:                                 st.error("⚠️ Bắt buộc nhập chi tiết 'Nội dung nguyên nhân khách quan & Phương án xử lý' (tối thiểu 5 ký tự)!")
+245:                                 has_error = True
+246:                     elif u_status == "Có vướng mắc":
+247:                         if not u_explain.strip() or len(u_explain.strip()) < 5:
+248:                             st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
+249:                             has_error = True
+250:                             
+251:                     if not has_error:
+252:                         # Determine final link value
+253:                         final_link = current_link
+254:                         if u_status != "Hoàn thành":
+255:                             final_link = ""
+256:                         else:
+257:                             if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)":
+258:                                 final_link = u_link_text.strip()
+259:                             elif u_result_mode == "📁 Tải file đính kèm (PDF, Word, Excel, Ảnh...)" and u_file is not None:
+260:                                 upload_dir = os.path.join("OUTPUT", "UPLOADED_FILES")
+261:                                 if not os.path.exists(upload_dir):
+262:                                     os.makedirs(upload_dir, exist_ok=True)
+263:                                 safe_name = re.sub(r'[^\w\-_.]', '_', u_file.name)
+264:                                 file_name = f"{selected_id}_{safe_name}"
+265:                                 file_path = os.path.join(upload_dir, file_name)
+266:                                 with open(file_path, "wb") as f:
+267:                                     f.write(u_file.getbuffer())
+268:                                 final_link = file_path
+269:                                 
+270:                         df.loc[df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
+271:                         df.loc[df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
+272:                         df.loc[df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
+273:                         df.loc[df['ID'] == selected_id, 'NgayBatDau'] = u_start
+274:                         df.loc[df['ID'] == selected_id, 'Deadline'] = u_deadline
+275:                         df.loc[df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
+276:                         df.loc[df['ID'] == selected_id, 'TrangThai'] = u_status
+277:                         df.loc[df['ID'] == selected_id, 'LinkKetQua'] = final_link
+278:                         df.loc[df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip() if ((u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") or (not u_is_late and u_status == "Có vướng mắc")) else ""
+279:                         df.loc[df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now()
+280:                         df.loc[df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
+281:                         df.loc[df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
+282:                         
+283:                         if save_db(df):
+284:                             st.success(f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!")
+285:                             st.cache_data.clear()
+286:                             st.rerun()
+287:                             
+288:                 if del_click:
+289:                     df_after_del = df[df['ID'] != selected_id]
+290:                     if save_db(df_after_del):
+291:                         st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_id}!")
+292:                         st.cache_data.clear()
+293:                         st.rerun()
+294: 
+295:                 st.markdown("---")
+296:                 with st.expander("🔄 Tái tạo công việc định kỳ (Nhân bản cho kỳ sau)"):
+297:                     st.info("Tính năng này giúp nhân bản công việc hiện tại thành một công việc mới cho kỳ tiếp theo (dành cho các báo cáo tuần, giao ban tháng...).")
+298:                     
+299:                     rep_name = st.text_input("Tên công việc mới", value=f"{task_data['TenCongViec']} (Kỳ tiếp theo)", key=f"rep_name_{task_data['ID']}")
+300:                     
+301:                     try:
+302:                         from dateutil.relativedelta import relativedelta
+303:                         import pandas as pd
+304:                         
+305:                             
+306:                 if g_del_click:
+307:                     gantt_df_after_del = gantt_df[gantt_df['ID'] != selected_g_id]
+308:                     if save_gantt_db(gantt_df_after_del):
+309:                         st.success(f"🗑️ Đã xóa thành công công việc mã: {selected_g_id}!")
+310:                         st.cache_data.clear()
+311:                         st.rerun()
+312: # ----------------- 5. ĐÁNH GIÁ KPI & XẾP LOẠI -----------------
+313: elif menu == "🏆 Đánh giá KPI & Xếp loại":
+314:     st.markdown(f"### 🏆 Đánh giá KPI & Xếp loại Cá nhân — {selected_company}")
+315:     
+316:     kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
+317:     
+318:     with kpi_tab1:
+319:         st.markdown("#### Đánh giá và Xếp loại KPI Tháng")
+320:         
+321:         col_m1, col_m2 = st.columns(2)
+322:         with col_m1:
+323:             selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+324:         with col_m2:
+325:             selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
+326:             
+327:         # Lọc công việc trong tháng (dựa trên Deadline)
+328:         kpi_df = display_df.copy()
+329:         
+330:         def is_in_month(d, m, y):
+331:             if pd.isna(d): return False
+332:             if isinstance(d, str):
+333:                 try: d = datetime.strptime(d, "%Y-%m-%d").date()
+334:                 except: return False
+335:             if isinstance(d, datetime): d = d.date()
+336:             if isinstance(d, date): return d.month == m and d.year == y
+337:             return False
+338:             
+339:         kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))]
+340:         
+341:         if kpi_df.empty:
+342:             st.info(f"Không có dữ liệu công việc nào có Hạn chót trong Tháng {selected_month}/{selected_year}.")
+343:         else:
+344:             # Nhóm theo Người thực hiện
+345:             personnel_kpi = []
+346:             grouped = kpi_df.groupby('NguoiChuTri')
+347:             for person, group in grouped:
+348:                 if not str(person).strip(): continue
+349:                 total_tasks = len(group)
+350:                 done_tasks = len(group[group['TrangThai'] == 'Hoàn thành'])
+351:                 
+352:                 # Tính điểm trung bình (cân đối trễ hạn chủ quan)
+353:                 group_copy = group.copy()
+354:                 for idx, row in group_copy.iterrows():
+355:                     is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+356:                     is_late = False
+357:                     dl = row['Deadline']
+358:                     if isinstance(dl, str):
+359:                         try: dl = datetime.strptime(dl, "%Y-%m-%d").date()
+360:                         except: pass
+361:                     if isinstance(dl, datetime): dl = dl.date()
+362:                     if isinstance(dl, date): is_late = (dl < today) and not is_comp
+363:                     
+364:                     if is_late and row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
+365:                         group_copy.at[idx, 'PhanTramHoanThanh'] = 100
+366:                         
+367:                 avg_score = group_copy['PhanTramHoanThanh'].mean()
+368:                 
+369:                 # Xếp loại
+370:                 if avg_score >= 90: grade = "A"
+371:                 elif avg_score >= 75: grade = "B"
+372:                 else: grade = "C"
+373:                 
+374:                 personnel_kpi.append({

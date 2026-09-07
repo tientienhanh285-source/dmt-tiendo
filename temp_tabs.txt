@@ -1,0 +1,2 @@
+'                if selected_dept_m != "Tất cả phòng ban":\n'
+'                    kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_m, selected_dept_m)]\n'

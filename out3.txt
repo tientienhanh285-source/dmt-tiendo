@@ -1,0 +1,3 @@
+1456         "🔍 Quản lý & Đối chiếu JD",
+3570 elif menu == "🔍 Quản lý & Đối chiếu JD":
+3571     st.markdown("### 🔍 Quản lý & Đối chiếu JD (Trí tuệ nhân tạo)")

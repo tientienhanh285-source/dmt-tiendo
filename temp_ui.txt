@@ -1,0 +1,9 @@
+766:                 "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ" if task_status != "Quá hạn" else "👤 Do chủ quan"
+1239:                     formatted_causes.append("[Do chủ quan]")
+1488:         # Only tasks with PhanLoaiTreHan == "👤 Do chủ quan" will keep their real (deducted) progress.
+1494:                 if row.get('PhanLoaiTreHan') != "👤 Do chủ quan":
+1640:                 return "🔴 [Do chủ quan]"
+1780:                     "Phân loại nguyên nhân trễ hạn",
+1781:                     ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"],
+2035:                         u_options = ["🟢 Không trễ hạn / Đúng tiến độ", "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)", "👤 Do chủ quan"]
+2039:                             "Phân loại nguyên nhân trễ hạn",

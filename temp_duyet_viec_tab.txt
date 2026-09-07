@@ -1,0 +1,18 @@
+--- DUYET VIEC TAB ---
+
+# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------# ----------------- 6. QUẢN LÝ CẤU HÌNH -----------------
+elif menu == "✅ Duyệt việc Khách quan":
+    st.header("✅ Duyệt lý do trễ hạn khách quan")
+    
+    if not st.session_state.is_admin_authenticated:
+        st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")
+    else:
+        df = read_db()
+        if df.empty:
+            st.info("Chưa có dữ liệu công việc.")
+        else:
+            col_thang, col_nam, col_phong = st.columns(3)
+            with col_thang:
+                thang_opts = list(range(1, 13))
+                sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month - 1)
+            with col_nam:

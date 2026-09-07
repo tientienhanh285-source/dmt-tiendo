@@ -1,0 +1,15 @@
+134: DEFAULT_PERSONNEL = {
+135: "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
+136: "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Thị Tú Uyên"],
+137: "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+138: "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Phan Thị Mỹ Hạnh", "Nguyễn Đức Lợi", "Trần Tin"],
+139: "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
+140: "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
+141: "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+142: "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
+143: "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
+144: "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+145: "Xí nghiệp DTBD": ["Mai Văn Châu"],
+146: "Sàn GDBĐS": ["Ngô Thị Tâm"],
+147: "Tổ KPI": []
+148: }

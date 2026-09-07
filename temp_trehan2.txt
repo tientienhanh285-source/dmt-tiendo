@@ -1,0 +1,30 @@
+                            index=u_default_idx,
+                            key=f"u_late_cause_sel_{task_data['ID']}"
+                        )
+                        if u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+                            u_explain = st.text_area("📝 Chi tiết nguyên nhân khách quan & Đề xuất phương án xử lý (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Ví dụ: Bị vướng pháp lý do đối tác chậm cung cấp hồ sơ. Đề xuất xin dời sang tuần sau...", height=120, key=f"u_explain_txt_{task_data['ID']}")
+                            
+                            if st.session_state.is_admin_authenticated:
+                                current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                                chamchuoc_opts = ["0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"]
+                                idx_cc = chamchuoc_opts.index(current_chamchuoc) if current_chamchuoc in chamchuoc_opts else 0
+                                u_chamchuoc = st.selectbox("Mức độ ghi nhận (Dành cho Quản lý)", chamchuoc_opts, index=idx_cc, key=f"u_cc_{task_data['ID']}")
+                            else:
+                                current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                                u_chamchuoc = current_chamchuoc
+                                if current_chamchuoc != '0% (Không ghi nhận)':
+                                    st.info(f"Đã được Quản lý ghi nhận mức độ KPI: **{current_chamchuoc}**")
+                        else:
+                            u_explain = ""
+                            u_chamchuoc = '0% (Không ghi nhận)'
+                    else:
+                        u_chamchuoc = '0% (Không ghi nhận)'
+
+                        if u_has_issue:
+                            u_explain = st.text_area("📝 Chi tiết vướng mắc & Đề xuất hỗ trợ (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), placeholder="Mô tả chi tiết vướng mắc...", height=120, key=f"u_explain_txt_{task_data['ID']}")
+                        else:
+                            u_explain = ""
+                    
+                btn_save, btn_del = st.columns([3, 2])
+                
+                with btn_save:

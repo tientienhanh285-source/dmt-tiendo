@@ -1,0 +1,8 @@
+618: 
+619: 
+620: 
+621: def read_kpi_adjustments():
+622: import pandas as pd
+623: conn = get_gsheets_conn()
+624: empty_df = pd.DataFrame(columns=["ID", "TenNhanVien", "Thang", "Nam", "LoaiHanhVi", "DiemDieuChinh", "LyDo"])
+625: if conn is None:

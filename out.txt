@@ -1,0 +1,43 @@
+264             allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan']
+282             allowed_cols = ['ID', 'TenDuAn', 'TenCongViec', 'GiaiDoan', 'NgayBatDau', 'Deadline', 'PhanTramHoanThanh', 'Milestone', 'NgayCapNhat']
+331             if hasattr(read_db, "clear"): read_db.clear()
+592     required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "QuanTrong", "KhanCap", "NgayCapNhat"]
+636     for col in ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]:
+643     df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
+781         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+876         tasks_df = read_db()
+957                     "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+973                 docs_df.at[idx, "NgayCapNhat"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+1013                     "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+1027             tasks_df.at[t_idx, "NgayCapNhat"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+1038         "TrangThai", "NgayCapNhat", "GhiChu"
+1089     df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
+1122         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1130 def read_db():
+1135         "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan"
+1211     df['NgayCapNhat'] = pd.to_datetime(df['NgayCapNhat'], dayfirst=True, errors='coerce')
+1244         df_save['NgayCapNhat'] = df_save['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1470 df = read_db()
+1575         if 'NgayCapNhat' in df_copy.columns:
+1576             df_copy['NgayCapNhat'] = df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1585             if 'NgayCapNhat' in docs_df_copy.columns:
+1586                 docs_df_copy['NgayCapNhat'] = docs_df_copy['NgayCapNhat'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) and isinstance(x, (date, datetime)) else None)
+1601                 'NgayCapNhat': 'Thời gian cập nhật'
+1638                     if col_name in ["ID", "STT", "NgayBatDau", "Deadline", "Deadline", "PhanTramHoanThanh", "TrangThai", "NgayCapNhat"]:
+1775             alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+1783             alert_df_show = pd.DataFrame(alert_list).sort_values(by=["Urgency", "Deadline"])
+1913         if 'NgayCapNhat' in table_df.columns:
+1914             table_df = table_df.sort_values(by='NgayCapNhat', ascending=False)
+2131     if 'NgayCapNhat' in table_df.columns:
+2132         table_df = table_df.sort_values(by='NgayCapNhat', ascending=False)
+2365                         fresh_df = read_db()
+2424                                 "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+2671                             fresh_df = read_db()
+2681                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+2701                         fresh_df = read_db()
+2740                             fresh_df = read_db()
+2768                                 "NgayCapNhat": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+3444                     st.dataframe(hist_display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False]), use_container_width=True, hide_index=True)
+3473         df = read_db()
+3548                         fresh_df = read_db()
+4081            `ID`, `DonVi`, `PhongBan`, `NguoiChuTri`, `TenDuAn`, `MocTienDo`, `SanPhamBanGiao`, `TenCongViec`, `PhanLoaiChiSo`, `NgayBatDau`, `Deadline`, `DoUuTien`, `PhanTramHoanThanh`, `TrangThai`, `LinkKetQua`, `GiaiTrinhDeXuat`, `NgayCapNhat`

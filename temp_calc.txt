@@ -1,0 +1,8 @@
+2813:                 def calc_score_for_group(grp):
+2828:                     kh_score = calc_score_for_group(ke_hoach_tasks)
+2829:                     gb_score = calc_score_for_group(giao_ban_tasks)
+2832:                     task_score = calc_score_for_group(ke_hoach_tasks)
+2949:                         def calc_score_for_group_y(grp, auto_w):
+2963:                             kh_score_y = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
+2964:                             gb_score_y = calc_score_for_group_y(giao_ban_tasks_y, auto_w)
+2967:                             t_score = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)

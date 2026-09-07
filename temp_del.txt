@@ -1,0 +1,18 @@
+def delete_kpi_adjustment(adj_id):
+    import pandas as pd
+    df = read_kpi_adjustments()
+    if df.empty: return False, "Dữ liệu trống"
+    df = df[df['ID'] != adj_id]
+    conn = get_gsheets_conn()
+    if conn is not None:
+        try:
+            success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
+            if success:
+                import streamlit as st
+                st.cache_data.clear()
+                return True, ""
+        except Exception as e:
+            return False, str(e)
+    return False, "Lỗi kết nối"
+
+

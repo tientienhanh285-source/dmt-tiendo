@@ -1,0 +1,22 @@
+Line 1824: tab_report, tab_giaoban, tab_data = st.tabs(["📊 CÔNG VIỆC TỚI HẠN", "📢 BÁO CÁO GIAO BAN", "📋 BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC"])
+Line 1902: # ----------------- 1.5. BÁO CÁO GIAO BAN -----------------
+Line 1904: st.markdown(f"### 📢 Báo cáo Giao ban — {selected_company}")
+Line 1906: # Lọc các công việc có nguồn giao việc là "Giao ban"
+Line 1907: gb_df = display_df[display_df['NguonGiaoViec'].astype(str).str.contains("Giao ban", na=False, case=False)].copy()
+Line 1910: st.info('Chưa có công việc nào có "Nguồn giao việc" là "Giao ban".')
+Line 1911: st.write('💡 Để thêm công việc vào Giao ban, hãy chọn Nguồn giao việc là **Công việc trong "Giao ban"** khi tạo hoặc cập nhật công việc.')
+Line 1918: gb_col1.metric("📌 Tổng Số Việc Giao Ban", total_gb)
+Line 1925: # Formatting the table for Giao ban
+Line 2383: task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'Công việc trong "Giao ban"'])
+Line 2384: st.caption("💡 **Định kỳ:** Đăng ký đầu tháng / quản lý giao. **Giao ban:** Phát sinh sau khi họp giao ban.")
+Line 2619: u_nguon_opts = ["Công việc được giao / định kì", 'Công việc trong "Giao ban"']
+Line 2623: st.caption("💡 **Định kỳ:** Đăng ký đầu tháng. **Giao ban:** Phát sinh sau khi họp giao ban.")
+Line 2836: st.info("Tính năng này giúp nhân bản công việc hiện tại thành một công việc mới cho kỳ tiếp theo (dành cho các báo cáo tuần, giao ban tháng...).")
+Line 3002: ke_hoach_tasks = group_copy[group_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+Line 3003: giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+Line 3151: if row.get('NguonGiaoViec', '') == 'Công việc trong "Giao ban"':
+Line 3168: f"**2️⃣ Điểm Giao ban ({gb_val}):** = {gb_math}\n\n"
+Line 3269: ke_hoach_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+Line 3270: giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+Line 4454: > :blue[**Điểm KPI**] = (:green[**Điểm trung bình công việc Định kỳ**] × **70%**) + (:orange[**Điểm trung bình công việc Giao ban**] × **30%**) + :red[**Điểm thưởng/phạt**]
+Line 4456: *(Lưu ý: Nếu không có công việc Giao ban, hệ thống sẽ tự động điều chỉnh 100% trọng số cho công việc Định kỳ).*

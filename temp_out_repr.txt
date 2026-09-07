@@ -1,0 +1,4 @@
+MENU_OPTIONS FOUND
+'\nmenu_options = [\n    "👀 BẢNG TỔNG QUAN (View)",\n    "🚀 Bảng theo dõi tiến độ công việc",\n    "➕ Thêm / Cập Nhật Công Việc",\n    "📖 Sổ tay Hướng dẫn"\n]\n\nif st.session_state.is_admin_authenticated:\n    menu_options = [\n        "👀 BẢNG TỔNG QUAN (View)",\n        "🚀 Bảng theo dõi tiến độ công việc",\n        "➕ Thêm / Cập Nhật Công Việc",\n        "🏆 Đánh giá KPI & Xếp loại",\n        "✅ Duyệt việc Khách quan",\n        "🔍 Quản lý & Đối chiếu JD",\n'
+DUYET VIEC FOUND
+'elif menu == "✅ Duyệt việc Khách quan":\n    st.header("✅ Duyệt lý do trễ hạn khách quan")\n    \n    if not st.session_state.is_admin_authenticated:\n        st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")\n'

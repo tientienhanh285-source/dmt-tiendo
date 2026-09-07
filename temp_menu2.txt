@@ -1,0 +1,7 @@
+1138: menu = st.sidebar.radio(
+1386: if menu == "📊 Dashboard Tổng Quan":
+1525: elif menu == "📋 Bảng Tiến Độ Chi Tiết":
+1695: elif menu == "➕ Thêm / Cập Nhật Công Việc":
+2232: elif menu == "📊 SƠ ĐỒ GANTT DỰ ÁN DMT":
+2751: elif menu == "🏆 Đánh giá KPI & Xếp loại":
+3253: elif menu == "⚙️ Quản Lý Cấu HÌnh":

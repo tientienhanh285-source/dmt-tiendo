@@ -1,0 +1,13 @@
+885:         "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan"
+939:     if "NguonGiaoViec" not in df.columns:
+940:         df["NguonGiaoViec"] = "Công việc được giao / định kì"
+981:         if 'NguonGiaoViec' not in df_save.columns: df_save['NguonGiaoViec'] = 'Công việc được giao / định kì'
+982:         df_save['NguonGiaoViec'] = df_save['NguonGiaoViec'].fillna('Công việc được giao / định kì')
+1903:                         "NguonGiaoViec": task_nguon,
+1949:                     current_nguon = task_data.get('NguonGiaoViec', 'Công việc được giao / định kì')
+2142:                         df.loc[df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
+2831:                 # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
+2832:                 ke_hoach_tasks = group_copy[group_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+2833:                 giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']
+2985:                         ke_hoach_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] != 'Công việc trong "Giao ban"']
+2986:                         giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'] == 'Công việc trong "Giao ban"']

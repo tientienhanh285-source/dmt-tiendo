@@ -1,0 +1,770 @@
+Sheet: 03.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 03/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 04.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 04/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 05.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 05/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 06.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 06/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 07.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 07/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 08.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 08/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 09.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 09/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 10.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 10/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 NaN        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+3                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+4                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 11.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 11/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 12.2020
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 12/2020        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 01.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 01/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 02.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 02/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 03.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 03/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 04.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 04/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 05.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8     Unnamed: 9        Unnamed: 10 Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 05/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Tổng điểm trừ  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN            NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: Sheet1
+Columns: ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10']
+Sample data:
+  Unnamed: 0 Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9  Unnamed: 10
+0        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN          NaN
+1        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN          NaN
+2        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN          NaN
+3        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN        NaN          NaN
+4       menu        NaN       Thuỷ      Trang     Phương       Bính      phòng       Ngọc        thi      total          NaN
+--------------------------------------------------
+Sheet: 06.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 06/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 07.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 07/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 08.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 08/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 09.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 09/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 10.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 10/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 11.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 11/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 12.2021
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 12/2021        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 01.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 01/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 02.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 02/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 03.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 03/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 04.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 04/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 05.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 05/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 06.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 06/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 07.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 07/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 08.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 08/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 09.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 09/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 10.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 10/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 11.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 11/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 12.2022
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 12/2022        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 01.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 01/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 02.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 02/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 03.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 03/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 04.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 04/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 05.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 05/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 06.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 06/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 07.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 07/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 08.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 08/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 09.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 09/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 10.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 10/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 11.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 11/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 12.2023
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 12/2023        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 01.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 01/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 02.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 02/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 03.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 03/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 04.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 04/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 05.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 05/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 06.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 06/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 07.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 07/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 08.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 08/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 09.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 09/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 10.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 10/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 11.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 11/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 12.2024
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 12/2024        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 01.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 01/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 02.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 02/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 03.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 03/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 04.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 04/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 05.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 05/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 06.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 06/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 07.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 07/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 08.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 08/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 09.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 09/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 10.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 10/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 11.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 11/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 12.2025
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 12/2025        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 01.2026
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 01/2026        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 02.2026
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 02/2026        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 03.2026
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 03/2026        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 04.2026
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 04/2026        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 05.2026 
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 05/2026        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------
+Sheet: 06.2026
+Columns: ['CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13', 'Unnamed: 14']
+Sample data:
+  CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG Unnamed: 1 Unnamed: 2 Unnamed: 3 Unnamed: 4       Unnamed: 5       Unnamed: 6       Unnamed: 7                Unnamed: 8    Unnamed: 9   Unnamed: 10        Unnamed: 11 Unnamed: 12 Unnamed: 13 Unnamed: 14
+0                                            BAN HÀNH CHÍNH - NHÂN SỰ        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+1                        BẢNG CHẤM ĐIỂM TÍNH LƯƠNG CBNV THÁNG 06/2026        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+2                                                                 STT  Họ và tên    Chức vụ     Số lần        NaN              NaN  Điểm trừ đi trễ  Điểm trừ về sớm  Điểm trừ không chấm công  Điểm trừ TC1  Điểm trừ TC2  Tổng điểm còn lại    Xếp loại     Ghi chú         NaN
+3                                                                 NaN        NaN        NaN     Đi trễ     Về Sớm  Không chấm công              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+4                                                        I/ Ban TC-KT        NaN        NaN        NaN        NaN              NaN              NaN              NaN                       NaN           NaN           NaN                NaN         NaN         NaN         NaN
+--------------------------------------------------

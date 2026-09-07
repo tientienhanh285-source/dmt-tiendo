@@ -1,0 +1,25 @@
+Line 1573: issue_v = len(display_df[display_df['TrangThai'] == 'Có vướng mắc'])
+Line 1637: 'GiaiTrinhDeXuat': 'Ghi chú / Giải trình vướng mắc'
+Line 1645: desired_order = ['STT', 'Ngày bắt đầu', 'Hạn chót', 'Trạng thái thực hiện', 'Người thực hiện', 'Phòng ban', 'Dự án / Hạng mục', 'Tên công việc', 'Ghi chú / Giải trình vướng mắc']
+Line 1787: issue_dash = len(dash_df[dash_df['TrangThai'] == 'Có vướng mắc'])
+Line 1877: crit_display['Ghi chú / Giải trình vướng mắc'] = alert_df_show['GiaiTrinhDeXuat']
+Line 1890: "Ghi chú / Giải trình vướng mắc": st.column_config.TextColumn("Ghi chú / Giải trình vướng mắc", width="large")
+Line 1915: issue_gb = len(gb_df[gb_df['TrangThai'] == 'Có vướng mắc'])
+Line 2048: is_issue = row['TrangThai'] == 'Có vướng mắc'
+Line 2211: (table_df['TrangThai'] != 'Có vướng mắc') &
+Line 2222: table_df = table_df[table_df['TrangThai'] == 'Có vướng mắc']
+Line 2265: if row['TrangThai'] == 'Có vướng mắc': return "🔴 Vướng mắc"
+Line 2395: task_has_issue = st.checkbox("Công việc đang gặp vướng mắc, cần hỗ trợ", value=False)
+Line 2414: # 10. Ghi chú vướng mắc
+Line 2430: task_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", placeholder="Mô tả chi tiết vướng mắc...", key="new_task_explain")
+Line 2453: calc_status = "Có vướng mắc"
+Line 2478: elif calc_status == "Có vướng mắc":
+Line 2480: st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
+Line 2643: default_has_issue = task_data['TrangThai'] == 'Có vướng mắc'
+Line 2644: u_has_issue = st.checkbox("Công việc gặp vướng mắc, cần hỗ trợ", value=default_has_issue, key=f"u_has_issue_{task_data['ID']}")
+Line 2709: u_explain = st.text_area("Ghi chú / Giải trình vướng mắc (Bắt buộc)", value=task_data.get('GiaiTrinhDeXuat', ''), key=f"u_explain_txt_{task_data['ID']}")
+Line 2730: u_status = "Có vướng mắc"
+Line 2755: elif u_status == "Có vướng mắc":
+Line 2757: st.error("⚠️ Bắt buộc điền 'Ghi chú / Giải trình vướng mắc' chi tiết!")
+Line 4403: **3️⃣ Xử lý Trễ hạn / Có vướng mắc**
+Line 4404: - Nếu rủi ro trễ hạn, đổi trạng thái thành **Có vướng mắc** và ghi rõ lý do tại ô *Giải trình / Đề xuất*.

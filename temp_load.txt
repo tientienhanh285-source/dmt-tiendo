@@ -1,0 +1,43 @@
+def load_config():
+    default_config = {
+        "companies": {
+            "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
+                "projects_by_category": {
+                    "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
+                    "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
+                    "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group"]
+                },
+                "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
+                "personnel_by_department": DEFAULT_PERSONNEL.copy()
+            },
+            "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
+                "projects_by_category": {
+                    "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
+                },
+                "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "personnel_by_department": {
+                    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
+                    "Ban Tài chính Kế toán": ["Lê Thị Hải"],
+                    "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
+                    "Tổ KPI": []
+                }
+            },
+            "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+                "projects_by_category": {},
+                "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "personnel_by_department": {
+                    "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                    "Ban Kỹ thuật": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
+                    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
+                    "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
+                    "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                    "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"]
+                }
+            }
+        },
+        "cv_gsheet_url": ""
+    }
+    
+    conn = get_gsheets_conn()
+    if conn is None:
+        return default_config

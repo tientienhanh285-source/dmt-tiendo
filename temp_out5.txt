@@ -1,0 +1,25 @@
+2771: if isinstance(d, datetime): d = d.date()
+2772: if isinstance(d, date): return d.month == m and d.year == y
+2773: return False
+2774: 
+2775: kpi_df = kpi_df[kpi_df['Deadline'].apply(lambda x: is_in_month(x, selected_month, selected_year))] if not kpi_df.empty else kpi_df
+2776: 
+2777: adj_df = read_kpi_adjustments()
+2778: adj_df = adj_df[(adj_df['Thang'] == selected_month) & (adj_df['Nam'] == selected_year)]
+2779: 
+2780: if kpi_df.empty and adj_df.empty:
+2781: st.info(f"Không có dữ liệu công việc hoặc điểm thưởng/phạt nào trong Tháng {selected_month}/{selected_year}.")
+2782: else:
+2783: import pandas as pd
+2784: from datetime import datetime, date
+2785: personnel_kpi = []
+2786: 
+2787: # Find all personnel relevant to THIS company
+2788: company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
+2789: 
+2790: all_p = set(kpi_df['NguoiChuTri'].dropna().unique())
+2791: all_p.update(adj_df['TenNhanVien'].dropna().unique())
+2792: 
+2793: # Filter to only keep those who belong to the selected company
+2794: all_p = all_p.intersection(company_personnel)
+2795: 

@@ -1,0 +1,8 @@
+app.py: 1733:         submit_new = st.button("💾 Lưu", type="primary")
+app.py: 1735:         if submit_new:
+app.py: 2522:             g_submit = st.button("💾 Lưu", type="primary")
+app.py: 2523:             if g_submit:
+app_backup.py: 1652:         submit_new = st.button("💾 THÊM CÔNG VIỆC MỚI", type="primary")
+app_backup.py: 1654:         if submit_new:
+app_backup.py: 2306:             g_submit = st.button("💾 THÊM CÔNG VIỆC GANTT", type="primary")
+app_backup.py: 2307:             if g_submit:

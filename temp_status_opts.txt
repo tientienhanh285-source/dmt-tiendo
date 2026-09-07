@@ -1,0 +1,24 @@
+
+--- Block around line 2399 ---
+                    # 7 & 8. Status radio
+                    st.markdown("<p style='font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-top: 0;'>📌 Trạng thái công việc</p>", unsafe_allow_html=True)
+                    status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc", "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC"]
+                    task_status_choice = st.radio("Trạng thái công việc", status_opts, index=None, label_visibility="collapsed", key="new_status_choice")
+                    task_is_completed = (task_status_choice == status_opts[0])
+                    task_has_issue = (task_status_choice == status_opts[1])
+                    
+                    if task_status_choice is not None:
+                        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+                        # 10. Ghi chú vướng mắc
+
+--- Block around line 2672 ---
+                    
+                    st.markdown("<p style='font-size: 1.1rem; font-weight: 600; color: #1e3a8a;'>📌 Trạng thái công việc</p>", unsafe_allow_html=True)
+                    u_status_opts = ["✅ Xác nhận ĐÃ HOÀN THÀNH công việc", "⚠️ Công việc CHƯA HOÀN THÀNH, đang VƯỚNG MẮC"]
+                    
+                    u_current_status = task_data.get('TrangThai', 'Đang thực hiện')
+                    if u_current_status == 'Hoàn thành':
+                        u_status_idx = 0
+                    elif u_current_status == 'Có vướng mắc':
+                        u_status_idx = 1
+                    else:

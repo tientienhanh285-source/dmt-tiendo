@@ -1,152 +1,170 @@
-import os
-import re
+import sys
 
-def patch_app():
+def main():
     with open('app.py', 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Find where to insert
-    target = """                    kpi_month_df[["Người thực hiện", "Phòng ban", "Số việc", "Điểm công việc", "Thưởng/Phạt", "TỔNG ĐIỂM", "Xếp loại"]],
-                    column_config={
-                        "TỔNG ĐIỂM": st.column_config.ProgressColumn("TỔNG ĐIỂM", format="%f", min_value=0, max_value=115),
-                    },
-                    use_container_width=True, hide_index=True
-                )"""
-                
-    if target not in content:
-        print("Cannot find target string in app.py")
-        return
+    insertion_point = """            if ai_person:
+                jd_source_data = config.get("job_descriptions", {}).get(selected_company, {}).get(ai_person, "")"""
 
-    insertion = """
-                st.markdown("---")
-                with st.expander("🤖 AI Phân tích Độ chuẩn xác JD (Quét Hàng Loạt Phòng Ban)", expanded=False):
-                    st.info("💡 Tính năng này sẽ quét qua toàn bộ các nhân viên trong phòng ban trên để đối chiếu công việc với JD, nhằm tự động lọc ra những người có **tỷ lệ làm việc lặt vặt/ngoài lề cao**.")
-                    
+    batch_code = """
+            # --- BATCH AI SCAN ---
+            st.markdown("---")
+            with st.expander("⚡ Quét nhanh toàn bộ Phòng ban (Batch AI Scan)", expanded=False):
+                st.info("Tính năng này sẽ tự động kiểm tra JD của tất cả nhân sự trong phòng ban. Những ai chưa có kết quả sẽ tự động gọi AI để phân tích. Khuyên dùng khi bạn muốn kiểm tra tổng thể cả phòng.")
+                
+                batch_api_key = ""
+                try:
+                    if "gemini" in st.secrets and "api_key" in st.secrets["gemini"]:
+                        batch_api_key = st.secrets["gemini"]["api_key"]
+                except:
+                    pass
+                if not batch_api_key:
                     import os
-                    api_key = ""
-                    try:
-                        if "gemini" in st.secrets and "api_key" in st.secrets["gemini"]:
-                            api_key = st.secrets["gemini"]["api_key"]
-                    except:
-                        pass
+                    batch_api_key = os.environ.get("GEMINI_API_KEY", "")
+                    
+                if not batch_api_key:
+                    batch_api_key = st.text_input("🔑 Nhập khóa API Gemini để quét hàng loạt:", type="password", key="batch_api_key_input")
+                
+                if st.button("🚀 Bắt đầu Quét toàn bộ", type="primary"):
+                    if not batch_api_key:
+                        st.error("Vui lòng nhập API Key!")
+                    elif not ai_personnel:
+                        st.warning("Phòng ban không có nhân sự.")
+                    else:
+                        import google.generativeai as genai
+                        import hashlib
+                        import json
+                        import time
                         
-                    if not api_key:
-                        api_key = os.environ.get("GEMINI_API_KEY", "")
+                        genai.configure(api_key=batch_api_key, transport='rest')
+                        valid_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+                        model_name = 'gemini-3.6-flash' if 'models/gemini-3.6-flash' in valid_models else ('gemini-1.5-flash' if 'models/gemini-1.5-flash' in valid_models else 'gemini-pro')
+                        model = genai.GenerativeModel(model_name)
                         
-                    if not api_key:
-                        api_key = st.text_input("🔑 Nhập khóa API Gemini (API Key) để sử dụng:", type="password", key="api_key_batch")
+                        results = []
+                        progress_bar = st.progress(0)
+                        status_text = st.empty()
                         
-                    if api_key:
-                        if st.button("▶️ QUÉT AI TOÀN BỘ PHÒNG BAN TRÊN", type="primary", key="btn_scan_batch"):
-                            import google.generativeai as genai
-                            import json
-                            genai.configure(api_key=api_key, transport='rest')
-                            try:
-                                valid_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-                                model_name = 'gemini-3.6-flash' if 'models/gemini-3.6-flash' in valid_models else ('gemini-1.5-flash' if 'models/gemini-1.5-flash' in valid_models else 'gemini-pro')
-                                model = genai.GenerativeModel(model_name)
+                        def is_same_person_batch(db_name, target_name):
+                            db_str = str(db_name).strip().lower()
+                            tgt_str = str(target_name).strip().lower()
+                            if db_str == tgt_str: return True
+                            tgt_parts = tgt_str.split()
+                            if len(tgt_parts) >= 2:
+                                return tgt_parts[0] in db_str and tgt_parts[-1] in db_str
+                            return False
+                        
+                        total_people = len(ai_personnel)
+                        
+                        for idx, p in enumerate(ai_personnel):
+                            status_text.text(f"Đang phân tích ({idx+1}/{total_people}): {p}...")
+                            
+                            # Lọc công việc
+                            p_tasks = display_df[
+                                (display_df['NguoiChuTri'].apply(lambda x: is_same_person_batch(x, p))) & 
+                                (display_df['Deadline'].apply(lambda x: x.strftime('%m/%Y') if pd.notna(x) and hasattr(x, 'strftime') else '') == ai_month)
+                            ]
+                            
+                            if p_tasks.empty:
+                                results.append({"Nhân sự": p, "Kết quả": "Trống", "Tỷ lệ khớp": None, "Chi tiết": "Không có công việc trong tháng này"})
+                            else:
+                                jd_data = config.get("job_descriptions", {}).get(selected_company, {}).get(p, "")
+                                jd_str = jd_data if isinstance(jd_data, str) else jd_data.get("jd_text", "")
                                 
-                                # Process all personnel in the current kpi_month_df
-                                red_flag_reports = []
+                                if not jd_str.strip():
+                                    results.append({"Nhân sự": p, "Kết quả": "Thiếu JD", "Tỷ lệ khớp": None, "Chi tiết": "Chưa khai báo Mô tả công việc"})
+                                else:
+                                    tasks_list = "\\n".join([f"- {row['TenCongViec']}" for _, row in p_tasks.iterrows()])
+                                    prompt = f\"\"\"
+                                    Đóng vai một Giám đốc nhân sự cực kỳ tinh tế. 
+                                    Dưới đây là Bản Mô tả công việc (JD) của nhân viên {p}:
                                 
-                                progress_bar = st.progress(0)
-                                status_text = st.empty()
+                                    [BẢN MÔ TẢ CÔNG VIỆC]
+                                    {jd_str}
+                                    [KẾT THÚC JD]
                                 
-                                total_p = len(kpi_month_df)
-                                for i, (_, row) in enumerate(kpi_month_df.iterrows()):
-                                    p_name = row['Người thực hiện']
-                                    status_text.text(f"Đang quét {i+1}/{total_p}: {p_name} ...")
-                                    progress_bar.progress((i) / total_p)
-                                    
-                                    # Get JD
-                                    jd_df = db.get("jd") if isinstance(db.get("jd"), pd.DataFrame) else pd.DataFrame([db.get("jd")] if db.get("jd") else [])
-                                    if jd_df.empty:
-                                        try:
-                                            jd_df = pd.read_json("jd_db.json") if os.path.exists("jd_db.json") else pd.DataFrame()
-                                        except: pass
-                                    
-                                    p_jd = jd_df[jd_df['TenNhanVien'].str.lower() == p_name.lower()] if not jd_df.empty and 'TenNhanVien' in jd_df.columns else pd.DataFrame()
-                                    if p_jd.empty:
-                                        # Khong co JD, bo qua hoac canh bao
-                                        continue
-                                        
-                                    jd_source = p_jd.iloc[0].get('NoiDungJD', '')
-                                    if not jd_source or len(str(jd_source)) < 10:
-                                        continue
-                                        
-                                    # Get tasks
-                                    ai_tasks = display_df[
-                                        (display_df['NguoiChuTri'].str.lower() == p_name.lower()) & 
-                                        (display_df['Deadline'].apply(lambda x: x.month == selected_month and x.year == selected_year if pd.notna(x) and hasattr(x, 'month') else False))
-                                    ]
-                                    
-                                    if ai_tasks.empty:
-                                        continue
-                                        
-                                    tasks_list = "\\n".join([f"- {r['TenCongViec']}" for _, r in ai_tasks.iterrows()])
-                                    
-                                    prompt = f\"\"\"Đóng vai Giám đốc nhân sự tinh tế.
-                                    Mô tả công việc của {p_name}:
-                                    {jd_source}
-                                    
-                                    Công việc thực hiện:
+                                    Và đây là danh sách công việc họ thực hiện trong tháng:
                                     {tasks_list}
-                                    
-                                    1. Đối chiếu từng công việc xem có khớp với chuyên môn trong JD không.
-                                    2. Format kết quả đầu ra thành JSON thô (chỉ trả về JSON, không markdown ```json):
+                                
+                                    NHIỆM VỤ CỦA BẠN:
+                                    1. Đối chiếu TỪNG công việc xem nó có KHỚP với chuyên môn quy định trong JD không. 
+                                    (Lưu ý: Tên công việc thực tế có thể chi tiết và từ ngữ khác biệt so với JD văn xuôi. Hãy dùng tư duy suy luận về bản chất và mục đích để phán đoán).
+                                    2. Nếu khớp, giải thích vì nó phục vụ cho mục nào trong JD. Nếu ngoài JD, ghi rõ là công việc phát sinh.
+                                    3. Format kết quả đầu ra thành đúng định dạng chuỗi JSON thô như sau (chỉ trả về JSON, không chứa dấu tick markdown ```json):
                                     {{
+                                        "ty_le_khop": <số nguyên từ 0-100, ví dụ 80>,
                                         "chi_tiet": [
                                             {{
-                                                "ten_cong_viec": "<Tên>",
-                                                "phan_loai": "<Chỉ điền 'Khớp JD' hoặc 'Ngoài JD'>"
+                                                "ten_cong_viec": "<Tên công việc y nguyên trong danh sách>",
+                                                "phan_loai": "<Chỉ điền 'Khớp JD' hoặc 'Ngoài JD'>",
+                                                "nhan_xet": "<Phân tích ngắn gọn 1-2 câu>"
                                             }}
                                         ]
                                     }}
                                     \"\"\"
                                     
+                                    prompt_hash = hashlib.md5(prompt.encode('utf-8')).hexdigest()
+                                    cache_file = f".ai_cache_{prompt_hash}.txt"
+                                    
                                     try:
-                                        response = model.generate_content(
-                                            prompt, 
-                                            generation_config={"temperature": 0.0},
-                                            request_options={"retry": None, "timeout": 30.0}
-                                        )
-                                        raw_text = response.text
-                                        import re
-                                        json_match = re.search(r'\\{.*\\}', raw_text, re.DOTALL)
-                                        if json_match:
-                                            ai_result = json.loads(json_match.group(0))
-                                            out_of_jd_tasks = [t for t in ai_result.get("chi_tiet", []) if t.get("phan_loai", "") == "Ngoài JD"]
-                                            if out_of_jd_tasks:
-                                                red_flag_reports.append({
-                                                    "Tên nhân viên": p_name,
-                                                    "Phòng ban": row['Phòng ban'],
-                                                    "Số việc ngoài JD": len(out_of_jd_tasks),
-                                                    "Chi tiết": "\\n".join([f"- {t['ten_cong_viec']}" for t in out_of_jd_tasks])
-                                                })
+                                        if os.path.exists(cache_file):
+                                            with open(cache_file, "r", encoding="utf-8") as f:
+                                                raw_text = f.read()
+                                        else:
+                                            # Gọi API
+                                            response = model.generate_content(
+                                                prompt, 
+                                                generation_config={"temperature": 0.0},
+                                                request_options={"retry": None, "timeout": 30.0}
+                                            )
+                                            raw_text = response.text
+                                            if raw_text:
+                                                with open(cache_file, "w", encoding="utf-8") as f:
+                                                    f.write(raw_text)
+                                            time.sleep(2) # Tránh rate limit
+                                            
+                                        cleaned = raw_text.strip()
+                                        if cleaned.startswith("```json"):
+                                            cleaned = cleaned[7:]
+                                        if cleaned.endswith("```"):
+                                            cleaned = cleaned[:-3]
+                                        
+                                        data = json.loads(cleaned)
+                                        ty_le = data.get("ty_le_khop", 0)
+                                        ngoai_jd_count = sum(1 for c in data.get("chi_tiet", []) if "Ngoài JD" in c.get("phan_loai", ""))
+                                        
+                                        if ty_le == 100:
+                                            res_text = "🟢 Tốt (100% khớp)"
+                                        elif ty_le >= 50:
+                                            res_text = f"🟡 Cảnh báo ({ty_le}% khớp)"
+                                        else:
+                                            res_text = f"🔴 Lệch JD ({ty_le}% khớp)"
+                                            
+                                        chi_tiet_text = f"{ngoai_jd_count} việc ngoài JD" if ngoai_jd_count > 0 else "Hoàn toàn khớp"
+                                        
+                                        results.append({"Nhân sự": p, "Kết quả": res_text, "Tỷ lệ khớp": ty_le, "Chi tiết": chi_tiet_text})
                                     except Exception as e:
-                                        print(f"Error AI cho {p_name}: {e}")
-                                        pass
-                                
-                                progress_bar.progress(1.0)
-                                status_text.text(f"Hoàn thành quét {total_p} nhân sự!")
-                                
-                                if len(red_flag_reports) == 0:
-                                    st.success("✅ Tuyệt vời! Toàn bộ phòng ban này đều làm việc đúng chuẩn JD, không phát hiện việc nào sai lệch chuyên môn.")
-                                else:
-                                    st.error(f"🚨 PHÁT HIỆN {len(red_flag_reports)} NHÂN SỰ CÓ CÔNG VIỆC NGOÀI CHUYÊN MÔN!")
-                                    st.dataframe(pd.DataFrame(red_flag_reports), use_container_width=True)
-                            except Exception as ex:
-                                st.error(f"Lỗi AI: {ex}")
-    """
-    
-    new_content = content.replace(target, target + insertion)
-    
-    if target + insertion in new_content:
-        with open('app.py', 'w', encoding='utf-8') as f:
-            f.write(new_content)
-        print("Successfully patched app.py!")
-    else:
-        print("Failed to patch")
+                                        results.append({"Nhân sự": p, "Kết quả": "Lỗi AI", "Tỷ lệ khớp": None, "Chi tiết": str(e)})
+                            
+                            progress_bar.progress((idx + 1) / total_people)
+                            
+                        status_text.success("✅ Đã hoàn thành phân tích toàn bộ phòng ban!")
+                        
+                        if results:
+                            df_res = pd.DataFrame(results)
+                            st.dataframe(df_res, use_container_width=True, hide_index=True)
+                            
+            st.markdown("---")
+"""
 
-if __name__ == '__main__':
-    patch_app()
+    if "# --- BATCH AI SCAN ---" not in content:
+        content = content.replace(insertion_point, batch_code + "\n" + insertion_point)
+        with open('app.py', 'w', encoding='utf-8') as f:
+            f.write(content)
+        print("Patched successfully!")
+    else:
+        print("Already patched.")
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,55 @@
+BUTTONS:
+- Tải Báo cáo Phòng Ban
+- Lưu đổi tên phòng
+- Xác nhận xóa
+- 🔄 TẠO CÔNG VIỆC CHO KỲ SAU
+- 🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm
+- 💾 Lưu tất cả thay đổi
+- Thêm dự án
+- Lưu đổi tên
+- Xác nhận xóa phòng
+- Thêm phòng ban
+- Lưu thay đổi
+- Xác nhận xóa dự án
+- 💾 LƯU CẬP NHẬT TIẾN ĐỘ
+- Thêm nhân sự
+- 🗑️ XÓA CÔNG VIỆC CHỌN
+- Tạo Phiếu Đánh Giá
+- 💾 Lưu
+- Lưu Điểm Điều Chỉnh
+
+--- ADD TASK LOGIC ---
+if st.button("Lưu Điểm Điều Chỉnh", type="primary"):
+                if adj_template == "Lý do khác" and not adj_reason.strip():
+                    st.error("⚠️ Vui lòng nhập lý do chi tiết!")
+                else:
+                    actual_val = adj_val if adj_type == "⭐ Thưởng điểm" else -adj_val
+                    if adj_template != "Lý do khác":
+                        final_reason = f"[{adj_template}] ({so_lan} lần) {adj_reason.strip()}".strip()
+                    else:
+                        final_reason = adj_reason.strip()
+                    add_kpi_adjustment(adj_person, adj_month, adj_year, adj_type, actual_val, final_reason)
+                    st.success("🎉 Đã lưu điều chỉnh điểm thành công!")
+                    st.rerun()
+
+...
+if st.button("Thêm dự án", type="primary"):
+                        if new_proj_name.strip():
+                            if new_proj_name.strip() not in projs_in_cat:
+                                config["companies"][selected_company]["projects_by_category"][sel_cat].append(new_proj_name.strip())
+                                if save_config(config):
+                                    st.success(f"Đã thêm dự án: {new_proj_name}")
+                                    st.cache_data.clear()
+                                    st.rerun()
+                            else:
+                                st.error("Dự án đã tồn tại!")
+                        else:
+                            st.error("Tên dự án không được để trống!")
+                            
+                with col_edit:
+                    st.markdown("**✏️ Đổi tên dự án**")
+                    if projs_in_cat:
+                        proj_to_edit = st.selectbox("Chọn dự án cần sửa", projs_in_cat, key="admin_edit_pr
+...
+
+--- DELETE TASK LOGIC ---

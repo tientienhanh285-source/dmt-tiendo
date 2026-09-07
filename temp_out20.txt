@@ -1,0 +1,65 @@
+2856: if grp.empty: return 0
+2857: t_score = 0
+2858: total_w = 0
+2859: for idx, row in grp.iterrows():
+2860: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2861: w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
+2862: 
+2863: if is_comp:
+2864: p = 100
+2865: else:
+2866: if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+2867: cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+2868: if cc == "Miễn trừ (Loại bỏ KPI)":
+2869: w = 0
+2870: p = 0
+2871: elif cc == "50%": p = 50
+2872: elif cc == "80%": p = 80
+2873: elif cc == "90%": p = 90
+2874: else: p = 0
+2875: else:
+2876: p = 0
+2877: 
+2878: if pd.isna(p): p = 0
+2879: t_score += (p / 100.0) * w
+2880: total_w += w
+2881: 
+2882: if total_w > 0:
+2883: return (t_score / total_w) * 100
+2884: return 0
+2885: 
+2886: if len(giao_ban_tasks) > 0:
+2887: kh_score = calc_score_for_group(ke_hoach_tasks)
+2888: gb_score = calc_score_for_group(giao_ban_tasks)
+2889: task_score = kh_score * 0.7 + gb_score * 0.3
+2890: else:
+2891: task_score = calc_score_for_group(ke_hoach_tasks)
+2892: 
+2893: 
+2894: p_adj_df = adj_df[adj_df['TenNhanVien'] == person] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
+2895: adj_score = p_adj_df['DiemDieuChinh'].sum()
+2896: 
+2897: final_score = min(115, max(0, round(task_score + adj_score, 2)))
+2898: 
+2899: # Xếp loại mới
+2900: if final_score > 91: grade = "A"
+2901: elif final_score > 81: grade = "B"
+2902: elif final_score > 71: grade = "C"
+2903: else: grade = "D"
+2904: 
+2905: pb = group['PhongBan'].iloc[0] if not group.empty else ""
+2906: 
+2907: personnel_kpi.append({
+2908: "Người thực hiện": person,
+2909: "Phòng ban": pb,
+2910: "Số việc": total_tasks,
+2911: "Điểm công việc": round(task_score, 1),
+2912: "Thưởng/Phạt": adj_score,
+2913: "TỔNG ĐIỂM": final_score,
+2914: "Xếp loại": grade,
+2915: "_kh_score": round(kh_score, 1) if len(giao_ban_tasks) > 0 else round(task_score, 1),
+2916: "_gb_score": round(gb_score, 1) if len(giao_ban_tasks) > 0 else 0,
+2917: "_has_gb": len(giao_ban_tasks) > 0
+2918: })
+2919: 
+2920: if personnel_kpi:

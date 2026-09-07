@@ -1,0 +1,90 @@
+3281: else:
+3282: adj_type = st.radio("Phân loại hành vi", ["⭐ Thưởng điểm", "🛑 Phạt điểm"], horizontal=True)
+3283: adj_val = st.number_input("Số điểm", min_value=0, max_value=15, value=5)
+3284: adj_reason = st.text_area("Lý do chi tiết (Bắt buộc)")
+3285: 
+3286: if st.button("Lưu Điểm Điều Chỉnh", type="primary"):
+3287: if adj_template == "Lý do khác" and not adj_reason.strip():
+3288: st.error("⚠️ Vui lòng nhập lý do chi tiết!")
+3289: else:
+3290: actual_val = adj_val if adj_type == "⭐ Thưởng điểm" else -adj_val
+3291: if adj_template != "Lý do khác":
+3292: final_reason = f"[{adj_template}] ({so_lan} lần) {adj_reason.strip()}".strip()
+3293: else:
+3294: final_reason = adj_reason.strip()
+3295: add_kpi_adjustment(adj_person, adj_month, adj_year, adj_type, actual_val, final_reason)
+3296: st.session_state["success_msg"] = "🎉 Đã lưu điều chỉnh điểm thành công!"
+3297: st.rerun()
+3298: 
+3299: with kpi_tab4:
+3300: st.markdown("### Tùy chọn Xuất Báo Cáo & Phân tích")
+3301: col_x1, col_x2 = st.columns(2)
+3302: 
+3303: with col_x1:
+3304: st.markdown("#### 1. Báo Cáo Phòng Ban (Excel)")
+3305: if st.button("Tải Báo cáo Phòng Ban"):
+3306: data_rows = []
+3307: for i, person in enumerate(all_p_list):
+3308: data_rows.append({
+3309: 'HoTen': person, 'ChucVu': 'Nhân viên',
+3310: 'SoLanTre': 0, 'SoLanSom': 0, 'SoLanKhongCC': 0,
+3311: 'DiemTruTre': 0, 'DiemTruSom': 0, 'DiemTruKhongCC': 0,
+3312: 'TongTru': 0, 'DiemConLai': 100, 'XepLoai': 'A', 'GhiChu': ''
+3313: })
+3314: excel_data = kpi_reports.generate_department_excel(selected_company, selected_month, selected_year, data_rows)
+3315: st.download_button("📥 Tải Báo Cáo Excel", data=excel_data, file_name=f"KPI_Thang_{selected_month}_{selected_year}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+3316: 
+3317: with col_x2:
+3318: st.markdown("#### 2. Phiếu KPI Cá Nhân (Word)")
+3319: emp_to_export = st.selectbox("Chọn nhân viên", all_p_list, key='emp_export')
+3320: if st.button("Tạo Phiếu Đánh Giá"):
+3321: # Collect real tasks and penalties
+3322: emp_tasks = []
+3323: kpi_score = 100
+3324: if personnel_kpi:
+3325: for p in personnel_kpi:
+3326: if p['Người thực hiện'] == emp_to_export:
+3327: kpi_score = p['Điểm công việc']
+3328: break
+3329: 
+3330: e_kpi_df = kpi_df[kpi_df['NguoiChuTri'] == emp_to_export].copy()
+3331: e_kpi_df['TyTrongKPI'] = pd.to_numeric(e_kpi_df['TyTrongKPI'], errors='coerce').fillna(0)
+3332: e_kpi_df['PhanTramHoanThanh'] = pd.to_numeric(e_kpi_df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+3333: # Calc weights again if needed, or just display raw tasks
+3334: explicit_weight_sum = e_kpi_df[e_kpi_df['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+3335: unweighted_count = len(e_kpi_df[e_kpi_df['TyTrongKPI'] <= 0])
+3336: remaining_weight = max(0, 100 - explicit_weight_sum)
+3337: auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
+3338: 
+3339: for idx, row in e_kpi_df.iterrows():
+3340: w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
+3341: pt = row.get('PhanTramHoanThanh', 0)
+3342: if pd.isna(pt): pt = 0
+3343: 
+3344: diem_tru = w - (pt / 100.0 * w)
+3345: emp_tasks.append({
+3346: 'TenCV': row['TenCongViec'],
+3347: 'TgianYC': str(row['Deadline']),
+3348: 'KetQua': f"{pt}% (Tỷ trọng: {w:.1f}%)",
+3349: 'DiemTru': round(diem_tru, 1)
+3350: })
+3351: 
+3352: e_adj_df = adj_df[adj_df['TenNhanVien'] == emp_to_export] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
+3353: penalties = e_adj_df.to_dict('records')
+3354: 
+3355: def _get_pb(name):
+3356: # Try to find from current company's departments
+3357: depts = get_departments_for_company(selected_company, config)
+3358: if depts:
+3359: for d in depts:
+3360: p_list = get_personnel_for_company_dept(selected_company, d, config)
+3361: if name in p_list: return d
+3362: # Fallback to global config
+3363: for d, p_list in config.get("personnel_by_department", {}).items():
+3364: if name in p_list: return d
+3365: return "Khác"
+3366: 
+3367: emp_pb = _get_pb(emp_to_export)
+3368: word_data = kpi_reports.generate_individual_docx(emp_to_export, selected_month, selected_year, kpi_score, emp_tasks, penalties, "Nhân viên", emp_pb)
+3369: st.download_button("📥 Tải Phiếu Cá Nhân (Word)", data=word_data, file_name=f"Phieu_KPI_{emp_to_export}_Thang_{selected_month}_{selected_year}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+3370: 

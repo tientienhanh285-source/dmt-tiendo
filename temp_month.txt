@@ -1,0 +1,22 @@
+2772: with kpi_tab1:
+2773: st.markdown("#### Đánh giá và Xếp loại KPI Tháng")
+2774: 
+2775: col_m1, col_m2, col_m3 = st.columns(3)
+2776: with col_m1:
+2777: selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+2778: with col_m2:
+2779: selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
+2780: with col_m3:
+2781: allowed_depts_m = get_departments_for_company(selected_company, config)
+---
+2774: 
+2775: col_m1, col_m2, col_m3 = st.columns(3)
+2776: with col_m1:
+2777: selected_month = st.selectbox("Chọn Tháng", list(range(1, 13)), index=today.month - 1)
+2778: with col_m2:
+2779: selected_year = st.selectbox("Chọn Năm", [today.year - 1, today.year, today.year + 1], index=1)
+2780: with col_m3:
+2781: allowed_depts_m = get_departments_for_company(selected_company, config)
+2782: dept_options_m = ["Tất cả phòng ban"] + allowed_depts_m
+2783: selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
+---

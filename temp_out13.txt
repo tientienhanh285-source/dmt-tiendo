@@ -1,0 +1,30 @@
+251: if worksheet == "Sheet1":
+252: col_mapping = {
+253: 'Mã CV': 'ID', 'MaCV': 'ID',
+254: 'Tên công việc': 'TenCongViec', 'Nội dung': 'TenCongViec', 'Công việc': 'TenCongViec',
+255: 'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+256: 'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+257: 'Hạn chót': 'Deadline', 'Ngày hoàn thành': 'Deadline'
+258: }
+259: rename_dict = {k: v for k, v in col_mapping.items() if k in df.columns}
+260: df.rename(columns=rename_dict, inplace=True)
+261: 
+262: 
+263: allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan']
+264: df = df[[c for c in df.columns if c in allowed_cols]]
+265: 
+266: elif worksheet == "KPI_ADJUSTMENTS":
+267: if "DiemDieuChinh" in df.columns:
+268: df.rename(columns={"DiemDieuChinh": "SoDiem"}, inplace=True)
+269: if "TenNhanVien" in df.columns:
+270: df.rename(columns={"TenNhanVien": "NhanSu"}, inplace=True)
+271: if "LoaiHanhVi" in df.columns:
+272: df.rename(columns={"LoaiHanhVi": "LoaiDieuChinh"}, inplace=True)
+273: allowed_cols = ['ID', 'NhanSu', 'Thang', 'Nam', 'LoaiDieuChinh', 'SoDiem', 'LyDo', 'NguoiCapNhat', 'ThoiGianCapNhat']
+274: df = df[[c for c in df.columns if c in allowed_cols]]
+275: 
+276: elif worksheet == "CONFIG":
+277: allowed_cols = ['PhongBan', 'NhanSu', 'Role']
+278: df = df[[c for c in df.columns if c in allowed_cols]]
+279: 
+280: elif worksheet == "GANTT_KHDT":

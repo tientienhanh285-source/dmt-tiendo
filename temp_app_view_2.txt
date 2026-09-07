@@ -1,0 +1,100 @@
+2951: det_p = st.selectbox("👤 Chọn nhân sự cần tra cứu", valid_people, key="detail_person_kpi")
+2952: if det_p:
+2953: p_info = kpi_month_df[kpi_month_df['Người thực hiện'] == det_p].iloc[0]
+2954: st.markdown(f"### 🧮 Diễn giải công thức tính điểm của **{det_p}**")
+2955: 
+2956: kh_val = p_info['_kh_score']
+2957: gb_val = p_info['_gb_score']
+2958: has_gb = p_info['_has_gb']
+2959: task_val = p_info['Điểm công việc']
+2960: adj_val = p_info['Thưởng/Phạt']
+2961: final_val = p_info['TỔNG ĐIỂM']
+2962: 
+2963: st.markdown(f"**📝 Danh sách công việc của {det_p}:**")
+2964: p_tasks = kpi_df[kpi_df['NguoiChuTri'] == det_p].copy()
+2965: if p_tasks.empty:
+2966: st.warning("Không có đầu việc nào được ghi nhận trong tháng.")
+2967: else:
+2968: p_tasks['TyTrongKPI'] = pd.to_numeric(p_tasks.get('TyTrongKPI', pd.Series(0, index=p_tasks.index)), errors='coerce').fillna(0)
+2969: explicit_w = p_tasks[p_tasks['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
+2970: unweighted = len(p_tasks[p_tasks['TyTrongKPI'] <= 0])
+2971: auto_w = max(0, 100 - explicit_w) / unweighted if unweighted > 0 else 0
+2972: 
+2973: quy_dois = []
+2974: w_thuctes = []
+2975: kh_parts = []
+2976: gb_parts = []
+2977: kh_tw = 0.0
+2978: gb_tw = 0.0
+2979: 
+2980: for idx, row in p_tasks.iterrows():
+2981: is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2982: w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
+2983: if is_comp:
+2984: p = 100
+2985: p_tasks.at[idx, 'MucDoGhiNhan'] = "-"
+2986: elif "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+2987: cc = str(row.get('MucDoGhiNhan', '0%'))
+2988: if "Miễn trừ" in cc: w = 0; p = 0
+2989: elif "50%" in cc: p = 50
+2990: elif "80%" in cc: p = 80
+2991: elif "90%" in cc: p = 90
+2992: else: p = 0
+2993: else:
+2994: p = 0
+2995: p_tasks.at[idx, 'MucDoGhiNhan'] = "-"
+2996: 
+2997: quy_dois.append(p)
+2998: w_round = round(w, 2)
+2999: w_thuctes.append(w_round)
+3000: 
+3001: if row.get('NguonGiaoViec', '') == 'Công việc trong "Giao ban"':
+3002: if w_round > 0:
+3003: gb_parts.append(f"({p} × {w_round}%)")
+3004: gb_tw += w_round
+3005: else:
+3006: if w_round > 0:
+3007: kh_parts.append(f"({p} × {w_round}%)")
+3008: kh_tw += w_round
+3009: 
+3010: p_tasks['Tỷ trọng (Thực tế) %'] = w_thuctes
+3011: p_tasks['Điểm quy đổi'] = quy_dois
+3012: 
+3013: kh_math = f"[{' + '.join(kh_parts)}] / {round(kh_tw,2)}%" if kh_parts else "0"
+3014: gb_math = f"[{' + '.join(gb_parts)}] / {round(gb_tw,2)}%" if gb_parts else "0"
+3015: 
+3016: if has_gb:
+3017: st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
+3018: f"**2️⃣ Điểm Giao ban ({gb_val}):** = {gb_math}\n\n"
+3019: f"**3️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
+3020: f"👉 **TỔNG ĐIỂM ({final_val})** = (Điểm KH × 70% + Điểm GB × 30%) + Thưởng/Phạt = ({kh_val} × 0.7 + {gb_val} × 0.3) + ({adj_val})")
+3021: else:
+3022: st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
+3023: f"**2️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
+3024: f"👉 **TỔNG ĐIỂM ({final_val})** = Điểm KH + Thưởng/Phạt = {kh_val} + ({adj_val})")
+3025: 
+3026: p_tasks_disp = p_tasks[['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI', 'Tỷ trọng (Thực tế) %', 'Điểm quy đổi']].copy()
+3027: p_tasks_disp['Deadline'] = pd.to_datetime(p_tasks_disp['Deadline'], errors='coerce').dt.strftime('%d/%m/%Y').fillna('')
+3028: st.dataframe(p_tasks_disp, use_container_width=True, hide_index=True)
+3029: 
+3030: st.markdown(f"**⚖️ Lịch sử Thưởng/Phạt của {det_p}:**")
+3031: p_adjs = adj_df[adj_df['TenNhanVien'] == det_p][['LoaiHanhVi', 'LyDo', 'DiemDieuChinh']] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
+3032: if p_adjs.empty:
+3033: st.success("Không có ghi nhận thưởng/phạt nào.")
+3034: else:
+3035: st.dataframe(p_adjs, use_container_width=True, hide_index=True)
+3036: else:
+3037: st.info("Không có dữ liệu cá nhân hợp lệ.")
+3038: with kpi_tab2:
+3039: st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
+3040: col_y1, col_y2 = st.columns(2)
+3041: with col_y1:
+3042: selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
+3043: with col_y2:
+3044: allowed_depts_y = get_departments_for_company(selected_company, config)
+3045: dept_options_y = ["Tất cả phòng ban"] + allowed_depts_y
+3046: selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
+3047: 
+3048: if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
+3049: with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
+3050: import pandas as pd

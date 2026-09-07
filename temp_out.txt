@@ -1,0 +1,30 @@
+211: 'ID': 'Mã CV',
+212: 'TenCongViec': 'Tên công việc',
+213: 'PhanTramHoanThanh': 'Tiến độ %',
+214: 'TrangThai': 'Trạng thái',
+215: 'Deadline': 'Hạn chót'
+216: }
+217: df.rename(columns=col_mapping, inplace=True)
+218: if "NgayBatDau" in df.columns:
+219: df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"], errors="coerce").dt.strftime('%d/%m/%Y')
+220: if "Hạn chót" in df.columns:
+221: df["Hạn chót"] = pd.to_datetime(df["Hạn chót"], errors="coerce").dt.strftime('%d/%m/%Y')
+222: 
+223: elif worksheet == "KPI_ADJUSTMENTS":
+224: if "SoDiem" in df.columns:
+225: df.rename(columns={"SoDiem": "DiemDieuChinh"}, inplace=True)
+226: 
+227: 
+228: 
+229: return df
+230: except Exception as e:
+231: import streamlit as st
+232: st.warning(f"Lỗi đọc Supabase ({worksheet}): {e}")
+233: return fallback_df
+234: 
+235: def safe_gsheets_update(conn, worksheet, data):
+236: import streamlit as st
+237: import time
+238: import pandas as pd
+239: import numpy as np
+240: import math

@@ -1,0 +1,91 @@
+361:     required_cols = ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "QuanTrong", "KhanCap", "NgayCapNhat"]
+378:                 'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+379:                 'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+393:             if 'PhanTramHoanThanh' in df.columns:
+394:                 df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+395:             if 'TrangThai' in df.columns:
+396:                 df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
+397:                 df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
+404:     for col in ["ID", "TenDuAn", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "PhanTramHoanThanh", "Milestone", "NgayCapNhat"]:
+417:     df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0).astype(int)
+597:         "Trạng thái": ["Trạng thái", "Trang thai", "TRẠNG THÁI", "TrangThai"],
+707:                 "TrangThai": trang_thai,
+723:             docs_df.at[idx, "TrangThai"] = trang_thai
+760:                 "PhanTramHoanThanh": 100 if task_status == "Hoàn thành" else 99,
+761:                 "TrangThai": task_status,
+776:             tasks_df.at[t_idx, "TrangThai"] = task_status
+777:             tasks_df.at[t_idx, "PhanTramHoanThanh"] = 100 if task_status == "Hoàn thành" else 99
+789:         "TrangThai", "NgayCapNhat", "GhiChu"
+807:                 'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+808:                 'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+822:             if 'PhanTramHoanThanh' in df.columns:
+823:                 df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+824:             if 'TrangThai' in df.columns:
+825:                 df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
+826:                 df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
+846:         status_val = str(row['TrangThai']).strip()
+860:                 df.at[idx, 'TrangThai'] = f"⚠️ Trễ hạn xử lý CV (Trễ {days_late} ngày)"
+885:         "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec"
+903:                 'Tiến độ %': 'PhanTramHoanThanh', 'Progress': 'PhanTramHoanThanh', 'Tiến độ': 'PhanTramHoanThanh',
+904:                 'Trạng thái': 'TrangThai', 'Status': 'TrangThai',
+918:             if 'PhanTramHoanThanh' in df.columns:
+919:                 df['PhanTramHoanThanh'] = pd.to_numeric(df['PhanTramHoanThanh'], errors='coerce').fillna(0)
+920:             if 'TrangThai' in df.columns:
+921:                 df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
+922:                 df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
+960:         is_comp = str(row['TrangThai']).strip() == "Hoàn thành"
+963:         df.at[idx, 'PhanTramHoanThanh'] = calculate_time_progress(start_d, end_d, is_comp)
+1192: done_v = len(display_df[display_df['TrangThai'] == 'Hoàn thành'])
+1193: issue_v = len(display_df[display_df['TrangThai'] == 'Có vướng mắc'])
+1194: overdue_v = len(display_df[(display_df['Deadline'] < today) & (display_df['TrangThai'] != 'Hoàn thành')])
+1213:             is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+1283:                 'TrangThai': 'Trạng thái xử lý',
+1321:                     if col_name in ["ID", "STT", "NgayBatDau", "Deadline", "Deadline", "PhanTramHoanThanh", "TrangThai", "NgayCapNhat"]:
+1326:                     if col_name == "PhanTramHoanThanh":
+1404:     for _, row in dash_df[dash_df['TrangThai'] != 'Hoàn thành'].iterrows():
+1418:     done_dash = len(dash_df[dash_df['TrangThai'] == 'Hoàn thành'])
+1419:     issue_dash = len(dash_df[dash_df['TrangThai'] == 'Có vướng mắc'])
+1420:     overdue_dash = len(dash_df[(dash_df['Deadline'] < today) & (dash_df['TrangThai'] != 'Hoàn thành')])
+1487:             is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+1491:                     perf_df.at[idx, 'PhanTramHoanThanh'] = 100
+1497:                 Đã_Xong=("TrangThai", lambda x: (x == "Hoàn thành").sum()),
+1498:                 Hiệu_Suất=("PhanTramHoanThanh", "mean")
+1581:             prog = int(row['PhanTramHoanThanh'])
+1600:         df_display['Tiến độ'] = table_df['PhanTramHoanThanh']
+1604:             prog = int(row['PhanTramHoanThanh'])
+1605:             is_issue = row['TrangThai'] == 'Có vướng mắc'
+1629:             is_comp = (row['TrangThai'] == 'Hoàn thành')
+1648:             is_comp = (row['TrangThai'] == 'Hoàn thành')
+1893:                         "PhanTramHoanThanh": task_progress,
+1894:                         "TrangThai": calc_status,
+1972:                     default_is_completed = task_data['TrangThai'] == 'Hoàn thành'
+1975:                     default_has_issue = task_data['TrangThai'] == 'Có vướng mắc'
+2068:                     u_progress = calculate_time_progress(u_start, u_deadline, u_is_completed)
+2117:                         df.loc[df['ID'] == selected_id, 'PhanTramHoanThanh'] = u_progress
+2118:                         df.loc[df['ID'] == selected_id, 'TrangThai'] = u_status
+2192:                             "PhanTramHoanThanh": 0,
+2193:                             "TrangThai": "Chưa bắt đầu" if today < rep_start else "Đang thực hiện",
+2236:         for _, row in project_tasks_df[project_tasks_df['PhanTramHoanThanh'] < 100].iterrows():
+2268:                     "Tiến độ hiện tại": f"{row['PhanTramHoanThanh']}%",
+2280:             avg_progress = int(project_tasks_df['PhanTramHoanThanh'].mean()) if total_tasks > 0 else 0
+2307:             project_tasks_df['Tiến độ %'] = project_tasks_df['PhanTramHoanThanh'].apply(lambda x: f"{x}%")
+2315:                 color="TrangThai",
+2317:                 hover_data=["PhanTramHoanThanh", "MocTienDo"]
+2369:                         final_act = row['PhanTramHoanThanh']
+2449:                 if row['PhanTramHoanThanh'] >= 100: return "🟢 Hoàn thành"
+2460:                 if row['PhanTramHoanThanh'] >= 100: return "✅ Đã xong"
+2490:                 disp_table[["Trạng Thái", "TenCongViec", "GiaiDoan", "NgayBatDau", "Deadline", "Số Ngày Còn Lại", "PhanTramHoanThanh", "QuanTrong", "KhanCap", "Milestone"]],
+2498:                     "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ %", format="%d%%", min_value=0, max_value=100),
+2580:                                 "PhanTramHoanThanh": 0,
+2615:                         "PhanTramHoanThanh": g_progress,
+2685:                     u_g_progress = st.slider("Tiến độ %", 0, 100, int(g_task_data['PhanTramHoanThanh']), key="u_g_progress")
+2709:                         gantt_df.loc[gantt_df['ID'] == selected_g_id, 'PhanTramHoanThanh'] = u_g_progress
+2782:                 done_tasks = len(group[group['TrangThai'] == 'Hoàn thành'])
+2788:                     is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2798:                         group_copy.at[idx, 'PhanTramHoanThanh'] = 100
+2818:                         p = row.get('PhanTramHoanThanh', 0)
+2928:                             is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+2937:                                 m_df_copy.at[idx, 'PhanTramHoanThanh'] = 100
+2954:                                 p = row.get('PhanTramHoanThanh', 0)
+3139:                         pt = row.get('PhanTramHoanThanh', 0)
+3419:            `ID`, `DonVi`, `PhongBan`, `NguoiChuTri`, `TenDuAn`, `MocTienDo`, `SanPhamBanGiao`, `TenCongViec`, `PhanLoaiChiSo`, `NgayBatDau`, `Deadline`, `DoUuTien`, `PhanTramHoanThanh`, `TrangThai`, `LinkKetQua`, `GiaiTrinhDeXuat`, `NgayCapNhat`
