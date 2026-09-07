@@ -3377,10 +3377,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                                 
                             explicit_weight = m_df_copy[m_df_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
                             uw_count = len(m_df_copy[m_df_copy['TyTrongKPI'] <= 0])
-                            if (selected_year_full > 2026) or (selected_year_full == 2026 and m >= 8):
-                                auto_w = 0
-                            else:
-                                auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
+                            auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
                         
                             if 'NguonGiaoViec' not in m_df_copy.columns:
                                 m_df_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
