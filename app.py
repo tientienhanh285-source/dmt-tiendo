@@ -1961,7 +1961,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
         col_f1, col_f2 = st.columns([1, 2.5])
         with col_f1:
             month_opts = ["Tất cả các tháng"] + [f"Tháng {i}" for i in range(1, 13)]
-            gb_month = st.selectbox("Lọc theo Tháng", month_opts, index=today.month)
+            gb_month = st.selectbox("Lọc theo Tháng", month_opts, index=0)
         with col_f2:
             gb_status = st.radio("Lọc trạng thái", ["Tất cả", "🔴 Cần chú ý gấp", "🟡 Sắp tới hạn (≤3 ngày)", "🔵 Đang thực hiện", "✅ Hoàn thành"], horizontal=True)
             
