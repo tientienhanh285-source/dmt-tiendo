@@ -1613,17 +1613,18 @@ if role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_au
         
 # -------- LỌC QUẢN LÝ ---------
 if role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False):
-    all_depts = sorted([d for d in display_df['PhongBan'].dropna().unique() if str(d).strip() != "" and str(d).strip().lower() != "nan"])
+    valid_depts = get_departments_for_company(selected_company, config)
+    data_depts = [d for d in display_df['PhongBan'].dropna().unique() if str(d).strip() != "" and str(d).strip().lower() != "nan"]
+    all_depts = sorted(list(set(valid_depts + data_depts)))
     
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Cấu hình Quản lý**")
+    st.sidebar.markdown("### 🏢 Phòng/Ban của bạn")
     
     current_idx = 0
     if st.session_state.get('manager_dept') in all_depts:
         current_idx = all_depts.index(st.session_state.manager_dept)
         
     if all_depts:
-        selected_dept = st.sidebar.selectbox("Phòng/Ban của bạn", all_depts, index=current_idx)
+        selected_dept = st.sidebar.selectbox("Lọc dữ liệu theo Phòng/Ban:", all_depts, index=current_idx, label_visibility="collapsed")
         st.session_state.manager_dept = selected_dept
         
         # Filter display_df
