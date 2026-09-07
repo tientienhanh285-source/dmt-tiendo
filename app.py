@@ -2038,19 +2038,39 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
             
             # Formatting the table for Giao ban
             gb_display = gb_df[['Deadline', 'NguoiChuTri', 'TenCongViec', 'PhanTramHoanThanh', 'Tình trạng', 'GiaiTrinhDeXuat']]
-            st.dataframe(
-                gb_display,
-                column_config={
-                    "Deadline": st.column_config.DateColumn("Hạn chót", format="DD/MM/YYYY"),
-                    "NguoiChuTri": "Người phụ trách",
-                    "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
-                    "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100),
-                    "Tình trạng": st.column_config.TextColumn("Tình trạng"),
-                    "GiaiTrinhDeXuat": st.column_config.TextColumn("Vướng mắc / Giải trình", width="medium")
-                },
-                use_container_width=True,
-                hide_index=True
-            )
+            
+            mobile_mode_gb = st.checkbox("📱 Chế độ Điện thoại", value=False, key="mobile_gb", help="Hiển thị dạng thẻ dọc để xem trên mobile")
+            
+            if mobile_mode_gb:
+                st.markdown("---")
+                for idx, row in gb_df.iterrows():
+                    prog = int(row['PhanTramHoanThanh']) if pd.notna(row['PhanTramHoanThanh']) else 0
+                    try:
+                        dl_str = row['Deadline'].strftime('%d/%m/%Y') if pd.notna(row['Deadline']) and hasattr(row['Deadline'], 'strftime') else str(row['Deadline'])
+                    except:
+                        dl_str = ""
+                    
+                    with st.container():
+                        st.markdown(f"**📌 {row['TenCongViec']}**")
+                        st.markdown(f"👤 *{row['NguoiChuTri']}* | Tình trạng: **{row['Tình trạng']}**")
+                        st.markdown(f"⏳ **Hạn chót:** {dl_str} | Giải trình: *{row.get('GiaiTrinhDeXuat', '')}*")
+                        st.caption(f"Tiến độ: {prog}%")
+                        st.progress(prog)
+                        st.markdown("---")
+            else:
+                st.dataframe(
+                    gb_display,
+                    column_config={
+                        "Deadline": st.column_config.DateColumn("Hạn chót", format="DD/MM/YYYY"),
+                        "NguoiChuTri": "Người phụ trách",
+                        "TenCongViec": st.column_config.TextColumn("Tên công việc", width="large"),
+                        "PhanTramHoanThanh": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100),
+                        "Tình trạng": st.column_config.TextColumn("Tình trạng"),
+                        "GiaiTrinhDeXuat": st.column_config.TextColumn("Vướng mắc / Giải trình", width="medium")
+                    },
+                    use_container_width=True,
+                    hide_index=True
+                )
 
     # ----------------- 2. BẢNG TIẾN ĐỘ CHI TIẾT -----------------
 
