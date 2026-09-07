@@ -3797,7 +3797,7 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
         st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")
     else:
         # df is already loaded and mapped with DEPT_ABBR globally
-        if df.empty:
+        if display_df.empty:
             st.info("Chưa có dữ liệu công việc.")
         else:
             col_thang, col_nam, col_phong = st.columns(3)
@@ -3808,11 +3808,7 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
                 nam_opts = [today.year - 1, today.year, today.year + 1]
                 sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
             with col_phong:
-                if selected_company != "Tất cả đơn vị":
-                    company_df = df[df['DonVi'] == selected_company]
-                else:
-                    company_df = df
-                valid_depts = sorted([d for d in company_df['PhongBan'].dropna().unique() if str(d).strip() != ""])
+                valid_depts = sorted([d for d in display_df['PhongBan'].dropna().unique() if str(d).strip() != ""])
                 phong_opts = ["Tất cả"] + valid_depts
                 sel_phong = st.selectbox("Lọc theo Phòng/Ban", phong_opts)
                 
@@ -3826,15 +3822,16 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
                     return d.month == sel_thang and d.year == sel_nam
                 except:
                     return False
-                    
-            df['is_in_month'] = df['Deadline'].apply(is_in_selected_month)
+            
+            local_df = display_df.copy()        
+            local_df['is_in_month'] = local_df['Deadline'].apply(is_in_selected_month)
             
             # Condition: Deadline in month, objective reason
-            mask = df['is_in_month'] & df['PhanLoaiTreHan'].astype(str).str.lower().str.contains("khách quan")
+            mask = local_df['is_in_month'] & local_df['PhanLoaiTreHan'].astype(str).str.lower().str.contains("khách quan")
             if sel_phong != "Tất cả":
-                mask = mask & (df['PhongBan'] == sel_phong)
+                mask = mask & (local_df['PhongBan'] == sel_phong)
                 
-            filtered_df = df[mask].copy()
+            filtered_df = local_df[mask].copy()
             
             if filtered_df.empty:
                 st.success(f"🎉 Không có công việc nào báo cáo Khách quan trong tháng {sel_thang}/{sel_nam}!")
