@@ -3806,17 +3806,27 @@ elif menu in ["✅ Duyệt việc Khách quan", "⚖️ Duyệt việc Khách qu
         if display_df.empty:
             st.info("Chưa có dữ liệu công việc.")
         else:
-            col_thang, col_nam, col_phong = st.columns(3)
-            with col_thang:
-                thang_opts = list(range(1, 13))
-                sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month - 1)
-            with col_nam:
-                nam_opts = [today.year - 1, today.year, today.year + 1]
-                sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
-            with col_phong:
-                valid_depts = sorted([d for d in display_df['PhongBan'].dropna().unique() if str(d).strip() != ""])
-                phong_opts = ["Tất cả"] + valid_depts
-                sel_phong = st.selectbox("Lọc theo Phòng/Ban", phong_opts)
+            if role_mode == "Quản lý":
+                col_thang, col_nam = st.columns(2)
+                with col_thang:
+                    thang_opts = list(range(1, 13))
+                    sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month - 1)
+                with col_nam:
+                    nam_opts = [today.year - 1, today.year, today.year + 1]
+                    sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
+                sel_phong = "Tất cả"
+            else:
+                col_thang, col_nam, col_phong = st.columns(3)
+                with col_thang:
+                    thang_opts = list(range(1, 13))
+                    sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month - 1)
+                with col_nam:
+                    nam_opts = [today.year - 1, today.year, today.year + 1]
+                    sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
+                with col_phong:
+                    valid_depts = sorted([d for d in display_df['PhongBan'].dropna().unique() if str(d).strip() != ""])
+                    phong_opts = ["Tất cả"] + valid_depts
+                    sel_phong = st.selectbox("Lọc theo Phòng/Ban", phong_opts)
                 
             st.markdown("---")
             
