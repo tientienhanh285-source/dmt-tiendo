@@ -281,7 +281,7 @@ def safe_gsheets_update(conn, worksheet, data):
             df.rename(columns=rename_dict, inplace=True)
             
             
-            allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan', 'TrangThaiDuyetKQ', 'ThoiGianDuyetKQ']
+            allowed_cols = ['ID', 'DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'MocTienDo', 'SanPhamBanGiao', 'TenCongViec', 'PhanLoaiChiSo', 'NgayBatDau', 'Deadline', 'DoUuTien', 'PhanTramHoanThanh', 'TrangThai', 'LinkKetQua', 'GiaiTrinhDeXuat', 'NgayCapNhat', 'ChuKyTheoDoi', 'PhanLoaiTreHan', 'TyTrongKPI', 'NguonGiaoViec', 'MucDoGhiNhan']
             df = df[[c for c in df.columns if c in allowed_cols]]
             
         elif worksheet == "KPI_ADJUSTMENTS":
@@ -1170,7 +1170,7 @@ def read_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan", "TrangThaiDuyetKQ", "ThoiGianDuyetKQ"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan"
     ]
     conn = get_gsheets_conn()
     if conn is None:
@@ -3985,16 +3985,10 @@ elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc 
                     st.info(f"Đang hiển thị **{len(filtered_df)}** công việc báo cáo lý do Khách quan.")
                     
                     # Setup Editor
-                    if "TrangThaiDuyetKQ" not in filtered_df.columns:
-                        filtered_df["TrangThaiDuyetKQ"] = "🔴 Chưa duyệt"
-                    if "ThoiGianDuyetKQ" not in filtered_df.columns:
-                        filtered_df["ThoiGianDuyetKQ"] = ""
-                        
-                    # Fix: Fill NA values correctly so data_editor doesn't crash
-                    filtered_df['TrangThaiDuyetKQ'] = filtered_df['TrangThaiDuyetKQ'].fillna('🔴 Chưa duyệt')
-                    filtered_df['ThoiGianDuyetKQ'] = filtered_df['ThoiGianDuyetKQ'].fillna('')
+                    # Compute dynamic state for UI
+                    filtered_df["TrangThaiDuyetKQ"] = filtered_df["MucDoGhiNhan"].apply(lambda x: "🔴 Chưa duyệt" if str(x).strip() == "" else "🟢 Đã duyệt")
 
-                    edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "TrangThaiDuyetKQ", "ThoiGianDuyetKQ", "MucDoGhiNhan"]
+                    edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "TrangThaiDuyetKQ", "MucDoGhiNhan"]
                     disp_df = filtered_df[edit_cols].copy()
                     
                     # We need to make all columns disabled EXCEPT MucDoGhiNhan
@@ -4007,7 +4001,6 @@ elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc 
                         "TrangThai": st.column_config.TextColumn("Trạng Thái", disabled=True),
                         "GiaiTrinhDeXuat": st.column_config.TextColumn("Giải Trình Khách Quan", disabled=True),
                         "TrangThaiDuyetKQ": st.column_config.TextColumn("Trạng thái", disabled=True),
-                        "ThoiGianDuyetKQ": st.column_config.TextColumn("Thời gian duyệt", disabled=True),
                         "MucDoGhiNhan": st.column_config.SelectboxColumn(
                             "Mức độ Ghi nhận KPI",
                             help="Chọn mức điểm đánh giá theo lý do khách quan (Chỉ dành cho Quản lý)",
@@ -4038,10 +4031,6 @@ elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc 
                                     old_val = fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'].values[0]
                                     if new_val != old_val:
                                         fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'] = new_val
-                                        if 'TrangThaiDuyetKQ' in fresh_df.columns:
-                                            fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThaiDuyetKQ'] = 'Đã duyệt'
-                                        if 'ThoiGianDuyetKQ' in fresh_df.columns:
-                                            fresh_df.loc[fresh_df['ID'] == task_id, 'ThoiGianDuyetKQ'] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
                                         changed = True
                                     
                             if changed:
