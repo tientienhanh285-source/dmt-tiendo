@@ -1230,19 +1230,16 @@ def read_db():
     if "NguonGiaoViec" not in df.columns:
         df["NguonGiaoViec"] = "Công việc được giao / định kì"
     if "MucDoGhiNhan" not in df.columns:
-        df["MucDoGhiNhan"] = "0% (Không ghi nhận)"
-    if "TrangThaiDuyetKQ" not in df.columns:
-        df["TrangThaiDuyetKQ"] = "🔴 Chưa duyệt"
-    if "ThoiGianDuyetKQ" not in df.columns:
-        df["ThoiGianDuyetKQ"] = ""
+        df["MucDoGhiNhan"] = "Chưa đánh giá"
     else:
         def clean_mucdo(val):
             val_str = str(val).strip()
+            if val_str in ['nan', 'None', '', '0% (Không ghi nhận)']: return "Chưa đánh giá"
             if val_str == "0.5" or "50" in val_str: return "50%"
             if val_str == "0.8" or "80" in val_str: return "80%"
             if val_str == "0.9" or "90" in val_str: return "90%"
             if "miễn" in val_str.lower() or "loại bỏ" in val_str.lower(): return "Miễn trừ (Loại bỏ KPI)"
-            return "0% (Không ghi nhận)"
+            return val_str
         df["MucDoGhiNhan"] = df["MucDoGhiNhan"].apply(clean_mucdo)
 
     for col in required_cols:
@@ -2381,7 +2378,7 @@ elif menu in ["👀 BẢNG TỔNG QUAN (View)", "📊 BẢNG TỔNG QUAN (View)"
         
     table_df['SortPriority'] = table_df.apply(_get_priority, axis=1)
     if 'NgayCapNhat' in table_df.columns:
-        table_df = table_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
+        table_df = table_df.sort_values(by=['NgayCapNhat', 'SortPriority', 'ID'], ascending=[False, True, False]).reset_index(drop=True)
     else:
         table_df = table_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
@@ -3986,7 +3983,7 @@ elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc 
                     
                     # Setup Editor
                     # Compute dynamic state for UI
-                    filtered_df["TrangThaiDuyetKQ"] = filtered_df["MucDoGhiNhan"].apply(lambda x: "🔴 Chưa duyệt" if str(x).strip() == "" else "🟢 Đã duyệt")
+                    filtered_df["TrangThaiDuyetKQ"] = filtered_df["MucDoGhiNhan"].apply(lambda x: "🔴 Chưa duyệt" if str(x).strip() == "Chưa đánh giá" else "🟢 Đã duyệt")
 
                     edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "TrangThaiDuyetKQ", "MucDoGhiNhan"]
                     disp_df = filtered_df[edit_cols].copy()
@@ -4004,7 +4001,7 @@ elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc 
                         "MucDoGhiNhan": st.column_config.SelectboxColumn(
                             "Mức độ Ghi nhận KPI",
                             help="Chọn mức điểm đánh giá theo lý do khách quan (Chỉ dành cho Quản lý)",
-                            options=["0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"],
+                            options=["Chưa đánh giá", "0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"],
                             required=True
                         )
                     }
