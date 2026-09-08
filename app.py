@@ -2104,7 +2104,13 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
         st.markdown(f"### 📋 Bảng Tiến Độ Công Việc Chi Tiết — {selected_company}")
     
         # Filter tools for Boss
-        col_filter1, col_filter2, col_filter3 = st.columns(3)
+        is_personal = role_mode == "Nhân viên" and st.session_state.get("is_personal_authenticated", False)
+        
+        if is_personal:
+            col_filter1, col_filter3 = st.columns(2)
+            sel_owner_filter = "Tất cả"
+        else:
+            col_filter1, col_filter2, col_filter3 = st.columns(3)
     
         with col_filter1:
             db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
@@ -2112,9 +2118,10 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
             proj_options = ["Tất cả dự án"] + merged_projs
             sel_proj_filter = st.selectbox("Lọc nhanh theo Dự án / Hạng mục", proj_options)
         
-        with col_filter2:
-            owners = ["Tất cả"] + sorted(list(display_df['NguoiChuTri'].dropna().astype(str).unique())) if not display_df.empty else ["Tất cả"]
-            sel_owner_filter = st.selectbox("Lọc theo Người phụ trách", owners)
+        if not is_personal:
+            with col_filter2:
+                owners = ["Tất cả"] + sorted(list(display_df['NguoiChuTri'].dropna().astype(str).unique())) if not display_df.empty else ["Tất cả"]
+                sel_owner_filter = st.selectbox("Lọc theo Người phụ trách", owners)
             
         with col_filter3:
             months = set()
