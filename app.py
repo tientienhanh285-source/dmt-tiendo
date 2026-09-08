@@ -1170,7 +1170,7 @@ def read_db():
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
         "TenCongViec", "PhanLoaiChiSo", "NgayBatDau", "Deadline", "DoUuTien", 
-        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan"
+        "PhanTramHoanThanh", "TrangThai", "LinkKetQua", "GiaiTrinhDeXuat", "NgayCapNhat", "ChuKyTheoDoi", "PhanLoaiTreHan", "TyTrongKPI", "NguonGiaoViec", "MucDoGhiNhan", "TrangThaiDuyetKQ", "ThoiGianDuyetKQ"
     ]
     conn = get_gsheets_conn()
     if conn is None:
@@ -1231,6 +1231,10 @@ def read_db():
         df["NguonGiaoViec"] = "Công việc được giao / định kì"
     if "MucDoGhiNhan" not in df.columns:
         df["MucDoGhiNhan"] = "0% (Không ghi nhận)"
+    if "TrangThaiDuyetKQ" not in df.columns:
+        df["TrangThaiDuyetKQ"] = "🔴 Chưa duyệt"
+    if "ThoiGianDuyetKQ" not in df.columns:
+        df["ThoiGianDuyetKQ"] = ""
     else:
         def clean_mucdo(val):
             val_str = str(val).strip()
@@ -3983,10 +3987,14 @@ elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc 
                     # Setup Editor
                     if "TrangThaiDuyetKQ" not in filtered_df.columns:
                         filtered_df["TrangThaiDuyetKQ"] = "🔴 Chưa duyệt"
-                    # Evaluate existing
-                    filtered_df["TrangThaiDuyetKQ"] = filtered_df["MucDoGhiNhan"].apply(lambda x: "🔴 Chưa duyệt" if str(x) == "nan" or str(x).strip() == "" else "🟢 Đã duyệt")
+                    if "ThoiGianDuyetKQ" not in filtered_df.columns:
+                        filtered_df["ThoiGianDuyetKQ"] = ""
+                        
+                    # Fix: Fill NA values correctly so data_editor doesn't crash
+                    filtered_df['TrangThaiDuyetKQ'] = filtered_df['TrangThaiDuyetKQ'].fillna('🔴 Chưa duyệt')
+                    filtered_df['ThoiGianDuyetKQ'] = filtered_df['ThoiGianDuyetKQ'].fillna('')
 
-                    edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "TrangThaiDuyetKQ", "MucDoGhiNhan"]
+                    edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "TrangThaiDuyetKQ", "ThoiGianDuyetKQ", "MucDoGhiNhan"]
                     disp_df = filtered_df[edit_cols].copy()
                     
                     # We need to make all columns disabled EXCEPT MucDoGhiNhan
@@ -3999,6 +4007,7 @@ elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc 
                         "TrangThai": st.column_config.TextColumn("Trạng Thái", disabled=True),
                         "GiaiTrinhDeXuat": st.column_config.TextColumn("Giải Trình Khách Quan", disabled=True),
                         "TrangThaiDuyetKQ": st.column_config.TextColumn("Trạng thái", disabled=True),
+                        "ThoiGianDuyetKQ": st.column_config.TextColumn("Thời gian duyệt", disabled=True),
                         "MucDoGhiNhan": st.column_config.SelectboxColumn(
                             "Mức độ Ghi nhận KPI",
                             help="Chọn mức điểm đánh giá theo lý do khách quan (Chỉ dành cho Quản lý)",
