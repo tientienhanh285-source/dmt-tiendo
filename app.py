@@ -1453,7 +1453,7 @@ selected_company = st.sidebar.selectbox(
     format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
 )
 
-role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "HR", "Cá nhân (Thử nghiệm)"], index=0)
+role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "HR"], index=0)
 
 
 if "is_admin_authenticated" not in st.session_state:
@@ -1513,21 +1513,28 @@ elif role_mode == "HR":
             st.session_state.is_admin_authenticated = False
             st.rerun()
 
-elif role_mode == "Cá nhân (Thử nghiệm)":
+elif role_mode == "Nhân viên":
     st.session_state.is_admin_authenticated = False
     st.session_state.is_manager_authenticated = False
-    if not st.session_state.is_personal_authenticated:
-        pers_pwd = st.sidebar.text_input("Nhập MÃ PIN cá nhân (Mặc định: 1234)", type="password")
-        if pers_pwd:
-            if pers_pwd == "1234":
-                st.session_state.is_personal_authenticated = True
-                st.rerun()
-            else:
-                st.sidebar.error("MÃ PIN không đúng!")
     
-    if st.session_state.is_personal_authenticated:
-        st.sidebar.success("Đã xác thực quyền Cá nhân!")
+    if not st.session_state.is_personal_authenticated:
+        st.sidebar.markdown("### 👤 Xác thực Nhân viên")
+        valid_depts = get_departments_for_company(selected_company, config)
+        sel_login_dept = st.sidebar.selectbox("1. Chọn Phòng ban", ["-- Chọn --"] + valid_depts, key="login_dept")
         
+        if sel_login_dept != "-- Chọn --":
+            personnel_list = get_personnel_for_company_dept(selected_company, sel_login_dept, config)
+            if personnel_list:
+                sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + personnel_list, key="login_user")
+                if sel_login_user != "-- Chọn --":
+                    if st.sidebar.button("Xác nhận Đăng nhập"):
+                        st.session_state.is_personal_authenticated = True
+                        st.session_state.personal_user = sel_login_user
+                        st.rerun()
+            else:
+                st.sidebar.warning("Phòng ban này chưa có dữ liệu nhân sự.")
+    else:
+        st.sidebar.success(f"👋 Xin chào, {st.session_state.personal_user}!")
         if st.sidebar.button("Đăng xuất"):
             st.session_state.is_personal_authenticated = False
             st.session_state.personal_user = None
@@ -1605,7 +1612,7 @@ if 'NguoiChuTri' not in display_df.columns:
     display_df['NguoiChuTri'] = ''
 
 # -------- LỌC CÁ NHÂN ---------
-if role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_authenticated:
+if role_mode == "Nhân viên" and st.session_state.is_personal_authenticated:
     all_owners = sorted(list(display_df['NguoiChuTri'].dropna().astype(str).unique()))
     
     # Render selectbox in sidebar
@@ -2477,7 +2484,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
             # 4. Department
             allowed_depts = get_departments_for_company(entry_company, config)
-            is_personal = (role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
+            is_personal = (role_mode == "Nhân viên" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
             if is_personal:
                 # Deduce their department from their existing tasks or default to first
                 user_dept_mode = display_df['PhongBan'].mode()
@@ -2496,7 +2503,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             if dept_lead in dept_personnel:
                 default_lead_idx = dept_personnel.index(dept_lead)
             
-            is_personal = (role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
+            is_personal = (role_mode == "Nhân viên" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
             if is_personal:
                 sel_owner_opt = st.selectbox("Người thực hiện / Phụ trách", [st.session_state.personal_user], index=0, disabled=True)
                 task_owner = st.session_state.personal_user
@@ -2805,7 +2812,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     u_owner_options = list(u_dept_personnel) + ["✍️ Nhập tên người khác..."]
                     
                     current_owner = task_data['NguoiChuTri']
-                    is_personal = (role_mode == "Cá nhân (Thử nghiệm)" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
+                    is_personal = (role_mode == "Nhân viên" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
                     if is_personal:
                         st.selectbox("Người thực hiện / Phụ trách", [st.session_state.personal_user], index=0, disabled=True, key=f"u_owner_sel_{task_data['ID']}")
                         u_owner = st.session_state.personal_user
@@ -2823,7 +2830,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                             u_owner = st.text_input("✍️ Nhập tên người thực hiện khác...", value=current_owner, key=f"u_owner_custom_{task_data['ID']}")
                     
                 with col_u2:
-                    is_emp_locked = (role_mode == "Cá nhân (Thử nghiệm)")
+                    is_emp_locked = (role_mode == "Nhân viên")
                     u_start = st.date_input("Ngày bắt đầu thực hiện", value=pd.to_datetime(task_data['NgayBatDau']).date() if pd.notna(task_data['NgayBatDau']) and str(task_data['NgayBatDau']).strip() else today, format="DD/MM/YYYY", disabled=is_emp_locked, key=f"u_start_{task_data['ID']}")
                     u_deadline = st.date_input("Hạn hoàn thành (Deadline)", value=pd.to_datetime(task_data['Deadline']).date() if pd.notna(task_data['Deadline']) and str(task_data['Deadline']).strip() else today, format="DD/MM/YYYY", disabled=is_emp_locked, key=f"u_deadline_{task_data['ID']}")
                     
@@ -2852,7 +2859,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     default_cycle_idx = cycle_list.index(current_cycle) if current_cycle in cycle_list else 3
                     u_cycle = current_cycle
                     
-                    is_emp_locked = (role_mode == "Cá nhân (Thử nghiệm)")
+                    is_emp_locked = (role_mode == "Nhân viên")
                     if is_emp_locked:
                         st.text_input("Tỷ trọng KPI (%)", value=str(task_data.get('TyTrongKPI', '')), disabled=True, key=f"u_weight_disp_{task_data['ID']}")
                         u_weight = task_data.get('TyTrongKPI', '')
