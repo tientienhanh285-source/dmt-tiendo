@@ -1615,19 +1615,8 @@ if 'NguoiChuTri' not in display_df.columns:
 if role_mode == "Nhân viên" and st.session_state.is_personal_authenticated:
     all_owners = sorted(list(display_df['NguoiChuTri'].dropna().astype(str).unique()))
     
-    # Render selectbox in sidebar
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("**Cấu hình Cá nhân**")
-    
-    current_idx = 0
-    if st.session_state.personal_user in all_owners:
-        current_idx = all_owners.index(st.session_state.personal_user)
-    elif "Nguyễn Thị Hạnh Tiên" in all_owners:
-        current_idx = all_owners.index("Nguyễn Thị Hạnh Tiên")
-        
-    selected_user = st.sidebar.selectbox("Bạn là ai?", all_owners, index=current_idx)
-    st.session_state.personal_user = selected_user
-    
+    # The user has already selected their identity during login, so no need for 'Bạn là ai?' selectbox
+    pass
     # Filter display_df
     if st.session_state.personal_user:
         display_df = display_df[display_df['NguoiChuTri'] == st.session_state.personal_user].copy()
@@ -2042,7 +2031,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
                 return 3
             gb_df['SortPriority'] = gb_df.apply(_get_priority_gb, axis=1)
             if 'NgayCapNhat' in gb_df.columns:
-                gb_df = gb_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
+                gb_df = gb_df.sort_values(by=['NgayCapNhat', 'SortPriority', 'ID'], ascending=[False, True, False]).reset_index(drop=True)
             else:
                 gb_df = gb_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
@@ -2161,7 +2150,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
             
         table_df['SortPriority'] = table_df.apply(_get_priority, axis=1)
         if 'NgayCapNhat' in table_df.columns:
-            table_df = table_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
+            table_df = table_df.sort_values(by=['NgayCapNhat', 'SortPriority', 'ID'], ascending=[False, True, False]).reset_index(drop=True)
         else:
             table_df = table_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
@@ -2751,13 +2740,20 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
         if 'NgayCapNhat' in avail_update_df.columns:
             avail_update_df = avail_update_df.sort_values(by=['NgayCapNhat', 'ID'], ascending=[False, False]).reset_index(drop=True)
         
-        col_f1, col_f2, col_f3, col_f4 = st.columns(4)
-        with col_f1:
-            departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().astype(str).unique()))
-            filter_dept = st.selectbox("Lọc theo Phòng ban", departments, key="filter_dept_update")
-        with col_f2:
-            owners = ["Tất cả"] + sorted(list(avail_update_df['NguoiChuTri'].dropna().astype(str).unique()))
-            filter_owner = st.selectbox("Lọc theo Người phụ trách", owners, key="filter_owner_update")
+        is_personal_update = role_mode == "Nhân viên" and st.session_state.get("is_personal_authenticated", False)
+        if is_personal_update:
+            col_f3, col_f4 = st.columns(2)
+            filter_dept = "Tất cả"
+            filter_owner = "Tất cả"
+        else:
+            col_f1, col_f2, col_f3, col_f4 = st.columns(4)
+            with col_f1:
+                departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().astype(str).unique()))
+                filter_dept = st.selectbox("Lọc theo Phòng ban", departments, key="filter_dept_update")
+            with col_f2:
+                owners = ["Tất cả"] + sorted(list(avail_update_df['NguoiChuTri'].dropna().astype(str).unique()))
+                filter_owner = st.selectbox("Lọc theo Người phụ trách", owners, key="filter_owner_update")
+                
         with col_f3:
             projects = ["Tất cả"] + sorted(list(avail_update_df['TenDuAn'].dropna().astype(str).unique()))
             filter_proj = st.selectbox("Lọc theo Dự án", projects, key="filter_proj_update")
