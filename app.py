@@ -1559,7 +1559,8 @@ except Exception:
 menu_options = [
     "🚀 Bảng theo dõi tiến độ công việc",
     "➕ Thêm / Cập Nhật Công Việc",
-    "📖 Sổ tay Hướng dẫn"
+    "📊 Quản trị BSC - KPI",
+        "📖 Sổ tay Hướng dẫn"
 ]
 if is_mobile:
     menu_options.insert(0, "👀 BẢNG TỔNG QUAN (View)")
@@ -1570,6 +1571,7 @@ if st.session_state.get('is_manager_authenticated', False):
         "➕ Thêm / Cập Nhật Công Việc",
         "⚖️ Duyệt việc Khách quan",
         "🏆 Đánh giá KPI & Xếp loại",
+        "📊 Quản trị BSC - KPI",
         "📖 Sổ tay Hướng dẫn"
     ]
     if is_mobile:
@@ -1584,6 +1586,7 @@ if st.session_state.is_admin_authenticated:
         "🏆 Đánh giá KPI & Xếp loại",
         "🔍 Quản lý & Đối chiếu JD",
         "⚙️ Quản Lý Cấu Hình",
+        "📊 Quản trị BSC - KPI",
         "📖 Sổ tay Hướng dẫn"
     ]
 
@@ -1846,9 +1849,13 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
     dash_df = display_df.copy()
     total_dash = len(dash_df)
     done_dash = len(dash_df[dash_df['TrangThai'] == 'Hoàn thành'])
-    issue_dash = len(dash_df[dash_df['TrangThai'] == 'Có vướng mắc'])
-    overdue_dash = len(dash_df[(pd.to_datetime(dash_df['Deadline'], errors='coerce') < pd.Timestamp(today)) & (dash_df['TrangThai'] != 'Hoàn thành')])
-    doing_dash = total_dash - done_dash - issue_dash - overdue_dash
+    
+    # Tính số việc Vướng mắc HOẶC Trễ hạn (không đếm trùng)
+    is_issue = dash_df['TrangThai'] == 'Có vướng mắc'
+    is_overdue = (pd.to_datetime(dash_df['Deadline'], errors='coerce') < pd.Timestamp(today)) & (dash_df['TrangThai'] != 'Hoàn thành')
+    issue_and_overdue_count = len(dash_df[is_issue | is_overdue])
+    
+    doing_dash = total_dash - done_dash - issue_and_overdue_count
     if doing_dash < 0:
         doing_dash = 0
         
@@ -1861,7 +1868,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
     with m_col3:
         st.metric("Đang làm", doing_dash)
     with m_col4:
-        st.metric("🔴 Trễ hạn / Vướng mắc", issue_dash + overdue_dash)
+        st.metric("🔴 Trễ hạn / Vướng mắc", issue_and_overdue_count)
 
     st.markdown("---")
     
@@ -2032,7 +2039,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
                 return 3
             gb_df['SortPriority'] = gb_df.apply(_get_priority_gb, axis=1)
             if 'NgayCapNhat' in gb_df.columns:
-                gb_df = gb_df.sort_values(by=['NgayCapNhat', 'SortPriority', 'ID'], ascending=[False, True, False]).reset_index(drop=True)
+                gb_df = gb_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
             else:
                 gb_df = gb_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
@@ -2151,7 +2158,7 @@ if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo
             
         table_df['SortPriority'] = table_df.apply(_get_priority, axis=1)
         if 'NgayCapNhat' in table_df.columns:
-            table_df = table_df.sort_values(by=['NgayCapNhat', 'SortPriority', 'ID'], ascending=[False, True, False]).reset_index(drop=True)
+            table_df = table_df.sort_values(by=['SortPriority', 'NgayCapNhat', 'ID'], ascending=[True, False, False]).reset_index(drop=True)
         else:
             table_df = table_df.sort_values(by=['SortPriority', 'ID'], ascending=[True, False]).reset_index(drop=True)
         
@@ -4744,7 +4751,8 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
         """)
 
 # ----------------- 6. SỔ TAY HƯỚNG DẪN -----------------
-elif menu == "📖 Sổ tay Hướng dẫn":
+elif menu == "📊 Quản trị BSC - KPI",
+        "📖 Sổ tay Hướng dẫn":
     st.markdown("## 📖 Sổ tay Hướng dẫn sử dụng phần mềm KPI")
     st.markdown("Chọn vai trò của bạn để xem hướng dẫn chi tiết:")
     
