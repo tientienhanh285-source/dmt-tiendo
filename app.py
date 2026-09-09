@@ -2547,7 +2547,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
     # Form: Add New
     with tab_new:
         # --- TÍNH NĂNG NHÂN BẢN KẾ HOẠCH TỪ THÁNG TRƯỚC ---
-        if role_mode in ["Quản lý", "Nhân viên"]:
+        if role_mode in ["Quản lý", "Nhân viên"] and is_local:
             with st.expander("🪄 Nhập khẩu Kế hoạch (Sao chép từ tháng trước)", expanded=False):
                 st.info("💡 Tính năng này giúp sao chép danh sách công việc & Tỷ trọng KPI của chính bạn từ tháng trước sang tháng này. Các việc 'Hoàn thành' sẽ tự động reset về 'Chưa bắt đầu'.")
                 if st.button("🚀 Bê nguyên xi việc tháng trước sang tháng này"):
