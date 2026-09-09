@@ -2696,22 +2696,24 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'CV giao ban / VB đến'])
             st.caption("💡 **Định kỳ:** Đăng ký đầu tháng / quản lý giao. **Giao ban:** Phát sinh sau khi họp giao ban.")
             
-            # --- 🚀 TÍNH NĂNG MỚI: TAGGING MỤC TIÊU QUÝ ---
-            st.markdown("<p style='font-size: 1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 5px; margin-top: 15px;'>📌 Gắn với Mục tiêu Quý</p>", unsafe_allow_html=True)
-            
-            # Lấy danh sách Mục tiêu Quý
-            current_year = str(today.year)
-            year_key = f"{task_dept}_{current_year}"
-            
-            bsc_goals = []
-            if "bsc_data" in st.session_state and "years" in st.session_state.bsc_data:
-                if year_key in st.session_state.bsc_data["years"]:
-                    bsc_goals = [f"[{g['quarter']}] {g['name']}" for g in st.session_state.bsc_data["years"][year_key]]
-            
-            if not bsc_goals:
-                bsc_goals = ["Không có Mục tiêu Quý nào được thiết lập (Liên hệ Quản lý)"]
+            task_moc_tien_do = "Tự do / Không gắn mục tiêu"
+            if is_local:
+                # --- 🚀 TÍNH NĂNG MỚI: TAGGING MỤC TIÊU QUÝ ---
+                st.markdown("<p style='font-size: 1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 5px; margin-top: 15px;'>📌 Gắn với Mục tiêu Quý</p>", unsafe_allow_html=True)
                 
-            task_moc_tien_do = st.selectbox("Chọn Mục tiêu Quý", ["Tự do / Không gắn mục tiêu"] + bsc_goals, label_visibility="collapsed")
+                # Lấy danh sách Mục tiêu Quý
+                current_year = str(today.year)
+                year_key = f"{task_dept}_{current_year}"
+                
+                bsc_goals = []
+                if "bsc_data" in st.session_state and "years" in st.session_state.bsc_data:
+                    if year_key in st.session_state.bsc_data["years"]:
+                        bsc_goals = [f"[{g['quarter']}] {g['name']}" for g in st.session_state.bsc_data["years"][year_key]]
+                
+                if not bsc_goals:
+                    bsc_goals = ["Không có Mục tiêu Quý nào được thiết lập (Liên hệ Quản lý)"]
+                    
+                task_moc_tien_do = st.selectbox("Chọn Mục tiêu Quý", ["Tự do / Không gắn mục tiêu"] + bsc_goals, label_visibility="collapsed")
             
         with col2:
             # 6. Dates
