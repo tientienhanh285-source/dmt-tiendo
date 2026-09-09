@@ -1,30 +1,13 @@
-211: 'ID': 'Mã CV',
-212: 'TenCongViec': 'Tên công việc',
-213: 'PhanTramHoanThanh': 'Tiến độ %',
-214: 'TrangThai': 'Trạng thái',
-215: 'Deadline': 'Hạn chót'
-216: }
-217: df.rename(columns=col_mapping, inplace=True)
-218: if "NgayBatDau" in df.columns:
-219: df["NgayBatDau"] = pd.to_datetime(df["NgayBatDau"], errors="coerce").dt.strftime('%d/%m/%Y')
-220: if "Hạn chót" in df.columns:
-221: df["Hạn chót"] = pd.to_datetime(df["Hạn chót"], errors="coerce").dt.strftime('%d/%m/%Y')
-222: 
-223: elif worksheet == "KPI_ADJUSTMENTS":
-224: if "SoDiem" in df.columns:
-225: df.rename(columns={"SoDiem": "DiemDieuChinh"}, inplace=True)
-226: 
-227: 
-228: 
-229: return df
-230: except Exception as e:
-231: import streamlit as st
-232: st.warning(f"Lỗi đọc Supabase ({worksheet}): {e}")
-233: return fallback_df
-234: 
-235: def safe_gsheets_update(conn, worksheet, data):
-236: import streamlit as st
-237: import time
-238: import pandas as pd
-239: import numpy as np
-240: import math
+    if "ThoiGianDuyetKQ" not in df.columns:
+        df["ThoiGianDuyetKQ"] = ""
+    else:
+        def clean_mucdo(val):
+            val_str = str(val).strip()
+            if val_str == "0.5" or "50" in val_str: return "50%"
+            if val_str == "0.8" or "80" in val_str: return "80%"
+            if val_str == "0.9" or "90" in val_str: return "90%"
+            if "miễn" in val_str.lower() or "loại bỏ" in val_str.lower(): return "Miễn trừ (Loại bỏ KPI)"
+            return "0% (Không ghi nhận)"
+        df["MucDoGhiNhan"] = df["MucDoGhiNhan"].apply(clean_mucdo)
+
+    for col in required_cols:

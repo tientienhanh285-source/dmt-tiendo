@@ -1,40 +1,24 @@
-st.sidebar.markdown("---")
-
-menu_options = [
-    "👀 BẢNG TỔNG QUAN (View)",
-    "🚀 Bảng theo dõi tiến độ công việc",
-    "➕ Thêm / Cập Nhật Công Việc",
-    "📖 Sổ tay Hướng dẫn"
-]
-
-if st.session_state.is_admin_authenticated:
-    menu_options = [
-        "👀 BẢNG TỔNG QUAN (View)",
-        "🚀 Bảng theo dõi tiến độ công việc",
-        "➕ Thêm / Cập Nhật Công Việc",
-        "🏆 Đánh giá KPI & Xếp loại",
-        "✅ Duyệt việc Khách quan",
-        "🔍 Quản lý & Đối chiếu JD",
-        "⚙️ Quản Lý Cấu Hình",
-        "📖 Sổ tay Hướng dẫn"
-    ]
-
-menu = st.sidebar.radio(
-    "PHÂN HỆ CHỨC NĂNG",
-    menu_options,
-    index=0
-)
-
-st.sidebar.markdown("---")
-
-# Current date
-df = read_db()
-if not df.empty and "PhongBan" in df.columns:
-    df["PhongBan"] = df["PhongBan"].map(lambda x: DEPT_ABBR.get(x, x))
-
-gantt_df = read_gantt_db()
-today = date.today()
-
-# Filter display dataframe based on sidebar selected company
-if selected_company != "Tất cả đơn vị":
-    display_df = df[df['DonVi'] == selected_company].copy()
+1449: selected_company = st.sidebar.selectbox(
+1456: role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "HR"], index=0)
+1494:             st.session_state.manager_dept = st.sidebar.selectbox("Lọc dữ liệu theo Phòng/Ban:", valid_depts, index=current_idx, label_visibility="collapsed")
+1523:         sel_login_dept = st.sidebar.selectbox("1. Chọn Phòng ban", ["-- Chọn --"] + valid_depts, key="login_dept")
+1528:                 sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + personnel_list, key="login_user")
+1558: menu_options = [
+1564:     menu_options.insert(0, "👀 BẢNG TỔNG QUAN (View)")
+1567:     menu_options = [
+1575:         menu_options.insert(0, "📊 BẢNG TỔNG QUAN (View)")
+1578:     menu_options = [
+1589: menu = st.sidebar.radio(
+1591:     menu_options,
+1838: if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo dõi tiến độ công việc"]:
+1839:     st.info("💡 **Gợi ý:** Để xem chi tiết hướng dẫn sử dụng phần mềm, bạn hãy nhấp vào mục **📖 Sổ tay Hướng dẫn** ở thanh Menu bên trái nhé!")
+2303: elif menu in ["👀 BẢNG TỔNG QUAN (View)", "📊 BẢNG TỔNG QUAN (View)"]:
+2457: elif menu == "➕ Thêm / Cập Nhật Công Việc":
+3123: elif menu == "🏆 Đánh giá KPI & Xếp loại":
+3855: elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc Khách quan", "✅ Duyệt việc Khách quan"]:
+3859:         st.warning("⚠️ Vui lòng nhập **Mật khẩu Quản lý** ở thanh bên trái (cột menu) để truy cập tính năng này.")
+4041: elif menu == "🔍 Quản lý & Đối chiếu JD":
+4491: elif menu == "⚙️ Quản Lý Cấu Hình":
+4498:             st.warning("⚠️ Vui lòng chọn cụ thể một **Công ty / Đơn vị** ở menu bên trái để tiến hành cấu hình (Không áp dụng cho 'Tất cả đơn vị').")
+4570:             st.warning("⚠️ Vui lòng chọn cụ thể một **Công ty / Đơn vị** ở menu bên trái để tiến hành cấu hình (Không áp dụng cho 'Tất cả đơn vị').")
+4746: elif menu == "📖 Sổ tay Hướng dẫn":

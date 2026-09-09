@@ -4751,8 +4751,7 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
         """)
 
 # ----------------- 6. SỔ TAY HƯỚNG DẪN -----------------
-elif menu == "📊 Quản trị BSC - KPI",
-        "📖 Sổ tay Hướng dẫn":
+elif menu == "📖 Sổ tay Hướng dẫn":
     st.markdown("## 📖 Sổ tay Hướng dẫn sử dụng phần mềm KPI")
     st.markdown("Chọn vai trò của bạn để xem hướng dẫn chi tiết:")
     
