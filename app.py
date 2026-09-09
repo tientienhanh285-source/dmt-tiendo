@@ -514,6 +514,72 @@ def load_config():
 
 
 # Load current config dynamically
+
+
+def save_bsc_config(bsc_data):
+    conn = get_gsheets_conn()
+    if conn is None:
+        return False
+    try:
+        import json
+        import pandas as pd
+        df_save = pd.DataFrame([{
+            "NhanSu": "APP_BSC_CONFIG",
+            "PhongBan": "SYSTEM",
+            "Role": "SYSTEM",
+            "config_json": json.dumps(bsc_data, ensure_ascii=False)
+        }])
+        success = safe_gsheets_update(conn, worksheet="CONFIG", data=df_save)
+        import streamlit as st
+        st.cache_data.clear()
+        return success
+    except Exception as e:
+        print("Error saving BSC config:", e)
+        return False
+
+def load_bsc_config():
+    default_config = {"years": {}, "quarters": {}, "months": {}}
+    conn = get_gsheets_conn()
+    if conn is None:
+        return default_config
+    try:
+        import json
+        df = safe_gsheets_read(conn, worksheet="CONFIG", ttl=30)
+        if df is None or df.empty:
+            return default_config
+
+        if "NhanSu" in df.columns and "config_json" in df.columns:
+            rows = df[df["NhanSu"] == "APP_BSC_CONFIG"]
+            if not rows.empty:
+                json_str = rows.iloc[0]["config_json"]
+                data = json.loads(json_str)
+                for key in ["years", "quarters", "months"]:
+                    if key not in data:
+                        data[key] = {}
+                        
+                # Inject DEMO data if HCNS has no data
+                demo_year_key = "Ban Hành chính Nhân sự_2026"
+                demo_month_key = "Ban Hành chính Nhân sự_2026_10"
+                if demo_year_key not in data["years"]:
+                    data["years"][demo_year_key] = [
+                        {"name": "Kiện toàn bộ hồ sơ PCCC, diễn tập, thẩm định định kỳ", "quarter": "Cả năm"},
+                        {"name": "Xây dựng hệ thống cấp bậc chức danh, KPI toàn hệ thống (BCS)", "quarter": "Q4"},
+                        {"name": "Rà soát toàn bộ hồ sơ Pháp lý - Cty CP Đầu tư ĐNMT", "quarter": "Q1"}
+                    ]
+                if demo_month_key not in data["months"]:
+                    data["months"][demo_month_key] = [
+                        {"name": "Hoàn thành quy trình tự kiểm tra PCCC cơ sở", "weight": 20},
+                        {"name": "Thành lập đội KPIs Công ty và lập kế hoạch khung năng lực", "weight": 40},
+                        {"name": "Rà soát đánh số danh mục Hồ sơ pháp lý Công ty BT1-BT5", "weight": 30}
+                    ]
+                return data
+
+        return default_config
+    except Exception as e:
+        print("Error loading BSC config:", e)
+        return default_config
+
+
 config = load_config()
 
 DEPT_ABBR = {
@@ -1590,6 +1656,12 @@ if st.session_state.is_admin_authenticated:
         "📖 Sổ tay Hướng dẫn"
     ]
 
+import socket
+is_local = (socket.gethostname() == "thuyhc")
+if not is_local:
+    if "📊 Quản trị BSC - KPI" in menu_options:
+        menu_options.remove("📊 Quản trị BSC - KPI")
+
 menu = st.sidebar.radio(
     "PHÂN HỆ CHỨC NĂNG",
     menu_options,
@@ -2426,6 +2498,11 @@ elif menu in ["👀 BẢNG TỔNG QUAN (View)", "📊 BẢNG TỔNG QUAN (View)"
             return "❌ Chưa bắt đầu"
         df_display['Trạng thái'] = table_df.apply(format_status, axis=1)
         
+        def add_prefix_to_name(row):
+            prefix = "🌟 [QUẢN LÝ GIAO] " if ("[Mục tiêu" in str(row.get('GiaiTrinhDeXuat', ''))) else ""
+            return f"{prefix}{row['TenCongViec']}"
+        df_display['Tên công việc'] = table_df.apply(add_prefix_to_name, axis=1)
+
         ordered_cols = ['Ngày bắt đầu', 'Hạn chót', 'Tiến độ', 'Trạng thái', 'Người thực hiện', 'Phòng ban', 'Dự án / Hạng mục', 'Tên công việc']
         df_display = df_display[ordered_cols]
         
@@ -2469,6 +2546,82 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
     
     # Form: Add New
     with tab_new:
+        # --- TÍNH NĂNG NHÂN BẢN KẾ HOẠCH TỪ THÁNG TRƯỚC ---
+        if role_mode in ["Quản lý", "Nhân viên"]:
+            with st.expander("🪄 Nhập khẩu Kế hoạch (Sao chép từ tháng trước)", expanded=False):
+                st.info("💡 Tính năng này giúp sao chép danh sách công việc & Tỷ trọng KPI của chính bạn từ tháng trước sang tháng này. Các việc 'Hoàn thành' sẽ tự động reset về 'Chưa bắt đầu'.")
+                if st.button("🚀 Bê nguyên xi việc tháng trước sang tháng này"):
+                    with acquire_db_lock():
+                        fresh_df = read_db()
+                        if not fresh_df.empty:
+                            from datetime import date
+                            import re
+                            
+                            # Xác định tháng trước
+                            prev_month = today.month - 1
+                            prev_year = today.year
+                            if prev_month == 0:
+                                prev_month = 12
+                                prev_year -= 1
+                            
+                            def is_prev_month(d):
+                                import pandas as pd
+                                from datetime import datetime, date
+                                if pd.isna(d): return False
+                                if isinstance(d, str):
+                                    try: d = datetime.strptime(d, "%Y-%m-%d").date()
+                                    except: return False
+                                if isinstance(d, datetime): d = d.date()
+                                if isinstance(d, date): return d.month == prev_month and d.year == prev_year
+                                return False
+                                
+                            # Lọc các việc của tháng trước do người này phụ trách
+                            user_name = st.session_state.personal_user if role_mode == "Nhân viên" else st.session_state.username
+                            if role_mode == "Quản lý" and st.session_state.get('manager_dept'):
+                                # Quản lý copy cho cả phòng ban
+                                mask = (fresh_df['PhongBan'] == st.session_state.manager_dept) & fresh_df['Deadline'].apply(is_prev_month)
+                            else:
+                                mask = (fresh_df['NguoiChuTri'] == user_name) & fresh_df['Deadline'].apply(is_prev_month)
+                                
+                            tasks_to_copy = fresh_df[mask].copy()
+                            
+                            if tasks_to_copy.empty:
+                                st.warning(f"Không tìm thấy công việc nào trong tháng {prev_month}/{prev_year} để sao chép!")
+                            else:
+                                # Tạo ID mới
+                                next_id = 1
+                                ids = fresh_df['ID'].tolist()
+                                nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
+                                if nums: next_id = max(nums) + 1
+                                
+                                new_rows = []
+                                import calendar
+                                # Ngày cuối của tháng hiện tại
+                                last_day = calendar.monthrange(today.year, today.month)[1]
+                                new_start = date(today.year, today.month, 1)
+                                new_deadline = date(today.year, today.month, last_day)
+                                
+                                for _, row in tasks_to_copy.iterrows():
+                                    new_row = row.copy()
+                                    new_row['ID'] = f"TSK-{next_id:03d}"
+                                    next_id += 1
+                                    
+                                    # Reset trạng thái
+                                    new_row['NgayBatDau'] = new_start
+                                    new_row['Deadline'] = new_deadline
+                                    new_row['TrangThai'] = "Chưa bắt đầu"
+                                    new_row['PhanTramHoanThanh'] = 0
+                                    new_row['LinkKetQua'] = ""
+                                    new_row['MucDoGhiNhan'] = "Mức 3 (100%)" # Reset đánh giá
+                                    new_row['PhanLoaiTreHan'] = "🟢 Không trễ hạn / Đúng tiến độ"
+                                    
+                                    new_rows.append(new_row)
+                                    
+                                df_updated = pd.concat([fresh_df, pd.DataFrame(new_rows)], ignore_index=True)
+                                if save_db(df_updated):
+                                    st.success(f"🎉 Đã nhân bản thành công {len(new_rows)} công việc sang tháng {today.month}/{today.year}!")
+                                    st.rerun()
+
         st.markdown("#### Thêm mới công việc tự do")
         
         col1, col2 = st.columns(2)
@@ -2536,8 +2689,29 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             
             # 3. Task details
             task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
+            
+            task_weight = st.number_input("Tỷ trọng KPI cho công việc này (%)", value=0)
+            st.caption("💡 Mẹo: Quản lý tự chia tỷ trọng cho các việc trong tháng (Tổng có thể là 100%).")
+                
             task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'CV giao ban / VB đến'])
             st.caption("💡 **Định kỳ:** Đăng ký đầu tháng / quản lý giao. **Giao ban:** Phát sinh sau khi họp giao ban.")
+            
+            # --- 🚀 TÍNH NĂNG MỚI: TAGGING MỤC TIÊU QUÝ ---
+            st.markdown("<p style='font-size: 1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 5px; margin-top: 15px;'>📌 Gắn với Mục tiêu Quý</p>", unsafe_allow_html=True)
+            
+            # Lấy danh sách Mục tiêu Quý
+            current_year = str(today.year)
+            year_key = f"{task_dept}_{current_year}"
+            
+            bsc_goals = []
+            if "bsc_data" in st.session_state and "years" in st.session_state.bsc_data:
+                if year_key in st.session_state.bsc_data["years"]:
+                    bsc_goals = [f"[{g['quarter']}] {g['name']}" for g in st.session_state.bsc_data["years"][year_key]]
+            
+            if not bsc_goals:
+                bsc_goals = ["Không có Mục tiêu Quý nào được thiết lập (Liên hệ Quản lý)"]
+                
+            task_moc_tien_do = st.selectbox("Chọn Mục tiêu Quý", ["Tự do / Không gắn mục tiêu"] + bsc_goals, label_visibility="collapsed")
             
         with col2:
             # 6. Dates
@@ -2614,10 +2788,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
 
             # 11. Chu kỳ theo dõi
             task_cycle = "Theo dự án / Tự do"
-            
-            # 12. Tỷ trọng KPI
-            task_weight = 0
-            
+
             
         submit_new = st.button("💾 Lưu", type="primary", key="btn_save_new_task")
         
@@ -2714,7 +2885,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                                 "PhongBan": task_dept,
                                 "NguoiChuTri": task_owner.strip(),
                                 "TenDuAn": project_name,
-                                "MocTienDo": "Tự do",
+                                "MocTienDo": task_moc_tien_do,
                                 "SanPhamBanGiao": "Xem chi tiết",
                                 "TenCongViec": task_name.strip(),
                                 "PhanLoaiChiSo": "Chỉ số kết quả (Outcome Metric)",
@@ -2796,7 +2967,8 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             def format_task_option(task_id):
                 row = df[df['ID'] == task_id].iloc[0]
                 pic = row.get('NguoiChuTri', 'Chưa rõ')
-                return f"{row['TenCongViec']} - Phụ trách: {pic}"
+                prefix = "🌟 [QUẢN LÝ GIAO] " if ("[Mục tiêu" in str(row.get('GiaiTrinhDeXuat', ''))) else ""
+                return f"{prefix}{row['TenCongViec']} - Phụ trách: {pic}"
             
             selected_id = st.selectbox("Chọn công việc cần cập nhật", avail_update_df['ID'].tolist(), format_func=format_task_option)
             task_data = df[df['ID'] == selected_id].iloc[0]
@@ -3242,6 +3414,31 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     t_score = 0
                     total_w = 0
                     for idx, row in grp.iterrows():
+                        w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
+                        muc_dat = str(row.get('MucDoGhiNhan', 'Mức 3'))
+                        
+                        if 'Mức 4' in muc_dat: p = 125
+                        elif 'Mức 3' in muc_dat: p = 100
+                        elif 'Mức 2' in muc_dat: p = 75
+                        elif 'Mức 1' in muc_dat: p = 50
+                        elif 'Mức 0' in muc_dat: p = 0
+                        elif 'Mức -1' in muc_dat: p = -50
+                        elif 'Mức -2' in muc_dat: p = -75
+                        elif 'Mức -3' in muc_dat: p = -100
+                        else:
+                            # Tương thích ngược: Nếu chưa chấm mức, tính theo Trạng thái
+                            is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                            p = 100 if is_comp else 0
+
+                        t_score += (p / 100.0) * w
+                        total_w += w
+                        
+                    if total_w > 0:
+                        return (t_score / total_w) * 100
+                    return 0
+                    t_score = 0
+                    total_w = 0
+                    for idx, row in grp.iterrows():
                         is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                         w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
                         
@@ -3328,6 +3525,40 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     },
                     use_container_width=True, hide_index=True
                 )
+                
+                if is_manager_view and not kpi_df.empty:
+                    st.markdown("### ✍️ Bảng Chấm Điểm KPI (Quản lý chấm Mức Đạt)")
+                    st.info("💡 Chọn Mức đạt cho từng công việc: Mức 4 (125%), Mức 3 (100%), Mức 2 (75%), Mức 1 (50%), Mức 0 (0%), Mức Âm (Phạt).")
+                    
+                    edit_df = kpi_df[['ID', 'TenCongViec', 'NguoiChuTri', 'TyTrongKPI', 'MucDoGhiNhan']].copy()
+                    
+                    # Chuẩn hóa cột MucDoGhiNhan
+                    valid_levels = ["Mức 4 (125%)", "Mức 3 (100%)", "Mức 2 (75%)", "Mức 1 (50%)", "Mức 0 (0%)", "Mức -1 (-50%)", "Mức -2 (-75%)", "Mức -3 (-100%)"]
+                    edit_df['MucDoGhiNhan'] = edit_df['MucDoGhiNhan'].apply(lambda x: x if x in valid_levels else "Mức 3 (100%)")
+                    
+                    edited_data = st.data_editor(
+                        edit_df,
+                        column_config={
+                            "ID": st.column_config.TextColumn("Mã CV", disabled=True),
+                            "TenCongViec": st.column_config.TextColumn("Tên công việc", disabled=True),
+                            "NguoiChuTri": st.column_config.TextColumn("Người làm", disabled=True),
+                            "TyTrongKPI": st.column_config.NumberColumn("Tỷ trọng (%)", disabled=True),
+                            "MucDoGhiNhan": st.column_config.SelectboxColumn("Đánh giá (Mức đạt)", options=valid_levels, required=True)
+                        },
+                        hide_index=True,
+                        use_container_width=True,
+                        key="kpi_eval_editor"
+                    )
+                    
+                    if st.button("💾 Lưu Đánh Giá Mức Đạt", type="primary"):
+                        with acquire_db_lock():
+                            fresh_df = read_db()
+                            for idx, row in edited_data.iterrows():
+                                mask = fresh_df['ID'] == row['ID']
+                                fresh_df.loc[mask, 'MucDoGhiNhan'] = row['MucDoGhiNhan']
+                            if save_db(fresh_df):
+                                st.success("✅ Đã lưu kết quả đánh giá thành công!")
+                                st.rerun()
 
                 st.markdown("---")
                 with st.expander("🔍 Tra cứu chi tiết điểm KPI của từng nhân sự", expanded=False):
@@ -3424,6 +3655,11 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
     if 'kpi_tab2' in locals():
         with kpi_tab2:
             st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
+            
+            # --- 🚀 TÍNH NĂNG MỚI: HỆ SỐ K ---
+            st.markdown("##### 💵 Tham số Tài chính (Hệ số K Doanh nghiệp)")
+            k_factor = st.slider("Hệ số Kinh doanh (K)", min_value=0.5, max_value=1.5, value=1.0, step=0.1, help="Kéo để giả lập Quỹ thưởng T13. Ví dụ K=0.5 nghĩa là năm nay đói kém, giảm 50% quỹ thưởng.")
+            
             if is_manager_view:
                 selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
                 selected_dept_y = st.session_state.manager_dept if st.session_state.get('manager_dept') else "Tất cả phòng ban"
@@ -3569,27 +3805,35 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             
                             months_grades[f"Tháng {m}"] = grade
                         
-                        # Logic xếp loại năm mới
+                        # Logic xếp loại năm Cảng Đà Nẵng
                         evaluated = count_a_star + count_a + count_b + count_c + count_d
                         if evaluated == 0:
                             final_grade = "-"
-                            bonus = "-"
+                            bonus_val = 0
                         elif evaluated < 12 and selected_year_full >= today.year:
                             final_grade = "Đang tích lũy"
-                            bonus = "-"
+                            bonus_val = 0
                         else:
-                            if count_c > 0 or count_d > 0:
-                                final_grade = "C"
-                                bonus = "60%"
-                            elif count_b >= 2:
-                                final_grade = "B"
-                                bonus = "80%"
-                            elif (count_a + count_a_star) >= 11:
+                            # Tính điểm trung bình cả năm để xếp loại Cảng Đà Nẵng
+                            t_score = f_score # Lấy điểm tháng gần nhất hoặc trung bình
+                            if f_score >= 90:
                                 final_grade = "A"
-                                bonus = "100%"
-                            else:
+                                bonus_val = 110
+                            elif f_score >= 80:
                                 final_grade = "B"
-                                bonus = "80%"
+                                bonus_val = 105
+                            elif f_score >= 70:
+                                final_grade = "C"
+                                bonus_val = 100
+                            elif f_score >= 50:
+                                final_grade = "D"
+                                bonus_val = 95
+                            else:
+                                final_grade = "E"
+                                bonus_val = 90
+                            
+                            bonus = f"{bonus_val}%"
+                            actual_bonus = f"{int(bonus_val * k_factor)}%"
                             
                         row_data = {
                             "Người thực hiện": person,
@@ -3597,7 +3841,8 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                         }
                         row_data.update(months_grades)
                         row_data["Xếp loại Năm"] = final_grade
-                        row_data["Mức hưởng T13"] = bonus
+                        row_data["Mức hưởng T13 (Gốc)"] = bonus
+                        row_data["Thực nhận (Sau K)"] = actual_bonus
                         yearly_data.append(row_data)
                     
                     if yearly_data:
@@ -4751,6 +4996,167 @@ elif menu == "⚙️ Quản Lý Cấu Hình":
         """)
 
 # ----------------- 6. SỔ TAY HƯỚNG DẪN -----------------
+
+elif menu == "📊 Quản trị BSC - KPI":
+    st.markdown('<div class="main-title">📊 Quản trị BSC - KPI (Top-Down)</div>', unsafe_allow_html=True)
+    
+    if not (st.session_state.is_admin_authenticated or st.session_state.is_manager_authenticated):
+        st.warning("🔒 Chức năng này chỉ dành cho Quản lý (Trưởng bộ phận) và HR. Vui lòng đăng nhập từ menu bên trái.")
+    else:
+        st.info("💡 Module này giúp Quản lý thiết lập Kế hoạch năm, rã thành Mục tiêu Quý/Tháng, sau đó giao việc và gắn tỷ trọng KPI trực tiếp cho nhân viên.")
+        
+        if "bsc_data" not in st.session_state:
+            st.session_state.bsc_data = load_bsc_config()
+            
+        bsc_data = st.session_state.bsc_data
+        
+        tab1, tab2, tab3 = st.tabs(["1. Thiết lập Kế hoạch Năm & Quý", "2. Phân rã Mục tiêu Tháng", "3. Giao việc từ Mục tiêu"])
+        
+        with tab1:
+            st.subheader("Thiết lập Kế hoạch Năm & Quý")
+            st.write("Tại đây, Ban HCNS hoặc Quản lý sẽ thiết lập các mục tiêu lớn trong năm của từng Ban.")
+            
+            with st.form("form_add_year_goal"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    target_year = st.selectbox("Năm", ["2025", "2026", "2027"])
+                    dept = st.selectbox("Phòng ban", get_departments_for_company(selected_company, config))
+                with col2:
+                    goal_name = st.text_input("Tên Mục tiêu Kế hoạch Năm")
+                    quarter = st.selectbox("Phân bổ vào Quý", ["Q1", "Q2", "Q3", "Q4", "Cả năm"])
+                submit_year = st.form_submit_button("Lưu Kế hoạch")
+                
+                if submit_year:
+                    if goal_name:
+                        year_key = f"{dept}_{target_year}"
+                        if year_key not in bsc_data["years"]:
+                            bsc_data["years"][year_key] = []
+                        bsc_data["years"][year_key].append({"name": goal_name, "quarter": quarter})
+                        if save_bsc_config(bsc_data):
+                            st.success("Lưu Kế hoạch năm thành công!")
+                            st.rerun()
+                        else:
+                            st.error("Lỗi khi lưu!")
+                    else:
+                        st.warning("Vui lòng nhập tên Mục tiêu!")
+            
+            st.write("---")
+            st.write("### Danh sách Mục tiêu Năm")
+            year_key_sel = f"{dept}_{target_year}"
+            if year_key_sel in bsc_data["years"] and bsc_data["years"][year_key_sel]:
+                import pandas as pd
+                df_y = pd.DataFrame(bsc_data["years"][year_key_sel])
+                st.dataframe(df_y, use_container_width=True)
+            else:
+                st.info("Chưa có kế hoạch năm cho phòng ban này.")
+                
+        with tab2:
+            st.subheader("Phân rã Mục tiêu Tháng")
+            st.write("Trưởng bộ phận bóc tách Kế hoạch Năm/Quý thành các mục tiêu cụ thể của Tháng.")
+            
+            with st.form("form_add_month_goal"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    m_year = st.selectbox("Năm ", ["2025", "2026", "2027"])
+                    m_month = st.selectbox("Tháng", [str(i) for i in range(1, 13)])
+                    m_dept = st.selectbox("Phòng ban ", get_departments_for_company(selected_company, config))
+                with col2:
+                    m_goal_name = st.text_input("Tên Mục tiêu Tháng (Key Result)")
+                    m_weight = st.number_input("Tỷ trọng dự kiến của mục tiêu này (%)", min_value=0, max_value=100, value=20)
+                submit_month = st.form_submit_button("Lưu Mục tiêu Tháng")
+                
+                if submit_month:
+                    if m_goal_name:
+                        month_key = f"{m_dept}_{m_year}_{m_month}"
+                        if month_key not in bsc_data["months"]:
+                            bsc_data["months"][month_key] = []
+                        bsc_data["months"][month_key].append({"name": m_goal_name, "weight": m_weight})
+                        if save_bsc_config(bsc_data):
+                            st.success("Lưu Mục tiêu tháng thành công!")
+                            st.rerun()
+                        else:
+                            st.error("Lỗi khi lưu!")
+                    else:
+                        st.warning("Vui lòng nhập tên Mục tiêu Tháng!")
+                        
+            st.write("---")
+            st.write("### Danh sách Mục tiêu Tháng")
+            month_key_sel = f"{m_dept}_{m_year}_{m_month}"
+            if month_key_sel in bsc_data["months"] and bsc_data["months"][month_key_sel]:
+                import pandas as pd
+                df_m = pd.DataFrame(bsc_data["months"][month_key_sel])
+                st.dataframe(df_m, use_container_width=True)
+            else:
+                st.info("Chưa có mục tiêu tháng cho phòng ban này.")
+                
+        with tab3:
+            st.subheader("Giao việc & Tỷ trọng (Từ Mục tiêu)")
+            st.write("Trưởng bộ phận chọn Mục tiêu Tháng, và tạo công việc giao cho nhân viên.")
+            
+            t3_year = st.selectbox("Năm  ", ["2025", "2026", "2027"])
+            t3_month = st.selectbox("Tháng ", [str(i) for i in range(1, 13)])
+            
+            # Use a selectbox so HR or Manager can change the department
+            default_t3 = get_departments_for_company(selected_company, config)[0]
+            if st.session_state.get('manager_dept') in get_departments_for_company(selected_company, config):
+                default_t3 = st.session_state.manager_dept
+            t3_dept = st.selectbox("Phòng ban", get_departments_for_company(selected_company, config), index=get_departments_for_company(selected_company, config).index(default_t3) if default_t3 in get_departments_for_company(selected_company, config) else 0)
+        
+            
+            t3_month_key = f"{t3_dept}_{t3_year}_{t3_month}"
+            if t3_month_key in bsc_data["months"] and bsc_data["months"][t3_month_key]:
+                goals = [g["name"] for g in bsc_data["months"][t3_month_key]]
+                selected_goal = st.selectbox("Chọn Mục tiêu Tháng để giao việc:", goals)
+                
+                with st.form("form_assign_task"):
+                    st.write(f"**Tạo công việc cho mục tiêu: {selected_goal}**")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        task_name = st.text_input("Tên công việc")
+                        assignee = st.selectbox("Giao cho nhân viên", get_personnel_for_company_dept(selected_company, t3_dept, config))
+                        dl = st.date_input("Hạn chót")
+                    with col2:
+                        kpi_weight = st.number_input("Tỷ trọng KPI cho công việc này (%)", min_value=0, max_value=100, value=10)
+                        project = st.selectbox("Dự án liên quan", [""] + get_filtered_projects(selected_company, config, []))
+                    
+                    submit_task = st.form_submit_button("Giao việc lên Hệ thống")
+                    
+                    if submit_task:
+                        if task_name and assignee:
+                            import uuid
+                            from datetime import date
+                            new_task = {
+                                "ID": str(uuid.uuid4())[:8],
+                                "DonVi": selected_company,
+                                "PhongBan": t3_dept,
+                                "NguoiChuTri": assignee,
+                                "TenCongViec": task_name,
+                                "GiaiTrinhDeXuat": f"[Mục tiêu Tháng {t3_month}: {selected_goal}]",
+                                "TyTrongKPI": kpi_weight,
+                                "Deadline": dl.strftime("%Y-%m-%d"),
+                                "NgayBatDau": date.today().strftime("%Y-%m-%d"),
+                                "TrangThai": "Đang thực hiện",
+                                "NgayCapNhat": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                "TenDuAn": project,
+                                "NguonGiaoViec": "Công việc được giao / định kì",
+                                "ChuKyTheoDoi": "Theo dự án / Tự do",
+                                "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ",
+                                "MucDoGhiNhan": "Chưa đánh giá",
+                                "PhanTramHoanThanh": 0
+                            }
+                            import pandas as pd
+                            df_tasks = read_db()
+                            df_tasks = pd.concat([df_tasks, pd.DataFrame([new_task])], ignore_index=True)
+                            if save_db(df_tasks):
+                                st.success(f"Đã giao việc cho {assignee} thành công!")
+                            else:
+                                st.error("Lỗi khi lưu công việc!")
+                        else:
+                            st.warning("Vui lòng nhập tên công việc và chọn người nhận!")
+            else:
+                st.info("Hãy tạo Mục tiêu Tháng trước khi giao việc!")
+
+
 elif menu == "📖 Sổ tay Hướng dẫn":
     st.markdown("## 📖 Sổ tay Hướng dẫn sử dụng phần mềm KPI")
     st.markdown("Chọn vai trò của bạn để xem hướng dẫn chi tiết:")
