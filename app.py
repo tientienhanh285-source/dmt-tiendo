@@ -2690,8 +2690,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
             # 3. Task details
             task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
             
-            task_weight = st.number_input("Tỷ trọng KPI cho công việc này (%)", value=0)
-            st.caption("💡 Mẹo: Quản lý tự chia tỷ trọng cho các việc trong tháng (Tổng có thể là 100%).")
+            task_weight = 0
                 
             task_nguon = st.selectbox("Nguồn giao việc", ["Công việc được giao / định kì", 'CV giao ban / VB đến'])
             st.caption("💡 **Định kỳ:** Đăng ký đầu tháng / quản lý giao. **Giao ban:** Phát sinh sau khi họp giao ban.")
@@ -3045,11 +3044,7 @@ elif menu == "➕ Thêm / Cập Nhật Công Việc":
                     u_cycle = current_cycle
                     
                     is_emp_locked = (role_mode == "Nhân viên")
-                    if is_emp_locked:
-                        st.text_input("Tỷ trọng KPI (%)", value=str(task_data.get('TyTrongKPI', '')), disabled=True, key=f"u_weight_disp_{task_data['ID']}")
-                        u_weight = task_data.get('TyTrongKPI', '')
-                    else:
-                        u_weight = task_data.get('TyTrongKPI', '')
+                    u_weight = task_data.get('TyTrongKPI', '')
                     
                 
                 u_is_late = (u_deadline is not None and u_deadline < today) and not u_is_completed
@@ -3417,18 +3412,21 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     total_w = 0
                     for idx, row in grp.iterrows():
                         w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
-                        muc_dat = str(row.get('MucDoGhiNhan', 'Mức 3'))
                         
-                        if 'Mức 4' in muc_dat: p = 125
-                        elif 'Mức 3' in muc_dat: p = 100
-                        elif 'Mức 2' in muc_dat: p = 75
-                        elif 'Mức 1' in muc_dat: p = 50
-                        elif 'Mức 0' in muc_dat: p = 0
-                        elif 'Mức -1' in muc_dat: p = -50
-                        elif 'Mức -2' in muc_dat: p = -75
-                        elif 'Mức -3' in muc_dat: p = -100
+                        if is_local:
+                            muc_dat = str(row.get('MucDoGhiNhan', 'Mức 3'))
+                            if 'Mức 4' in muc_dat: p = 125
+                            elif 'Mức 3' in muc_dat: p = 100
+                            elif 'Mức 2' in muc_dat: p = 75
+                            elif 'Mức 1' in muc_dat: p = 50
+                            elif 'Mức 0' in muc_dat: p = 0
+                            elif 'Mức -1' in muc_dat: p = -50
+                            elif 'Mức -2' in muc_dat: p = -75
+                            elif 'Mức -3' in muc_dat: p = -100
+                            else:
+                                is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                                p = 100 if is_comp else 0
                         else:
-                            # Tương thích ngược: Nếu chưa chấm mức, tính theo Trạng thái
                             is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                             p = 100 if is_comp else 0
 
@@ -3528,39 +3526,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                     use_container_width=True, hide_index=True
                 )
                 
-                if is_manager_view and not kpi_df.empty:
-                    st.markdown("### ✍️ Bảng Chấm Điểm KPI (Quản lý chấm Mức Đạt)")
-                    st.info("💡 Chọn Mức đạt cho từng công việc: Mức 4 (125%), Mức 3 (100%), Mức 2 (75%), Mức 1 (50%), Mức 0 (0%), Mức Âm (Phạt).")
-                    
-                    edit_df = kpi_df[['ID', 'TenCongViec', 'NguoiChuTri', 'TyTrongKPI', 'MucDoGhiNhan']].copy()
-                    
-                    # Chuẩn hóa cột MucDoGhiNhan
-                    valid_levels = ["Mức 4 (125%)", "Mức 3 (100%)", "Mức 2 (75%)", "Mức 1 (50%)", "Mức 0 (0%)", "Mức -1 (-50%)", "Mức -2 (-75%)", "Mức -3 (-100%)"]
-                    edit_df['MucDoGhiNhan'] = edit_df['MucDoGhiNhan'].apply(lambda x: x if x in valid_levels else "Mức 3 (100%)")
-                    
-                    edited_data = st.data_editor(
-                        edit_df,
-                        column_config={
-                            "ID": st.column_config.TextColumn("Mã CV", disabled=True),
-                            "TenCongViec": st.column_config.TextColumn("Tên công việc", disabled=True),
-                            "NguoiChuTri": st.column_config.TextColumn("Người làm", disabled=True),
-                            "TyTrongKPI": st.column_config.NumberColumn("Tỷ trọng (%)", disabled=True),
-                            "MucDoGhiNhan": st.column_config.SelectboxColumn("Đánh giá (Mức đạt)", options=valid_levels, required=True)
-                        },
-                        hide_index=True,
-                        use_container_width=True,
-                        key="kpi_eval_editor"
-                    )
-                    
-                    if st.button("💾 Lưu Đánh Giá Mức Đạt", type="primary"):
-                        with acquire_db_lock():
-                            fresh_df = read_db()
-                            for idx, row in edited_data.iterrows():
-                                mask = fresh_df['ID'] == row['ID']
-                                fresh_df.loc[mask, 'MucDoGhiNhan'] = row['MucDoGhiNhan']
-                            if save_db(fresh_df):
-                                st.success("✅ Đã lưu kết quả đánh giá thành công!")
-                                st.rerun()
+
 
                 st.markdown("---")
                 with st.expander("🔍 Tra cứu chi tiết điểm KPI của từng nhân sự", expanded=False):
@@ -3658,9 +3624,7 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
         with kpi_tab2:
             st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
             
-            # --- 🚀 TÍNH NĂNG MỚI: HỆ SỐ K ---
-            st.markdown("##### 💵 Tham số Tài chính (Hệ số K Doanh nghiệp)")
-            k_factor = st.slider("Hệ số Kinh doanh (K)", min_value=0.5, max_value=1.5, value=1.0, step=0.1, help="Kéo để giả lập Quỹ thưởng T13. Ví dụ K=0.5 nghĩa là năm nay đói kém, giảm 50% quỹ thưởng.")
+            k_factor = 1.0
             
             if is_manager_view:
                 selected_year_full = st.selectbox("Chọn Năm Tổng Kết", [today.year - 1, today.year, today.year + 1], index=1, key="year_full")
@@ -3807,34 +3771,62 @@ elif menu == "🏆 Đánh giá KPI & Xếp loại":
                             
                             months_grades[f"Tháng {m}"] = grade
                         
-                        # Logic xếp loại năm Cảng Đà Nẵng
-                        evaluated = count_a_star + count_a + count_b + count_c + count_d
-                        if evaluated == 0:
-                            final_grade = "-"
-                            bonus_val = 0
-                        elif evaluated < 12 and selected_year_full >= today.year:
-                            final_grade = "Đang tích lũy"
-                            bonus_val = 0
+                        if is_local:
+                            # Logic xếp loại năm Cảng Đà Nẵng
+                            evaluated = count_a_star + count_a + count_b + count_c + count_d
+                            if evaluated == 0:
+                                final_grade = "-"
+                                bonus_val = 0
+                            elif evaluated < 12 and selected_year_full >= today.year:
+                                final_grade = "Đang tích lũy"
+                                bonus_val = 0
+                            else:
+                                # Tính điểm trung bình cả năm để xếp loại Cảng Đà Nẵng
+                                t_score = f_score # Lấy điểm tháng gần nhất hoặc trung bình
+                                if f_score >= 90:
+                                    final_grade = "A"
+                                    bonus_val = 110
+                                elif f_score >= 80:
+                                    final_grade = "B"
+                                    bonus_val = 105
+                                elif f_score >= 70:
+                                    final_grade = "C"
+                                    bonus_val = 100
+                                elif f_score >= 50:
+                                    final_grade = "D"
+                                    bonus_val = 95
+                                else:
+                                    final_grade = "E"
+                                    bonus_val = 90
+                                
+                                bonus = f"{bonus_val}%"
                         else:
-                            # Tính điểm trung bình cả năm để xếp loại Cảng Đà Nẵng
-                            t_score = f_score # Lấy điểm tháng gần nhất hoặc trung bình
-                            if f_score >= 90:
+                            # Logic xếp loại năm cũ
+                            if count_a_star >= 8 and count_b == 0 and count_c == 0 and count_d == 0:
+                                final_grade = "A+"
+                                bonus_val = 120
+                            elif (count_a_star + count_a) >= 8 and count_c == 0 and count_d == 0:
                                 final_grade = "A"
                                 bonus_val = 110
-                            elif f_score >= 80:
+                            elif (count_a_star + count_a + count_b) >= 8 and count_d == 0:
                                 final_grade = "B"
                                 bonus_val = 105
-                            elif f_score >= 70:
+                            elif (count_a_star + count_a + count_b + count_c) >= 8 and count_d <= 2:
                                 final_grade = "C"
                                 bonus_val = 100
-                            elif f_score >= 50:
-                                final_grade = "D"
-                                bonus_val = 95
                             else:
-                                final_grade = "E"
+                                final_grade = "D"
                                 bonus_val = 90
                             
-                            bonus = f"{bonus_val}%"
+                            evaluated = count_a_star + count_a + count_b + count_c + count_d
+                            if evaluated == 0:
+                                final_grade = "-"
+                                bonus = "-"
+                            elif evaluated < 12 and selected_year_full >= today.year:
+                                final_grade = "Đang tích lũy"
+                                bonus = "-"
+                            else:
+                                bonus = f"{bonus_val}%"
                             actual_bonus = f"{int(bonus_val * k_factor)}%"
                             
                         row_data = {
@@ -5118,7 +5110,7 @@ elif menu == "📊 Quản trị BSC - KPI":
                         assignee = st.selectbox("Giao cho nhân viên", get_personnel_for_company_dept(selected_company, t3_dept, config))
                         dl = st.date_input("Hạn chót")
                     with col2:
-                        kpi_weight = st.number_input("Tỷ trọng KPI cho công việc này (%)", min_value=0, max_value=100, value=10)
+                        kpi_weight = 0
                         project = st.selectbox("Dự án liên quan", [""] + get_filtered_projects(selected_company, config, []))
                     
                     submit_task = st.form_submit_button("Giao việc lên Hệ thống")
