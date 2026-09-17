@@ -62,31 +62,9 @@ from contextlib import contextmanager
 import time
 
 @contextmanager
-def acquire_db_lock(timeout=15):
-    # Lock local (cho cùng 1 container/server)
-    lock_dir = "db_write.lock"
-    start_time = time.time()
-    locked_local = False
-    
-    while time.time() - start_time < timeout:
-        try:
-            os.mkdir(lock_dir)
-            locked_local = True
-            break
-        except FileExistsError:
-            time.sleep(0.5)
-            
-    if not locked_local:
-        st.error("⚠️ Hệ thống đang bận. Vui lòng đợi vài giây và thử lại.")
-        st.stop()
-        
-    try:
-        yield
-    finally:
-        try:
-            os.rmdir(lock_dir)
-        except:
-            pass
+def acquire_db_lock(timeout=10):
+    # Supabase uses Postgres which has atomic upserts, no need for local locks that break in Cloud
+    yield
 
 # Page config - Light Theme is handled natively by Streamlit's default settings
 
@@ -158,38 +136,42 @@ def _get_table_name(worksheet):
 def get_global_state():
     return {}
 
+import json
+import pandas as pd
+import numpy as np
+
+@st.cache_data(ttl=15, show_spinner=False)
+def _cached_fetch_table_data(worksheet, filters_str):
+    conn = get_gsheets_conn()
+    if not conn: return None
+    table_name = _get_table_name(worksheet)
+    query = conn.table(table_name).select('*')
+    if filters_str:
+        filters = json.loads(filters_str)
+        for k, v in filters.items():
+            if isinstance(v, list):
+                query = query.in_(k, v)
+            else:
+                query = query.eq(k, v)
+    res = query.execute()
+    return res.data
+
 def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None, filters=None):
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
     
     import streamlit as st
-
-
-    import time
-    
-    cache_key = f"cached_df_{worksheet}"
-    
-
+    import pandas as pd
+    import numpy as np
             
     try:
-        table_name = _get_table_name(worksheet)
-        query = conn.table(table_name).select('*')
-        if filters:
-            for k, v in filters.items():
-                if isinstance(v, list):
-                    query = query.in_(k, v)
-                else:
-                    query = query.eq(k, v)
-        res = query.execute()
-        data = res.data
+        filters_str = json.dumps(filters) if filters else ""
+        data = _cached_fetch_table_data(worksheet, filters_str)
         if not data:
             return fallback_df
             
-        import pandas as pd
         df = pd.DataFrame(data)
-        
-        import numpy as np
         df = df.replace("", np.nan).dropna(how='all')
         
         if worksheet == "Sheet1":
@@ -214,13 +196,9 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None, filters=None):
             if "LoaiDieuChinh" in df.columns:
                 df.rename(columns={"LoaiDieuChinh": "LoaiHanhVi"}, inplace=True)
                 
-
-        
         return df
     except Exception as e:
         import streamlit as st
-
-
         st.warning(f"Lỗi đọc Supabase ({worksheet}): {e}")
         return fallback_df
 
@@ -297,6 +275,7 @@ def safe_gsheets_update(conn, worksheet, data):
                     
         if records:
             conn.table(table_name).upsert(records).execute()
+            _cached_fetch_table_data.clear()
             
             if pk in df.columns:
                 current_ids = [str(x) for x in df[pk].tolist()]
@@ -325,6 +304,7 @@ def safe_gsheets_update(conn, worksheet, data):
         elif worksheet == "VAN_BAN_DEN":
             if hasattr(read_incoming_docs_db, "clear"): read_incoming_docs_db.clear()
             
+        _cached_fetch_table_data.clear()
         return True
     except Exception as e:
         err_msg = str(e)
