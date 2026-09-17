@@ -874,8 +874,7 @@ with tab_update:
                             "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ"
                         }
                         
-                        df_rep = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
-                        if save_db(df_rep):
+                        if insert_task(new_row):
                             st.session_state["success_msg"] = f"🎉 Đã nhân bản thành công công việc mới mã: {new_id}!"
                             st.rerun()
 
