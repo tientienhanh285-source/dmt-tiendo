@@ -1214,6 +1214,12 @@ def read_db(filters=None):
     if conn is None:
         return pd.DataFrame(columns=required_cols)
         
+    if filters and 'PhongBan' in filters:
+        pb_filter = filters['PhongBan']
+        if isinstance(pb_filter, str):
+            short_name = DEPT_ABBR.get(pb_filter, pb_filter)
+            filters['PhongBan'] = list(set([pb_filter, short_name]))
+            
     try:
         df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=15, filters=filters)
         if df is None or df.empty or len(df.columns) < 2:
