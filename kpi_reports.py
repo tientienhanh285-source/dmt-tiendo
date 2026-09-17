@@ -39,7 +39,9 @@ def render_analytics_dashboard(yearly_data_df):
     
     fig2 = px.bar(yearly_data_df, x='Nhân viên', y='Điểm TB (Ước tính)', color='Xếp loại Cả Năm',
                  title="Điểm KPI Trung bình (Ước tính) theo Nhân viên",
-                 color_discrete_map={'A (100%)':'#2ca02c', 'B (80%)':'#1f77b4', 'C (60%)':'#ff7f0e'})
+                 color_discrete_map={'A (100%)':'#2ca02c', 'B (80%)':'#1f77b4', 'C (60%)':'#ff7f0e'},
+                 text_auto='.2f')
+    fig2.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
     st.plotly_chart(fig2, use_container_width=True)
 
 def generate_department_excel(company_name, month, year, data_rows):

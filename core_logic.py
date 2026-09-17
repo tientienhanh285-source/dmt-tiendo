@@ -158,7 +158,7 @@ def _get_table_name(worksheet):
 def get_global_state():
     return {}
 
-def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
+def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None, filters=None):
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
@@ -174,7 +174,14 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None):
             
     try:
         table_name = _get_table_name(worksheet)
-        res = conn.table(table_name).select('*').execute()
+        query = conn.table(table_name).select('*')
+        if filters:
+            for k, v in filters.items():
+                if isinstance(v, list):
+                    query = query.in_(k, v)
+                else:
+                    query = query.eq(k, v)
+        res = query.execute()
         data = res.data
         if not data:
             return fallback_df
@@ -1260,7 +1267,7 @@ def load_project_targets():
             return []
     return []
 
-def read_db():
+def read_db(filters=None):
     # Force cache clear for new progress calculation rules
     required_cols = [
         "ID", "DonVi", "PhongBan", "NguoiChuTri", "TenDuAn", "MocTienDo", "SanPhamBanGiao",
@@ -1272,7 +1279,7 @@ def read_db():
         return pd.DataFrame(columns=required_cols)
         
     try:
-        df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=15)
+        df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=15, filters=filters)
         if df is None or df.empty or len(df.columns) < 2:
             df = pd.DataFrame(columns=required_cols)
         else:
