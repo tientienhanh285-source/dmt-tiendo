@@ -841,7 +841,12 @@ if is_hr or is_manager:
                 if f_thang != "Tất cả":
                     hist_display_df = hist_display_df[hist_display_df["Thang"] == f_thang]
                 
-                st.dataframe(hist_display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False]), use_container_width=True, hide_index=True)
+                hist_display_df = hist_display_df.sort_values(by=["Phòng ban", "Thang", "ID"], ascending=[True, False, False])
+                
+                cols_to_drop = ["ID", "NguoiCapNhat", "ThoiGianCapNhat"]
+                display_cols = [c for c in hist_display_df.columns if c not in cols_to_drop]
+                
+                st.dataframe(hist_display_df[display_cols], use_container_width=True, hide_index=True)
                 
                 st.markdown("---")
                 st.markdown("##### 🗑️ Xóa Điều Chỉnh KPI")
