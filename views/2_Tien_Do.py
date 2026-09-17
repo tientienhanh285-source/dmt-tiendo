@@ -48,8 +48,11 @@ if 'role_mode' in st.session_state:
 if 'display_df' not in locals():
     try:
         display_df = read_db(filters=db_filters if db_filters else None)
-    except:
-        pass
+    except Exception as e:
+        import traceback
+        st.error(f"Lỗi khi gọi read_db(): {e}")
+        st.code(traceback.format_exc())
+        display_df = pd.DataFrame()
 
 if 'df' in locals() or 'df' not in locals():
     df = display_df.copy()
