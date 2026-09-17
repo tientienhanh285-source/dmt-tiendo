@@ -1309,6 +1309,10 @@ def read_db(filters=None):
         end_d = row['Deadline']
         df.at[idx, 'PhanTramHoanThanh'] = calculate_time_progress(start_d, end_d, is_comp)
         
+    if 'NgayCapNhat' in df.columns:
+        df['NgayCapNhat_dt'] = pd.to_datetime(df['NgayCapNhat'], errors='coerce')
+        df = df.sort_values(by='NgayCapNhat_dt', ascending=False).drop(columns=['NgayCapNhat_dt']).reset_index(drop=True)
+        
     return df
 
 
