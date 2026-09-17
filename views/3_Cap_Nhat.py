@@ -368,7 +368,7 @@ with tab_new:
         else:
             # Calculate status and progress automatically
             if task_is_completed:
-                calc_status = "Hoàn thành"
+                calc_status = "Chờ nghiệm thu"
             elif task_has_issue:
                 calc_status = "Có vướng mắc"
             elif task_deadline < today:
@@ -384,7 +384,7 @@ with tab_new:
                 
             # Constraints validation
             has_error = False
-            if calc_status == "Hoàn thành":
+            if calc_status == "Chờ nghiệm thu":
                 if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not task_link_text.strip():
                     st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm'!")
                     has_error = True
@@ -469,7 +469,7 @@ with tab_new:
                             "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
                             "TyTrongKPI": task_weight,
                             "NguonGiaoViec": task_nguon,
-                            "MucDoGhiNhan": "0% (Không ghi nhận)"
+                            "MucDoGhiNhan": "Chưa đánh giá" if (is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") else "0% (Không ghi nhận)"
                         }
                         
                         new_id = insert_task(new_row)
@@ -641,6 +641,8 @@ with tab_update:
                             u_chamchuoc = st.selectbox("Mức độ ghi nhận (Dành cho Quản lý)", chamchuoc_opts, index=idx_cc, key=f"u_cc_{task_data['ID']}")
                         else:
                             current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
+                            if current_chamchuoc == '0% (Không ghi nhận)' and task_data.get('PhanLoaiTreHan', '') != "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
+                                current_chamchuoc = 'Chưa đánh giá'
                             u_chamchuoc = current_chamchuoc
                             if current_chamchuoc != '0% (Không ghi nhận)':
                                 st.info(f"Đã được Quản lý ghi nhận mức độ KPI: **{current_chamchuoc}**")
