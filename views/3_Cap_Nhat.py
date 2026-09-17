@@ -212,8 +212,11 @@ with tab_new:
             if t.get("department") == task_dept and t.get("project_name") not in khdt_projects:
                 khdt_projects.append(t.get("project_name"))
                 
-        db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
-        merged_projs = get_filtered_projects(entry_company, config, db_projs, department=global_active_dept)
+        db_projs = []
+        if not display_df.empty:
+            dept_tasks = display_df[display_df["PhongBan"] == task_dept]
+            db_projs = list(dept_tasks["TenDuAn"].dropna().unique())
+        merged_projs = get_filtered_projects(entry_company, config, db_projs, department=task_dept)
         
         for p in khdt_projects:
             if p not in merged_projs:
