@@ -456,6 +456,34 @@ def load_config():
             data["companies"] = default_config["companies"]
             needs_save = True
             
+        # Map departments to abbreviations to ensure consistency across the app
+        abbr_map = {
+            "Ban Lãnh đạo": "BLĐ",
+            "Lãnh đạo": "BLĐ",
+            "Ban Hành chính Nhân sự": "HCNS",
+            "Ban Tài chính Kế toán": "TCKT",
+            "Ban Kế hoạch Đầu tư": "KHĐT",
+            "Ban Chuẩn bị Đầu tư": "CBĐT",
+            "Ban Kỹ thuật": "KT",
+            "Ban Đền bù Giải tỏa": "ĐBGT",
+            "Ban Dự án": "DA",
+            "Xí nghiệp DTBD": "XN DTBD",
+            "Sàn GDBĐS": "Sàn GDBĐS",
+            "Tổ KPI": "Tổ KPI",
+            "Ban chỉ huy Công trường": "BCH CT",
+            "Xí nghiệp xe máy thiết bị": "XN XMTB",
+            "Xí nghiệp xe thiết bị": "XN XMTB"
+        }
+        
+        for comp_name, comp_data in data.get("companies", {}).items():
+            if "departments" in comp_data:
+                comp_data["departments"] = [abbr_map.get(d, d) for d in comp_data["departments"]]
+            if "personnel_by_department" in comp_data:
+                new_personnel = {}
+                for d, p in comp_data["personnel_by_department"].items():
+                    new_personnel[abbr_map.get(d, d)] = p
+                comp_data["personnel_by_department"] = new_personnel
+                
         return data
     except Exception as e:
         print("Error parsing DB config:", e)
