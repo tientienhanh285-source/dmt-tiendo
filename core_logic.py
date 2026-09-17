@@ -1246,6 +1246,9 @@ def read_db(filters=None):
             if 'TrangThai' in df.columns:
                 df['TrangThai'] = df['TrangThai'].fillna('Đang thực hiện')
                 df['TrangThai'] = df['TrangThai'].replace('', 'Đang thực hiện')
+            
+            if 'PhongBan' in df.columns:
+                df['PhongBan'] = df['PhongBan'].apply(lambda x: DEPT_ABBR.get(str(x).strip(), str(x).strip()))
 
     except Exception as e:
         import streamlit as st
