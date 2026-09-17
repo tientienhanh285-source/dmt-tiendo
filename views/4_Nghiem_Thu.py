@@ -132,21 +132,15 @@ else:
                             task_id = row['ID']
                             new_val = row['TrangThaiNghiemThu']
                             if new_val == "✅ Duyệt (Hoàn thành)":
-                                fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThai'] = 'Hoàn thành'
-                                if 'TrangThaiNghiemThu' in fresh_df.columns:
-                                    fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThaiNghiemThu'] = 'Đã duyệt'
+                                update_task(task_id, {'TrangThai': 'Hoàn thành', 'TrangThaiNghiemThu': 'Đã duyệt'})
                                 changed = True
                             elif new_val == "❌ Từ chối (Làm lại)":
-                                fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThai'] = 'Đang thực hiện'
-                                fresh_df.loc[fresh_df['ID'] == task_id, 'PhanTramHoanThanh'] = 0
-                                if 'TrangThaiNghiemThu' in fresh_df.columns:
-                                    fresh_df.loc[fresh_df['ID'] == task_id, 'TrangThaiNghiemThu'] = 'Từ chối'
+                                update_task(task_id, {'TrangThai': 'Đang thực hiện', 'PhanTramHoanThanh': 0, 'TrangThaiNghiemThu': 'Từ chối'})
                                 changed = True
                         
                         if changed:
-                            if save_db(fresh_df):
-                                st.success("✅ Đã lưu kết quả nghiệm thu thành công!")
-                                st.rerun()
+                            st.success("✅ Đã lưu kết quả nghiệm thu thành công!")
+                            st.rerun()
                                 
     with tab_khachquan:
         if display_df.empty:
@@ -242,18 +236,15 @@ else:
                         for idx, row in edited_df.iterrows():
                             task_id = row['ID']
                             new_val = row['MucDoGhiNhan']
-                            # Some tasks might not exist if deleted concurrently, but for robustness:
                             if task_id in fresh_df['ID'].values:
                                 old_val = fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'].values[0]
                                 if new_val != old_val:
-                                    fresh_df.loc[fresh_df['ID'] == task_id, 'MucDoGhiNhan'] = new_val
+                                    update_task(task_id, {'MucDoGhiNhan': new_val})
                                     changed = True
                                 
                         if changed:
-                            fresh_df = fresh_df.drop(columns=['is_in_month', 'TrangThaiDuyetKQ_disp'], errors='ignore')
-                            if save_db(fresh_df):
-                                st.success("✅ Đã lưu toàn bộ phê duyệt thành công!")
-                                st.rerun()
+                            st.success("✅ Đã lưu toàn bộ phê duyệt thành công!")
+                            st.rerun()
                         else:
                             st.info("Chưa có thay đổi nào cần lưu.")
 

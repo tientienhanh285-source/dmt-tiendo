@@ -219,10 +219,8 @@ else:
                             "MucDoGhiNhan": "Chưa đánh giá",
                             "PhanTramHoanThanh": 0
                         }
-                        import pandas as pd
-                        df_tasks = read_db()
-                        df_tasks = pd.concat([df_tasks, pd.DataFrame([new_task])], ignore_index=True)
-                        if save_db(df_tasks):
+                        new_id = insert_task(new_task)
+                        if new_id:
                             st.success(f"Đã giao việc cho {assignee} thành công!")
                         else:
                             st.error("Lỗi khi lưu công việc!")

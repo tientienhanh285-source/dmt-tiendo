@@ -757,6 +757,7 @@ def read_kpi_adjustments():
         st.error(f"Lỗi khi đọc trang tính KPI_ADJUSTMENTS: {e}")
         raise e
 
+import uuid
 def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
     if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
     import pandas as pd
@@ -765,11 +766,8 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
         dup = df[(df['TenNhanVien'] == ten) & (df['Thang'] == thang) & (df['Nam'] == nam) & (df['LoaiHanhVi'] == loai) & (df['DiemDieuChinh'] == diem) & (df['LyDo'] == lydo)]
         if not dup.empty:
             return True, ""
-    if df.empty:
-        new_id = 1
-    else:
-        max_id = pd.to_numeric(df['ID'], errors='coerce').max(skipna=True)
-        new_id = 1 if pd.isna(max_id) else int(max_id) + 1
+    
+    new_id = uuid.uuid4().hex[:8]
     new_row = {
         "ID": new_id,
         "TenNhanVien": ten,
@@ -779,70 +777,28 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
         "DiemDieuChinh": diem,
         "LyDo": lydo
     }
-    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-    conn = get_gsheets_conn()
-    if conn is not None:
-        try:
-            success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
-            if success:
-                import streamlit as st
-
-
-                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
-                return True, ""
-            else:
-                return False, "Không thể cập nhật lên Google Sheets (lỗi đã ghi log)"
-        except Exception as e:
-            return False, str(e)
-    return False, "Không kết nối được Google Sheets"
+    
+    if insert_db_record("KPI_ADJUSTMENTS", new_row):
+        return True, ""
+    return False, "Không thể thêm KPI Adjustment"
 
 def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
-    if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
-    import pandas as pd
-    df = read_kpi_adjustments()
-    if df.empty: return False, "Dữ liệu trống"
-    idx = df[df['ID'] == adj_id].index
-    if len(idx) == 0: return False, "Không tìm thấy ID"
-    df.loc[idx[0], 'TenNhanVien'] = ten
-    df.loc[idx[0], 'Thang'] = thang
-    df.loc[idx[0], 'Nam'] = nam
-    df.loc[idx[0], 'LoaiHanhVi'] = loai
-    df.loc[idx[0], 'DiemDieuChinh'] = diem
-    df.loc[idx[0], 'LyDo'] = lydo
-    conn = get_gsheets_conn()
-    if conn is not None:
-        try:
-            success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
-            if success:
-                import streamlit as st
-
-
-                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
-                return True, ""
-        except Exception as e:
-            return False, str(e)
-    return False, "Lỗi kết nối"
+    update_dict = {
+        "TenNhanVien": ten,
+        "Thang": thang,
+        "Nam": nam,
+        "LoaiHanhVi": loai,
+        "DiemDieuChinh": diem,
+        "LyDo": lydo
+    }
+    if update_db_record("KPI_ADJUSTMENTS", "ID", adj_id, update_dict):
+        return True, ""
+    return False, "Lỗi cập nhật KPI Adjustment"
 
 def delete_kpi_adjustment(adj_id):
-    if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
-    import pandas as pd
-    df = read_kpi_adjustments()
-    if df.empty: return False, "Dữ liệu trống"
-    df = df[df['ID'].astype(str).str.strip() != str(adj_id).strip()]
-    conn = get_gsheets_conn()
-    if conn is not None:
-        try:
-            success = safe_gsheets_update(conn, worksheet="KPI_ADJUSTMENTS", data=df)
-            if success:
-                import streamlit as st
-
-
-                if hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
-                return True, ""
-        except Exception as e:
-            return False, str(e)
-    return False, "Lỗi kết nối"
-
+    if delete_db_record("KPI_ADJUSTMENTS", "ID", adj_id):
+        return True, ""
+    return False, "Lỗi xóa KPI Adjustment" 
 
 def save_gantt_db(df):
     conn = get_gsheets_conn()
@@ -1355,7 +1311,151 @@ def read_db(filters=None):
         
     return df
 
+
+def insert_db_record(worksheet, new_row_dict):
+    conn = get_gsheets_conn()
+    if conn is None: return False
+    try:
+        table_name = _get_table_name(worksheet)
+        import math
+        from datetime import date, datetime
+        import pandas as pd
+        for k, v in list(new_row_dict.items()):
+            if isinstance(v, (date, datetime)):
+                new_row_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(v, float):
+                if math.isnan(v): new_row_dict[k] = None
+                elif v.is_integer(): new_row_dict[k] = int(v)
+            elif pd.isna(v):
+                new_row_dict[k] = None
+        conn.table(table_name).insert(new_row_dict).execute()
+        _cached_fetch_table_data.clear()
+        if worksheet == "KPI_ADJUSTMENTS" and hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+        return True
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi insert Supabase ({worksheet}): {e}")
+        return False
+
+def update_db_record(worksheet, id_col, id_val, update_dict):
+    conn = get_gsheets_conn()
+    if conn is None: return False
+    try:
+        table_name = _get_table_name(worksheet)
+        import math
+        from datetime import date, datetime
+        import pandas as pd
+        for k, v in list(update_dict.items()):
+            if isinstance(v, (date, datetime)):
+                update_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(v, float):
+                if math.isnan(v): update_dict[k] = None
+                elif v.is_integer(): update_dict[k] = int(v)
+            elif pd.isna(v):
+                update_dict[k] = None
+        conn.table(table_name).update(update_dict).eq(id_col, id_val).execute()
+        _cached_fetch_table_data.clear()
+        if worksheet == "KPI_ADJUSTMENTS" and hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+        return True
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi update Supabase ({worksheet}): {e}")
+        return False
+
+def delete_db_record(worksheet, id_col, id_val):
+    conn = get_gsheets_conn()
+    if conn is None: return False
+    try:
+        table_name = _get_table_name(worksheet)
+        conn.table(table_name).delete().eq(id_col, id_val).execute()
+        _cached_fetch_table_data.clear()
+        if worksheet == "KPI_ADJUSTMENTS" and hasattr(read_kpi_adjustments, "clear"): read_kpi_adjustments.clear()
+        return True
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi delete Supabase ({worksheet}): {e}")
+        return False
+
+def insert_task(new_row_dict):
+    conn = get_gsheets_conn()
+    if conn is None: return False
+    try:
+        table_name = _get_table_name("Sheet1")
+        import uuid
+        import math
+        from datetime import date, datetime
+        import pandas as pd
+        
+        # generate ID automatically to avoid collision
+        new_row_dict['ID'] = f"TSK-{uuid.uuid4().hex[:8].upper()}"
+        
+        # clean datetimes
+        for k, v in list(new_row_dict.items()):
+            if isinstance(v, (date, datetime)):
+                new_row_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(v, float):
+                if math.isnan(v): new_row_dict[k] = None
+                elif v.is_integer(): new_row_dict[k] = int(v)
+            elif pd.isna(v):
+                new_row_dict[k] = None
+                
+        conn.table(table_name).insert(new_row_dict).execute()
+        
+        if hasattr(read_db, "clear"): read_db.clear()
+        _cached_fetch_table_data.clear()
+        return new_row_dict['ID']
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi insert Supabase: {e}")
+        return False
+
+def update_task(task_id, update_dict):
+    conn = get_gsheets_conn()
+    if conn is None: return False
+    try:
+        table_name = _get_table_name("Sheet1")
+        import math
+        from datetime import date, datetime
+        import pandas as pd
+        
+        for k, v in list(update_dict.items()):
+            if isinstance(v, (date, datetime)):
+                update_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
+            elif isinstance(v, float):
+                if math.isnan(v): update_dict[k] = None
+                elif v.is_integer(): update_dict[k] = int(v)
+            elif pd.isna(v):
+                update_dict[k] = None
+                
+        conn.table(table_name).update(update_dict).eq('ID', task_id).execute()
+        
+        if hasattr(read_db, "clear"): read_db.clear()
+        _cached_fetch_table_data.clear()
+        return True
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi update Supabase: {e}")
+        return False
+
+
+def delete_task(task_id):
+    conn = get_gsheets_conn()
+    if conn is None: return False
+    try:
+        table_name = _get_table_name("Sheet1")
+        conn.table(table_name).delete().eq('ID', task_id).execute()
+        
+        if hasattr(read_db, "clear"): read_db.clear()
+        _cached_fetch_table_data.clear()
+        return True
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Lỗi delete Supabase: {e}")
+        return False
+
 def save_db(df):
+
+
     conn = get_gsheets_conn()
     if conn is None:
         st.error("Chưa kết nối Google Sheets.")

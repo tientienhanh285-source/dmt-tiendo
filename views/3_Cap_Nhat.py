@@ -150,10 +150,11 @@ with tab_new:
                                 
                                 new_rows.append(new_row)
                                 
-                            df_updated = pd.concat([fresh_df, pd.DataFrame(new_rows)], ignore_index=True)
-                            if save_db(df_updated):
-                                st.success(f"🎉 Đã nhân bản thành công {len(new_rows)} công việc sang tháng {today.month}/{today.year}!")
-                                st.rerun()
+                            for r in new_rows:
+                                r_dict = r.to_dict()
+                                insert_task(r_dict)
+                            st.success(f"🎉 Đã nhân bản thành công {len(new_rows)} công việc sang tháng {today.month}/{today.year}!")
+                            st.rerun()
 
     st.markdown("#### Thêm mới công việc tự do")
     
@@ -471,9 +472,9 @@ with tab_new:
                             "MucDoGhiNhan": "0% (Không ghi nhận)"
                         }
                         
-                        df_updated = pd.concat([fresh_df, pd.DataFrame([new_row])], ignore_index=True)
-                        if save_db(df_updated):
-                            st.session_state["success_msg"] = f"🎉 Đã khởi tạo thành công công việc mã: {task_id}!"
+                        new_id = insert_task(new_row)
+                        if new_id:
+                            st.session_state["success_msg"] = f"🎉 Đã khởi tạo thành công công việc mã: {new_id}!"
                             st.rerun()
 
 
@@ -776,7 +777,24 @@ with tab_update:
                             else:
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
 
-                            if save_db(fresh_df):
+                            update_dict = {
+                                'TenDuAn': u_proj.strip(),
+                                'TenCongViec': u_name.strip(),
+                                'NguoiChuTri': u_owner.strip(),
+                                'NgayBatDau': u_start,
+                                'Deadline': u_deadline,
+                                'PhanTramHoanThanh': u_progress,
+                                'TrangThai': u_status,
+                                'LinkKetQua': final_link,
+                                'GiaiTrinhDeXuat': u_explain.strip(),
+                                'NgayCapNhat': (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'),
+                                'ChuKyTheoDoi': u_cycle,
+                                'PhanLoaiTreHan': u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ",
+                                'TyTrongKPI': str(u_weight),
+                                'NguonGiaoViec': u_nguon,
+                                'MucDoGhiNhan': u_chamchuoc if u_is_late else '0% (Không ghi nhận)'
+                            }
+                            if update_task(selected_id, update_dict):
                                 st.session_state["success_msg"] = f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!"
                                 st.rerun()
                             
@@ -786,9 +804,7 @@ with tab_update:
             if del_click:
                 with acquire_db_lock():
                     
-                    fresh_df = read_db()
-                    df_after_del = fresh_df[fresh_df['ID'] != selected_id]
-                    if save_db(df_after_del):
+                    if delete_task(selected_id):
                         st.session_state["success_msg"] = f"🗑️ Đã xóa thành công công việc mã: {selected_id}!"
                         st.rerun()
 
