@@ -798,11 +798,11 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
     new_id = uuid.uuid4().hex[:8]
     new_row = {
         "ID": new_id,
-        "TenNhanVien": ten,
+        "NhanSu": ten,
         "Thang": thang,
         "Nam": nam,
-        "LoaiHanhVi": loai,
-        "DiemDieuChinh": diem,
+        "LoaiDieuChinh": loai,
+        "SoDiem": diem,
         "LyDo": lydo
     }
     
@@ -812,11 +812,11 @@ def add_kpi_adjustment(ten, thang, nam, loai, diem, lydo):
 
 def edit_kpi_adjustment(adj_id, ten, thang, nam, loai, diem, lydo):
     update_dict = {
-        "TenNhanVien": ten,
+        "NhanSu": ten,
         "Thang": thang,
         "Nam": nam,
-        "LoaiHanhVi": loai,
-        "DiemDieuChinh": diem,
+        "LoaiDieuChinh": loai,
+        "SoDiem": diem,
         "LyDo": lydo
     }
     if update_db_record("KPI_ADJUSTMENTS", "ID", adj_id, update_dict):
