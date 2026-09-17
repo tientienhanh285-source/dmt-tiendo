@@ -132,10 +132,10 @@ else:
                             task_id = row['ID']
                             new_val = row['TrangThaiNghiemThu']
                             if new_val == "✅ Duyệt (Hoàn thành)":
-                                update_task(task_id, {'TrangThai': 'Hoàn thành', 'TrangThaiNghiemThu': 'Đã duyệt'})
+                                update_task(task_id, {'TrangThai': 'Hoàn thành'})
                                 changed = True
                             elif new_val == "❌ Từ chối (Làm lại)":
-                                update_task(task_id, {'TrangThai': 'Đang thực hiện', 'PhanTramHoanThanh': 0, 'TrangThaiNghiemThu': 'Từ chối'})
+                                update_task(task_id, {'TrangThai': 'Đang thực hiện', 'PhanTramHoanThanh': 0})
                                 changed = True
                         
                         if changed:
