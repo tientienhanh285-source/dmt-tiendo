@@ -176,11 +176,15 @@ with tab_new:
         # 4. Department
         allowed_depts = get_departments_for_company(entry_company, config)
         is_personal = (role_mode == "Nhân viên" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
+        is_manager = (role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_dept'))
+        
         if is_personal:
             # Deduce their department from their existing tasks or default to first
             user_dept_mode = display_df['PhongBan'].mode()
             user_dept = user_dept_mode[0] if not user_dept_mode.empty else allowed_depts[0]
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", [user_dept], index=0, disabled=True)
+        elif is_manager:
+            task_dept = st.selectbox("Phòng ban chịu trách nhiệm", [st.session_state.manager_dept], index=0, disabled=True)
         else:
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", allowed_depts)
         

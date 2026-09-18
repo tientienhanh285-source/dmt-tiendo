@@ -354,28 +354,45 @@ if role_mode == "Quản lý":
     st.session_state.personal_user = None
     st.session_state.is_admin_authenticated = False
     if not st.session_state.is_manager_authenticated:
-        mgr_pwd = st.sidebar.text_input("Nhập Mật khẩu Quản lý", type="password")
-        if mgr_pwd:
-            if mgr_pwd == "quanly123":
-                st.session_state.is_manager_authenticated = True
-                st.rerun()
+        st.sidebar.markdown("### 🏢 Xác thực Quản lý")
+        valid_depts = get_departments_for_company(selected_company, config)
+        sel_login_dept = st.sidebar.selectbox("1. Chọn Phòng ban", ["-- Chọn --"] + valid_depts, key="mgr_login_dept")
+        
+        if sel_login_dept != "-- Chọn --":
+            personnel_list = get_personnel_for_company_dept(selected_company, sel_login_dept, config)
+            if personnel_list:
+                dept_lead = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, "")
+                
+                # Make sure the department lead is at the top or selected by default if exists
+                default_idx = 0
+                if dept_lead in personnel_list:
+                    default_idx = personnel_list.index(dept_lead)
+                sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + personnel_list, index=default_idx + 1 if dept_lead else 0, key="mgr_login_user")
+                
+                if sel_login_user != "-- Chọn --":
+                    mgr_pwd = st.sidebar.text_input("3. Nhập Mật khẩu Quản lý", type="password")
+                    if st.sidebar.button("Xác nhận Đăng nhập"):
+                        if mgr_pwd == "quanly123":
+                            st.session_state.is_manager_authenticated = True
+                            st.session_state.manager_dept = sel_login_dept
+                            st.session_state.manager_user = sel_login_user
+                            st.rerun()
+                        else:
+                            st.sidebar.error("Mật khẩu không đúng!")
             else:
-                st.sidebar.error("Mật khẩu không đúng!")
+                st.sidebar.warning("Phòng ban này chưa có dữ liệu nhân sự.")
     
     if st.session_state.is_manager_authenticated:
-        st.sidebar.success("Đã xác thực quyền Quản lý!")
+        st.sidebar.success(f"👋 Xin chào Quản lý, {st.session_state.get('manager_user', '')}!")
         
         if st.sidebar.button("Đăng xuất"):
             st.session_state.is_manager_authenticated = False
+            st.session_state.manager_dept = None
+            st.session_state.manager_user = None
             st.rerun()
-            
-        valid_depts = get_departments_for_company(selected_company, config)
-        st.sidebar.markdown("### 🏢 Phòng/Ban của bạn")
-        current_idx = 0
-        if st.session_state.get('manager_dept') in valid_depts:
-            current_idx = valid_depts.index(st.session_state.manager_dept)
-        if valid_depts:
-            st.session_state.manager_dept = st.sidebar.selectbox("Lọc dữ liệu theo Phòng/Ban:", valid_depts, index=current_idx, label_visibility="collapsed")
+        
+        # We no longer allow changing department dynamically for Manager
+        st.sidebar.markdown(f"**Phòng/Ban phụ trách:** {st.session_state.get('manager_dept', '')}")
 
 elif role_mode == "HR":
     st.session_state.is_personal_authenticated = False
