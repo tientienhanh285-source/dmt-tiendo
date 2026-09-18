@@ -255,10 +255,7 @@ with kpi_tab1:
                 "Điểm công việc": round(task_score, 1),
                 "Thưởng/Phạt": adj_score,
                 "TỔNG ĐIỂM": final_score,
-                "Xếp loại": grade,
-                "_kh_score": round(kh_score, 1) if len(giao_ban_tasks) > 0 else round(task_score, 1),
-                "_gb_score": round(gb_score, 1) if len(giao_ban_tasks) > 0 else 0,
-                "_has_gb": len(giao_ban_tasks) > 0
+                "Xếp loại": grade
             })
             
         if personnel_kpi:
@@ -284,10 +281,6 @@ with kpi_tab1:
                     if det_p:
                         p_info = kpi_month_df[kpi_month_df['Người thực hiện'] == det_p].iloc[0]
                         st.markdown(f"### 🧮 Diễn giải công thức tính điểm của **{det_p}**")
-                        
-                        kh_val = p_info['_kh_score']
-                        gb_val = p_info['_gb_score']
-                        has_gb = p_info['_has_gb']
                         task_val = p_info['Điểm công việc']
                         adj_val = p_info['Thưởng/Phạt']
                         final_val = p_info['TỔNG ĐIỂM']
@@ -304,10 +297,8 @@ with kpi_tab1:
                             
                             quy_dois = []
                             w_thuctes = []
-                            kh_parts = []
-                            gb_parts = []
-                            kh_tw = 0.0
-                            gb_tw = 0.0
+                            task_parts = []
+                            task_tw = 0.0
                             
                             for idx, row in p_tasks.iterrows():
                                 is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
@@ -330,30 +321,18 @@ with kpi_tab1:
                                 w_round = round(w, 2)
                                 w_thuctes.append(w_round)
                                 
-                                if row.get('NguonGiaoViec', '') in ['Công việc trong "Giao ban"', 'CV giao ban / VB đến']:
-                                    if w_round > 0:
-                                        gb_parts.append(f"({p} × {w_round}%)")
-                                        gb_tw += w_round
-                                else:
-                                    if w_round > 0:
-                                        kh_parts.append(f"({p} × {w_round}%)")
-                                        kh_tw += w_round
+                                if w_round > 0:
+                                    task_parts.append(f"({p} × {w_round}%)")
+                                    task_tw += w_round
                                 
                             p_tasks['Tỷ trọng (Thực tế) %'] = w_thuctes
                             p_tasks['Điểm quy đổi'] = quy_dois
                             
-                            kh_math = f"[{' + '.join(kh_parts)}] / {round(kh_tw,2)}%" if kh_parts else "0"
-                            gb_math = f"[{' + '.join(gb_parts)}] / {round(gb_tw,2)}%" if gb_parts else "0"
+                            task_math = f"[{' + '.join(task_parts)}] / {round(task_tw,2)}%" if task_parts else "0"
                             
-                            if has_gb:
-                                st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
-                                        f"**2️⃣ Điểm Giao ban ({gb_val}):** = {gb_math}\n\n"
-                                        f"**3️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
-                                        f"👉 **TỔNG ĐIỂM ({final_val})** = (Điểm KH × 70% + Điểm GB × 30%) + Thưởng/Phạt = ({kh_val} × 0.7 + {gb_val} × 0.3) + ({adj_val})")
-                            else:
-                                st.info(f"**1️⃣ Điểm Kế hoạch / Định kỳ ({kh_val}):** = {kh_math}\n\n"
-                                        f"**2️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
-                                        f"👉 **TỔNG ĐIỂM ({final_val})** = Điểm KH + Thưởng/Phạt = {kh_val} + ({adj_val})")
+                            st.info(f"**1️⃣ Điểm Công việc ({task_val}):** = {task_math}\n\n"
+                                    f"**2️⃣ Điểm Thưởng/Phạt:** {adj_val}\n\n"
+                                    f"👉 **TỔNG ĐIỂM ({final_val})** = Điểm Công việc + Thưởng/Phạt = {task_val} + ({adj_val})")
 
                             p_tasks_disp = p_tasks[['NguonGiaoViec', 'TenDuAn', 'TenCongViec', 'Deadline', 'TrangThai', 'PhanLoaiTreHan', 'MucDoGhiNhan', 'TyTrongKPI', 'Tỷ trọng (Thực tế) %', 'Điểm quy đổi']].copy()
                             p_tasks_disp['Deadline'] = pd.to_datetime(p_tasks_disp['Deadline'], errors='coerce').dt.strftime('%d/%m/%Y').fillna('')
@@ -452,11 +431,6 @@ if 'kpi_tab2' in locals():
                         uw_count = len(m_df_copy[m_df_copy['TyTrongKPI'] <= 0])
                         auto_w = max(0, 100 - explicit_weight) / uw_count if uw_count > 0 else 0
                     
-                        if 'NguonGiaoViec' not in m_df_copy.columns:
-                            m_df_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
-                        ke_hoach_tasks_y = m_df_copy[~m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
-                        giao_ban_tasks_y = m_df_copy[m_df_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
-                    
                         def calc_score_for_group_y(grp, auto_w):
                             if grp.empty: return 0
                             score = 0
@@ -488,12 +462,7 @@ if 'kpi_tab2' in locals():
                                 return (score / total_w) * 100
                             return 0
                         
-                        if len(giao_ban_tasks_y) > 0:
-                            kh_score_y = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
-                            gb_score_y = calc_score_for_group_y(giao_ban_tasks_y, auto_w)
-                            t_score = kh_score_y * 0.7 + gb_score_y * 0.3
-                        else:
-                            t_score = calc_score_for_group_y(ke_hoach_tasks_y, auto_w)
+                        t_score = calc_score_for_group_y(m_df_copy, auto_w)
                     
                         f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
                     
