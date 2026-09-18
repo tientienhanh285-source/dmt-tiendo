@@ -1305,15 +1305,15 @@ def read_db(filters=None):
     if "NguonGiaoViec" not in df.columns:
         df["NguonGiaoViec"] = "Công việc được giao / định kì"
     if "MucDoGhiNhan" not in df.columns:
-        df["MucDoGhiNhan"] = "Chưa đánh giá"
+        df["MucDoGhiNhan"] = ""
     else:
         def clean_mucdo(val):
             val_str = str(val).strip()
-            if val_str in ['nan', 'None', '', '0% (Không ghi nhận)']: return "Chưa đánh giá"
+            if val_str in ['nan', 'None', '']: return ""
             if val_str == "0.5" or "50" in val_str: return "50%"
             if val_str == "0.8" or "80" in val_str: return "80%"
             if val_str == "0.9" or "90" in val_str: return "90%"
-            if "miễn" in val_str.lower() or "loại bỏ" in val_str.lower(): return "Miễn trừ (Loại bỏ KPI)"
+            if "0%" in val_str or "0" == val_str: return "0% (Không ghi nhận)"
             return val_str
         df["MucDoGhiNhan"] = df["MucDoGhiNhan"].apply(clean_mucdo)
 

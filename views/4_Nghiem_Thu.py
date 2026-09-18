@@ -196,7 +196,7 @@ else:
                 
                 # Setup Editor
                 # Compute dynamic state for UI
-                filtered_df["TrangThaiDuyetKQ"] = filtered_df["MucDoGhiNhan"].apply(lambda x: "🔴 Chưa duyệt" if str(x).strip() == "Chưa đánh giá" else "🟢 Đã duyệt")
+                filtered_df["TrangThaiDuyetKQ"] = filtered_df["MucDoGhiNhan"].apply(lambda x: "🔴 Chưa duyệt" if pd.isna(x) or str(x).strip() in ["", "nan", "None", "Chưa đánh giá"] else "🟢 Đã duyệt")
 
                 edit_cols = ["ID", "PhongBan", "NguoiChuTri", "TenCongViec", "Deadline", "TrangThai", "GiaiTrinhDeXuat", "TrangThaiDuyetKQ", "MucDoGhiNhan"]
                 disp_df = filtered_df[edit_cols].copy()
@@ -214,7 +214,7 @@ else:
                     "MucDoGhiNhan": st.column_config.SelectboxColumn(
                         "Mức độ Ghi nhận KPI",
                         help="Chọn mức điểm đánh giá theo lý do khách quan (Chỉ dành cho Quản lý)",
-                        options=["Chưa đánh giá", "0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"],
+                        options=["0% (Không ghi nhận)", "50%", "80%", "90%"],
                         required=True
                     )
                 }

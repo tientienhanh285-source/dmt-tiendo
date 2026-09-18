@@ -476,7 +476,7 @@ with tab_new:
                             "PhanLoaiTreHan": task_late_cause if is_late else "🟢 Không trễ hạn / Đúng tiến độ",
                             "TyTrongKPI": task_weight,
                             "NguonGiaoViec": task_nguon,
-                            "MucDoGhiNhan": "Chưa đánh giá" if (is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") else "0% (Không ghi nhận)"
+                            "MucDoGhiNhan": "" if (is_late and task_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)") else "0% (Không ghi nhận)"
                         }
                         
                         new_id = insert_task(new_row)
@@ -643,15 +643,15 @@ with tab_update:
                     if u_is_late and u_late_cause == "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
                         if st.session_state.is_admin_authenticated or st.session_state.get('is_manager_authenticated', False):
                             current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
-                            chamchuoc_opts = ["0% (Không ghi nhận)", "Miễn trừ (Loại bỏ KPI)", "50%", "80%", "90%"]
+                            chamchuoc_opts = ["0% (Không ghi nhận)", "50%", "80%", "90%"]
                             idx_cc = chamchuoc_opts.index(current_chamchuoc) if current_chamchuoc in chamchuoc_opts else 0
                             u_chamchuoc = st.selectbox("Mức độ ghi nhận (Dành cho Quản lý)", chamchuoc_opts, index=idx_cc, key=f"u_cc_{task_data['ID']}")
                         else:
                             current_chamchuoc = task_data.get('MucDoGhiNhan', '0% (Không ghi nhận)')
                             if current_chamchuoc == '0% (Không ghi nhận)' and task_data.get('PhanLoaiTreHan', '') != "🌧️ Do khách quan (Pháp lý, Đối tác, Thời tiết, Cơ quan nhà nước...)":
-                                current_chamchuoc = 'Chưa đánh giá'
+                                current_chamchuoc = ''
                             u_chamchuoc = current_chamchuoc
-                            if current_chamchuoc != '0% (Không ghi nhận)':
+                            if current_chamchuoc not in ['', '0% (Không ghi nhận)']:
                                 st.info(f"Đã được Quản lý ghi nhận mức độ KPI: **{current_chamchuoc}**")
                             else:
                                 st.caption("💡 **Lưu ý:** Giải trình này sẽ được hệ thống gửi đến Quản lý để xem xét mức độ ghi nhận KPI.")

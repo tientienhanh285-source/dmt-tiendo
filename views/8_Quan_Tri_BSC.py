@@ -216,7 +216,7 @@ else:
                             "NguonGiaoViec": "Công việc được giao / định kì",
                             "ChuKyTheoDoi": "Theo dự án / Tự do",
                             "PhanLoaiTreHan": "🟢 Không trễ hạn / Đúng tiến độ",
-                            "MucDoGhiNhan": "Chưa đánh giá",
+                            "MucDoGhiNhan": "",
                             "PhanTramHoanThanh": 0
                         }
                         new_id = insert_task(new_task)
