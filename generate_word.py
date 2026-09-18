@@ -50,7 +50,7 @@ slides = [
     ),
     (
         "SLIDE 10: CƠ CẤU ĐIỂM & THƯỞNG / PHẠT",
-        "Về cơ cấu điểm, hệ thống phân bổ 70% cho Công việc định kỳ và 30% cho Công việc giao ban.\nNgoài ra, chúng ta có chính sách Thưởng/Phạt minh bạch trên hệ thống:\n- Cộng điểm: Dành cho việc hoàn thành xuất sắc hoặc có sáng kiến mang lại hiệu quả thiết thực.\n- Trừ điểm: Áp dụng khi vi phạm nội quy, đi trễ, hoặc sai sót trong nghiệp vụ.\nBộ phận HCNS và Quản lý sẽ rà soát các tiêu chí này trước khi kết thúc kỳ đánh giá."
+        "Về cơ cấu điểm: Hệ thống không phân loại tỷ trọng cho công việc định kỳ hay phát sinh. TỔNG ĐIỂM = 100 điểm - ĐIỂM PHẠT + ĐIỂM THƯỞNG. Tất cả đầu mục công việc đều được chia đều tỷ trọng (nếu không có tỷ trọng tùy chỉnh).\nNgoài ra, chúng ta có chính sách Thưởng/Phạt minh bạch trên hệ thống:\n- Cộng điểm: Dành cho việc hoàn thành xuất sắc hoặc có sáng kiến mang lại hiệu quả thiết thực.\n- Trừ điểm: Áp dụng khi vi phạm nội quy, đi trễ, hoặc sai sót trong nghiệp vụ.\nBộ phận HCNS và Quản lý sẽ rà soát các tiêu chí này trước khi kết thúc kỳ đánh giá."
     ),
     (
         "SLIDE 11: XẾP LOẠI & TRẢ LƯƠNG",

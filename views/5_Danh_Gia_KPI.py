@@ -171,15 +171,10 @@ with kpi_tab1:
                     
             explicit_weight_sum = group_copy[group_copy['TyTrongKPI'] > 0]['TyTrongKPI'].sum()
             unweighted_count = len(group_copy[group_copy['TyTrongKPI'] <= 0])
-            
             remaining_weight = max(0, 100 - explicit_weight_sum)
             auto_weight = remaining_weight / unweighted_count if unweighted_count > 0 else 0
             
-            # Calculate score dynamically based on NguonGiaoViec (70/30 rule)
-            if 'NguonGiaoViec' not in group_copy.columns:
-                group_copy['NguonGiaoViec'] = 'Công việc được giao / định kì'
-            ke_hoach_tasks = group_copy[~group_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
-            giao_ban_tasks = group_copy[group_copy['NguonGiaoViec'].isin(['Công việc trong "Giao ban"', 'CV giao ban / VB đến'])]
+            # TỔNG ĐIỂM: Tất cả các đầu mục đều chia đều tỷ trọng (100 base)
             
             def calc_score_for_group(grp):
                 if grp.empty: return 0
@@ -204,23 +199,8 @@ with kpi_tab1:
                     else:
                         is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                         p = 100 if is_comp else 0
-
-                    t_score += (p / 100.0) * w
-                    total_w += w
-                    
-                if total_w > 0:
-                    return (t_score / total_w) * 100
-                return 0
-                t_score = 0
-                total_w = 0
-                for idx, row in grp.iterrows():
-                    is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
-                    w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_weight
-                    
-                    if is_comp:
-                        p = 100
-                    else:
-                        if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
+                        
+                        if not is_comp and "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
                             cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
                             if cc == "Miễn trừ (Loại bỏ KPI)":
                                 w = 0
@@ -229,10 +209,7 @@ with kpi_tab1:
                             elif cc == "80%": p = 80
                             elif cc == "90%": p = 90
                             else: p = 0
-                        else:
-                            p = 0
-                    
-                    if pd.isna(p): p = 0
+
                     t_score += (p / 100.0) * w
                     total_w += w
                     
@@ -240,12 +217,7 @@ with kpi_tab1:
                     return (t_score / total_w) * 100
                 return 0
 
-            if len(giao_ban_tasks) > 0:
-                kh_score = calc_score_for_group(ke_hoach_tasks)
-                gb_score = calc_score_for_group(giao_ban_tasks)
-                task_score = kh_score * 0.7 + gb_score * 0.3
-            else:
-                task_score = calc_score_for_group(ke_hoach_tasks)
+            task_score = calc_score_for_group(group_copy)
 
             
             p_adj_df = adj_df[adj_df['TenNhanVien'] == person] if 'TenNhanVien' in adj_df.columns else pd.DataFrame()
