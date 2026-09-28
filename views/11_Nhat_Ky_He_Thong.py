@@ -19,7 +19,7 @@ def fetch_logs():
     if not conn:
         return pd.DataFrame()
     try:
-        res = conn.table("kpi_config").select("*").eq("LoaiCauHinh", "AUDIT_LOG").execute()
+        res = conn.table("kpi_config").select("*").eq("Role", "AUDIT_LOG").execute()
         if not res.data:
             return pd.DataFrame()
         
