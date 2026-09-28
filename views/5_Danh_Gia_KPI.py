@@ -151,7 +151,7 @@ with kpi_tab1:
             if not str(person).strip(): continue
             group = kpi_df[kpi_df['NguoiChuTri'] == person]
             total_tasks = len(group)
-            done_tasks = len(group[group['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']])
+            done_tasks = len(group[group['TrangThai'].isin(['Hoàn thành', 'Hoàn thành (Trễ hạn)'])])
             
             group_copy = group.copy()
             group_copy['TyTrongKPI'] = pd.to_numeric(group_copy.get('TyTrongKPI', pd.Series(0, index=group_copy.index)), errors='coerce').fillna(0)

@@ -84,7 +84,7 @@ st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_
 # Calculate stats based on filtered dash_df
 dash_df = display_df.copy()
 total_dash = len(dash_df)
-done_dash = len(dash_df[dash_df['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']])
+done_dash = len(dash_df[dash_df['TrangThai'].isin(['Hoàn thành', 'Hoàn thành (Trễ hạn)'])])
 
 # Tính số việc Vướng mắc HOẶC Trễ hạn (không đếm trùng)
 is_issue = dash_df['TrangThai'] == 'Có vướng mắc'
@@ -401,7 +401,7 @@ with tab_giaoban:
         st.write('💡 Nếu chưa có công việc, hãy chọn Nguồn giao việc là **Công việc trong "Giao ban"** khi tạo hoặc cập nhật công việc.')
     else:
         total_gb = len(gb_df)
-        done_gb = len(gb_df[gb_df['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']])
+        done_gb = len(gb_df[gb_df['TrangThai'].isin(['Hoàn thành', 'Hoàn thành (Trễ hạn)'])])
         issue_gb = len(gb_df[gb_df['TrangThai'] == 'Có vướng mắc'])
         
         gb_col1, gb_col2, gb_col3, gb_col4 = st.columns(4)
