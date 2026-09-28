@@ -568,6 +568,10 @@ if 'kpi_tab2' in locals():
                 else:
                     st.info("Không có dữ liệu.")
 
+
+is_hr = is_hr_view
+is_manager = is_manager_view
+if is_hr or is_manager:
     with kpi_tab3:
         st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
         all_p_list = []
