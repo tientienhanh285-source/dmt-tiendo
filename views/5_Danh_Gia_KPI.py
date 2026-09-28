@@ -347,51 +347,47 @@ with kpi_tab1:
         else:
             st.info("Không có dữ liệu cá nhân hợp lệ.")
 if 'kpi_tab2' in locals():
-    
-with kpi_tab_quy:
-    st.markdown("#### 📊 Báo cáo Tổng kết KPI Quý")
-    col_q1, col_q2 = st.columns(2)
-    with col_q1:
-        sel_quy = st.selectbox("Chọn Quý", [1, 2, 3, 4], index=(today.month - 1) // 3)
-    with col_q2:
-        sel_nam = st.selectbox("Chọn Năm (Quý)", [today.year - 1, today.year, today.year + 1], index=1)
-    
-    st.write(f"Đang hiển thị tổng hợp tiến độ Quý {sel_quy}/{sel_nam}")
-    
-    # Months in this quarter
-    q_months = [sel_quy * 3 - 2, sel_quy * 3 - 1, sel_quy * 3]
-    
-    # Filter tasks
-    if not display_df.empty:
-        df_quy = display_df.copy()
-        df_quy['Thang_Deadline'] = df_quy['Deadline'].dt.month
-        df_quy['Nam_Deadline'] = df_quy['Deadline'].dt.year
-        df_quy = df_quy[(df_quy['Thang_Deadline'].isin(q_months)) & (df_quy['Nam_Deadline'] == sel_nam)]
+    with kpi_tab_quy:
+        st.markdown("#### 📊 Báo cáo Tổng kết KPI Quý")
+        col_q1, col_q2 = st.columns(2)
+        with col_q1:
+            sel_quy = st.selectbox("Chọn Quý", [1, 2, 3, 4], index=(today.month - 1) // 3)
+        with col_q2:
+            sel_nam = st.selectbox("Chọn Năm (Quý)", [today.year - 1, today.year, today.year + 1], index=1)
         
-        if df_quy.empty:
-            st.info(f"Không có công việc nào trong Quý {sel_quy}/{sel_nam}")
-        else:
-            quy_summary = []
-            for p in all_p:
-                p_tasks = df_quy[df_quy['NguoiChuTri'] == p]
-                if not p_tasks.empty:
-                    total_t = len(p_tasks)
-                    done_t = len(p_tasks[p_tasks['PhanTramHoanThanh'] == 100])
-                    quy_summary.append({
-                        "Nhân sự": p,
-                        "Tổng việc": total_t,
-                        "Đã hoàn thành": done_t,
-                        "Tỷ lệ": f"{done_t/total_t*100:.1f}%"
-                    })
-            if quy_summary:
-                st.dataframe(pd.DataFrame(quy_summary), use_container_width=True)
+        st.write(f"Đang hiển thị tổng hợp tiến độ Quý {sel_quy}/{sel_nam}")
+        q_months = [sel_quy * 3 - 2, sel_quy * 3 - 1, sel_quy * 3]
+        
+        if not display_df.empty:
+            df_quy = display_df.copy()
+            df_quy['Thang_Deadline'] = df_quy['Deadline'].dt.month
+            df_quy['Nam_Deadline'] = df_quy['Deadline'].dt.year
+            df_quy = df_quy[(df_quy['Thang_Deadline'].isin(q_months)) & (df_quy['Nam_Deadline'] == sel_nam)]
             
-            with st.expander("Chi tiết công việc Quý", expanded=False):
-                st.dataframe(df_quy[['ID', 'NguoiChuTri', 'TenCongViec', 'Deadline', 'PhanTramHoanThanh', 'TrangThai']], use_container_width=True)
-    else:
-        st.info("Chưa có dữ liệu.")
-
-with kpi_tab2:
+            if df_quy.empty:
+                st.info(f"Không có công việc nào trong Quý {sel_quy}/{sel_nam}")
+            else:
+                quy_summary = []
+                for p in all_p:
+                    p_tasks = df_quy[df_quy['NguoiChuTri'] == p]
+                    if not p_tasks.empty:
+                        total_t = len(p_tasks)
+                        done_t = len(p_tasks[p_tasks['PhanTramHoanThanh'] == 100])
+                        quy_summary.append({
+                            "Nhân sự": p,
+                            "Tổng việc": total_t,
+                            "Đã hoàn thành": done_t,
+                            "Tỷ lệ": f"{done_t/total_t*100:.1f}%"
+                        })
+                if quy_summary:
+                    st.dataframe(pd.DataFrame(quy_summary), use_container_width=True)
+                
+                with st.expander("Chi tiết công việc Quý", expanded=False):
+                    st.dataframe(df_quy[['ID', 'NguoiChuTri', 'TenCongViec', 'Deadline', 'PhanTramHoanThanh', 'TrangThai']], use_container_width=True)
+        else:
+            st.info("Chưa có dữ liệu.")
+            
+    with kpi_tab2:
         st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
         
         k_factor = 1.0
@@ -570,7 +566,6 @@ with kpi_tab2:
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
                 else:
                     st.info("Không có dữ liệu.")
-
 
     with kpi_tab3:
         st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
