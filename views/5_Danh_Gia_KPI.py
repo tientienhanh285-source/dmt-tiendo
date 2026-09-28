@@ -360,6 +360,7 @@ if 'kpi_tab2' in locals():
         
         if not display_df.empty:
             df_quy = display_df.copy()
+            df_quy['Deadline'] = pd.to_datetime(df_quy['Deadline'], errors='coerce')
             df_quy['Thang_Deadline'] = df_quy['Deadline'].dt.month
             df_quy['Nam_Deadline'] = df_quy['Deadline'].dt.year
             df_quy = df_quy[(df_quy['Thang_Deadline'].isin(q_months)) & (df_quy['Nam_Deadline'] == sel_nam)]
