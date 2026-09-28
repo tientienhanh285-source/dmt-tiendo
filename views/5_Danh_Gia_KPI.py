@@ -83,11 +83,11 @@ is_hr_view = role_mode == "HR" and st.session_state.get("is_admin_authenticated"
 is_manager_view = role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False)
 
 if is_hr_view:
-    kpi_tab1, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
+    kpi_tab1, kpi_tab_quy, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "📊 Tổng kết Quý", "🏅 Tổng kết Năm", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])
 elif is_manager_view:
-    kpi_tab1, kpi_tab2, kpi_tab3 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)", "⚖️ Thưởng / Phạt Điểm"])
+    kpi_tab1, kpi_tab_quy, kpi_tab2, kpi_tab3 = st.tabs(["📅 Đánh giá theo Tháng", "📊 Tổng kết Quý", "🏅 Tổng kết Năm", "⚖️ Thưởng / Phạt Điểm"])
 else:
-    kpi_tab1, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "🏅 Tổng kết KPI Cả Năm (Tháng 13)"])
+    kpi_tab1, kpi_tab_quy, kpi_tab2 = st.tabs(["📅 Đánh giá theo Tháng", "📊 Tổng kết Quý", "🏅 Tổng kết Năm"])
 
 with kpi_tab1:
     st.markdown("#### Đánh giá và Xếp loại KPI Tháng")
@@ -347,7 +347,51 @@ with kpi_tab1:
         else:
             st.info("Không có dữ liệu cá nhân hợp lệ.")
 if 'kpi_tab2' in locals():
-    with kpi_tab2:
+    
+with kpi_tab_quy:
+    st.markdown("#### 📊 Báo cáo Tổng kết KPI Quý")
+    col_q1, col_q2 = st.columns(2)
+    with col_q1:
+        sel_quy = st.selectbox("Chọn Quý", [1, 2, 3, 4], index=(today.month - 1) // 3)
+    with col_q2:
+        sel_nam = st.selectbox("Chọn Năm (Quý)", [today.year - 1, today.year, today.year + 1], index=1)
+    
+    st.write(f"Đang hiển thị tổng hợp tiến độ Quý {sel_quy}/{sel_nam}")
+    
+    # Months in this quarter
+    q_months = [sel_quy * 3 - 2, sel_quy * 3 - 1, sel_quy * 3]
+    
+    # Filter tasks
+    if not display_df.empty:
+        df_quy = display_df.copy()
+        df_quy['Thang_Deadline'] = df_quy['Deadline'].dt.month
+        df_quy['Nam_Deadline'] = df_quy['Deadline'].dt.year
+        df_quy = df_quy[(df_quy['Thang_Deadline'].isin(q_months)) & (df_quy['Nam_Deadline'] == sel_nam)]
+        
+        if df_quy.empty:
+            st.info(f"Không có công việc nào trong Quý {sel_quy}/{sel_nam}")
+        else:
+            quy_summary = []
+            for p in all_p:
+                p_tasks = df_quy[df_quy['NguoiChuTri'] == p]
+                if not p_tasks.empty:
+                    total_t = len(p_tasks)
+                    done_t = len(p_tasks[p_tasks['PhanTramHoanThanh'] == 100])
+                    quy_summary.append({
+                        "Nhân sự": p,
+                        "Tổng việc": total_t,
+                        "Đã hoàn thành": done_t,
+                        "Tỷ lệ": f"{done_t/total_t*100:.1f}%"
+                    })
+            if quy_summary:
+                st.dataframe(pd.DataFrame(quy_summary), use_container_width=True)
+            
+            with st.expander("Chi tiết công việc Quý", expanded=False):
+                st.dataframe(df_quy[['ID', 'NguoiChuTri', 'TenCongViec', 'Deadline', 'PhanTramHoanThanh', 'TrangThai']], use_container_width=True)
+    else:
+        st.info("Chưa có dữ liệu.")
+
+with kpi_tab2:
         st.markdown("#### Tổng kết KPI Cả Năm & Xếp loại thưởng Tháng 13")
         
         k_factor = 1.0
@@ -365,7 +409,7 @@ if 'kpi_tab2' in locals():
                 selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
     
         if st.button("🔄 Chạy / Cập nhật Báo cáo Tổng kết Năm", type="primary"):
-            with st.spinner("Đang tính toán dữ liệu 12 tháng..."):
+            with st.spinner("Đang tính toán dữ liệu 4 Quý..."):
                 import pandas as pd
                 from datetime import datetime, date
                 all_personnel = set(display_df['NguoiChuTri'].dropna().unique())
@@ -374,7 +418,6 @@ if 'kpi_tab2' in locals():
                 if 'TenNhanVien' in adj_year_df.columns:
                     all_personnel.update(adj_year_df['TenNhanVien'].dropna().unique())
             
-                # Filter to only keep those who belong to the selected company
                 company_personnel = set(display_df['NguoiChuTri'].dropna().unique())
                 all_personnel = all_personnel.intersection(company_personnel)
             
@@ -384,35 +427,36 @@ if 'kpi_tab2' in locals():
                 for person in all_personnel:
                     person_df = display_df[display_df['NguoiChuTri'] == person].copy()
                 
-                    months_grades = {}
+                    quarters_grades = {}
                     count_a_star = 0
                     count_a = 0
                     count_b = 0
                     count_c = 0
                     count_d = 0
                 
-                    for m in range(1, 13):
-                        if selected_year_full > today.year or (selected_year_full == today.year and m > today.month):
-                            months_grades[f"Tháng {m}"] = "-"
+                    for q in range(1, 5):
+                        q_months = [q*3-2, q*3-1, q*3]
+                        if selected_year_full > today.year or (selected_year_full == today.year and q_months[0] > today.month):
+                            quarters_grades[f"Quý {q}"] = "-"
                             continue
                     
-                        def is_in_m(d):
+                        def is_in_q(d):
                             if pd.isna(d): return False
                             if isinstance(d, str):
                                 try: d = datetime.strptime(d, "%Y-%m-%d").date()
                                 except: return False
                             if isinstance(d, datetime): d = d.date()
-                            if isinstance(d, date): return d.month == m and d.year == selected_year_full
+                            if isinstance(d, date): return d.month in q_months and d.year == selected_year_full
                             return False
                         
-                        m_df = person_df[person_df['Deadline'].apply(is_in_m)] if not person_df.empty else person_df
-                        m_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == m)] if 'TenNhanVien' in adj_year_df.columns else pd.DataFrame()
+                        q_df = person_df[person_df['Deadline'].apply(is_in_q)] if not person_df.empty else person_df
+                        q_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == q) & (adj_year_df['LoaiDieuChinh'].str.contains("Quý", na=False))] if not adj_year_df.empty else pd.DataFrame()
                     
-                        if m_df.empty and m_adj_df.empty:
-                            months_grades[f"Tháng {m}"] = "-"
+                        if q_df.empty and q_adj_df.empty:
+                            quarters_grades[f"Quý {q}"] = "-"
                             continue
                         
-                        m_df_copy = m_df.copy()
+                        m_df_copy = q_df.copy()
                         m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', pd.Series(0, index=m_df_copy.index)), errors='coerce').fillna(0)
                     
                         for idx, row in m_df_copy.iterrows():
@@ -439,8 +483,7 @@ if 'kpi_tab2' in locals():
                                 is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
                                 w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
                             
-                                if is_comp:
-                                    p = 100
+                                if is_comp: p = 100
                                 else:
                                     if "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
                                         cc = row.get('MucDoGhiNhan', '0% (Không ghi nhận)')
@@ -451,20 +494,17 @@ if 'kpi_tab2' in locals():
                                         elif cc == "80%": p = 80
                                         elif cc == "90%": p = 90
                                         else: p = 0
-                                    else:
-                                        p = 0
+                                    else: p = 0
                                     
                                 if pd.isna(p): p = 0
                                 score += (p / 100.0) * w
                                 total_w += w
                             
-                            if total_w > 0:
-                                return (score / total_w) * 100
+                            if total_w > 0: return (score / total_w) * 100
                             return 0
                         
                         t_score = calc_score_for_group_y(m_df_copy, auto_w)
-                    
-                        f_score = min(115, max(0, round(t_score + m_adj_df['DiemDieuChinh'].sum(), 2)))
+                        f_score = min(115, max(0, round(t_score + (q_adj_df['DiemDieuChinh'].sum() if not q_adj_df.empty else 0), 2)))
                     
                         if f_score > 100:
                             grade = "A*"
@@ -479,79 +519,47 @@ if 'kpi_tab2' in locals():
                             grade = "C"
                             count_c += 1
                         else:
-                            if selected_year_full == today.year and m == today.month:
+                            if selected_year_full == today.year and q_months[0] > today.month:
                                 grade = "-"
                             else:
                                 grade = "D"
                                 count_d += 1
                         
-                        months_grades[f"Tháng {m}"] = grade
+                        quarters_grades[f"Quý {q}"] = grade
                     
-                    if is_local:
-                        # Logic xếp loại năm Cảng Đà Nẵng
-                        evaluated = count_a_star + count_a + count_b + count_c + count_d
-                        if evaluated == 0:
-                            final_grade = "-"
-                            bonus_val = 0
-                        elif evaluated < 12 and selected_year_full >= today.year:
-                            final_grade = "Đang tích lũy"
-                            bonus_val = 0
-                        else:
-                            # Tính điểm trung bình cả năm để xếp loại Cảng Đà Nẵng
-                            t_score = f_score # Lấy điểm tháng gần nhất hoặc trung bình
-                            if f_score >= 90:
-                                final_grade = "A"
-                                bonus_val = 110
-                            elif f_score >= 80:
-                                final_grade = "B"
-                                bonus_val = 105
-                            elif f_score >= 70:
-                                final_grade = "C"
-                                bonus_val = 100
-                            elif f_score >= 50:
-                                final_grade = "D"
-                                bonus_val = 95
-                            else:
-                                final_grade = "E"
-                                bonus_val = 90
-                            
-                            bonus = f"{bonus_val}%"
+                    if count_a_star >= 3 and count_b == 0 and count_c == 0 and count_d == 0:
+                        final_grade = "A*"
+                        bonus_val = 120
+                    elif (count_a_star + count_a) >= 3 and count_c == 0 and count_d == 0:
+                        final_grade = "A"
+                        bonus_val = 110
+                    elif (count_a_star + count_a + count_b) >= 3 and count_d == 0:
+                        final_grade = "B"
+                        bonus_val = 105
+                    elif (count_a_star + count_a + count_b + count_c) >= 3 and count_d <= 1:
+                        final_grade = "C"
+                        bonus_val = 100
                     else:
-                        # Logic xếp loại năm cũ
-                        if count_a_star >= 8 and count_b == 0 and count_c == 0 and count_d == 0:
-                            final_grade = "A+"
-                            bonus_val = 120
-                        elif (count_a_star + count_a) >= 8 and count_c == 0 and count_d == 0:
-                            final_grade = "A"
-                            bonus_val = 110
-                        elif (count_a_star + count_a + count_b) >= 8 and count_d == 0:
-                            final_grade = "B"
-                            bonus_val = 105
-                        elif (count_a_star + count_a + count_b + count_c) >= 8 and count_d <= 2:
-                            final_grade = "C"
-                            bonus_val = 100
-                        else:
-                            final_grade = "D"
-                            bonus_val = 90
-                        
-                        evaluated = count_a_star + count_a + count_b + count_c + count_d
-                        if evaluated == 0:
-                            final_grade = "-"
-                            bonus = "-"
-                        elif evaluated < 12 and selected_year_full >= today.year:
-                            final_grade = "Đang tích lũy"
-                            bonus = "-"
-                        else:
-                            bonus = f"{bonus_val}%"
-                        actual_bonus = f"{int(bonus_val * k_factor)}%"
+                        final_grade = "D"
+                        bonus_val = 90
+                    
+                    evaluated = count_a_star + count_a + count_b + count_c + count_d
+                    if evaluated == 0:
+                        final_grade = "-"
+                        bonus = "-"
+                    elif evaluated < 4 and selected_year_full >= today.year:
+                        final_grade = "Đang tích lũy"
+                        bonus = "-"
+                    else:
+                        bonus = f"{bonus_val}%"
+                    actual_bonus = f"{int(bonus_val * k_factor)}%" if bonus != "-" else "-"
                         
                     row_data = {
                         "Người thực hiện": person,
                         "Phòng ban": DEPT_ABBR.get(person_df['PhongBan'].mode()[0], person_df['PhongBan'].mode()[0]) if not person_df.empty else ""
                     }
-                    row_data.update(months_grades)
+                    row_data.update(quarters_grades)
                     row_data["Xếp loại Năm"] = final_grade
-                    row_data["Mức hưởng T13 (Gốc)"] = bonus
                     row_data["Thực nhận (Sau K)"] = actual_bonus
                     yearly_data.append(row_data)
                 
@@ -560,16 +568,10 @@ if 'kpi_tab2' in locals():
                     if selected_dept_y != "Tất cả phòng ban":
                         yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
-                
-                    excel_data = kpi_reports.generate_yearly_excel(yearly_df, selected_year_full)
-                    st.download_button("📥 Xuất Báo cáo Excel", data=excel_data, file_name=f"TongKet_KPI_{selected_year_full}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 else:
                     st.info("Không có dữ liệu.")
 
-is_hr = role_mode == "HR" and st.session_state.get("is_admin_authenticated", False)
-is_manager = role_mode == "Quản lý" and st.session_state.get("is_manager_authenticated", False)
 
-if is_hr or is_manager:
     with kpi_tab3:
         st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
         all_p_list = []
@@ -639,7 +641,7 @@ if is_hr or is_manager:
                 adj_reason = st.text_input("Ghi chú thêm (Tùy chọn)")
                 
             else:
-                adj_type = st.radio("Phân loại hành vi", ["⭐ Thưởng điểm", "🛑 Phạt điểm"], horizontal=True)
+                adj_type = st.radio("Phân loại hành vi", ["⭐ Thưởng điểm", "🛑 Phạt điểm", "⭐ Thưởng điểm Quý"], horizontal=True)
                 adj_val = st.number_input("Số điểm", min_value=0, max_value=15, value=5)
                 adj_reason = st.text_area("Lý do chi tiết (Bắt buộc)")
                 
@@ -647,7 +649,7 @@ if is_hr or is_manager:
             if adj_template == "Lý do khác" and not adj_reason.strip():
                 st.error("⚠️ Vui lòng nhập lý do chi tiết!")
             else:
-                actual_val = adj_val if adj_type == "⭐ Thưởng điểm" else -adj_val
+                actual_val = adj_val if "Thưởng" in adj_type else -adj_val
                 if adj_template != "Lý do khác":
                     final_reason = f"[{adj_template}] ({so_lan} lần) {adj_reason.strip()}".strip()
                 else:

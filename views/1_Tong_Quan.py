@@ -95,8 +95,20 @@ with col_f1:
     proj_options = ["Tất cả dự án"] + merged_projs
     sel_proj = st.selectbox("Lọc Dự án", proj_options, key="tv_proj")
 with col_f2:
-    dept_options = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
-    sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept")
+    if st.session_state.get('role_mode') == "Quản lý" and st.session_state.get('manager_dept'):
+        mgr_dept = st.session_state.manager_dept
+        if mgr_dept != "Tất cả":
+            dept_options = [mgr_dept]
+            sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept", disabled=True)
+        else:
+            dept_options = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
+            sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept")
+    elif st.session_state.get('role_mode') == "Nhân viên":
+        dept_options = [st.session_state.get('auth_user_dept', 'Phòng ban')]
+        sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept", disabled=True)
+    else:
+        dept_options = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
+        sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept")
 with col_f3:
     status_options = ["Đang thực hiện", "Sắp tới hạn / Trễ hạn", "Hoàn thành", "Vướng mắc", "Tất cả trạng thái"]
     sel_status = st.selectbox("Lọc Trạng thái", status_options, key="tv_status", index=1)
