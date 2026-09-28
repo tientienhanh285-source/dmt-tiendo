@@ -85,7 +85,7 @@ else:
         
     bsc_data = st.session_state.bsc_data
     
-    tab1, tab2, tab3 = st.tabs(["1. Thiết lập Kế hoạch Năm & Quý", "2. Phân rã Mục tiêu Tháng", "3. Giao việc từ Mục tiêu"])
+    tab1, tab2, tab3, tab4 = st.tabs(["1. Kế hoạch Năm", "2. Mục tiêu Tháng", "3. Giao việc", "4. Nghiệm thu Chỉ tiêu"])
     
     with tab1:
         st.subheader("Thiết lập Kế hoạch Năm & Quý")
@@ -231,3 +231,50 @@ else:
 
 
 
+
+    with tab4:
+        st.subheader("Kiểm soát & Nghiệm thu Chỉ tiêu Tháng (Max 99%)")
+        st.info("Hệ thống tự động cộng dồn tiến độ các công việc con. Tuy nhiên, thanh tiến độ Chỉ tiêu sẽ bị khống chế ở mức 99%. Quản lý phải bấm 'Duyệt' để xác nhận đạt 100%.")
+        
+        t4_year = st.selectbox("Năm", ["2025", "2026", "2027"], key="t4_year")
+        t4_month = st.selectbox("Tháng", [str(i) for i in range(1, 13)], key="t4_month")
+        t4_dept = st.selectbox("Phòng ban", get_departments_for_company(selected_company, config), key="t4_dept")
+        
+        month_key = f"{t4_dept}_{t4_year}_{t4_month}"
+        
+        if month_key in bsc_data["months"] and bsc_data["months"][month_key]:
+            approved_goals = bsc_data.get("approved_goals", [])
+            for goal in bsc_data["months"][month_key]:
+                goal_name = goal["name"]
+                # Lấy các task thuộc mục tiêu này
+                goal_tasks = df[df["SanPhamBanGiao"] == goal_name] if not df.empty else pd.DataFrame()
+                
+                avg_prog = 0
+                if not goal_tasks.empty:
+                    goal_tasks['PhanTramHoanThanh'] = pd.to_numeric(goal_tasks['PhanTramHoanThanh'], errors='coerce').fillna(0)
+                    avg_prog = goal_tasks['PhanTramHoanThanh'].mean()
+                
+                # Khống chế 99%
+                is_approved = f"{month_key}_{goal_name}" in approved_goals
+                if avg_prog >= 99.9 and not is_approved:
+                    display_prog = 99.0
+                elif avg_prog >= 99.9 and is_approved:
+                    display_prog = 100.0
+                else:
+                    display_prog = round(avg_prog, 1)
+                
+                st.markdown(f"**🎯 Chỉ tiêu:** {goal_name} (Tỷ trọng: {goal['weight']}%)")
+                st.progress(int(display_prog) / 100.0)
+                st.caption(f"Tiến độ hiện tại: {display_prog}% ({len(goal_tasks)} công việc)")
+                
+                if display_prog == 99.0:
+                    if st.button(f"✅ Duyệt Hoàn thành 100% Chỉ tiêu này", key=f"btn_appr_goal_{goal_name}"):
+                        if "approved_goals" not in bsc_data:
+                            bsc_data["approved_goals"] = []
+                        bsc_data["approved_goals"].append(f"{month_key}_{goal_name}")
+                        save_bsc_config(bsc_data)
+                        st.success("Đã nghiệm thu hoàn thành Chỉ tiêu!")
+                        st.rerun()
+                st.write("---")
+        else:
+            st.info("Không có chỉ tiêu tháng nào để nghiệm thu.")

@@ -151,8 +151,8 @@ elif sel_status == "Sắp tới hạn / Trễ hạn":
         (table_df['TrangThai'] != 'Hoàn thành') & 
         (table_df['Deadline'].apply(get_days_left) <= 3)
     ]
-elif sel_status == "Hoàn thành":
-    table_df = table_df[table_df['TrangThai'] == 'Hoàn thành']
+elif sel_status in ["Hoàn thành", "Hoàn thành (Trễ hạn)"]:
+    table_df = table_df[table_df['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']]
 elif sel_status == "Vướng mắc":
     table_df = table_df[table_df['TrangThai'] == 'Có vướng mắc']
     

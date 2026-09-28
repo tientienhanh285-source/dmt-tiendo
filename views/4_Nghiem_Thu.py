@@ -88,7 +88,7 @@ else:
         if display_df.empty:
             st.info("Chưa có dữ liệu công việc.")
         else:
-            nghiemthu_df = display_df[display_df['TrangThai'] == 'Chờ nghiệm thu'].copy()
+            nghiemthu_df = display_df[display_df['TrangThai'].isin(['Chờ nghiệm thu', 'Chờ nghiệm thu (Trễ hạn)'])].copy()
             if role_mode == "Quản lý":
                 manager_dept = st.session_state.get("manager_dept", "Tất cả")
                 if manager_dept != "Tất cả":

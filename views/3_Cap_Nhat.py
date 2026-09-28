@@ -375,7 +375,10 @@ with tab_new:
         else:
             # Calculate status and progress automatically
             if task_is_completed:
-                calc_status = "Chờ nghiệm thu"
+                if task_deadline < today:
+                    calc_status = "Chờ nghiệm thu (Trễ hạn)"
+                else:
+                    calc_status = "Chờ nghiệm thu"
             elif task_has_issue:
                 calc_status = "Có vướng mắc"
             elif task_deadline < today:
@@ -715,7 +718,10 @@ with tab_update:
                 else:
                     # Calculate status and progress automatically
                     if u_is_completed:
-                        u_status = "Chờ nghiệm thu"
+                        if u_deadline < today:
+                            u_status = "Chờ nghiệm thu (Trễ hạn)"
+                        else:
+                            u_status = "Chờ nghiệm thu"
                     elif u_has_issue:
                         u_status = "Có vướng mắc"
                     elif u_deadline < today:
@@ -804,6 +810,21 @@ with tab_update:
                                 'MucDoGhiNhan': u_chamchuoc if u_is_late else '0% (Không ghi nhận)'
                             }
                             if update_task(selected_id, update_dict):
+                                try:
+                                    conn = get_gsheets_conn()
+                                    if conn:
+                                        import json
+                                        user_name = st.session_state.get("username", "Unknown")
+                                        action_txt = f"Cập nhật tiến độ thành {u_progress}% | Trạng thái: {u_status}"
+                                        row = {
+                                            "NhanSu": selected_id,
+                                            "PhongBan": str(datetime.now())[:19],
+                                            "Role": "AUDIT_LOG",
+                                            "config_json": json.dumps({"user": user_name, "action": action_txt, "time": str(datetime.now())[:19]})
+                                        }
+                                        conn.table("kpi_config").insert(row).execute()
+                                except:
+                                    pass
                                 st.session_state["success_msg"] = f"🎉 Đã lưu cập nhật công việc mã: {selected_id}!"
                                 st.rerun()
                             

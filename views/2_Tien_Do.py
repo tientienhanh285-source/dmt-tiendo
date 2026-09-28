@@ -84,7 +84,7 @@ st.markdown(f"### 🚀 Bảng theo dõi tiến độ công việc — {selected_
 # Calculate stats based on filtered dash_df
 dash_df = display_df.copy()
 total_dash = len(dash_df)
-done_dash = len(dash_df[dash_df['TrangThai'] == 'Hoàn thành'])
+done_dash = len(dash_df[dash_df['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']])
 
 # Tính số việc Vướng mắc HOẶC Trễ hạn (không đếm trùng)
 is_issue = dash_df['TrangThai'] == 'Có vướng mắc'
@@ -347,7 +347,7 @@ with tab_giaoban:
     if not gb_df.empty:
         def _get_deadline_status(row):
             st_val = str(row.get('TrangThai', ''))
-            if st_val == 'Hoàn thành': return "✅ Hoàn thành"
+            if st_val in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']: return "✅ Hoàn thành"
             if st_val == 'Có vướng mắc': return "🔥 Đang vướng mắc"
             
             dl = row.get('Deadline')
@@ -401,7 +401,7 @@ with tab_giaoban:
         st.write('💡 Nếu chưa có công việc, hãy chọn Nguồn giao việc là **Công việc trong "Giao ban"** khi tạo hoặc cập nhật công việc.')
     else:
         total_gb = len(gb_df)
-        done_gb = len(gb_df[gb_df['TrangThai'] == 'Hoàn thành'])
+        done_gb = len(gb_df[gb_df['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']])
         issue_gb = len(gb_df[gb_df['TrangThai'] == 'Có vướng mắc'])
         
         gb_col1, gb_col2, gb_col3, gb_col4 = st.columns(4)
@@ -582,7 +582,7 @@ with tab_data:
     
         # Format Nguyên nhân trễ hạn
         def format_late_cause(row):
-            is_comp = (row['TrangThai'] == 'Hoàn thành')
+            is_comp = (row['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
             is_late = (pd.notna(row['Deadline']) and row['Deadline'] < today) and not is_comp
             if not is_late:
                 return "--"
@@ -601,7 +601,7 @@ with tab_data:
     
         # Format Kết quả / File đính kèm
         def format_notes(row):
-            is_comp = (row['TrangThai'] == 'Hoàn thành')
+            is_comp = (row['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
             if is_comp:
                 val = row['LinkKetQua']
                 if not val or pd.isna(val):

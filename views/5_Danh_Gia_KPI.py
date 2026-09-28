@@ -151,13 +151,13 @@ with kpi_tab1:
             if not str(person).strip(): continue
             group = kpi_df[kpi_df['NguoiChuTri'] == person]
             total_tasks = len(group)
-            done_tasks = len(group[group['TrangThai'] == 'Hoàn thành'])
+            done_tasks = len(group[group['TrangThai'] in ['Hoàn thành', 'Hoàn thành (Trễ hạn)']])
             
             group_copy = group.copy()
             group_copy['TyTrongKPI'] = pd.to_numeric(group_copy.get('TyTrongKPI', pd.Series(0, index=group_copy.index)), errors='coerce').fillna(0)
             
             for idx, row in group_copy.iterrows():
-                is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                is_comp = (str(row.get('TrangThai')).strip() in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
                 is_late = False
                 dl = row['Deadline']
                 if isinstance(dl, str):
@@ -194,10 +194,10 @@ with kpi_tab1:
                         elif 'Mức -2' in muc_dat: p = -75
                         elif 'Mức -3' in muc_dat: p = -100
                         else:
-                            is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                            is_comp = (str(row.get('TrangThai')).strip() in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
                             p = 100 if is_comp else 0
                     else:
-                        is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                        is_comp = (str(row.get('TrangThai')).strip() in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
                         p = 100 if is_comp else 0
                         
                         if not is_comp and "khách quan" in str(row.get('PhanLoaiTreHan')).lower():
@@ -301,7 +301,7 @@ with kpi_tab1:
                             task_tw = 0.0
                             
                             for idx, row in p_tasks.iterrows():
-                                is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                                is_comp = (str(row.get('TrangThai')).strip() in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
                                 w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
                                 if is_comp: 
                                     p = 100
@@ -430,6 +430,8 @@ if 'kpi_tab2' in locals():
                     count_b = 0
                     count_c = 0
                     count_d = 0
+                    total_year_score = 0
+                    evaluated_quarters = 0
                 
                     for q in range(1, 5):
                         q_months = [q*3-2, q*3-1, q*3]
@@ -447,7 +449,7 @@ if 'kpi_tab2' in locals():
                             return False
                         
                         q_df = person_df[person_df['Deadline'].apply(is_in_q)] if not person_df.empty else person_df
-                        q_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == q) & (adj_year_df['LoaiDieuChinh'].str.contains("Quý", na=False))] if not adj_year_df.empty else pd.DataFrame()
+                        q_adj_df = adj_year_df[(adj_year_df['TenNhanVien'] == person) & (adj_year_df['Thang'] == q) & (adj_year_df['LoaiHanhVi'].str.contains("Quý", na=False))] if not adj_year_df.empty else pd.DataFrame()
                     
                         if q_df.empty and q_adj_df.empty:
                             quarters_grades[f"Quý {q}"] = "-"
@@ -457,7 +459,7 @@ if 'kpi_tab2' in locals():
                         m_df_copy['TyTrongKPI'] = pd.to_numeric(m_df_copy.get('TyTrongKPI', pd.Series(0, index=m_df_copy.index)), errors='coerce').fillna(0)
                     
                         for idx, row in m_df_copy.iterrows():
-                            is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                            is_comp = (str(row.get('TrangThai')).strip() in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
                             is_late = False
                             dl = row['Deadline']
                             if isinstance(dl, str):
@@ -477,7 +479,7 @@ if 'kpi_tab2' in locals():
                             score = 0
                             total_w = 0
                             for idx, row in grp.iterrows():
-                                is_comp = (str(row.get('TrangThai')).strip() == 'Hoàn thành')
+                                is_comp = (str(row.get('TrangThai')).strip() in ['Hoàn thành', 'Hoàn thành (Trễ hạn)'])
                                 w = row['TyTrongKPI'] if row['TyTrongKPI'] > 0 else auto_w
                             
                                 if is_comp: p = 100
@@ -502,6 +504,8 @@ if 'kpi_tab2' in locals():
                         
                         t_score = calc_score_for_group_y(m_df_copy, auto_w)
                         f_score = min(115, max(0, round(t_score + (q_adj_df['DiemDieuChinh'].sum() if not q_adj_df.empty else 0), 2)))
+                        total_year_score += f_score
+                        evaluated_quarters += 1
                     
                         if f_score > 100:
                             grade = "A*"
@@ -550,10 +554,13 @@ if 'kpi_tab2' in locals():
                     else:
                         bonus = f"{bonus_val}%"
                     actual_bonus = f"{int(bonus_val * k_factor)}%" if bonus != "-" else "-"
+                    
+                    avg_score = total_year_score / evaluated_quarters if evaluated_quarters > 0 else 0
                         
                     row_data = {
                         "Người thực hiện": person,
-                        "Phòng ban": DEPT_ABBR.get(person_df['PhongBan'].mode()[0], person_df['PhongBan'].mode()[0]) if not person_df.empty else ""
+                        "Phòng ban": DEPT_ABBR.get(person_df['PhongBan'].mode()[0], person_df['PhongBan'].mode()[0]) if not person_df.empty else "",
+                        "Điểm TB Năm": round(avg_score, 1)
                     }
                     row_data.update(quarters_grades)
                     row_data["Xếp loại Năm"] = final_grade
@@ -565,6 +572,16 @@ if 'kpi_tab2' in locals():
                     if selected_dept_y != "Tất cả phòng ban":
                         yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
+                    
+                    st.markdown("---")
+                    with st.expander("🌟 Danh sách Đề xuất Hạng A* (Lao động Xuất sắc)", expanded=True):
+                        st.info("Danh sách các cá nhân có tổng điểm trung bình KPI từ tháng 1 đến tháng 12 đạt trên 100 điểm.")
+                        if "Điểm TB Năm" in yearly_df.columns:
+                            astar_df = yearly_df[pd.to_numeric(yearly_df["Điểm TB Năm"], errors="coerce") > 100].copy()
+                            if not astar_df.empty:
+                                st.dataframe(astar_df, use_container_width=True, hide_index=True)
+                            else:
+                                st.warning("Năm nay chưa có nhân sự nào đạt hạng A* (> 100 điểm).")
                 else:
                     st.info("Không có dữ liệu.")
 
