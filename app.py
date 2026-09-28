@@ -407,7 +407,10 @@ elif role_mode == "HR":
             else:
                 st.sidebar.error("Mật khẩu không đúng!")
     
-    if st.session_state.is_admin_authenticated:
+    
+p_nhat_ky = st.Page('views/11_Nhat_Ky_He_Thong.py', title='Nhật ký Hệ thống', icon='🕵️‍♂️')
+
+if st.session_state.is_admin_authenticated:
         st.sidebar.success("Đã xác thực toàn quyền (HR)!")
         
         if st.sidebar.button("Đăng xuất", key="logout_hr"):
@@ -481,6 +484,9 @@ if st.session_state.get('is_manager_authenticated', False):
     if is_mobile:
         menu_options.insert(0, "📊 BẢNG TỔNG QUAN (View)")
 
+
+p_nhat_ky = st.Page('views/11_Nhat_Ky_He_Thong.py', title='Nhật ký Hệ thống', icon='🕵️‍♂️')
+
 if st.session_state.is_admin_authenticated:
     menu_options = [
         "👀 BẢNG TỔNG QUAN (View)",
@@ -514,6 +520,9 @@ p_lap_duyet = st.Page('views/9_Lap_Duyet_KPI.py', title='Lập & Duyệt KPI', i
 p_quan_tri_bsc = st.Page('views/8_Quan_Tri_BSC.py', title='Quản trị BSC - KPI', icon='⚙️')
 p_cau_hinh = st.Page('views/7_Cau_Hinh.py', title='Quản Lý Cấu Hình', icon='⚙️')
 p_so_tay = st.Page('views/10_So_Tay.py', title='Sổ tay Hướng dẫn', icon='📖')
+
+
+p_nhat_ky = st.Page('views/11_Nhat_Ky_He_Thong.py', title='Nhật ký Hệ thống', icon='🕵️‍♂️')
 
 if st.session_state.is_admin_authenticated:
     pages = {
