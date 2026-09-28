@@ -361,13 +361,16 @@ if role_mode == "Quản lý":
         if sel_login_dept != "-- Chọn --":
             personnel_list = get_personnel_for_company_dept(selected_company, sel_login_dept, config)
             if personnel_list:
-                dept_lead = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, "")
+                dept_leads = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, [])
+                if isinstance(dept_leads, str):
+                    dept_leads = [dept_leads] if dept_leads else []
                 
-                # Make sure the department lead is at the top or selected by default if exists
-                default_idx = 0
-                if dept_lead in personnel_list:
-                    default_idx = personnel_list.index(dept_lead)
-                sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + personnel_list, index=default_idx + 1 if dept_lead else 0, key="mgr_login_user")
+                valid_leads = [lead for lead in dept_leads if lead in personnel_list]
+                
+                if valid_leads:
+                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + valid_leads, key="mgr_login_user")
+                else:
+                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + personnel_list, key="mgr_login_user")
                 
                 if sel_login_user != "-- Chọn --":
                     mgr_pwd = st.sidebar.text_input("3. Nhập Mật khẩu Quản lý", type="password")
