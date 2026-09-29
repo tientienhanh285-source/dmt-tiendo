@@ -543,13 +543,13 @@ p_nhat_ky = st.Page('views/11_Nhat_Ky_He_Thong.py', title='Nhật ký Hệ thố
 if st.session_state.is_admin_authenticated:
     pages = {
         'CÔNG VIỆC & TIẾN ĐỘ': [p_tong_quan, p_tien_do, p_cap_nhat, p_nghiem_thu],
-        'ĐÁNH GIÁ & KPI': [p_danh_gia],
+        'ĐÁNH GIÁ & KPI': [p_danh_gia, p_lap_duyet, p_quan_tri_bsc],
         'QUẢN TRỊ & HỆ THỐNG': [p_quan_ly_jd, p_cau_hinh, p_nhat_ky, p_so_tay]
     }
 elif st.session_state.get('is_manager_authenticated', False):
     pages = {
         'CÔNG VIỆC & TIẾN ĐỘ': [p_tong_quan, p_tien_do, p_cap_nhat, p_nghiem_thu],
-        'ĐÁNH GIÁ & KPI': [p_danh_gia],
+        'ĐÁNH GIÁ & KPI': [p_danh_gia, p_lap_duyet, p_quan_tri_bsc],
         'QUẢN TRỊ & HỆ THỐNG': [p_so_tay]
     }
 else:
