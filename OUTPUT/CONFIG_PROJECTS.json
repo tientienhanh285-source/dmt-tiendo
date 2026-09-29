@@ -30,8 +30,7 @@
         "Ban Kế hoạch Đầu tư",
         "Ban Chuẩn bị Đầu tư",
         "Ban Kỹ thuật",
-        "Ban Đền bù Giải tỏa",
-        "Tổ KPI"
+        "Ban Đền bù Giải tỏa"
     ],
     "personnel_by_department": {
         "Ban Lãnh đạo": [
@@ -66,8 +65,7 @@
             "Nguyễn Ngọc Tôn",
             "Mai Văn Châu",
             "Thái Hữu Quý"
-        ],
-        "Tổ KPI": []
+        ]
     },
     "cv_gsheet_url": ""
 }

@@ -76,8 +76,8 @@ def acquire_db_lock(timeout=10):
 
 # Standardized companies based on CIENCO, DMT Group, and DMT Marina documents
 COMPANIES = {
-    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {},
-    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {},
+    "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {},
+    "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {},
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {}
 }
 
@@ -97,7 +97,6 @@ DEFAULT_PERSONNEL = {
     "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "Xí nghiệp DTBD": ["Mai Văn Châu"],
     "Sàn GDBĐS": ["Ngô Thị Tâm"],
-    "Tổ KPI": []
 }
 
 def is_gsheets_configured():
@@ -361,7 +360,7 @@ def save_config(config_data):
 def load_config():
     default_config = {
         "companies": {
-            "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
+            "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
                 "projects_by_category": {
                     "BĐS & KDC": ["KDC Bàu Mạc", "KDC Nam Bàu Mạc", "KĐT Phước Lý & Phước Lý MR", "TĐC Phước Lý 2 & Hoà Liên 5", "Dự án Phong Nam", "Khu BT ST Hoà Ninh"],
                     "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
@@ -379,10 +378,9 @@ def load_config():
                     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
                     "Ban Tài chính Kế toán": ["Lê Thị Hải"],
                     "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
-                    "Tổ KPI": []
                 }
             },
-            "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+            "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
                 "projects_by_category": {},
                 "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
                 "personnel_by_department": {
@@ -469,7 +467,6 @@ def load_config():
             "Ban Dự án": "DA",
             "Xí nghiệp DTBD": "XN DTBD",
             "Sàn GDBĐS": "Sàn GDBĐS",
-            "Tổ KPI": "Tổ KPI",
             "Ban chỉ huy Công trường": "BCH CT",
             "Xí nghiệp xe máy thiết bị": "XN XMTB",
             "Xí nghiệp xe thiết bị": "XN XMTB"
@@ -571,7 +568,6 @@ DEPT_ABBR = {
     "Ban Dự án": "DA",
     "Xí nghiệp DTBD": "XN DTBD",
     "Sàn GDBĐS": "Sàn GDBĐS",
-    "Tổ KPI": "Tổ KPI",
     "Ban chỉ huy Công trường": "BCH CT",
     "Xí nghiệp xe máy thiết bị": "XN XMTB",
     "Xí nghiệp xe thiết bị": "XN XMTB"
@@ -599,31 +595,50 @@ DEPT_ABBR = {
     "Ban Dự án": "DA",
     "Xí nghiệp DTBD": "XN DTBD",
     "Sàn GDBĐS": "Sàn GDBĐS",
-    "Tổ KPI": "Tổ KPI"
 }
 
 DEPT_LEADS = {
-    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
-        "BLĐ": "Trần Quốc Thể",
-        "HCNS": "Nguyễn Thị Hạnh Tiên",
-        "TCKT": "Đồng Thị Nguyệt Nga",
-        "KHĐT": "Nguyễn Trần Thức",
-        "CBĐT": "Hồ Văn Khoa",
-        "KT": "Nguyễn Văn Bồn",
-        "ĐBGT": "Nguyễn Ngọc Tôn",
-        "DA": "Nguyễn Đình Thắng",
-        "XN DTBD": "Mai Văn Châu",
-        "Sàn GDBĐS": "Ngô Thị Tâm",
-        "Tổ KPI": ""
+    "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+        "KHĐT": ["Nguyễn Trần Thức"],
+        "CBĐT": ["Hồ Văn Khoa"],
+        "KT": ["Nguyễn Văn Bồn"],
+        "ĐBGT": ["Nguyễn Ngọc Tôn"],
+        "DA": ["Nguyễn Đình Thắng"],
+        "XN DTBD": ["Mai Văn Châu"],
+        "Sàn GDBĐS": ["Ngô Thị Tâm"]
+    },
+    "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+        "KT": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
+        "BCH CT": ["Nguyễn Phong Trung"],
+        "XN XMTB": ["Đặng Hiền"]
     }
 }
 
 def get_personnel_for_company_dept(company, dept, config):
     companies = config.get("companies", {})
+    personnel_list = []
     if company in companies:
-        return companies[company].get("personnel_by_department", {}).get(dept, [])
-    # Fallback to global config if any, or empty list
-    return config.get("personnel_by_department", {}).get(dept, [])
+        personnel_list = companies[company].get("personnel_by_department", {}).get(dept, [])
+    else:
+        # Fallback to global config if any, or empty list
+        personnel_list = config.get("personnel_by_department", {}).get(dept, [])
+        
+    # Map dept name to abbr
+    abbr = DEPT_ABBR.get(dept, dept)
+        
+    # Exclude managers from the personnel list
+    dept_leads = DEPT_LEADS.get(company, {}).get(abbr, [])
+    if isinstance(dept_leads, str):
+        dept_leads = [dept_leads] if dept_leads else []
+        
+    return [p for p in personnel_list if p not in dept_leads]
 
 def get_departments_for_company(company, config):
     companies = config.get("companies", {})
@@ -1034,7 +1049,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                 
                 new_doc_row = {
                     "ID": doc_id,
-                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG",
                     "SoKyHieu": so_ky_hieu,
                     "NgayBanHanh": ngay_ban_hanh,
                     "CoQuanGui": co_quan_gui,
@@ -1086,7 +1101,7 @@ def sync_incoming_docs_from_df(import_df, selected_company, today):
                 
                 new_task_row = {
                     "ID": task_id,
-                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG",
+                    "DonVi": selected_company if selected_company != "Tất cả đơn vị" else "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG",
                     "PhongBan": ban_chu_tri,
                     "NguoiChuTri": "Ban Lãnh đạo",
                     "TenDuAn": "Quản lý Công văn đến",

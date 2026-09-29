@@ -90,8 +90,8 @@ components.html(
 config = load_config()
 
 DEPT_ABBR = {
+    "Hội đồng quản trị": "HĐQT",
     "Ban Lãnh đạo": "BLĐ",
-    "Lãnh đạo": "BLĐ",
     "Ban Hành chính Nhân sự": "HCNS",
     "Ban Tài chính Kế toán": "TCKT",
     "Ban Kế hoạch Đầu tư": "KHĐT",
@@ -101,10 +101,6 @@ DEPT_ABBR = {
     "Ban Dự án": "DA",
     "Xí nghiệp DTBD": "XN DTBD",
     "Sàn GDBĐS": "Sàn GDBĐS",
-    "Tổ KPI": "Tổ KPI",
-    "Ban chỉ huy Công trường": "BCH CT",
-    "Xí nghiệp xe máy thiết bị": "XN XMTB",
-    "Xí nghiệp xe thiết bị": "XN XMTB"
 }
 
 for comp_name, comp_data in config.get("companies", {}).items():
@@ -119,6 +115,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
 
 # Default owners by department and company for autofill
 DEPT_ABBR = {
+    "Hội đồng quản trị": "HĐQT",
     "Ban Lãnh đạo": "BLĐ",
     "Ban Hành chính Nhân sự": "HCNS",
     "Ban Tài chính Kế toán": "TCKT",
@@ -129,22 +126,29 @@ DEPT_ABBR = {
     "Ban Dự án": "DA",
     "Xí nghiệp DTBD": "XN DTBD",
     "Sàn GDBĐS": "Sàn GDBĐS",
-    "Tổ KPI": "Tổ KPI"
 }
 
 DEPT_LEADS = {
-    "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
-        "BLĐ": "Trần Quốc Thể",
-        "HCNS": "Nguyễn Thị Hạnh Tiên",
-        "TCKT": "Đồng Thị Nguyệt Nga",
-        "KHĐT": "Nguyễn Trần Thức",
-        "CBĐT": "Hồ Văn Khoa",
-        "KT": "Nguyễn Văn Bồn",
-        "ĐBGT": "Nguyễn Ngọc Tôn",
-        "DA": "Nguyễn Đình Thắng",
-        "XN DTBD": "Mai Văn Châu",
-        "Sàn GDBĐS": "Ngô Thị Tâm",
-        "Tổ KPI": ""
+    "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+        "KHĐT": ["Nguyễn Trần Thức"],
+        "CBĐT": ["Hồ Văn Khoa"],
+        "KT": ["Nguyễn Văn Bồn"],
+        "ĐBGT": ["Nguyễn Ngọc Tôn"],
+        "DA": ["Nguyễn Đình Thắng"],
+        "XN DTBD": ["Mai Văn Châu"],
+        "Sàn GDBĐS": ["Ngô Thị Tâm"],
+    },
+    "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+        "KT": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
+        "BCH CT": ["Nguyễn Phong Trung"],
+        "XN XMTB": ["Đặng Hiền"]
     }
 }
 
@@ -432,7 +436,11 @@ elif role_mode == "Nhân viên":
         if sel_login_dept != "-- Chọn --":
             personnel_list = get_personnel_for_company_dept(selected_company, sel_login_dept, config)
             if personnel_list:
-                sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + personnel_list, key="login_user")
+                dept_leads = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, [])
+                if isinstance(dept_leads, str):
+                    dept_leads = [dept_leads] if dept_leads else []
+                nhan_vien_list = [p for p in personnel_list if p not in dept_leads]
+                sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
                 if sel_login_user != "-- Chọn --":
                     if st.sidebar.button("Xác nhận Đăng nhập"):
                         st.session_state.is_personal_authenticated = True
