@@ -149,6 +149,11 @@ DEPT_LEADS = {
         "KT": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
         "BCH CT": ["Nguyễn Phong Trung"],
         "XN XMTB": ["Đặng Hiền"]
+    },
+    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
+        "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Lê Thị Hải"]
     }
 }
 
