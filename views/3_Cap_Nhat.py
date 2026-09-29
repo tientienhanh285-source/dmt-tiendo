@@ -179,9 +179,12 @@ with tab_new:
         is_manager = (role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_dept'))
         
         if is_personal:
-            # Deduce their department from their existing tasks or default to first
-            user_dept_mode = display_df['PhongBan'].mode()
-            user_dept = user_dept_mode[0] if not user_dept_mode.empty else allowed_depts[0]
+            # First try auth_user_dept, fallback to mode, then fallback to first dept
+            if 'auth_user_dept' in st.session_state and st.session_state.auth_user_dept in allowed_depts:
+                user_dept = st.session_state.auth_user_dept
+            else:
+                user_dept_mode = display_df['PhongBan'].mode()
+                user_dept = user_dept_mode[0] if not user_dept_mode.empty else allowed_depts[0]
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", [user_dept], index=0, disabled=True)
         elif is_manager:
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", [st.session_state.manager_dept], index=0, disabled=True)
