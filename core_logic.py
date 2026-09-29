@@ -454,6 +454,13 @@ def load_config():
             data["companies"] = default_config["companies"]
             needs_save = True
             
+        # Migrate old company names to new standardized names
+        companies_data = data.get("companies", {})
+        if "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG" in companies_data:
+            companies_data["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"] = companies_data.pop("CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG")
+        if "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT" in companies_data:
+            companies_data["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"] = companies_data.pop("CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT")
+
         # Map departments to abbreviations to ensure consistency across the app
         abbr_map = {
             "Ban Lãnh đạo": "BLĐ",
