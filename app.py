@@ -560,6 +560,7 @@ else:
 # Ghi lại các biến toàn cục quan trọng vào session_state để các trang có thể truy cập
 st.session_state['role_mode'] = role_mode if 'role_mode' in locals() else 'Nhân viên'
 st.session_state['is_local'] = is_local if 'is_local' in locals() else False
+st.session_state['selected_company'] = selected_company if 'selected_company' in locals() else "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
 
 pg = st.navigation(pages)
 
