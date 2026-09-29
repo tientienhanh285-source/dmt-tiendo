@@ -637,15 +637,7 @@ def get_personnel_for_company_dept(company, dept, config):
         # Fallback to global config if any, or empty list
         personnel_list = config.get("personnel_by_department", {}).get(dept, [])
         
-    # Map dept name to abbr
-    abbr = DEPT_ABBR.get(dept, dept)
-        
-    # Exclude managers from the personnel list
-    dept_leads = DEPT_LEADS.get(company, {}).get(abbr, [])
-    if isinstance(dept_leads, str):
-        dept_leads = [dept_leads] if dept_leads else []
-        
-    return [p for p in personnel_list if p not in dept_leads]
+    return personnel_list
 
 def get_departments_for_company(company, config):
     companies = config.get("companies", {})
