@@ -420,9 +420,7 @@ elif role_mode == "HR":
                 st.sidebar.error("Mật khẩu không đúng!")
     
     
-p_nhat_ky = st.Page('views/11_Nhat_Ky_He_Thong.py', title='Nhật ký Hệ thống', icon='🕵️‍♂️')
-
-if st.session_state.is_admin_authenticated:
+    if st.session_state.is_admin_authenticated:
         st.sidebar.success("Đã xác thực toàn quyền (HR)!")
         
         if st.sidebar.button("Đăng xuất", key="logout_hr"):
