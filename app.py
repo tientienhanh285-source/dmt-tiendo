@@ -426,6 +426,7 @@ if role_mode == "Quản lý":
                             st.session_state.is_manager_authenticated = True
                             st.session_state.manager_dept = sel_login_dept
                             st.session_state.manager_user = sel_login_user
+                            st.session_state.just_logged_in = True
                             st.rerun()
                         else:
                             st.sidebar.error("Mật khẩu không đúng!")
@@ -453,6 +454,7 @@ elif role_mode == "HR":
         if admin_pwd:
             if admin_pwd == "admindmt123":
                 st.session_state.is_admin_authenticated = True
+                st.session_state.just_logged_in = True
                 st.rerun()
             else:
                 st.sidebar.error("Mật khẩu không đúng!")
@@ -601,5 +603,8 @@ st.session_state['role_mode'] = role_mode if 'role_mode' in locals() else 'Nhân
 st.session_state['is_local'] = is_local if 'is_local' in locals() else False
 
 pg = st.navigation(pages)
+
+if st.session_state.pop("just_logged_in", False):
+    st.switch_page("views/1_Tong_Quan.py")
 
 pg.run()
