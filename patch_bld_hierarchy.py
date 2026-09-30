@@ -1,141 +1,34 @@
 import os
-import glob
+import re
 
-bld_mapping_code = """        if st.session_state.manager_dept == "BLĐ":
-            manager_user = st.session_state.get('manager_user', '')
-            bld_hierarchy = {
-                "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
-                "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
-                "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"]
-            }
-            if manager_user in bld_hierarchy:
-                all_truong_ban = bld_hierarchy[manager_user]
-            else:
-                all_truong_ban = []
-                for leads in DEPT_LEADS.get(selected_company, {}).values():
-                    all_truong_ban.extend(leads)
-            db_filters['NguoiChuTri'] = list(set(all_truong_ban))"""
-
-old_block = """        if st.session_state.manager_dept == "BLĐ":
-            all_truong_ban = []
-            for leads in DEPT_LEADS.get(selected_company, {}).values():
-                all_truong_ban.extend(leads)
-            db_filters['NguoiChuTri'] = list(set(all_truong_ban))"""
-
-bld_mapping_local_1 = """                if manager_dept == "BLĐ":
-                    manager_user = st.session_state.get('manager_user', '')
-                    bld_hierarchy = {
-                        "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
-                        "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
-                        "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"]
-                    }
-                    if manager_user in bld_hierarchy:
-                        all_truong_ban = bld_hierarchy[manager_user]
-                    else:
-                        all_truong_ban = []
-                        for leads in DEPT_LEADS.get(selected_company, {}).values():
-                            all_truong_ban.extend(leads)
-                    nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'].isin(all_truong_ban)]"""
-
-old_local_1 = """                if manager_dept == "BLĐ":
-                    all_truong_ban = []
-                    for leads in DEPT_LEADS.get(selected_company, {}).values():
-                        all_truong_ban.extend(leads)
-                    nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'].isin(all_truong_ban)]"""
-
-bld_mapping_local_2 = """            if role_mode == "Quản lý" and st.session_state.get("manager_dept") == "BLĐ":
-                manager_user = st.session_state.get('manager_user', '')
-                bld_hierarchy = {
-                    "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
-                    "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
-                    "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"]
-                }
-                if manager_user in bld_hierarchy:
-                    all_truong_ban = bld_hierarchy[manager_user]
-                else:
-                    all_truong_ban = []
-                    for leads in DEPT_LEADS.get(selected_company, {}).values():
-                        all_truong_ban.extend(leads)
-                mask = mask & local_df['NguoiChuTri'].isin(all_truong_ban)"""
-
-old_local_2 = """            if role_mode == "Quản lý" and st.session_state.get("manager_dept") == "BLĐ":
-                all_truong_ban = []
-                for leads in DEPT_LEADS.get(selected_company, {}).values():
-                    all_truong_ban.extend(leads)
-                mask = mask & local_df['NguoiChuTri'].isin(all_truong_ban)"""
-
-bld_mapping_local_3 = """            if selected_dept_m == "BLĐ":
-                manager_user = st.session_state.get('manager_user', '')
-                bld_hierarchy = {
-                    "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
-                    "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
-                    "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"]
-                }
-                if manager_user in bld_hierarchy:
-                    all_truong_ban = bld_hierarchy[manager_user]
-                else:
-                    all_truong_ban = []
-                    for leads in DEPT_LEADS.get(selected_company, {}).values():
-                        all_truong_ban.extend(leads)
-                kpi_month_df = kpi_month_df[kpi_month_df["Người thực hiện"].isin(all_truong_ban)]"""
-
-old_local_3 = """            if selected_dept_m == "BLĐ":
-                all_truong_ban = []
-                for leads in DEPT_LEADS.get(selected_company, {}).values():
-                    all_truong_ban.extend(leads)
-                kpi_month_df = kpi_month_df[kpi_month_df["Người thực hiện"].isin(all_truong_ban)]"""
-
-bld_mapping_local_4 = """                    if selected_dept_y == "BLĐ":
-                        manager_user = st.session_state.get('manager_user', '')
-                        bld_hierarchy = {
-                            "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
-                            "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
-                            "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"]
-                        }
-                        if manager_user in bld_hierarchy:
-                            all_truong_ban = bld_hierarchy[manager_user]
-                        else:
-                            all_truong_ban = []
-                            for leads in DEPT_LEADS.get(selected_company, {}).values():
-                                all_truong_ban.extend(leads)
-                        yearly_df = yearly_df[yearly_df["Người thực hiện"].isin(all_truong_ban)]"""
-
-old_local_4 = """                    if selected_dept_y == "BLĐ":
-                        all_truong_ban = []
-                        for leads in DEPT_LEADS.get(selected_company, {}).values():
-                            all_truong_ban.extend(leads)
-                        yearly_df = yearly_df[yearly_df["Người thực hiện"].isin(all_truong_ban)]"""
-
-
-for file_path in glob.glob("views/*.py"):
-    with open(file_path, "r", encoding="utf-8") as f:
-        content = f.read()
+def update_bld_hierarchy(content):
+    # Regex to find bld_hierarchy dict and replace it
+    # We want to ensure Tôn is in there.
     
-    modified = False
+    # We will just replace the specific line for Nữ and add Tôn right after it.
+    old_nu = '"Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],'
+    new_nu_ton = '"Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],\n                    "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],'
     
-    if old_block in content:
-        content = content.replace(old_block, bld_mapping_code)
-        modified = True
-        
-    if "4_Nghiem_Thu.py" in file_path:
-        if old_local_1 in content:
-            content = content.replace(old_local_1, bld_mapping_local_1)
-            modified = True
-        if old_local_2 in content:
-            content = content.replace(old_local_2, bld_mapping_local_2)
-            modified = True
+    if old_nu in content:
+        return content.replace(old_nu, new_nu_ton)
+    
+    # Try another variation with different spacing
+    old_nu2 = '"Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"]'
+    if old_nu2 in content and '"Nguyễn Ngọc Tôn"' not in content:
+        return content.replace(old_nu2, new_nu_ton)
+
+    return content
+
+for root, dirs, files in os.walk('views'):
+    for f in files:
+        if f.endswith('.py'):
+            path = os.path.join(root, f)
+            with open(path, 'r', encoding='utf-8') as file:
+                content = file.read()
             
-    if "5_Danh_Gia_KPI.py" in file_path:
-        if old_local_3 in content:
-            content = content.replace(old_local_3, bld_mapping_local_3)
-            modified = True
-        if old_local_4 in content:
-            content = content.replace(old_local_4, bld_mapping_local_4)
-            modified = True
-
-    if modified:
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(content)
-        print(f"Updated {file_path}")
-    else:
-        print(f"Skipped {file_path} (pattern not found)")
+            new_content = update_bld_hierarchy(content)
+            
+            if new_content != content:
+                with open(path, 'w', encoding='utf-8') as file:
+                    file.write(new_content)
+                print(f'Updated bld_hierarchy in {path}')
