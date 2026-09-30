@@ -125,6 +125,12 @@ for comp_name, comp_data in config.get("companies", {}).items():
             if "XN DTBD" in new_personnel and "Trần Quốc Thể" not in new_personnel["XN DTBD"]:
                 new_personnel["XN DTBD"].append("Trần Quốc Thể")
                 
+        if comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
+            if "BLĐ" in new_personnel and "Thái Văn Thành" not in new_personnel["BLĐ"]:
+                new_personnel["BLĐ"].extend(["Thái Văn Thành", "Trần Văn Trọng"])
+            if "KT" in new_personnel and "Trần Văn Trọng" not in new_personnel["KT"]:
+                new_personnel["KT"].append("Trần Văn Trọng")
+                
         comp_data["personnel_by_department"] = new_personnel
 
 
