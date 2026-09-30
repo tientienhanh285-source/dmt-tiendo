@@ -114,7 +114,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
         if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
             if "HĐQT" not in comp_data.get("departments", []):
                 comp_data.setdefault("departments", []).insert(0, "HĐQT")
-            new_personnel["HĐQT"] = ["Đặng Ngọc Hoàng"]
+            new_personnel["HĐQT"] = ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"]
             if "BLĐ" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["BLĐ"]:
                 new_personnel["BLĐ"].remove("Đặng Ngọc Hoàng")
             if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["HCNS"]:
@@ -167,7 +167,7 @@ DEPT_ABBR = {
 
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
-        "HĐQT": ["Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
