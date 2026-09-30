@@ -120,7 +120,7 @@ st.markdown("""
 
 st.markdown(f"### 📊 Bảng Tổng Quan (View) — {selected_company}")
 
-col_f1, col_f2, col_f3, col_auto = st.columns([2, 2, 2, 1])
+col_f1, col_f2, col_f3, col_f4, col_auto = st.columns([1.5, 1.5, 1.5, 1.5, 1])
 with col_f1:
     db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
     merged_projs = get_filtered_projects(selected_company, config, db_projs, department=global_active_dept)
@@ -144,6 +144,9 @@ with col_f2:
 with col_f3:
     status_options = ["Đang thực hiện", "Sắp tới hạn / Trễ hạn", "Hoàn thành", "Vướng mắc", "Tất cả trạng thái"]
     sel_status = st.selectbox("Lọc Trạng thái", status_options, key="tv_status", index=1)
+with col_f4:
+    month_options = ["Tất cả các tháng"] + [f"Tháng {i}" for i in range(1, 13)]
+    sel_month = st.selectbox("Lọc Tháng (Hạn chót)", month_options, key="tv_month", index=0)
 with col_auto:
     auto_refresh = st.checkbox("🔄 Auto-refresh (5p)", value=True, help="Tự động tải lại trang sau mỗi 5 phút")
     mobile_mode = st.checkbox("📱 Chế độ Điện thoại", value=False, help="Hiển thị dạng thẻ dọc để xem trên mobile")
@@ -164,6 +167,13 @@ if sel_proj != "Tất cả dự án":
     table_df = table_df[table_df['TenDuAn'].str.contains(clean_proj, case=False, na=False)]
 if sel_dept != "Tất cả phòng ban":
     table_df = table_df[table_df['PhongBan'] == sel_dept]
+if sel_month != "Tất cả các tháng":
+    target_m = int(sel_month.replace("Tháng ", ""))
+    def check_month(d):
+        if pd.notna(d) and hasattr(d, 'month'):
+            return d.month == target_m
+        return False
+    table_df = table_df[table_df['Deadline'].apply(check_month)]
     
 def get_days_left(d):
     if pd.notna(d) and hasattr(d, 'strftime'):
