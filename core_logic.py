@@ -386,7 +386,7 @@ def load_config():
                 "personnel_by_department": {
                     "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
                     "Ban Kỹ thuật": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
-                    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đồng"],
+                    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
                     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
                     "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
                     "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"]

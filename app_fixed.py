@@ -130,7 +130,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
             new_personnel = {
                 "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
                 "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
-                "BCH CT": ["Nguyễn Phong Trung", "Lê Đồng", "Phạm Văn Long"],
+                "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
                 "XN XMTB": ["Đặng Hiền"],
                 "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
                 "HCNS": ["Nguyễn Thị Mỹ Phương"]
