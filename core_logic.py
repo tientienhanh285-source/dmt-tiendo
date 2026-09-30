@@ -96,6 +96,7 @@ DEFAULT_PERSONNEL = {
     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
     "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "Xí nghiệp DTBD": ["Mai Văn Châu"],
+    "XN DTBD": ["Mai Văn Châu"],
     "Sàn GDBĐS": ["Ngô Thị Tâm"],
 }
 
