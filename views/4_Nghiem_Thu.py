@@ -51,7 +51,7 @@ if 'role_mode' in st.session_state:
                     "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
                     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
                     "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"],
-                    "Thái Văn Thành": ["Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
+                    "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
                     "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
                 }
                 if manager_user in bld_hierarchy:
@@ -125,7 +125,7 @@ else:
                             "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
                             "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
                             "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"],
-                            "Thái Văn Thành": ["Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
+                            "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
                             "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
                         }
                         if manager_user in bld_hierarchy:
@@ -145,7 +145,8 @@ else:
                     
             # Prevent managers from approving their own tasks
             if 'manager_user' in locals() and manager_user:
-                nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'] != manager_user]
+                if manager_user != "Thái Văn Thành":
+                    nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'] != manager_user]
                     
             if nghiemthu_df.empty:
                 st.success("🎉 Hiện tại không có công việc nào chờ nghiệm thu!")
@@ -248,7 +249,7 @@ else:
                             "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
                             "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
                             "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"],
-                            "Thái Văn Thành": ["Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
+                            "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
                             "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
                         }
                         if manager_user in bld_hierarchy:
