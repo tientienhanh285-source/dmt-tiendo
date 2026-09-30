@@ -60,7 +60,13 @@ if 'role_mode' in st.session_state:
                     all_truong_ban = []
                     for leads in DEPT_LEADS.get(selected_company, {}).values():
                         all_truong_ban.extend(leads)
-                db_filters['NguoiChuTri'] = list(set(all_truong_ban))
+                
+                if st.session_state.manager_dept == "HĐQT":
+                    # HĐQT sees all companies, do not filter by DonVi or NguoiChuTri
+                    if 'DonVi' in db_filters:
+                        del db_filters['DonVi']
+                else:
+                    db_filters['NguoiChuTri'] = list(set(all_truong_ban))
             else:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
                 truong_ban_list = [p for p in dept_leads if p not in bld_members]
@@ -257,10 +263,9 @@ else:
     group_by = st.radio("Chế độ hiển thị danh sách", ["Gom nhóm theo Dự án", "Gom nhóm theo Phòng ban", "Không gom nhóm (Bảng phẳng)"], horizontal=True, key="view_group_by")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    if mobile_mode:
-        for idx, row in df_display.iterrows():
+    def render_mobile_cards(df_to_render):
+        for _, row in df_to_render.iterrows():
             prog = int(row['Tiến độ'])
-            
             with st.container():
                 st.markdown(f"**📌 {row['Tên công việc']}**")
                 st.markdown(f"📁 *{row['Dự án / Hạng mục']}* | 👤 *{row['Người thực hiện']}*")
@@ -268,31 +273,40 @@ else:
                 st.caption(f"Tiến độ: {prog}%")
                 st.progress(prog)
                 st.markdown("---")
-    else:
-        # Define table column config
-        col_config = {
-            "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
-            "Hạn chót": st.column_config.TextColumn("Hạn chót", width=150),
-            "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
-            "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
-            "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-            "Phòng ban": st.column_config.TextColumn("Phòng ban", width=80),
-            "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
-            "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
-        }
-        
-        if group_by == "Gom nhóm theo Dự án":
-            projects = df_display['Dự án / Hạng mục'].unique()
-            for p in projects:
-                p_df = df_display[df_display['Dự án / Hạng mục'] == p]
-                with st.expander(f"📁 Dự án: {p} ({len(p_df)} công việc)", expanded=True):
+
+    # Define table column config
+    col_config = {
+        "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
+        "Hạn chót": st.column_config.TextColumn("Hạn chót", width=150),
+        "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
+        "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
+        "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
+        "Phòng ban": st.column_config.TextColumn("Phòng ban", width=80),
+        "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
+        "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
+    }
+
+    if group_by == "Gom nhóm theo Dự án":
+        projects = df_display['Dự án / Hạng mục'].unique()
+        for p in projects:
+            p_df = df_display[df_display['Dự án / Hạng mục'] == p]
+            with st.expander(f"📁 Dự án: {p} ({len(p_df)} công việc)", expanded=True):
+                if mobile_mode:
+                    render_mobile_cards(p_df)
+                else:
                     st.dataframe(p_df.drop(columns=['Dự án / Hạng mục']), column_config=col_config, use_container_width=True, hide_index=True)
-        elif group_by == "Gom nhóm theo Phòng ban":
-            depts = df_display['Phòng ban'].unique()
-            for d in depts:
-                d_df = df_display[df_display['Phòng ban'] == d]
-                with st.expander(f"🏢 Phòng ban: {d} ({len(d_df)} công việc)", expanded=True):
+    elif group_by == "Gom nhóm theo Phòng ban":
+        depts = df_display['Phòng ban'].unique()
+        for d in depts:
+            d_df = df_display[df_display['Phòng ban'] == d]
+            with st.expander(f"🏢 Phòng ban: {d} ({len(d_df)} công việc)", expanded=True):
+                if mobile_mode:
+                    render_mobile_cards(d_df)
+                else:
                     st.dataframe(d_df.drop(columns=['Phòng ban']), column_config=col_config, use_container_width=True, hide_index=True)
+    else:
+        if mobile_mode:
+            render_mobile_cards(df_display)
         else:
             st.dataframe(df_display, column_config=col_config, use_container_width=True, hide_index=True, height=700)
 

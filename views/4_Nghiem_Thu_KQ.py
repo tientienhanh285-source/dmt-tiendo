@@ -56,7 +56,13 @@ if 'role_mode' in st.session_state:
                     all_truong_ban = []
                     for leads in DEPT_LEADS.get(selected_company, {}).values():
                         all_truong_ban.extend(leads)
-                db_filters['NguoiChuTri'] = list(set(all_truong_ban))
+                
+                if st.session_state.manager_dept == "HĐQT":
+                    # HĐQT sees all companies, do not filter by DonVi or NguoiChuTri
+                    if 'DonVi' in db_filters:
+                        del db_filters['DonVi']
+                else:
+                    db_filters['NguoiChuTri'] = list(set(all_truong_ban))
             else:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
                 truong_ban_list = [p for p in dept_leads if p not in bld_members]
@@ -150,7 +156,13 @@ if 'role_mode' in st.session_state:
                     all_truong_ban = []
                     for leads in DEPT_LEADS.get(selected_company, {}).values():
                         all_truong_ban.extend(leads)
-                db_filters['NguoiChuTri'] = list(set(all_truong_ban))
+                
+                if st.session_state.manager_dept == "HĐQT":
+                    # HĐQT sees all companies, do not filter by DonVi or NguoiChuTri
+                    if 'DonVi' in db_filters:
+                        del db_filters['DonVi']
+                else:
+                    db_filters['NguoiChuTri'] = list(set(all_truong_ban))
             else:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
                 truong_ban_list = [p for p in dept_leads if p not in bld_members]
