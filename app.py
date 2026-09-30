@@ -370,8 +370,10 @@ selected_company = st.sidebar.selectbox(
     index=1,
     format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
 )
+st.session_state['selected_company'] = selected_company
 
 role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "HR"], index=0)
+st.session_state['role_mode'] = role_mode
 
 
 if "is_admin_authenticated" not in st.session_state:
