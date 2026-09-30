@@ -52,7 +52,7 @@ if 'role_mode' in st.session_state:
                     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
                     "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"],
                     "Thái Văn Thành": ["Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
-                    "Trần Văn Trọng": ["Lê Nho Tân", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
+                    "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
                 }
                 if manager_user in bld_hierarchy:
                     all_truong_ban = bld_hierarchy[manager_user]
@@ -164,7 +164,9 @@ with tab_master:
     if role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated'):
         mgr_dept = st.session_state.get("manager_dept")
         if mgr_dept in ["BLĐ", "HĐQT", "Tất cả"]:
-            dept_opts = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
+                        dept_opts = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
+            if st.session_state.get('manager_user') == "Trần Văn Trọng":
+                dept_opts = [d for d in dept_opts if d not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
             sel_d = st.selectbox("Lọc Phòng ban (Master View)", dept_opts, key="master_dept")
             if sel_d != "Tất cả phòng ban":
                 active_dept = sel_d
@@ -175,6 +177,8 @@ with tab_master:
         
     if active_dept:
         project_targets = [t for t in project_targets if t.get("department") == active_dept]
+    elif role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_user') == "Trần Văn Trọng":
+        project_targets = [t for t in project_targets if t.get("department") not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
         
     if not project_targets:
         if active_dept:
