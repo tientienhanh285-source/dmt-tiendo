@@ -112,10 +112,13 @@ for comp_name, comp_data in config.get("companies", {}).items():
             new_personnel[DEPT_ABBR.get(d, d)] = p
         
         if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
-            if "BLĐ" in new_personnel and "Đặng Ngọc Hoàng" not in new_personnel["BLĐ"]:
-                new_personnel["BLĐ"].append("Đặng Ngọc Hoàng")
-            if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" not in new_personnel["HCNS"]:
-                new_personnel["HCNS"].append("Đặng Ngọc Hoàng")
+            if "HĐQT" not in comp_data.get("departments", []):
+                comp_data.setdefault("departments", []).insert(0, "HĐQT")
+            new_personnel["HĐQT"] = ["Đặng Ngọc Hoàng"]
+            if "BLĐ" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["BLĐ"]:
+                new_personnel["BLĐ"].remove("Đặng Ngọc Hoàng")
+            if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["HCNS"]:
+                new_personnel["HCNS"].remove("Đặng Ngọc Hoàng")
             if "TCKT" in new_personnel and "Đoàn Thị Ngọc Nữ" not in new_personnel["TCKT"]:
                 new_personnel["TCKT"].append("Đoàn Thị Ngọc Nữ")
             if "KHĐT" in new_personnel and "Trần Quốc Thể" not in new_personnel["KHĐT"]:
@@ -128,7 +131,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
         if comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
             comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT"]
             new_personnel = {
-                "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+                "HĐQT": ["Đặng Thị Lan Ngọc"],
                 "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
                 "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
                 "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
@@ -136,6 +139,14 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
                 "HCNS": ["Nguyễn Thị Mỹ Phương"]
             }
+            
+        if comp_name == "CTY CP DMT - MARINA (Du thuyền Happy Yacht)":
+            if "HĐQT" not in comp_data.get("departments", []):
+                comp_data.setdefault("departments", []).insert(0, "HĐQT")
+            new_personnel["HĐQT"] = ["Đặng Ngọc Hoàng"]
+            if "BLĐ" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["BLĐ"]:
+                new_personnel["BLĐ"].remove("Đặng Ngọc Hoàng")
+
         comp_data["personnel_by_department"] = new_personnel
 
 
@@ -156,8 +167,9 @@ DEPT_ABBR = {
 
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Ngọc Hoàng"],
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức", "Trần Quốc Thể"],
         "CBĐT": ["Hồ Văn Khoa", "Trần Quốc Thể"],
@@ -168,13 +180,14 @@ DEPT_LEADS = {
         "Sàn GDBĐS": ["Ngô Thị Tâm"],
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+        "HĐQT": ["Đặng Thị Lan Ngọc"],
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"]
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
-        "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Ngọc Hoàng"],
+        "BLĐ": ["Trần Cường"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Lê Thị Hải"]
     }
