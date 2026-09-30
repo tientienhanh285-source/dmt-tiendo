@@ -401,12 +401,12 @@ if role_mode == "Quản lý":
                 if isinstance(dept_leads, str):
                     dept_leads = [dept_leads] if dept_leads else []
                 
-                valid_leads = [lead for lead in dept_leads if lead in personnel_list]
+                valid_leads = dept_leads
                 
                 if valid_leads:
                     sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + valid_leads, key="mgr_login_user")
                 else:
-                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + personnel_list, key="mgr_login_user")
+                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"], key="mgr_login_user")
                 
                 if sel_login_user != "-- Chọn --":
                     mgr_pwd = st.sidebar.text_input("3. Nhập Mật khẩu Quản lý", type="password")
