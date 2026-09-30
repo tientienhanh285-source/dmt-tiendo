@@ -611,7 +611,7 @@ DEPT_LEADS = {
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
-        "KT": ["Nguyễn Văn Bồn"],
+        "KT": ["Trần Quốc Thể"],
         "ĐBGT": ["Nguyễn Ngọc Tôn"],
         "DA": ["Nguyễn Đình Thắng"],
         "XN DTBD": ["Mai Văn Châu"],
