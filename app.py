@@ -110,6 +110,31 @@ for comp_name, comp_data in config.get("companies", {}).items():
         new_personnel = {}
         for d, p in comp_data["personnel_by_department"].items():
             new_personnel[DEPT_ABBR.get(d, d)] = p
+        
+        if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
+            if "BLĐ" in new_personnel and "Đặng Ngọc Hoàng" not in new_personnel["BLĐ"]:
+                new_personnel["BLĐ"].append("Đặng Ngọc Hoàng")
+            if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" not in new_personnel["HCNS"]:
+                new_personnel["HCNS"].append("Đặng Ngọc Hoàng")
+            if "TCKT" in new_personnel and "Đoàn Thị Ngọc Nữ" not in new_personnel["TCKT"]:
+                new_personnel["TCKT"].append("Đoàn Thị Ngọc Nữ")
+            if "KHĐT" in new_personnel and "Trần Quốc Thể" not in new_personnel["KHĐT"]:
+                new_personnel["KHĐT"].append("Trần Quốc Thể")
+            if "CBĐT" in new_personnel and "Trần Quốc Thể" not in new_personnel["CBĐT"]:
+                new_personnel["CBĐT"].append("Trần Quốc Thể")
+            if "XN DTBD" in new_personnel and "Trần Quốc Thể" not in new_personnel["XN DTBD"]:
+                new_personnel["XN DTBD"].append("Trần Quốc Thể")
+                
+        if comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
+            comp_data["departments"] = ["BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT"]
+            new_personnel = {
+                "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
+                "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
+                "XN XMTB": ["Đặng Hiền"],
+                "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                "HCNS": ["Nguyễn Thị Mỹ Phương"]
+            }
         comp_data["personnel_by_department"] = new_personnel
 
 
@@ -131,24 +156,24 @@ DEPT_ABBR = {
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên", "Đặng Ngọc Hoàng"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
-        "KHĐT": ["Nguyễn Trần Thức"],
-        "CBĐT": ["Hồ Văn Khoa"],
+        "KHĐT": ["Nguyễn Trần Thức", "Trần Quốc Thể"],
+        "CBĐT": ["Hồ Văn Khoa", "Trần Quốc Thể"],
         "KT": ["Trần Quốc Thể"],
         "ĐBGT": ["Nguyễn Ngọc Tôn"],
         "DA": ["Nguyễn Đình Thắng"],
-        "XN DTBD": ["Mai Văn Châu"],
+        "XN DTBD": ["Mai Văn Châu", "Trần Quốc Thể"],
         "Sàn GDBĐS": ["Ngô Thị Tâm"],
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
-        "KT": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
-        "BCH CT": ["Nguyễn Phong Trung"],
-        "XN XMTB": ["Đặng Hiền"]
+        "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "HCNS": ["Nguyễn Thị Mỹ Phương"],
+        "TCKT": ["Nguyễn Thị Ngọc Hà"],
+        "KT": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "BCH CT": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "XN XMTB": ["Thái Văn Thành", "Trần Văn Trọng"]
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
         "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],
@@ -420,6 +445,7 @@ elif role_mode == "HR":
                 st.sidebar.error("Mật khẩu không đúng!")
     
     
+
     if st.session_state.is_admin_authenticated:
         st.sidebar.success("Đã xác thực toàn quyền (HR)!")
         
@@ -560,7 +586,6 @@ else:
 # Ghi lại các biến toàn cục quan trọng vào session_state để các trang có thể truy cập
 st.session_state['role_mode'] = role_mode if 'role_mode' in locals() else 'Nhân viên'
 st.session_state['is_local'] = is_local if 'is_local' in locals() else False
-st.session_state['selected_company'] = selected_company if 'selected_company' in locals() else "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
 
 pg = st.navigation(pages)
 
