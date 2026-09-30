@@ -612,18 +612,18 @@ DEPT_LEADS = {
         "TCKT": ["Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
-        "KT": ["Nguyễn Văn Bồn"],
+        "KT": [],
         "ĐBGT": ["Nguyễn Ngọc Tôn"],
         "DA": ["Nguyễn Đình Thắng"],
-        "XN DTBD": ["Mai Văn Châu"],
-        "Sàn GDBĐS": ["Ngô Thị Tâm"]
+        "XN DTBD": [],
+        "Sàn GDBĐS": []
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],
-        "KT": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "KT": ["Thái Văn Thành", "Trần Văn Trọng", "Phạm Quang Nghĩa"],
         "BCH CT": ["Thái Văn Thành", "Trần Văn Trọng"],
         "XN XMTB": ["Thái Văn Thành", "Trần Văn Trọng"]
     }
