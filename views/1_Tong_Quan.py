@@ -240,6 +240,23 @@ else:
     df_display = df_display[ordered_cols]
     
     st.markdown("---")
+    
+    # ---- Thêm Metric Cards Thống Kê ----
+    total_tasks = len(df_display)
+    done_tasks = len(df_display[df_display['Trạng thái'] == '✅ Đã xong'])
+    late_tasks = len(df_display[df_display['Trạng thái'] == '⚠️ Trễ hạn'])
+    issue_tasks = len(df_display[df_display['Trạng thái'] == '🔴 Vướng mắc'])
+    
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Tổng số việc", f"{total_tasks}")
+    col2.metric("Đã hoàn thành", f"{done_tasks}", f"{done_tasks/total_tasks*100:.1f}%" if total_tasks > 0 else "")
+    col3.metric("Trễ hạn", f"{late_tasks}", f"{-late_tasks}" if late_tasks > 0 else "", delta_color="inverse")
+    col4.metric("Đang vướng mắc", f"{issue_tasks}", f"{-issue_tasks}" if issue_tasks > 0 else "", delta_color="inverse")
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    group_by = st.radio("Chế độ hiển thị danh sách", ["Gom nhóm theo Dự án", "Gom nhóm theo Phòng ban", "Không gom nhóm (Bảng phẳng)"], horizontal=True, key="view_group_by")
+    st.markdown("<br>", unsafe_allow_html=True)
+
     if mobile_mode:
         for idx, row in df_display.iterrows():
             prog = int(row['Tiến độ'])
@@ -252,22 +269,32 @@ else:
                 st.progress(prog)
                 st.markdown("---")
     else:
-        st.dataframe(
-            df_display,
-            column_config={
-                "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
-                "Hạn chót": st.column_config.TextColumn("Hạn chót", width=150),
-                "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
-                "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
-                "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
-                "Phòng ban": st.column_config.TextColumn("Phòng ban", width=80),
-                "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
-                "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
-            },
-            use_container_width=True,
-            hide_index=True,
-            height=700
-        )
+        # Define table column config
+        col_config = {
+            "Ngày bắt đầu": st.column_config.TextColumn("Ngày bắt đầu", width=90),
+            "Hạn chót": st.column_config.TextColumn("Hạn chót", width=150),
+            "Tiến độ": st.column_config.ProgressColumn("Tiến độ", format="%d%%", min_value=0, max_value=100, width=100),
+            "Trạng thái": st.column_config.TextColumn("Trạng thái", width=120),
+            "Người thực hiện": st.column_config.TextColumn("Người thực hiện", width=150),
+            "Phòng ban": st.column_config.TextColumn("Phòng ban", width=80),
+            "Dự án / Hạng mục": st.column_config.TextColumn("Dự án / Hạng mục", width=200),
+            "Tên công việc": st.column_config.TextColumn("Tên công việc", width="large")
+        }
+        
+        if group_by == "Gom nhóm theo Dự án":
+            projects = df_display['Dự án / Hạng mục'].unique()
+            for p in projects:
+                p_df = df_display[df_display['Dự án / Hạng mục'] == p]
+                with st.expander(f"📁 Dự án: {p} ({len(p_df)} công việc)", expanded=True):
+                    st.dataframe(p_df.drop(columns=['Dự án / Hạng mục']), column_config=col_config, use_container_width=True, hide_index=True)
+        elif group_by == "Gom nhóm theo Phòng ban":
+            depts = df_display['Phòng ban'].unique()
+            for d in depts:
+                d_df = df_display[df_display['Phòng ban'] == d]
+                with st.expander(f"🏢 Phòng ban: {d} ({len(d_df)} công việc)", expanded=True):
+                    st.dataframe(d_df.drop(columns=['Phòng ban']), column_config=col_config, use_container_width=True, hide_index=True)
+        else:
+            st.dataframe(df_display, column_config=col_config, use_container_width=True, hide_index=True, height=700)
 
 # ----------------- 3. THÊM / CẬP NHẬT CÔNG VIỆC -----------------
 
