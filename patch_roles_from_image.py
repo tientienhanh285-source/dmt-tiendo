@@ -29,7 +29,7 @@ app_content = re.sub(r'DEPT_ABBR = \{[\s\S]*?\}', new_dept_abbr, app_content)
 new_dept_leads = """DEPT_LEADS = {
     "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức"],
@@ -55,13 +55,13 @@ with codecs.open(core_file, 'r', 'utf-8') as f:
 
 new_default_personnel = """DEFAULT_PERSONNEL = {
     "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn", "Đặng Ngọc Hoàng"],
+    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Đoàn Thị Ngọc Nữ"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Phan Thị Mỹ Hạnh", "Nguyễn Đức Lợi", "Trần Tin"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
     "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
-    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+    "Ban Đền bù Giải tỏa": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
     "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
     "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
@@ -95,7 +95,7 @@ for user in ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"]:
 
 if "Ban Lãnh đạo" not in p:
     p["Ban Lãnh đạo"] = []
-for user in ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"]:
+for user in ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"]:
     if user not in p["Ban Lãnh đạo"]:
         p["Ban Lãnh đạo"].append(user)
 

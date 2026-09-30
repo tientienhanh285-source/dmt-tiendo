@@ -117,6 +117,8 @@ for comp_name, comp_data in config.get("companies", {}).items():
             new_personnel["HĐQT"] = ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"]
             if "BLĐ" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["BLĐ"]:
                 new_personnel["BLĐ"].remove("Đặng Ngọc Hoàng")
+            if "BLĐ" in new_personnel and "Nguyễn Ngọc Tôn" in new_personnel["BLĐ"]:
+                new_personnel["BLĐ"].remove("Nguyễn Ngọc Tôn")
             if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["HCNS"]:
                 new_personnel["HCNS"].remove("Đặng Ngọc Hoàng")
             if "TCKT" in new_personnel and "Đoàn Thị Ngọc Nữ" not in new_personnel["TCKT"]:

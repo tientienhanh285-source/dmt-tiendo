@@ -64,7 +64,7 @@ DEFAULT_PERSONNEL = {
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Trần Văn Trọng", "Trần Cường"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phạm Quang Nghĩa", "Lê Thị Hải"],
     "Ban Kỹ thuật": ["Trần Văn Trọng", "Nguyễn Văn Sang", "Trương Ngọc Sỹ"],
-    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Mai Văn Châu", "Thái Hữu Quý"],
+    "Ban Đền bù Giải tỏa": ["Mai Văn Châu", "Thái Hữu Quý"],
     "Tổ KPI": []
 }
 

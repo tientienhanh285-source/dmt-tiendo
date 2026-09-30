@@ -143,7 +143,7 @@ DEPT_LEADS = {
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
         "KT": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
