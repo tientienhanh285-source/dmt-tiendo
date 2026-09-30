@@ -1,0 +1,7 @@
+
+company_options = ["Tất cả đơn vị"] + list(COMPANIES.keys())
+selected_company = st.sidebar.selectbox(
+    "CHỌN CÔNG TY / THÀNH VIÊN", 
+    company_options, 
+    index=1,
+    format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")

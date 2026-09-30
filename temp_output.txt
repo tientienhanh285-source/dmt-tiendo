@@ -1,0 +1,64 @@
+            translate: no;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+import streamlit.components.v1 as components
+components.html(
+    """
+    <script>
+        // Set ngôn ngữ trang thành tiếng Việt và gắn thẻ meta chống dịch
+        
+        const meta = window.parent.document.createElement('meta');
+        meta.name = 'google';
+        meta.content = 'notranslate';
+        window.parent.document.getElementsByTagName('head')[0].appendChild(meta);
+    </script>
+    """,
+    height=0,
+    width=0,
+)
+
+# Standardized companies based on CIENCO, DMT Group, and DMT Marina documents
+
+# Configuration JSON logic for dynamic Projects and Departments
+
+
+
+
+
+
+
+
+
+
+
+config = load_config()
+
+DEPT_ABBR = {
+    "Hội đồng quản trị": "HĐQT",
+    "Ban Lãnh đạo": "BLĐ",
+    "Ban Hành chính Nhân sự": "HCNS",
+    "Ban Tài chính Kế toán": "TCKT",
+    "Ban Kế hoạch Đầu tư": "KHĐT",
+    "Ban Chuẩn bị Đầu tư": "CBĐT",
+    "Ban Kỹ thuật": "KT",
+    "Ban Đền bù Giải tỏa": "ĐBGT",
+    "Ban Dự án": "DA",
+    "Xí nghiệp DTBD": "XN DTBD",
+    "Sàn GDBĐS": "Sàn GDBĐS",
+}
+
+for comp_name, comp_data in config.get("companies", {}).items():
+    if "departments" in comp_data:
+        comp_data["departments"] = [DEPT_ABBR.get(d, d) for d in comp_data["departments"]]
+    if "personnel_by_department" in comp_data:
+        new_personnel = {}
+        for d, p in comp_data["personnel_by_department"].items():
+            new_personnel[DEPT_ABBR.get(d, d)] = p
+        comp_data["personnel_by_department"] = new_personnel
+
+
+# Default owners by department and company for autofill
+DEPT_ABBR = {
+    "Hội đồng quản trị

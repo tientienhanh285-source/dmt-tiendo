@@ -1,13 +1,8 @@
-    if "ThoiGianDuyetKQ" not in df.columns:
-        df["ThoiGianDuyetKQ"] = ""
-    else:
-        def clean_mucdo(val):
-            val_str = str(val).strip()
-            if val_str == "0.5" or "50" in val_str: return "50%"
-            if val_str == "0.8" or "80" in val_str: return "80%"
-            if val_str == "0.9" or "90" in val_str: return "90%"
-            if "miễn" in val_str.lower() or "loại bỏ" in val_str.lower(): return "Miễn trừ (Loại bỏ KPI)"
-            return "0% (Không ghi nhận)"
-        df["MucDoGhiNhan"] = df["MucDoGhiNhan"].apply(clean_mucdo)
-
-    for col in required_cols:
+101:         selected_dept_m = st.session_state.manager_dept if st.session_state.get('manager_dept') else "Tất cả phòng ban"
+111:             selected_dept_m = st.selectbox("Lọc theo Phòng ban", dept_options_m, key="kpi_m_dept")
+263:             if selected_dept_m != "Tất cả phòng ban":
+264:                 kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_m, selected_dept_m)]
+398:             selected_dept_y = st.session_state.manager_dept if st.session_state.get('manager_dept') else "Tất cả phòng ban"
+406:                 selected_dept_y = st.selectbox("Lọc theo Phòng ban", dept_options_y, key="kpi_y_dept")
+572:                     if selected_dept_y != "Tất cả phòng ban":
+573:                         yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]

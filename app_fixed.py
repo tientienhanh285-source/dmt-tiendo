@@ -168,12 +168,12 @@ DEPT_LEADS = {
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
-        "KT": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
-        "BCH CT": ["Nguyễn Phong Trung"],
-        "XN XMTB": ["Đặng Hiền"]
+        "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "HCNS": ["Nguyễn Thị Mỹ Phương"],
+        "TCKT": ["Nguyễn Thị Ngọc Hà"],
+        "KT": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "BCH CT": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "XN XMTB": ["Thái Văn Thành", "Trần Văn Trọng"]
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
         "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],

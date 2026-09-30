@@ -1,0 +1,3 @@
+26: config = load_config()
+85:         comp_config = config.get("companies", {}).get(selected_company, {})
+155:         comp_config = config.get("companies", {}).get(selected_company, {})

@@ -1,0 +1,112 @@
+[
+    {
+        "project_name": "Khu dân cư Bàu Mạc",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT): Phụ thuộc khớp nối với đường Nguyễn An Ninh. Gồm: SN, GT, TN (3,32 tỷ), Cấp điện (0,77 tỷ), ĐCS (0,08 tỷ), Cấp nước (0,248 tỷ), Cây xanh (0,325 tỷ)",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 4.75,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Khu DC Nam Bàu Mạc",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT): Gồm SN, GT, TN; Cấp điện & DCS; Cấp nước; Cây xanh.",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 6.56,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Khu TĐC Phước Lý 2",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT): Dừng thi công và bàn giao.",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 0.00,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Khu TĐC Hòa Liên 5",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT-CIENCO): Bàn giao công trình.",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 0.00,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Tuyến đường Trần Hưng Đạo",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT-CIENCO): Bàn giao công trình.",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 0.00,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Trục 1 Tây Bắc (Đoạn 1)",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT-CIENCO): Hạng mục cấp nước (KL còn lại).",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 0.38,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Trục 1 Tây Bắc (Đoạn 2)",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT-CIENCO): Giá trị HĐ ban đầu đã điều chỉnh.",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 39.07,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Tuyến đường Lê Trọng Tấn (đoạn từ phước Lý 6 đến Hoàng Văn Thái)",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT-CIENCO): ĐCS (1,02 tỷ), di dời điện (0,48 tỷ), Cấp nước (3,52 tỷ), CX (0,61 tỷ), GT, TN (16,08 tỷ).",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 22.42,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Dự án Tam Anh Nam",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT-CIENCO): Đã bàn giao dự án.",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 0.00,
+        "disbursed_value": 0
+    },
+    {
+        "project_name": "Khu TĐC Hoà Vang",
+        "department": "KT",
+        "target_name": "Kế hoạch xây dựng hạ tầng (DMT-CIENCO): SN, GT, TN (18,6tỷ), Cấp nước (1,06 tỷ), Thoát nước thải (3,05 tỷ), cấp quyền KT (0,94 tỷ) & chi phí dự phòng (1,388 tỷ).",
+        "deadline": "Năm 2026",
+        "status": "Chưa bắt đầu",
+        "approved": false,
+        "progress": 0,
+        "budget_2026": 25.53,
+        "disbursed_value": 0
+    }
+]

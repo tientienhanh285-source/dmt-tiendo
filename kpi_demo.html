@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hệ thống KPI – DMT Group</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--p:#4f46e5;--pl:#6366f1;--s:#10b981;--w:#f59e0b;--d:#ef4444;--bg:#f1f5f9;--sb:#1e1b4b;--b:#e2e8f0;--t:#1e293b;--tm:#64748b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--t)}
+/* ===== LOGIN ===== */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4f46e5 100%)}
+.login-box{background:#fff;border-radius:20px;padding:40px 44px;width:420px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.login-logo{font-size:28px;font-weight:800;color:var(--p);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--tm);margin-bottom:30px}
+.login-label{font-size:12px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px}
+.login-input{width:100%;padding:11px 14px;border:1px solid var(--b);border-radius:10px;font-size:14px;font-family:inherit;color:var(--t);margin-bottom:16px;transition:border .15s}
+.login-input:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.login-roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.role-card{border:2px solid var(--b);border-radius:10px;padding:14px;cursor:pointer;text-align:center;transition:all .15s}
+.role-card:hover,.role-card.sel{border-color:var(--p);background:#eef2ff}
+.role-card .role-icon{font-size:24px;margin-bottom:6px}
+.role-card .role-name{font-size:13px;font-weight:700;color:var(--t)}
+.role-card .role-desc{font-size:11px;color:var(--tm);margin-top:2px}
+.btn-login{width:100%;padding:13px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:background .15s}
+.btn-login:hover{background:#4338ca}
+.login-hint{margin-top:16px;background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:12px;color:var(--tm)}
+.login-hint b{color:var(--t)}
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:var(--sb);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:width .2s}
+.logo{padding:20px 22px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo-n{font-size:17px;font-weight:800;color:#fff}
+.logo-s{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.nav{padding:10px 0;flex:1;overflow-y:auto}
+.ns{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;padding:10px 20px 4px}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.6);font-size:13px;border-left:3px solid transparent;cursor:pointer;transition:all .15s;user-select:none}
+.ni:hover{background:rgba(255,255,255,.06);color:#fff}
+.ni.on{background:rgba(79,70,229,.3);color:#fff;border-left-color:#6366f1;font-weight:600}
+.nbadge{margin-left:auto;background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700}
+.user-box{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.un{font-size:13px;font-weight:600;color:#fff}
+.ur{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+.logout-btn{margin-left:auto;background:rgba(255,255,255,.1);border:none;border-radius:6px;color:rgba(255,255,255,.6);font-size:11px;padding:4px 8px;cursor:pointer}
+.logout-btn:hover{background:rgba(255,255,255,.2);color:#fff}
+.main{margin-left:250px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:58px;background:#fff;border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 26px;gap:12px;position:sticky;top:0;z-index:50;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tp-info{flex:1}
+.tp-title{font-size:15px;font-weight:700}
+.tp-bread{font-size:12px;color:var(--tm)}
+.tp-right{display:flex;gap:8px;align-items:center}
+select,button,input,textarea{font-family:inherit}
+.msel{border:1px solid var(--b);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--t);cursor:pointer}
+.btn{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.bp{background:var(--p);color:#fff}.bp:hover{background:#4338ca}
+.bo{background:#fff;border:1px solid var(--b);color:var(--t)}.bo:hover{background:var(--bg)}
+.bs{background:var(--s);color:#fff}.bs:hover{background:#059669}
+.bw{background:var(--w);color:#fff}
+.bd{background:var(--d);color:#fff}
+.btn-sm{padding:5px 12px;font-size:12px}
+.content{padding:22px 26px;flex:1}
+/* ===== CARDS ===== */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
+.sc{background:#fff;border-radius:12px;padding:18px 20px;border:1px solid var(--b);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sc-l{font-size:12px;color:var(--tm);font-weight:500;margin-bottom:6px}
+.sc-v{font-size:28px;font-weight:800;line-height:1.1}
+.sc-sub{font-size:12px;color:var(--tm);margin-top:4px}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:6px}
+.g{background:#d1fae5;color:#065f46}.b{background:#dbeafe;color:#1e40af}
+.y{background:#fef3c7;color:#92400e}.r{background:#fee2e2;color:#991b1b}
+.v{background:#ede9fe;color:#6d28d9}
+.bsc-g{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.bsc-c{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid var(--b);border-top:3px solid;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.bsc-lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.bsc-vl{font-size:20px;font-weight:800}
+.bsc-cn{font-size:11px;color:var(--tm);margin-top:3px}
+.bsc-bar{height:4px;background:var(--b);border-radius:4px;margin-top:8px;overflow:hidden}
+.bsc-fill{height:100%;border-radius:4px}
+/* ===== TABLE / CARD ===== */
+.card{background:#fff;border-radius:12px;border:1px solid var(--b);overflow:hidden;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card-h{padding:13px 18px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-t{font-size:14px;font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tm);padding:9px 14px;text-align:left;background:#f8fafc;border-bottom:1px solid var(--b)}
+td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--b);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#fafbfd;transition:background .1s}
+.tn{font-weight:600}
+.ts{font-size:11px;color:var(--tm);margin-top:2px}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.t-ops{background:#ede9fe;color:#6d28d9}.t-fin{background:#d1fae5;color:#065f46}
+.t-cus{background:#dbeafe;color:#1e40af}.t-dev{background:#fef3c7;color:#92400e}
+.t-none{background:#f1f5f9;color:#64748b}
+.wt{font-weight:800;font-size:14px;color:var(--p)}
+.wi{width:68px;padding:5px 8px;border:1px solid var(--b);border-radius:6px;font-size:13px;font-weight:700;color:var(--p);text-align:center}
+.wi:focus{outline:none;border-color:var(--p)}
+.wi:disabled{background:#f8fafc;color:var(--tm);cursor:not-allowed}
+.pb{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;width:80px;display:inline-block;vertical-align:middle}
+.pf{height:100%;border-radius:4px;display:block}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.ch-done{background:#d1fae5;color:#065f46}
+.ch-doing{background:#dbeafe;color:#1e40af}
+.ch-pend{background:#f1f5f9;color:#64748b}
+.ch-wait{background:#fef3c7;color:#92400e}
+.ch-late{background:#fee2e2;color:#991b1b}
+.ch-locked{background:#ede9fe;color:#6d28d9}
+.notice{background:linear-gradient(135deg,#eef2ff,#f0f9ff);border:1px solid #c7d2fe;border-radius:10px;padding:12px 16px;font-size:13px;color:#4338ca;margin-bottom:18px;line-height:1.5}
+.warn-box{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:13px;color:#92400e;margin-bottom:18px}
+.success-box{background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;font-size:13px;color:#166534;margin-bottom:18px}
+/* ===== MODAL ===== */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center}
+.mbg.on{display:flex}
+.mdl{background:#fff;border-radius:16px;width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .2s ease}
+@keyframes pop{from{transform:translateY(-16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mh{padding:20px 24px 16px;border-bottom:1px solid var(--b)}
+.mh h3{font-size:16px;font-weight:700}
+.mh p{font-size:12px;color:var(--tm);margin-top:3px}
+.mb{padding:20px 24px}
+.mf{padding:14px 24px;border-top:1px solid var(--b);display:flex;gap:10px;justify-content:flex-end}
+.fg{margin-bottom:14px}
+.fl{font-size:12px;font-weight:600;color:var(--tm);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.3px}
+.fc{width:100%;padding:9px 12px;border:1px solid var(--b);border-radius:8px;font-size:13px;color:var(--t)}
+.fc:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fh{font-size:11px;color:var(--tm);margin-top:4px}
+.bsc-suggest{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.bsc-chip{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.bsc-chip.pick{border-color:currentColor;opacity:1}
+.bsc-chip:not(.pick){opacity:.55}
+.wtbar{background:#f8fafc;border:1px solid var(--b);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.wtval{font-size:20px;font-weight:800;margin-top:4px}
+.wtval.ok{color:var(--s)}.wtval.warn{color:var(--w)}.wtval.err{color:var(--d)}
+/* ===== APPROVE ===== */
+.apanel{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.atitle{font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.aitem{background:#fff;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.ainfo{flex:1}
+.aname{font-size:13px;font-weight:600}
+.ameta{font-size:11px;color:var(--tm);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+.aact{display:flex;gap:6px}
+/* ===== SCORE ===== */
+.score-hero{text-align:center;padding:28px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:12px;color:#fff;margin-bottom:18px}
+.score-num{font-size:72px;font-weight:800;line-height:1}
+.score-gr{font-size:17px;font-weight:700;margin-top:10px;background:rgba(255,255,255,.2);padding:5px 22px;border-radius:20px;display:inline-block}
+.score-sub{font-size:12px;opacity:.65;margin-top:8px}
+.srow{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--b);gap:12px}
+.srow:last-child{border-bottom:none}
+.st{flex:1;font-size:13px}
+.sw{width:50px;text-align:right;font-size:12px;color:var(--tm)}
+.si{width:66px;padding:4px 8px;border:1px solid var(--b);border-radius:6px;font-size:13px;font-weight:700;color:var(--p);text-align:center}
+.si:focus{outline:none;border-color:var(--p)}
+.sc2{width:60px;text-align:right;font-size:12px;font-weight:700;color:var(--s)}
+/* ===== FOOTER BAR ===== */
+.fbar{padding:12px 16px;background:#f8fafc;border-top:1px solid var(--b);display:flex;align-items:center;gap:12px;font-size:13px}
+/* ===== GANTT TIMELINE ===== */
+.timeline{position:relative;padding:16px 0}
+.tl-item{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.tl-label{width:200px;font-size:12px;font-weight:600;flex-shrink:0;text-align:right;color:var(--t)}
+.tl-track{flex:1;height:12px;background:#e2e8f0;border-radius:6px;position:relative;overflow:visible}
+.tl-bar{height:100%;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:9px;font-weight:700;color:#fff;transition:width .3s}
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){.g4,.bsc-g{grid-template-columns:1fr 1fr}.sidebar{width:60px}.main{margin-left:60px}}
+</style>
+</head>
+<body>
+
+<!-- ===== TRANG ĐĂNG NHẬP ===== -->
+<div id="login-screen">
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">&#127919; KPI System</div>
+    <div class="login-sub">DMT Group &ndash; Hệ thống Quản lý KPI Nội bộ</div>
+
+    <div class="fg">
+      <label class="login-label">Bạn đăng nhập với vai trò</label>
+      <div class="login-roles">
+        <div class="role-card sel" id="role-nv" onclick="selRole('nv')">
+          <div class="role-icon">&#128203;</div>
+          <div class="role-name">Nhân viên</div>
+          <div class="role-desc">Lập & gửi kế hoạch</div>
+        </div>
+        <div class="role-card" id="role-qm" onclick="selRole('qm')">
+          <div class="role-icon">&#128272;</div>
+          <div class="role-name">Quản lý</div>
+          <div class="role-desc">Duyệt & chấm điểm</div>
+        </div>
+      </div>
+    </div>
+
+    <label class="login-label">Tài khoản</label>
+    <select class="login-input" id="login-user">
+      <option value="tuuyen">Lê Ngọc Tú Uyên – HCNS</option>
+      <option value="hathanh">Nguyễn Hà Thanh – Kế toán</option>
+      <option value="minhduc">Trần Minh Đức – Sales</option>
+    </select>
+
+    <button class="btn-login" onclick="doLogin()">Đăng nhập</button>
+
+    <div class="login-hint">
+      <b>Demo nhanh:</b> Chọn vai trò &rarr; chọn tên &rarr; Đăng nhập.<br>
+      Vai trò <b>Quản lý</b> thấy màn hình duyệt & chấm điểm.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== ỨNG DỤNG CHÍNH ===== -->
+<div id="app-screen" style="display:none">
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-n">&#127919; KPI System</div>
+      <div class="logo-s">DMT Group &ndash; v2.0</div>
+    </div>
+    <nav class="nav" id="sidebar-nav"></nav>
+    <div class="user-box">
+      <div class="av" id="av-text">TU</div>
+      <div>
+        <div class="un" id="un-text">Tú Uyên</div>
+        <div class="ur" id="ur-text">Nhân viên</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">&#8592; Ra</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="tp-info">
+        <div class="tp-title" id="pg-title">Dashboard</div>
+        <div class="tp-bread" id="pg-bread">Tổng quan</div>
+      </div>
+      <div class="tp-right">
+        <select class="msel" id="month-sel" onchange="onMonthChange()">
+          <option>Tháng 7/2026</option>
+          <option>Tháng 8/2026</option>
+          <option selected>Tháng 9/2026</option>
+        </select>
+        <button class="btn bo btn-sm" id="btn-add" onclick="openAdd()" style="display:none">+ Thêm CV</button>
+        <button class="btn bp btn-sm" id="btn-submit" onclick="openSubmit()" style="display:none">&#128228; Gửi duyệt</button>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+</div>
+
+<!-- Modal: Thêm công việc -->
+<div class="mbg" id="m-add">
+  <div class="mdl">
+    <div class="mh"><h3>+ Thêm Công việc KPI</h3><p>Đề xuất tỷ trọng – Quản lý duyệt &amp; xác nhận trước khi chốt</p></div>
+    <div class="mb">
+      <div class="fg">
+        <label class="fl">Tên công việc *</label>
+        <input class="fc" id="i-name" placeholder="VD: Tính lương tháng 9, Tuyển dụng sales..." oninput="suggestBSC()">
+        <div class="fh" id="bsc-hint" style="margin-top:8px">
+          <span style="color:var(--tm)">Gợi ý mảng BSC:</span>
+          <div class="bsc-suggest" id="bsc-chips">
+            <span class="bsc-chip t-ops" data-val="ops" onclick="pickBSC('ops')">Vận hành</span>
+            <span class="bsc-chip t-fin" data-val="fin" onclick="pickBSC('fin')">Tài chính</span>
+            <span class="bsc-chip t-cus" data-val="cus" onclick="pickBSC('cus')">Khách hàng</span>
+            <span class="bsc-chip t-dev" data-val="dev" onclick="pickBSC('dev')">Phát triển</span>
+          </div>
+        </div>
+        <input type="hidden" id="i-bsc" value="">
+      </div>
+      <div class="fr2">
+        <div class="fg">
+          <label class="fl" style="margin-bottom:8px"><input type="checkbox" id="i-extra" onchange="calcTot()" style="margin-right:6px;vertical-align:middle">Việc phát sinh (Không tính vào 100%)</label>
+          <label class="fl">Tỷ trọng / Điểm thưởng đề xuất</label>
+          <input class="fc" id="i-wt" type="number" min="1" max="100" value="10" oninput="calcTot()">
+          <div class="fh">Tổng tất cả CV phải = 100%</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Loại KPI</label>
+          <select class="fc" id="i-type">
+            <option value="quant">Định lượng – có con số Target</option>
+            <option value="qual">Định tính – quản lý chấm điểm</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Target / Tiêu chí hoàn thành</label>
+        <input class="fc" id="i-tgt" placeholder="VD: Hoàn thành trước 5/10, Tuyển 2 nhân sự...">
+      </div>
+      <div class="fg">
+        <label class="fl">Ghi chú thêm</label>
+        <textarea class="fc" id="i-note" rows="2" placeholder="Bối cảnh, khó khăn dự kiến..."></textarea>
+      </div>
+      <div class="wtbar">
+        <div style="font-size:12px;color:var(--tm)">Tổng tỷ trọng sau khi thêm việc này</div>
+        <div class="wtval warn" id="wt-disp">100%</div>
+        <div id="wt-msg" style="font-size:11px;color:var(--tm);margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bo" onclick="closeM('m-add')">Huỷ</button>
+      <button class="btn bp" onclick="addTask()">Thêm vào Kế hoạch</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Gửi duyệt -->
+<div class="mbg" id="m-sub">
+  <div class="mdl" style="width:460px">
+    <div class="mh"><h3>Gửi Kế hoạch KPI để duyệt</h3></div>
+    <div class="mb">
+      <div class="notice">Sau khi gửi, kế hoạch chuyển sang <strong>Chờ duyệt</strong>. Quản lý sẽ kiểm tra, có thể điều chỉnh tỷ trọng và chốt. Bạn không thể chỉnh sửa trong thời gian này.</div>
+      <div id="sub-info"></div>
+    </div>
+    <div class="mf">
+      <button class="btn bo" onclick="closeM('m-sub')">Huỷ</button>
+      <button class="btn bs" onclick="submitPlan()">&#10003; Xác nhận Gửi duyệt</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Xem chi tiết duyệt -->
+<div class="mbg" id="m-detail">
+  <div class="mdl" style="width:680px">
+    <div class="mh"><h3 id="m-detail-title">Chi tiết Kế hoạch</h3><p id="m-detail-sub"></p></div>
+    <div class="mb" id="m-detail-body"></div>
+    <div class="mf" id="m-detail-foot"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DỮ LIỆU MẪU
+// ============================================================
+var USERS={
+  tuuyen:{name:'Lê Ngọc Tú Uyên',role:'nv',dept:'HCNS',abbr:'TU',color:'#4f46e5'},
+  hathanh:{name:'Nguyễn Hà Thanh',role:'nv',dept:'Kế toán',abbr:'HT',color:'#10b981'},
+  minhduc:{name:'Trần Minh Đức',role:'nv',dept:'Sales',abbr:'MD',color:'#f59e0b'}
+};
+var BM={
+  ops:{l:'Vận hành',c:'t-ops',clr:'#8b5cf6',kws:['báo cáo','quy trình','hồ sơ','họp','chấm công','giao ban','vận hành','nội bộ','hệ thống','quản lý','lưu trữ']},
+  fin:{l:'Tài chính',c:'t-fin',clr:'#10b981',kws:['lương','bhxh','thuế','kế toán','tài chính','chi phí','ngân sách','quyết toán','thanh toán','hóa đơn','công nợ']},
+  cus:{l:'Khách hàng',c:'t-cus',clr:'#3b82f6',kws:['khách','lễ tân','tiếp đón','sự kiện','khảo sát','hài lòng','chăm sóc','đối tác','gặp gỡ']},
+  dev:{l:'Phát triển',c:'t-dev',clr:'#f59e0b',kws:['tuyển','đào tạo','onboard','phát triển','cải tiến','đề xuất','sáng kiến','số hóa','học','kỹ năng']}
+};
+
+// Dữ liệu KPI theo từng nhân viên
+var KPI_DATA={
+  tuuyen:{
+    status:'draft',// draft | pending | approved
+    tasks:[
+      {id:1,name:'Tính lương & đóng BHXH tháng 9',bsc:'fin',w:30,tp:'quant',tgt:'Hoàn thành trước 5/10, không sai sót',st:'done',pr:100,sc:100,note:'Việc định kỳ ưu tiên cao'},
+      {id:2,name:'Tuyển dụng 2 nhân viên Sales',bsc:'dev',w:25,tp:'quant',tgt:'2 nhân viên ký hợp đồng',st:'doing',pr:60,sc:null,note:'Đang phỏng vấn vòng 2'},
+      {id:3,name:'Trực lễ tân & hỗ trợ phòng họp',bsc:'cus',w:15,tp:'qual',tgt:'',st:'done',pr:100,sc:90,note:'Đón tiếp khách, chuẩn bị phòng họp'},
+      {id:4,name:'Báo cáo giao ban hàng tuần (×4)',bsc:'ops',w:15,tp:'quant',tgt:'4 biên bản họp đúng hạn',st:'doing',pr:75,sc:null,note:'3/4 tuần hoàn thành'},
+      {id:5,name:'Đề xuất cải tiến số hoá hồ sơ',bsc:'dev',w:15,tp:'qual',tgt:'',st:'pending',pr:0,sc:null,note:'Bắt đầu nghiên cứu tháng này'}
+    ]
+  },
+  hathanh:{
+    status:'pending',
+    tasks:[
+      {id:10,name:'Quyết toán chi phí tháng 8',bsc:'fin',w:40,tp:'quant',tgt:'Báo cáo trước 10/9',st:'done',pr:100,sc:95,note:''},
+      {id:11,name:'Đối chiếu công nợ khách hàng',bsc:'fin',w:30,tp:'quant',tgt:'Xử lý 100% phát sinh',st:'doing',pr:50,sc:null,note:''},
+      {id:12,name:'Cập nhật phần mềm kế toán',bsc:'ops',w:25,tp:'qual',tgt:'',st:'pending',pr:0,sc:null,note:'Chờ IT cài đặt'}
+    ]
+  },
+  minhduc:{
+    status:'approved',
+    tasks:[
+      {id:20,name:'Chốt 3 hợp đồng khách hàng mới',bsc:'cus',w:50,tp:'quant',tgt:'3 hợp đồng ký kết',st:'doing',pr:67,sc:null,note:'2/3 hợp đồng'},
+      {id:21,name:'Báo cáo pipeline kinh doanh tuần',bsc:'ops',w:25,tp:'quant',tgt:'4 báo cáo đúng hạn',st:'doing',pr:75,sc:null,note:''},
+      {id:22,name:'Đào tạo sản phẩm mới cho team',bsc:'dev',w:25,tp:'qual',tgt:'',st:'done',pr:100,sc:88,note:'Xong buổi training'}
+    ]
+  }
+};
+
+var CU=null; // current user key
+var selectedBSC='';
+
+// ============================================================
+// LOGIN
+// ============================================================
+function selRole(r){
+  document.getElementById('role-nv').classList.toggle('sel',r==='nv');
+  document.getElementById('role-qm').classList.toggle('sel',r==='qm');
+}
+function getSelRole(){return document.getElementById('role-nv').classList.contains('sel')?'nv':'qm';}
+function doLogin(){
+  var uk=document.getElementById('login-user').value;
+  var role=getSelRole();
+  CU=uk;
+  USERS[uk].activeRole=role;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  var u=USERS[uk];
+  document.getElementById('av-text').textContent=u.abbr;
+  document.getElementById('av-text').style.background=u.color;
+  document.getElementById('un-text').textContent=u.name.split(' ').slice(-2).join(' ');
+  document.getElementById('ur-text').textContent=role==='qm'?'Quản lý':'Nhân viên';
+  buildNav(role);
+  goPage('dashboard');
+}
+function doLogout(){
+  CU=null;
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('login-screen').style.display='block';
+}
+
+// ============================================================
+// NAV
+// ============================================================
+var NV_NAV=[
+  {sec:'Tổng quan'},
+  {id:'dashboard',icon:'📊',label:'Dashboard'},
+  {id:'mykpi',icon:'📋',label:'KPI của tôi'},
+  {sec:'Hệ thống'},
+  {id:'bsc',icon:'🗂️',label:'Mục tiêu Năm (BSC)'},
+];
+var QM_NAV=[
+  {sec:'Tổng quan'},
+  {id:'dashboard',icon:'📊',label:'Dashboard toàn phòng'},
+  {sec:'Quản lý'},
+  {id:'approval',icon:'✅',label:'Duyệt Kế hoạch',badge:true},
+  {id:'scoring',icon:'🏆',label:'Chấm Điểm'},
+  {id:'report',icon:'📈',label:'Báo cáo KPI'},
+  {sec:'Hệ thống'},
+  {id:'bsc',icon:'🗂️',label:'Mục tiêu Năm (BSC)'},
+  {id:'config',icon:'⚙️',label:'Cài đặt'},
+];
+function buildNav(role){
+  var items=role==='qm'?QM_NAV:NV_NAV;
+  var html='';
+  var pending=Object.values(KPI_DATA).filter(d=>d.status==='pending').length;
+  items.forEach(it=>{
+    if(it.sec){html+='<div class="ns">'+it.sec+'</div>';return;}
+    var bdg=it.badge&&pending?'<span class="nbadge">'+pending+'</span>':'';
+    html+='<div class="ni" id="nav-'+it.id+'" onclick="goPage(\''+it.id+'\')">'+it.icon+' '+it.label+bdg+'</div>';
+  });
+  document.getElementById('sidebar-nav').innerHTML=html;
+}
+function goPage(v){
+  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('on'));
+  var el=document.getElementById('nav-'+v);
+  if(el)el.classList.add('on');
+  var T={
+    dashboard:['Dashboard KPI – Tháng 9/2026','Tổng quan'],
+    mykpi:['KPI của tôi','KPI cá nhân – '+USERS[CU].name],
+    approval:['Duyệt Kế hoạch','Quản lý – Danh sách chờ duyệt'],
+    scoring:['Chấm Điểm cuối tháng','Quản lý – Tháng 9/2026'],
+    report:['Báo cáo KPI','Báo cáo – Tháng 9/2026'],
+    bsc:['Mục tiêu Năm 2026 (BSC)','Hệ thống – Kế hoạch chiến lược'],
+    config:['Cài đặt hệ thống','Hệ thống']
+  };
+  document.getElementById('pg-title').textContent=T[v]?T[v][0]:v;
+  document.getElementById('pg-bread').textContent=T[v]?T[v][1]:'';
+  var isNV=USERS[CU].activeRole==='nv';
+  document.getElementById('btn-add').style.display=(v==='mykpi'&&isNV)?'':'none';
+  document.getElementById('btn-submit').style.display=(v==='mykpi'&&isNV&&KPI_DATA[CU].status==='draft')?'':'none';
+  window['R_'+v]&&window['R_'+v]();
+}
+function onMonthChange(){goPage(document.getElementById('pg-title').textContent.includes('Dashboard')?'dashboard':'mykpi');}
+
+// ============================================================
+// HELPER
+// ============================================================
+function getTasks(){return KPI_DATA[CU].tasks;}
+function totW(tasks){return (tasks||getTasks()).filter(t=>!t.isExtra).reduce((s,t)=>s+t.w,0);}
+function totSc(tasks){
+  var t=(tasks||getTasks()).filter(x=>x.sc!==null);
+  if(!t.length)return null;
+  var main = t.filter(x=>!x.isExtra).reduce((s,x)=>s+(x.sc*x.w/100),0);
+  var extra = t.filter(x=>x.isExtra).reduce((s,x)=>s+(x.sc*x.w/100),0);
+  return Math.round(main + extra);
+}
+function grade(n){return n===null?'--':n>=90?'Xuất sắc':n>=80?'Tốt':n>=70?'Khá':n>=60?'Đạt':'Chưa đạt';}
+function chip(s){return{done:'<span class="chip ch-done">&#10003; Hoàn thành</span>',doing:'<span class="chip ch-doing">&#9679; Đang làm</span>',late:'<span class="chip ch-late">&#9888; Trễ hạn</span>',pending:'<span class="chip ch-pend">&#9711; Chưa bắt đầu</span>'}[s]||'';}
+function statusLabel(ps){return{draft:'Bản nháp',pending:'Chờ duyệt',approved:'Đã duyệt'}[ps]||ps;}
+function statusChipCls(ps){return{draft:'ch-doing',pending:'ch-wait',approved:'ch-done'}[ps]||'ch-pend';}
+function bscTag(k){if(!k)return'<span class="tag t-none">Chưa phân loại</span>';return'<span class="tag '+BM[k].c+'">'+BM[k].l+'</span>';}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function R_dashboard(){
+  var isQM=USERS[CU].activeRole==='qm';
+  if(isQM){R_dashboard_qm();}else{R_dashboard_nv();}
+}
+function R_dashboard_nv(){
+  var d=KPI_DATA[CU],tk=d.tasks,tw=totW(tk),tot=totSc(tk),dn=tk.filter(t=>t.st==='done').length;
+  var bs={};tk.forEach(t=>{if(!bs[t.bsc])bs[t.bsc]={c:0,w:0};bs[t.bsc].c++;bs[t.bsc].w+=t.w});
+  var pL=statusLabel(d.status),pC=statusChipCls(d.status);
+  document.getElementById('content').innerHTML=
+'<div class="g4">'
++'<div class="sc"><div class="sc-l">Điểm KPI ước tính</div><div class="sc-v" style="color:var(--p)">'+(tot===null?'–':tot)+'</div><div class="sc-sub">/100 điểm tối đa</div><span class="badge b">Đang theo dõi</span></div>'
++'<div class="sc"><div class="sc-l">Công việc hoàn thành</div><div class="sc-v" style="color:var(--s)">'+dn+'/'+tk.length+'</div><span class="badge g">'+Math.round(dn/tk.length*100)+'% đạt</span></div>'
++'<div class="sc"><div class="sc-l">Trạng thái Kế hoạch</div><div style="font-size:16px;font-weight:700;margin:6px 0">'+pL+'</div><span class="chip '+pC+'">'+pL+'</span></div>'
++'<div class="sc"><div class="sc-l">Tổng tỷ trọng phân bổ</div><div class="sc-v" style="color:'+(tw===100?'var(--s)':'var(--d)')+'">'+tw+'%</div><span class="badge '+(tw===100?'g':'r')+'">'+(tw===100?'Hợp lệ':'Chưa đủ')+'</span></div>'
++'</div>'
++'<div class="bsc-g">'
++['ops','fin','cus','dev'].map(k=>{var s=bs[k]||{c:0,w:0};return'<div class="bsc-c" style="border-top-color:'+BM[k].clr+'"><div class="bsc-lb" style="color:'+BM[k].clr+'">'+BM[k].l+'</div><div class="bsc-vl">'+s.w+'%</div><div class="bsc-cn">'+s.c+' công việc</div><div class="bsc-bar"><div class="bsc-fill" style="width:'+s.w+'%;background:'+BM[k].clr+'"></div></div></div>';}).join('')
++'</div>'
++'<div class="notice">&#128161; <strong>BSC 4 Mảng</strong> là nhãn chiến lược – do hệ thống gợi ý hoặc Quản lý gán khi duyệt. Bạn không cần quan tâm đến phân loại này khi lập kế hoạch.</div>'
++taskTable(tk,d.status,false);
+}
+function R_dashboard_qm(){
+  var all=Object.entries(KPI_DATA);
+  var pending=all.filter(([k,d])=>d.status==='pending').length;
+  var approved=all.filter(([k,d])=>d.status==='approved').length;
+  var totalTasks=all.reduce((s,[k,d])=>s+d.tasks.length,0);
+  document.getElementById('content').innerHTML=
+'<div class="g4">'
++'<div class="sc"><div class="sc-l">Nhân viên cần duyệt</div><div class="sc-v" style="color:var(--w)">'+pending+'</div><span class="badge y">Chờ phê duyệt</span></div>'
++'<div class="sc"><div class="sc-l">Đã duyệt tháng này</div><div class="sc-v" style="color:var(--s)">'+approved+'</div><span class="badge g">Đã chốt</span></div>'
++'<div class="sc"><div class="sc-l">Tổng công việc theo dõi</div><div class="sc-v">'+totalTasks+'</div><span class="badge b">Tháng 9/2026</span></div>'
++'<div class="sc"><div class="sc-l">Bản nháp chưa gửi</div><div class="sc-v" style="color:var(--tm)">'+(all.length-pending-approved)+'</div><span class="badge b">Chờ NV gửi</span></div>'
++'</div>'
++'<div class="card"><div class="card-h"><div class="card-t">Tổng quan Kế hoạch KPI – Tháng 9/2026</div></div>'
++'<table><thead><tr><th>Nhân viên</th><th>Phòng ban</th><th>Số CV</th><th>Tổng tỷ trọng</th><th>Trạng thái</th><th>Điểm KPI</th><th></th></tr></thead><tbody>'
++all.map(([uk,d])=>{
+  var u=USERS[uk];var tw=totW(d.tasks);var sc=totSc(d.tasks);
+  return'<tr><td><div class="tn">'+u.name+'</div></td><td>'+u.dept+'</td><td>'+d.tasks.length+'</td>'
+  +'<td><span style="font-weight:700;color:'+(tw===100?'var(--s)':'var(--d)')+'">'+tw+'%</span></td>'
+  +'<td><span class="chip '+statusChipCls(d.status)+'">'+statusLabel(d.status)+'</span></td>'
+  +'<td style="font-weight:700;color:var(--p)">'+(sc===null?'–':sc+'/100')+'</td>'
+  +'<td><button class="btn bo btn-sm" onclick="openDetail(\''+uk+'\')">Xem</button>'+(d.status==='pending'?'<button class="btn bs btn-sm" style="margin-left:4px" onclick="approveUser(\''+uk+'\')">Duyệt</button>':'')+'</td></tr>';
+}).join('')
++'</tbody></table></div>';
+}
+
+function taskTable(tk,ps,editable){
+  return'<div class="card"><div class="card-h"><div class="card-t">Danh sách Công việc KPI – Tháng 9/2026</div><span class="chip '+statusChipCls(ps)+'">'+statusLabel(ps)+'</span></div>'
+  +'<table><thead><tr><th>Công việc</th><th>Mảng BSC</th><th>Tỷ trọng</th><th>Loại KPI</th><th>Tiến độ</th><th>Trạng thái</th></tr></thead><tbody>'
+  +tk.map(t=>
+    '<tr><td><div class="tn">'+t.name+'</div><div class="ts">'+t.note+'</div></td>'
+    +'<td>'+bscTag(t.bsc)+'</td>'
+    +'<td><span class="wt">'+t.w+'%</span></td>'
+    +'<td><span style="font-size:11px;color:var(--tm)">'+(t.tp==='quant'?'Định lượng':'Định tính')+'</span>'+(t.tgt?'<div style="font-size:11px;color:var(--tm)">'+t.tgt+'</div>':'')+'</td>'
+    +'<td><div style="display:flex;align-items:center;gap:6px"><span class="pb"><span class="pf" style="width:'+t.pr+'%;background:'+(t.pr===100?'var(--s)':t.pr>50?'var(--p)':'var(--w)')+'"></span></span>'+t.pr+'%</div></td>'
+    +'<td>'+chip(t.st)+'</td></tr>'
+  ).join('')
+  +'</tbody></table></div>';
+}
+
+// ============================================================
+// KPI CỦA TÔI (NV)
+// ============================================================
+function R_mykpi(){
+  var d=KPI_DATA[CU],tk=d.tasks,tw=totW(tk),ps=d.status;
+  var locked=ps!=='draft';
+  var html='';
+  if(ps==='draft')html+='<div class="notice">&#9997;&#65039; Bạn đang ở chế độ <strong>Bản nháp</strong>. Điều chỉnh tỷ trọng, thêm/xoá công việc rồi bấm <strong>Gửi duyệt</strong> để trình Quản lý.</div>';
+  else if(ps==='pending')html+='<div class="warn-box">&#9203; Kế hoạch đang <strong>Chờ Quản lý duyệt</strong>. Bạn không thể chỉnh sửa lúc này.</div>';
+  else html+='<div class="success-box">&#127919; Kế hoạch đã được <strong>Duyệt &amp; Chốt</strong>. Tập trung thực hiện và cập nhật tiến độ nhé!</div>';
+  html+='<div class="card"><div class="card-h"><div class="card-t">Kế hoạch KPI của tôi – Tháng 9/2026</div>'
+  +(ps==='draft'?'<button class="btn bo btn-sm" onclick="clonePrev()">&#128260; Clone tháng trước</button>':'')
+  +'</div>'
+  +'<table><thead><tr><th>Công việc</th><th>BSC <span style="font-weight:400;color:#94a3b8">(hệ thống gợi ý)</span></th><th>Loại / Target</th><th>Tỷ trọng (%)</th><th>Trạng thái</th>'+(ps==='draft'?'<th></th>':'')+'</tr></thead><tbody>'
+  +tk.map(t=>
+    '<tr><td><div class="tn">'+t.name+'</div><div class="ts">'+t.note+'</div></td>'
+    +'<td>'+bscTag(t.bsc)+'</td>'
+    +'<td><span style="font-size:11px;color:var(--tm)">'+(t.tp==='quant'?'Định lượng':'Định tính')+'</span>'+(t.tgt?'<div style="font-size:11px;color:var(--p);font-weight:600">'+t.tgt+'</div>':'')+'</td>'
+    +'<td><input class="wi" type="number" value="'+t.w+'" min="1" max="100" onchange="updW('+t.id+',this.value)" '+(locked?'disabled':'')+'></td>'
+    +'<td>'+chip(t.st)+'</td>'
+    +(ps==='draft'?'<td><button class="btn bo btn-sm" onclick="delT('+t.id+')">&#10005;</button></td>':'')
+    +'</tr>'
+  ).join('')
+  +'</tbody></table>'
+  +'<div class="fbar"><span style="font-weight:600">Tổng tỷ trọng:</span><span id="my-tot" style="font-size:18px;font-weight:800;color:'+(tw===100?'var(--s)':'var(--d)')+'">'+tw+'%</span>'
+  +(tw===100?'<span class="badge g">Hợp lệ ✓</span>':'<span class="badge r">Cần đủ 100%</span>')
+  +(ps==='draft'?'<button class="btn bp btn-sm" style="margin-left:auto" onclick="openAdd()">+ Thêm CV</button>':'')
+  +'</div></div>';
+  document.getElementById('content').innerHTML=html;
+}
+
+// ============================================================
+// APPROVAL (QM)
+// ============================================================
+function R_approval(){
+  var pending=Object.entries(KPI_DATA).filter(([k,d])=>d.status==='pending');
+  var approved=Object.entries(KPI_DATA).filter(([k,d])=>d.status==='approved');
+  var html='';
+  if(pending.length){
+    html+='<div class="apanel"><div class="atitle">&#9203; Đang chờ duyệt ('+pending.length+')</div>';
+    html+=pending.map(([uk,d])=>{
+      var u=USERS[uk];var tw=totW(d.tasks);var ok=tw===100;
+      return'<div class="aitem">'
+        +'<div class="av" style="background:'+u.color+'">'+u.abbr+'</div>'
+        +'<div class="ainfo"><div class="aname">'+u.name+' &ndash; '+u.dept+'</div>'
+        +'<div class="ameta"><span>'+d.tasks.length+' công việc</span><span>Tổng tỷ trọng: <strong style="color:'+(ok?'var(--s)':'var(--d)')+'">'+tw+'%</strong>'+(ok?' ✓':' ⚠')+'</span></div></div>'
+        +'<div class="aact">'
+        +'<button class="btn bo btn-sm" onclick="openDetail(\''+uk+'\')">Xem chi tiết</button>'
+        +'<button class="btn bw btn-sm" onclick="rejectUser(\''+uk+'\')">Từ chối</button>'
+        +'<button class="btn bs btn-sm" onclick="approveUser(\''+uk+'\')">&#10003; Duyệt</button>'
+        +'</div></div>';
+    }).join('');
+    html+='</div>';
+  }else{
+    html+='<div class="success-box">&#127881; Không có kế hoạch nào đang chờ duyệt!</div>';
+  }
+  if(approved.length){
+    html+='<div class="card"><div class="card-h"><div class="card-t">Đã duyệt & Chốt ('+approved.length+')</div></div>'
+    +'<table><thead><tr><th>Nhân viên</th><th>Phòng ban</th><th>Tổng CV</th><th>Trạng thái</th><th>Điểm KPI</th><th></th></tr></thead><tbody>'
+    +approved.map(([uk,d])=>{
+      var u=USERS[uk];var sc=totSc(d.tasks);
+      return'<tr><td class="tn">'+u.name+'</td><td>'+u.dept+'</td><td>'+d.tasks.length+'</td><td><span class="chip ch-done">Đã duyệt</span></td><td style="font-weight:700;color:var(--p)">'+(sc===null?'–':sc+'/100')+'</td><td><button class="btn bo btn-sm" onclick="openDetail(\''+uk+'\')">Xem</button></td></tr>';
+    }).join('')
+    +'</tbody></table></div>';
+  }
+  document.getElementById('content').innerHTML=html;
+}
+
+function openDetail(uk){
+  var u=USERS[uk],d=KPI_DATA[uk],ps=d.status;
+  document.getElementById('m-detail-title').textContent='Chi tiết – '+u.name;
+  document.getElementById('m-detail-sub').textContent=u.dept+' | Tháng 9/2026 | '+statusLabel(ps);
+  var tw=totW(d.tasks);
+  var body='<table><thead><tr><th>Công việc</th><th>Mảng BSC <span style="font-weight:400">(QM gán)</span></th><th>Loại</th><th>Tỷ trọng</th><th>Target</th></tr></thead><tbody>'
+  +d.tasks.map(t=>
+    '<tr><td><div class="tn">'+t.name+'</div></td>'
+    +'<td><select onchange="updBSC(\''+uk+'\','+t.id+',this.value)" style="border:1px solid var(--b);border-radius:6px;padding:3px 6px;font-size:11px" '+(ps==='approved'?'disabled':'')+'>'
+    +'<option value="">– Chưa gán –</option>'
+    +['ops','fin','cus','dev'].map(k=>'<option value="'+k+'" '+(t.bsc===k?'selected':'')+'>'+BM[k].l+'</option>').join('')
+    +'</select></td>'
+    +'<td>'+(t.tp==='quant'?'Định lượng':'Định tính')+'</td>'
+    +'<td><input class="wi" type="number" value="'+t.w+'" min="1" max="100" onchange="updWUser(\''+uk+'\','+t.id+',this.value)" '+(ps==='approved'?'disabled':'')+'></td>'
+    +'<td style="font-size:12px;color:var(--tm)">'+(t.tgt||'&mdash;')+'</td></tr>'
+  ).join('')
+  +'</tbody></table>'
+  +'<div class="fbar">Tổng: <strong style="color:'+(tw===100?'var(--s)':'var(--d)')+'">'+tw+'%</strong></div>';
+  document.getElementById('m-detail-body').innerHTML=body;
+  var foot='<button class="btn bo" onclick="closeM(\'m-detail\')">Đóng</button>';
+  if(ps==='pending'){
+    foot+='<button class="btn bw" onclick="rejectUser(\''+uk+'\');closeM(\'m-detail\')">Từ chối</button>';
+    foot+='<button class="btn bs" onclick="approveUser(\''+uk+'\');closeM(\'m-detail\')">&#10003; Duyệt & Chốt</button>';
+  }
+  document.getElementById('m-detail-foot').innerHTML=foot;
+  openM('m-detail');
+}
+function approveUser(uk){
+  var d=KPI_DATA[uk];
+  if(totW(d.tasks)!==100){alert('Tổng tỷ trọng chưa đủ 100%! Vui lòng điều chỉnh trước khi duyệt.');return;}
+  d.status='approved';
+  alert('✅ Đã duyệt kế hoạch của '+USERS[uk].name+'! Tỷ trọng đã được chốt.');
+  buildNav(USERS[CU].activeRole);
+  R_approval();
+}
+function rejectUser(uk){
+  KPI_DATA[uk].status='draft';
+  alert('❌ Đã từ chối. '+USERS[uk].name+' cần chỉnh sửa lại và gửi duyệt lại.');
+  buildNav(USERS[CU].activeRole);
+  R_approval();
+}
+
+// ============================================================
+// CHẤM ĐIỂM (QM)
+// ============================================================
+function R_scoring(){
+  var html='<div class="notice">Chấm điểm 0–100 cho từng công việc. Điểm KPI tổng sẽ tự tính theo tỷ trọng.</div>';
+  Object.entries(KPI_DATA).forEach(([uk,d])=>{
+    var u=USERS[uk];
+    var tot=totSc(d.tasks);var gr=grade(tot);
+    var sc2=d.tasks.filter(t=>t.sc!==null).length;
+    html+='<div class="card"><div class="card-h"><div class="card-t">'+u.name+' &ndash; '+u.dept+'</div>'
+    +'<div style="display:flex;gap:10px;align-items:center">'
+    +(tot!==null?'<span style="font-size:18px;font-weight:800;color:var(--p)">'+tot+'đ</span><span class="badge '+(tot>=80?'g':tot>=60?'y':'r')+'">'+gr+'</span>':'<span style="font-size:13px;color:var(--tm)">'+sc2+'/'+d.tasks.length+' đã chấm</span>')
+    +'</div></div>'
+    +'<div style="padding:0 14px">'
+    +'<div style="display:flex;padding:8px 0;border-bottom:2px solid var(--b);font-size:11px;font-weight:700;color:var(--tm);text-transform:uppercase;gap:10px"><div style="flex:1">Công việc</div><div style="width:80px">BSC</div><div style="width:55px;text-align:right">Tỷ trọng</div><div style="width:80px;text-align:center">Điểm</div><div style="width:60px;text-align:right">Đóng góp</div></div>'
+    +d.tasks.map(t=>
+      '<div class="srow">'
+      +'<div class="st"><div style="font-weight:600">'+t.name+'</div><div style="font-size:11px;color:var(--tm)">'+(t.tp==='quant'?'Target: '+(t.tgt||'–'):'Quản lý chấm tay')+'</div></div>'
+      +'<div style="width:80px">'+bscTag(t.bsc)+'</div>'
+      +'<div class="sw">'+t.w+'%</div>'
+      +'<div style="width:80px;text-align:center"><input class="si" type="number" min="0" max="100" value="'+(t.sc===null?'':t.sc)+'" placeholder="–" onchange="updSc(\''+uk+'\','+t.id+',this.value);R_scoring()"></div>'
+      +'<div class="sc2">'+(t.sc!==null?(t.sc*t.w/100).toFixed(1):'–')+'</div>'
+      +'</div>'
+    ).join('')
+    +'<div style="padding:10px 0;border-top:2px solid var(--b);display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:700">Tổng điểm KPI</span>'
+    +'<span style="font-size:22px;font-weight:800;color:var(--p)">'+(tot===null?'–':tot)+'<span style="font-size:13px;font-weight:400;color:var(--tm)">/100</span></span></div>'
+    +'</div></div>';
+  });
+  document.getElementById('content').innerHTML=html;
+}
+
+// ============================================================
+// BÁO CÁO
+// ============================================================
+function R_report(){
+  var rows=[
+    {uk:'tuuyen',t4:95,t5:88,t6:76,t7:91,t8:82},
+    {uk:'hathanh',t4:88,t5:91,t6:83,t7:79,t8:85},
+    {uk:'minhduc',t4:72,t5:80,t6:65,t7:88,t8:77}
+  ];
+  document.getElementById('content').innerHTML=
+'<div class="card"><div class="card-h"><div class="card-t">Lịch sử Điểm KPI – 6 tháng gần nhất</div></div>'
++'<table><thead><tr><th>Nhân viên</th><th>T4/26</th><th>T5/26</th><th>T6/26</th><th>T7/26</th><th>T8/26</th><th>T9/26</th><th>TB</th></tr></thead><tbody>'
++rows.map(r=>{
+  var u=USERS[r.uk];var cur=totSc(KPI_DATA[r.uk].tasks);
+  var vals=[r.t4,r.t5,r.t6,r.t7,r.t8];var avg=Math.round((vals.reduce((s,v)=>s+v,0)+(cur||0))/(cur!==null?6:5));
+  var grBadge=avg>=80?'g':avg>=60?'y':'r';
+  return'<tr><td class="tn">'+u.name+'<div class="ts">'+u.dept+'</div></td>'
+  +'<td>'+r.t4+'</td><td>'+r.t5+'</td><td>'+r.t6+'</td><td>'+r.t7+'</td><td>'+r.t8+'</td>'
+  +'<td style="font-weight:800;color:var(--p)">'+(cur===null?'–':cur)+'</td>'
+  +'<td><span class="badge '+grBadge+'">'+avg+'đ</span></td></tr>';
+}).join('')
++'</tbody></table></div>'
++'<div class="card"><div class="card-h"><div class="card-t">Phân tích theo Mảng BSC – Tháng 9/2026</div></div>'
++'<table><thead><tr><th>Mảng</th><th>Tổng công việc</th><th>Tổng tỷ trọng</th><th>Ghi chú</th></tr></thead><tbody>'
++['ops','fin','cus','dev'].map(k=>{
+  var cnt=0,wt=0;
+  Object.values(KPI_DATA).forEach(d=>d.tasks.forEach(t=>{if(t.bsc===k){cnt++;wt+=t.w;}}));
+  return'<tr><td>'+bscTag(k)+'</td><td>'+cnt+'</td><td style="font-weight:700">'+wt+'%</td><td style="font-size:12px;color:var(--tm)">Phân bổ thực tế</td></tr>';
+}).join('')
++'</tbody></table></div>';
+}
+
+// ============================================================
+// BSC
+// ============================================================
+function R_bsc(){
+  var secs=[
+    {k:'ops',n:'Vận hành nội bộ',cl:'#8b5cf6',tg:'40%',items:['Chuẩn hoá quy trình tuyển dụng (Q1)','Triển khai chấm công điện tử (Q2)','Số hoá toàn bộ hồ sơ nhân sự (Q3–Q4)','100% lương thanh toán đúng hạn mỗi tháng']},
+    {k:'fin',n:'Tài chính',cl:'#10b981',tg:'20%',items:['Chi phí HC ≤ ngân sách (sai lệch < 5%)','Quyết toán thuế TNCN đúng hạn','Chi phí tuyển dụng giảm 10% so với 2025']},
+    {k:'cus',n:'Khách hàng (Nội bộ)',cl:'#3b82f6',tg:'20%',items:['Hài lòng CBNV ≥ 85% qua khảo sát','Xử lý yêu cầu HCNS ≤ 2 ngày làm việc','Tổ chức 4 sự kiện nội bộ / năm']},
+    {k:'dev',n:'Phát triển tổ chức',cl:'#f59e0b',tg:'20%',items:['Tuyển đủ 15 nhân sự theo kế hoạch năm','Triển khai đào tạo nội bộ Q3','Xây dựng thư viện JD chuẩn cho 10 vị trí']}
+  ];
+  document.getElementById('content').innerHTML=
+'<div class="notice">&#128270; <strong>BSC 4 Mảng</strong> là khung chiến lược Năm 2026. Quản lý phân rã thành Công việc Tháng, sau đó hệ thống tự gợi ý hoặc QM gán nhãn BSC khi duyệt kế hoạch của nhân viên.</div>'
++secs.map(s=>'<div class="card"><div class="card-h" style="border-left:4px solid '+s.cl+'"><div class="card-t">'+s.n+'</div><span style="font-size:13px;font-weight:700;color:'+s.cl+'">Mục tiêu: '+s.tg+'</span></div>'
++'<div style="padding:10px 14px">'+s.items.map((it,i)=>'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b)"><div style="width:22px;height:22px;border-radius:50%;background:'+s.cl+';color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</div><div style="flex:1;font-size:13px">'+it+'</div><span class="chip ch-doing">Đang triển khai</span></div>').join('')+'</div></div>').join('');
+}
+
+function R_config(){
+  document.getElementById('content').innerHTML=
+'<div class="card" style="max-width:540px"><div class="card-h"><div class="card-t">Cài đặt Hệ thống KPI</div></div><div style="padding:20px">'
++'<div class="fg"><label class="fl">Chu kỳ đánh giá</label><select class="fc"><option>Hàng tháng (Đang dùng)</option><option>Hàng quý</option></select></div>'
++'<div class="fg"><label class="fl">Deadline gửi kế hoạch</label><input class="fc" value="Ngày 28–30 hàng tháng"></div>'
++'<div class="fg"><label class="fl">Cho phép NV tự đề xuất tỷ trọng?</label><select class="fc"><option>Có – Quản lý duyệt lại</option><option>Không – QM giao hoàn toàn</option></select></div>'
++'<div class="fg"><label class="fl">Gợi ý BSC tự động?</label><select class="fc"><option>Có – theo từ khoá</option><option>Không – NV/QM tự chọn</option></select></div>'
++'<button class="btn bp" onclick="alert(\'Đã lưu cài đặt!\')">Lưu cài đặt</button>'
++'</div></div>';
+}
+
+// ============================================================
+// MODAL & ACTIONS
+// ============================================================
+function openM(id){document.getElementById(id).classList.add('on');}
+function closeM(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.mbg').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+
+function openAdd(){
+  selectedBSC='';
+  document.getElementById('i-name').value='';
+  document.getElementById('i-wt').value='10';
+  document.getElementById('i-tgt').value='';
+  document.getElementById('i-note').value='';
+  document.getElementById('i-extra').checked=false;
+  document.querySelectorAll('.bsc-chip').forEach(c=>c.classList.remove('pick'));
+  calcTot();
+  openM('m-add');
+}
+function openSubmit(){
+  var tw=totW();
+  document.getElementById('sub-info').innerHTML=
+    '<div style="background:#f8fafc;border-radius:8px;padding:12px;font-size:13px">'
+    +KPI_DATA[CU].tasks.length+' công việc | Tổng tỷ trọng: <strong style="color:'+(tw===100?'var(--s)':'var(--d)')+'">'+tw+'%</strong> '
+    +(tw===100?'&#10003; Hợp lệ':'&#9888; Chưa đủ 100%!')
+    +'</div>';
+  openM('m-sub');
+}
+function calcTot(){
+  var isEx = document.getElementById('i-extra').checked;
+  var ex=totW(),nw=parseInt(document.getElementById('i-wt').value)||0;
+  var t=isEx?ex:(ex+nw);
+  if(isEx){ document.getElementById('wt-disp').textContent = '+'+nw+'đ'; document.getElementById('wt-disp').className='wtval ok'; document.getElementById('wt-msg').textContent='Được cộng thêm tối đa vào tổng điểm'; return; }
+  var el=document.getElementById('wt-disp');
+  el.textContent=t+'%';
+  el.className='wtval '+(t===100?'ok':t>100?'err':'warn');
+  document.getElementById('wt-msg').textContent=t>100?'Vượt quá 100%! Giảm tỷ trọng các việc khác trước.':t<100?'Còn thiếu '+(100-t)+'% để đủ 100%':'';
+}
+function addTask(){
+  var n=document.getElementById('i-name').value.trim();
+  if(!n)return alert('Vui lòng nhập tên công việc!');
+  var w=parseInt(document.getElementById('i-wt').value)||0;
+  var isEx = document.getElementById('i-extra').checked;
+  if(!isEx && totW()+w>100)return alert('Tổng tỷ trọng việc chính sẽ vượt 100%! Hãy giảm tỷ trọng việc khác trước.');
+  KPI_DATA[CU].tasks.push({
+    id:Date.now(),name:n,
+    bsc:selectedBSC||autoSuggestBSC(n),
+    w:w,
+    tp:document.getElementById('i-type').value,
+    tgt:document.getElementById('i-tgt').value,
+    note:document.getElementById('i-note').value,
+    st:'pending',pr:0,sc:null,
+    isExtra: isEx
+  });
+  closeM('m-add');
+  R_mykpi();
+}
+function delT(id){
+  if(!confirm('Xoá công việc này?'))return;
+  KPI_DATA[CU].tasks=KPI_DATA[CU].tasks.filter(t=>t.id!==id);
+  R_mykpi();
+}
+function updW(id,v){
+  var t=KPI_DATA[CU].tasks.find(t=>t.id===id);
+  if(t)t.w=parseInt(v)||0;
+  var tw=totW(),el=document.getElementById('my-tot');
+  if(el){el.textContent=tw+'%';el.style.color=tw===100?'var(--s)':'var(--d)';}
+}
+function updWUser(uk,id,v){
+  var t=KPI_DATA[uk].tasks.find(t=>t.id===id);
+  if(t)t.w=parseInt(v)||0;
+}
+function updBSC(uk,id,v){
+  var t=KPI_DATA[uk].tasks.find(t=>t.id===id);
+  if(t)t.bsc=v;
+}
+function updSc(uk,id,v){
+  var t=KPI_DATA[uk].tasks.find(t=>t.id===id);
+  if(t)t.sc=v===''?null:Math.min(100,Math.max(0,parseInt(v)));
+}
+function submitPlan(){
+  if(totW()!==100)return alert('Tổng tỷ trọng phải đúng 100% mới có thể gửi duyệt!');
+  KPI_DATA[CU].status='pending';
+  closeM('m-sub');
+  buildNav(USERS[CU].activeRole);
+  alert('&#10004; Đã gửi Kế hoạch KPI đến Quản lý! Bạn sẽ nhận phản hồi trong 1–2 ngày làm việc.');
+  document.getElementById('btn-submit').style.display='none';
+  R_mykpi();
+}
+function clonePrev(){
+  alert('Đã sao chép 5 công việc từ tháng 8! Các việc "Hoàn thành" được reset về "Chưa bắt đầu" để theo dõi lại.');
+}
+
+// ============================================================
+// BSC TỰ ĐỘNG GỢI Ý
+// ============================================================
+function autoSuggestBSC(name){
+  var low=name.toLowerCase();
+  var scores={ops:0,fin:0,cus:0,dev:0};
+  Object.entries(BM).forEach(([k,m])=>m.kws.forEach(kw=>{if(low.includes(kw))scores[k]+=2;}));
+  var best=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  return best[0][1]>0?best[0][0]:'';
+}
+function suggestBSC(){
+  var n=document.getElementById('i-name').value;
+  var sug=autoSuggestBSC(n);
+  document.querySelectorAll('.bsc-chip').forEach(c=>{
+    c.classList.toggle('pick',c.dataset.val===sug||(selectedBSC&&c.dataset.val===selectedBSC));
+  });
+  if(sug&&!selectedBSC){
+    // chỉ highlight gợi ý, không tự chọn cứng
+    document.querySelectorAll('.bsc-chip').forEach(c=>c.classList.toggle('pick',c.dataset.val===sug));
+  }
+}
+function pickBSC(v){
+  selectedBSC=v;
+  document.querySelectorAll('.bsc-chip').forEach(c=>c.classList.toggle('pick',c.dataset.val===v));
+}
+</script>
+</body>
+</html>

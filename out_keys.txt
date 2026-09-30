@@ -1,0 +1,3 @@
+CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG: ['projects_by_category', 'departments', 'personnel_by_department']
+CTY CP DMT - MARINA (Du thuyền Happy Yacht): ['projects_by_category', 'departments', 'personnel_by_department']
+CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT: ['projects_by_category', 'departments', 'personnel_by_department']

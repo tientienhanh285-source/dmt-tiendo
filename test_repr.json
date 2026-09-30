@@ -1,0 +1,19 @@
+{
+  "personnel": [
+    "Trần Quốc Thể",
+    "Nguyễn Văn Bồn"
+  ],
+  "personnel_repr": [
+    "'Trần Quốc Thể'",
+    "'Nguyễn Văn Bồn'"
+  ],
+  "dept_leads": [
+    "Trần Quốc Thể"
+  ],
+  "dept_leads_repr": [
+    "'Trần Quốc Thể'"
+  ],
+  "match": [
+    "Nguyễn Văn Bồn"
+  ]
+}

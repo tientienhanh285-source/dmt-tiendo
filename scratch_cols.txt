@@ -1,0 +1,1 @@
+ID, DonVi, PhongBan, NguoiChuTri, TenDuAn, MocTienDo, SanPhamBanGiao, TenCongViec, PhanLoaiChiSo, NgayBatDau, Deadline, DoUuTien, PhanTramHoanThanh, TrangThai, LinkKetQua, GiaiTrinhDeXuat, NgayCapNhat, ChuKyTheoDoi, PhanLoaiTreHan, TyTrongKPI, NguonGiaoViec, MucDoGhiNhan

@@ -1,0 +1,24 @@
+                        st.error("Tên dự án không được để trống!")
+                        
+            with col_edit:
+                st.markdown("**✏️ Đổi tên dự án**")
+                if projs_in_cat:
+                    proj_to_edit = st.selectbox("Chọn dự án cần sửa", projs_in_cat, key="admin_edit_proj_sel")
+                    edited_proj_name = st.text_input("Tên dự án mới", value=proj_to_edit, key="admin_edit_proj_val")
+-----------------
+                    st.error("Tên không được để trống!")
+                    
+        with col_d_edit:
+            st.markdown("**✏️ Đổi tên phòng ban**")
+            if comp_depts:
+                dept_to_edit = st.selectbox("Chọn phòng ban cần sửa", comp_depts, key="admin_edit_dept_sel")
+                edited_dept_name = st.text_input("Tên phòng ban mới", value=dept_to_edit, key="admin_edit_dept_val")
+-----------------
+                    else:
+                        st.error("Tên mới không được để trống!")
+            else:
+                st.write("Không có phòng ban để sửa.")
+                
+        with col_d_del:
+            st.markdown("**🗑️ Xóa phòng ban**")
+-----------------

@@ -409,10 +409,17 @@ with tab_new:
         else:
             # Calculate status and progress automatically
             if task_is_completed:
-                if task_deadline < today:
-                    calc_status = "Chờ nghiệm thu (Trễ hạn)"
+                auto_approve_users = ['Thái Văn Thành', 'Trần Quốc Thể', 'Đoàn Thị Ngọc Nữ', 'Nguyễn Ngọc Tôn', 'Đặng Ngọc Hoàng', 'Đặng Thanh Bình', 'Đặng Thị Lan Ngọc', 'Trần Cường']
+                if task_owner in auto_approve_users:
+                    if task_deadline < today:
+                        calc_status = "Hoàn thành (Trễ hạn)"
+                    else:
+                        calc_status = "Hoàn thành"
                 else:
-                    calc_status = "Chờ nghiệm thu"
+                    if task_deadline < today:
+                        calc_status = "Chờ nghiệm thu (Trễ hạn)"
+                    else:
+                        calc_status = "Chờ nghiệm thu"
             elif task_has_issue:
                 calc_status = "Có vướng mắc"
             elif task_deadline < today:
@@ -428,7 +435,7 @@ with tab_new:
                 
             # Constraints validation
             has_error = False
-            if calc_status == "Chờ nghiệm thu":
+            if calc_status in ["Chờ nghiệm thu", "Hoàn thành", "Hoàn thành (Trễ hạn)"]:
                 if result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not task_link_text.strip():
                     st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm'!")
                     has_error = True
@@ -752,10 +759,17 @@ with tab_update:
                 else:
                     # Calculate status and progress automatically
                     if u_is_completed:
-                        if u_deadline < today:
-                            u_status = "Chờ nghiệm thu (Trễ hạn)"
+                        auto_approve_users = ['Thái Văn Thành', 'Trần Quốc Thể', 'Đoàn Thị Ngọc Nữ', 'Nguyễn Ngọc Tôn', 'Đặng Ngọc Hoàng', 'Đặng Thanh Bình', 'Đặng Thị Lan Ngọc', 'Trần Cường']
+                        if row['NguoiChuTri'] in auto_approve_users:
+                            if u_deadline < today:
+                                u_status = "Hoàn thành (Trễ hạn)"
+                            else:
+                                u_status = "Hoàn thành"
                         else:
-                            u_status = "Chờ nghiệm thu"
+                            if u_deadline < today:
+                                u_status = "Chờ nghiệm thu (Trễ hạn)"
+                            else:
+                                u_status = "Chờ nghiệm thu"
                     elif u_has_issue:
                         u_status = "Có vướng mắc"
                     elif u_deadline < today:
@@ -768,7 +782,7 @@ with tab_update:
                     u_progress = calculate_time_progress(u_start, u_deadline, u_is_completed)
                         
                     # Constraints validation
-                    if u_status == "Chờ nghiệm thu":
+                    if u_status in ["Chờ nghiệm thu", "Hoàn thành", "Hoàn thành (Trễ hạn)"]:
                         if u_result_mode == "✍️ Nhập tên Báo cáo / Số hiệu Văn bản / Link (Dạng text tự do)" and not u_link_text.strip() and not current_link:
                             st.error("⚠️ Bắt buộc điền 'Kết quả / File đính kèm' để hoàn thành công việc!")
                             has_error = True

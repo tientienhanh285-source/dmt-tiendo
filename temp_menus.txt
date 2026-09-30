@@ -1,0 +1,11 @@
+    if "📊 Quản trị BSC - KPI" in menu_options:
+if menu in ["🚀 Bảng theo dõi tiến độ công việc", "📋 Bảng theo dõi tiến độ công việc"]:
+elif menu in ["👀 BẢNG TỔNG QUAN (View)", "📊 BẢNG TỔNG QUAN (View)"]:
+elif menu == "➕ Thêm / Cập Nhật Công Việc":
+elif menu == "🏆 Đánh giá KPI & Xếp loại":
+elif menu in ["✅ Duyệt & Nghiệm thu công việc", "⚖️ Duyệt việc Khách quan", "✅ Duyệt việc Khách quan"]:
+elif menu == "🔍 Quản lý & Đối chiếu JD":
+elif menu == "⚙️ Quản Lý Cấu Hình":
+elif menu == "📊 Quản trị BSC - KPI":
+elif menu == "📝 Lập & Duyệt KPI":
+elif menu == "📖 Sổ tay Hướng dẫn":

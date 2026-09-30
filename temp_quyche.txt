@@ -1,0 +1,155 @@
+<USER_REQUEST>
+PHẦN I: LỘ TRÌNH ĐÁNH GIÁ VÀ VẬN HÀNH
+
+Quy trình đánh giá được chia làm 3 tầng kiểm soát: Đầu tháng (Lập kế hoạch) - Cuối tháng (Chấm lương) - Cuối Quý/Năm (Nghiệm thu Mục tiêu).
+
+
+
+1. Đầu năm & Đầu Quý (Thiết lập Mục tiêu - Master View)
+
+Ban Lãnh Đạo (BLĐ): Phê duyệt Bảng Kế Hoạch Năm/Quý (Master View) cho từng Ban (KHĐT, KT, ĐBGT, v.v.). Yêu cầu cần ghi cụ thể thời hạn hoàn thành của các chỉ tiêu. Một dự án sẽ có nhiều chỉ tiêu, và các chỉ tiêu Tháng/Quý/Năm đó cần được ghi rõ hạn chót.
+
+Bảng này là đích đến cuối cùng. (Theo thường lệ mỗi năm các ban đều có Kế hoạch riêng, nhưng chưa hẳn tất cả đều thực hiện dựa trên Kế hoạch và đánh giá KPI hàng tháng cũng không dựa trực tiếp trên Kế hoạch gốc này).
+
+2. Đầu mỗi tháng (Phân rã Công việc - Task Breakdown)
+
+Trưởng ban (Quản lý): Dựa vào Kế hoạch Quý/Năm đang treo trên Master View, mỗi đầu tháng Quản lý sẽ tự phân bổ để đưa ra các công việc trọng yếu cần làm nhằm đạt được chỉ tiêu đó.
+
+Hạn chế liệt kê các việc vặt. Đối với những công việc thường xuyên, nhân viên chỉ cần ghi chung chung thuộc đầu mục chỉ tiêu nào. Các công việc phát sinh hoặc được giao cũng phải liên kết với chỉ tiêu của mình.
+
+Tóm lại, Quản lý sẽ tự tìm cách chia việc mỗi tháng cho nhân viên dưới bất cứ hình thức nào, miễn đáp ứng được yêu cầu: Nhân viên có theo dõi, nhập việc lên hệ thống và hoàn thành đúng chỉ tiêu theo Kế hoạch đặt ra.
+
+Chỉ định công việc trọng yếu: Bắt buộc Quản lý phải chia đầu mục việc rõ ràng cho từng nhân viên, xác định rõ ai là người chịu trách nhiệm hạng mục nào. Nếu chỉ tiêu trễ hạn sẽ xét trực tiếp về người đó và nguyên nhân.
+
+3. Cuối mỗi tháng (Đánh giá KPI & Trả lương)
+
+Đánh giá năng suất của nhân sự vẫn tiếp tục dựa trên các đầu mục hoàn thành công việc của nhân viên (Tasks có hạn chót rơi vào tháng đó).
+
+Họp Đánh giá Quý: Hệ thống tổng hợp dữ liệu KPI và tiến độ thực hiện công việc để đánh giá KPI trong 3 tháng của quý đó. Dựa trên Kế hoạch theo quý để đánh giá các chỉ tiêu đạt/chưa đạt, từ đó truy ngược lại những chỉ tiêu chưa hoàn thành là do cá nhân nào chịu trách nhiệm, làm cơ sở trừ điểm và có thể thiết lập lại mục tiêu Quý sau bằng việc đưa các chỉ tiêu chưa hoàn thành của Quý trước qua sắp xếp, hoặc giữ nguyên tùy tình hình hoạt động, nhằm phục vụ cuộc họp rà soát đầu Quý tiếp theo.
+
+Ví dụ: Trường hợp 3 tháng liền toàn bộ nhân viên phòng ban đó đều đạt loại A, nhưng mục tiêu Quý lại không hoàn thành, Quản lý/Trưởng ban sẽ là người chịu trách nhiệm trực tiếp nhận xếp loại B/C/D.
+
+Mục đích: Từ đó rút kinh nghiệm cho Quý sau, Quản lý phải chia việc cho nhân viên hợp lý hơn và luôn phải có những đầu mục công việc trọng yếu.
+
+4. Cuối năm (Tổng kết Thưởng Tết / Lương tháng 13)
+
+Lấy điểm trung bình KPI 12 tháng làm nền tảng.
+
+Đối chiếu với Tỷ lệ hoàn thành Kế hoạch Năm (Master View). Nếu Ban nào có tỷ lệ hoàn thành Kế hoạch Năm dưới mức quy định, sẽ đưa ra Hội đồng để xem xét đánh giá lại mức thưởng Tết (nhằm răn đe và nhắc nhở hướng tới hoàn thành mục tiêu chung).
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-15T10:30:08+07:00.
+
+The user's current state is as follows:
+Other open documents:
+- c:\Users\Admin\Desktop\AG\Theodoitiendo\generate_word.py (LANGUAGE_PYTHON)
+- c:\Users\Admin\Desktop\AG\Theodoitiendo\generate_slide_v2.py (LANGUAGE_PYTHON)
+- c:\Users\Admin\Desktop\AG\Theodoitiendo\patch_dept_leads.py (LANGUAGE_PYTHON)
+- c:\Users\Admin\Desktop\AG\Theodoitiendo\patch_kpi_future.py (LANGUAGE_PYTHON)
+- c:\Users\Admin\Desktop\AG\Theodoitiendo\patch_kpi_filter_2.py (LANGUAGE_PYTHON)
+</ADDITIONAL_METADATA>
+
+---
+
+<USER_REQUEST>
+PHẦN I: LỘ TRÌNH ĐÁNH GIÁ VÀ VẬN HÀNH
+
+Mục đích cốt lõi của việc đánh giá KPI dựa trên Bảng Kế hoạch (Master View):
+
+
+
+Loại bỏ việc rác: Tránh tình trạng nhân viên tự tạo quá nhiều việc vặt, việc lẻ tẻ không mang lại giá trị cốt lõi.
+
+Trám lỗ hổng trách nhiệm: Khắc phục triệt để tình trạng nhân viên hoàn thành việc cá nhân (được điểm cao) nhưng các chỉ tiêu chung theo Kế hoạch thì vẫn thất bại mà không rõ nguyên nhân.
+
+Bám sát mục tiêu: Theo sát tiến độ Kế hoạch chung của toàn công ty/phòng ban.
+
+Minh bạch trách nhiệm: Phân chia công việc sát sao, biết rõ ai đang chịu trách nhiệm làm việc gì, tiến độ đến đâu.
+
+Quy trình đánh giá được chia làm 3 tầng kiểm soát: Đầu tháng (Lập kế hoạch) - Cuối tháng (Chấm lương) - Cuối Quý/Năm (Nghiệm thu Mục tiêu).
+
+
+
+1. Đầu năm & Đầu Quý (Thiết lập Mục tiêu - Master View)
+
+Ban Lãnh Đạo (BLĐ): Phê duyệt Bảng Kế Hoạch Năm/Quý (Master View) cho từng Ban (KHĐT, KT, ĐBGT, v.v.). Yêu cầu cần ghi cụ thể thời hạn hoàn thành của các chỉ tiêu. Một dự án sẽ có nhiều chỉ tiêu, và các chỉ tiêu Tháng/Quý/Năm đó cần được ghi rõ hạn chót.
+
+Bảng này là đích đến cuối cùng. (Theo thường lệ mỗi năm các ban đều có Kế hoạch riêng, nhưng chưa hẳn tất cả đều thực hiện dựa trên Kế hoạch và đánh giá KPI hàng tháng cũng không dựa trực tiếp trên Kế hoạch gốc này).
+
+2. Đầu mỗi tháng (Phân rã Công việc - Task Breakdown)
+
+Trưởng ban (Quản lý): Dựa vào Kế hoạch Quý/Năm đang treo trên Master View, mỗi đầu tháng Quản lý sẽ tự phân bổ để đưa ra các công việc trọng yếu cần làm nhằm đạt được chỉ tiêu đó.
+
+Hạn chế liệt kê các việc vặt. Đối với những công việc thường xuyên, nhân viên chỉ cần ghi chung chung thuộc đầu mục chỉ tiêu nào. Các công việc phát sinh hoặc được giao cũng phải liên kết với chỉ tiêu của mình.
+
+Tóm lại, Quản lý sẽ tự tìm cách chia việc mỗi tháng cho nhân viên dưới bất cứ hình thức nào, miễn đáp ứng được yêu cầu: Nhân viên có theo dõi, nhập việc lên hệ thống và hoàn thành đúng chỉ tiêu theo Kế hoạch đặt ra.
+
+Chỉ định công việc trọng yếu: Bắt buộc Quản lý phải chia đầu mục việc rõ ràng cho từng nhân viên, xác định rõ ai là người chịu trách nhiệm hạng mục nào. Nếu chỉ tiêu trễ hạn sẽ xét trực tiếp về người đó và nguyên nhân.
+
+3. Cuối mỗi tháng (Đánh giá KPI & Trả lương)
+
+Đánh giá năng suất của nhân sự vẫn tiếp tục dựa trên các đầu mục hoàn thành công việc của nhân viên (Tasks có hạn chót rơi vào tháng đó).
+
+Họp Đánh giá Quý: Hệ thống tổng hợp dữ liệu KPI và tiến độ thực hiện công việc để đánh giá KPI trong 3 tháng của quý đó. Dựa trên Kế hoạch theo quý để đánh giá các chỉ tiêu đạt/chưa đạt, từ đó truy ngược lại những chỉ tiêu chưa hoàn thành là do cá nhân nào chịu trách nhiệm, làm cơ sở trừ điểm và có thể thiết lập lại mục tiêu Quý sau bằng việc đưa các chỉ tiêu chưa hoàn thành của Quý trước qua sắp xếp, hoặc giữ nguyên tùy tình hình hoạt động, nhằm phục vụ cuộc họp rà soát đầu Quý tiếp theo.
+
+Ví dụ: Trường hợp 3 tháng liền toàn bộ nhân viên phòng ban đó đều đạt loại A, nhưng mục tiêu Quý lại không hoàn thành, Quản lý/Trưởng ban sẽ là người chịu trách nhiệm trực tiếp nhận xếp loại B/C/D.
+
+Mục đích: Từ đó rút kinh nghiệm cho Quý sau, Quản lý phải chia việc cho nhân viên hợp lý hơn và luôn phải có những đầu mục công việc trọng yếu.
+
+4. Cuối năm (Tổng kết Thưởng Tết / Lương tháng 13)
+
+Lấy điểm trung bình KPI 12 tháng làm nền tảng.
+
+Đối chiếu với Tỷ lệ hoàn thành Kế hoạch Năm (Master View). Nếu Ban nào có tỷ lệ hoàn thành Kế hoạch Năm dưới mức quy định, sẽ đưa ra Hội đồng để xem xét đánh giá lại mức thưởng Tết (nhằm răn đe và nhắc nhở hướng tới hoàn thành mục tiêu chung).
+
+PHẦN II: QUY CHẾ ĐÁNH GIÁ VÀ CHẤM ĐIỂM CHI TIẾT
+
+Nguyên tắc Không tính Tỷ trọng (Weighting): Hệ thống không áp dụng việc chia tỷ trọng phần trăm (%) mức độ quan trọng cho từng chỉ tiêu/công việc.
+
+
+
+Lý do cốt lõi: Trong các mô hình KPI kinh điển (như Sales hay Sản xuất), "Tỷ trọng" sinh ra nhằm mục đích chia chác quỹ thưởng hàng tháng dựa trên Doanh thu thu về ngay trong tháng đó (Ai nắm task trọng số cao mang về nhiều tiền thì thưởng nhiều). Tuy nhiên, đặc thù các Ban dự án (KHĐT, Kỹ thuật...) của chúng ta có chu kỳ công việc kéo dài, kết quả/doanh thu không rơi đều vào từng tháng. Do đó, KPI hàng tháng ở đây đóng vai trò là "Công cụ kiểm soát tiến độ và tính kỷ luật", chứ không phải "Công cụ chia thưởng theo doanh thu". Việc cố tình gán tỷ trọng % sẽ rất khiên cưỡng, khó đo lường và tạo ra sự bất công khi tính lương, đặc biệt khi một chỉ tiêu bị tắc nghẽn bởi yếu tố khách quan hoặc khi nhiều nhân viên cùng làm một chỉ tiêu.
+
+Nguyên tắc "Mắt xích đồng đẳng": Trong quản lý dự án, một công việc giấy tờ nhỏ đôi khi lại là điều kiện tiên quyết (nút thắt) để giải quyết một dự án lớn. Vì vậy, một khi công việc đã được Quản lý giao và đưa vào Kế hoạch tháng, mọi chỉ tiêu đều được coi là những "mắt xích thiết yếu" như nhau. Đánh giá sẽ tập trung vào sự tuân thủ: Làm xong hay Trễ hạn, đảm bảo sự công bằng và dễ hiểu nhất cho nhân viên.
+
+Hệ thống tính điểm KPI áp dụng cơ chế Chấm điểm trừ (Penalty System). Điểm chuẩn ban đầu: 100 điểm.
+
+
+
+Tiêu chí 1: Tuân thủ thời gian và nội quy (Tối đa trừ 15 điểm)
+
+Đi trễ / Về sớm: Trừ điểm theo Quy chế công ty.
+
+Quên chấm công: Trừ điểm theo Quy chế công ty.
+
+Không báo cáo định kỳ đúng hạn: Trừ 5 điểm/lần.
+
+Không cập nhật KPI trên phần mềm đúng hạn: Trừ 3 điểm/lần (Lưu ý: Việc chủ động cập nhật tiến độ KPI trên phần mềm cũng là 1 chỉ tiêu cứng để đánh giá hàng tháng). (Điểm trừ do cấu hình từ máy chấm công hoặc do HCNS cập nhật).
+
+Tiêu chí 2: Mức độ hoàn thành công việc (Năng suất)
+
+Mỗi đầu việc (Task) được giao trong tháng sẽ bị đánh giá điểm trừ nếu:
+
+
+
+Trễ hạn (Quá deadline): Trừ 2 điểm/ngày trễ (Tính dựa trên ngày trễ so với hạn chót của task đó).
+
+Chất lượng không đạt (Bị trả về làm lại): Trừ 3 điểm/lần trả về.
+
+Không hoàn thành: Trừ tối đa 10 điểm/task. (Lưu ý: Không cộng điểm nếu hoàn thành đúng hạn, vì hoàn thành công việc được giao là trách nhiệm mặc định để giữ được 100 điểm ban đầu).
+
+Tiêu chí 3: Điểm Thưởng (Bonus)
+
+Điểm thưởng này sẽ được xét vào cuối mỗi Quý. Cộng 5 điểm đối với các cá nhân hoàn thành xuất sắc nhiệm vụ:
+
+Hoàn thành các công việc trọng điểm liên kết với chỉ tiêu đúng hạn hoặc trước hạn (Tuỳ theo Quản lý trực tiếp đánh giá và đề xuất).
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-15T11:26:11+07:00.
+
+The user's current state is as follows:
+Active Document: c:\Users\Admin\Downloads\kpi_regulation_diagram.md (LANGUAGE_MARKDOWN)
+Cursor is on line: 1
+Other open documents:
+- c:\Users\Admin\Downloads\kpi_regulation_diagram.md (LANGUAGE_MARKDOWN)
+</ADDITIONAL_METADATA>

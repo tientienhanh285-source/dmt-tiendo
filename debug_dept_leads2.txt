@@ -1,0 +1,13 @@
+DEPT_LEADS = {
+    "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+        "KHĐT": ["Nguyễn Trần Thức"],
+        "CBĐT": ["Hồ Văn Khoa"],
+        "KT": ["Nguyễn Văn Bồn"],
+        "ĐBGT": ["Nguyễn Ngọc Tôn"],
+        "DA": ["Nguyễn Đình Thắng"],
+        "XN DTBD": ["Mai Văn Châu"],
+        "Sàn GDBĐS": ["Ngô Thị Tâm"]
+    }

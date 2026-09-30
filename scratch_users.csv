@@ -1,0 +1,29 @@
+id,username,full_name,role,department_id
+1,tranquocthe,Trần Quốc Thể,Admin,1
+2,oanthingocnu,Đoàn Thị Ngọc Nữ,Admin,1
+3,angngochoang,Đặng Ngọc Hoàng,Admin,1
+4,nguyenthihanhtien,Nguyễn Thị Hạnh Tiên,Admin,2
+5,nguyenbangtrinh,Nguyễn Băng Trinh,Employee,2
+6,lengoctuuyen,Lê Ngọc Tú Uyên,Employee,2
+7,ongthinguyetnga,Đồng Thị Nguyệt Nga,Manager,3
+8,huynhthihoangha,Huỳnh Thị Hoàng Hà,Employee,3
+9,nguyenthinhatsang,Nguyễn Thị Nhật Sang,Employee,3
+10,nguyentranthuc,Nguyễn Trần Thức,Manager,4
+11,phanthimyhanh,Phan Thị Mỹ Hạnh,Employee,4
+12,nguyenucloi,Nguyễn Đức Lợi,Employee,4
+13,trantin,Trần Tin,Employee,4
+14,hovankhoa,Hồ Văn Khoa,Manager,5
+16,caothuytien,Cao Thuỷ Tiên,Employee,5
+17,nguyenvanbon,Nguyễn Văn Bồn,Manager,6
+18,nguyenngocton,Nguyễn Ngọc Tôn,Manager,7
+19,angcongnhut,Đặng Công Nhựt,Employee,7
+20,angthimyhanh,Đặng Thị Mỹ Hạnh,Employee,7
+21,angthanhquang,Đặng Thanh Quang,Employee,7
+22,nguyenphongtrung,Nguyễn Phong Trung,Manager,8
+23,phamvanlong,Phạm Văn Long,Employee,8
+24,leong,Lê Đông,Employee,8
+25,anghien,Đặng Hiền,Manager,9
+26,nguyeninhthang,Nguyễn Đình Thắng,Manager,10
+27,nguyeninhhieu,Nguyễn Đình Hiếu,Employee,10
+28,maivanchau,Mai Văn Châu,Manager,11
+29,ngothitam,Ngô Thị Tâm,Manager,12

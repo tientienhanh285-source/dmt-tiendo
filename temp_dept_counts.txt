@@ -1,0 +1,8 @@
+Ban Lãnh đạo: 3
+Ban Hành chính Nhân sự: 1
+Ban Tài chính Kế toán: 3
+Ban Kế hoạch Đầu tư: 3
+Ban Chuẩn bị Đầu tư: 2
+Ban Kỹ thuật: 4
+Ban Đền bù Giải tỏa: 3
+Tổ KPI: 0

@@ -145,8 +145,7 @@ else:
                     
             # Prevent managers from approving their own tasks
             if 'manager_user' in locals() and manager_user:
-                if manager_user not in ["Thái Văn Thành", "Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"]:
-                    nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'] != manager_user]
+                nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'] != manager_user]
                     
             if nghiemthu_df.empty:
                 st.success("🎉 Hiện tại không có công việc nào chờ nghiệm thu!")
