@@ -117,8 +117,6 @@ for comp_name, comp_data in config.get("companies", {}).items():
             new_personnel["HĐQT"] = ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"]
             if "BLĐ" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["BLĐ"]:
                 new_personnel["BLĐ"].remove("Đặng Ngọc Hoàng")
-            if "BLĐ" in new_personnel and "Nguyễn Ngọc Tôn" in new_personnel["BLĐ"]:
-                new_personnel["BLĐ"].remove("Nguyễn Ngọc Tôn")
             if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["HCNS"]:
                 new_personnel["HCNS"].remove("Đặng Ngọc Hoàng")
             if "TCKT" in new_personnel and "Đoàn Thị Ngọc Nữ" not in new_personnel["TCKT"]:
@@ -170,13 +168,13 @@ DEPT_ABBR = {
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"],
+        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức", "Trần Quốc Thể"],
         "CBĐT": ["Hồ Văn Khoa", "Trần Quốc Thể"],
         "KT": ["Trần Quốc Thể"],
-        "ĐBGT": ["Nguyễn Ngọc Tôn"],
+        "ĐBGT": [],
         "DA": ["Nguyễn Đình Thắng"],
         "XN DTBD": ["Mai Văn Châu", "Trần Quốc Thể"],
         "Sàn GDBĐS": ["Ngô Thị Tâm"],

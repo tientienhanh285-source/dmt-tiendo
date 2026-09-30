@@ -85,13 +85,13 @@ COMPANIES = {
 CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
 
 DEFAULT_PERSONNEL = {
-    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
+    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Đặng Ngọc Hoàng"],
     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Đoàn Thị Ngọc Nữ"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Phan Thị Mỹ Hạnh", "Nguyễn Đức Lợi", "Trần Tin"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
     "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
-    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+    "Ban Đền bù Giải tỏa": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
     "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
     "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],

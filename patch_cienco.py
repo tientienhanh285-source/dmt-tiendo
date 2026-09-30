@@ -3,7 +3,7 @@ import glob
 # The replacement logic for bld_hierarchy
 # We want to replace the old bld_hierarchy block with the new one
 
-old_block = '''        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Đặng Thanh Bình"]
+old_block = '''        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình"]
         if manager_user in bld_members:
             if st.session_state.manager_dept in ["BLĐ", "HĐQT"]:
                 bld_hierarchy = {
@@ -14,7 +14,7 @@ old_block = '''        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọ
                     "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đồng", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
                 }'''
 
-new_block = '''        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Đặng Thanh Bình"]
+new_block = '''        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình"]
         if manager_user in bld_members:
             if st.session_state.manager_dept in ["BLĐ", "HĐQT"]:
                 bld_hierarchy = {
