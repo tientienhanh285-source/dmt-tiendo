@@ -483,7 +483,10 @@ elif role_mode == "Nhân viên":
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, [])
                 if isinstance(dept_leads, str):
                     dept_leads = [dept_leads] if dept_leads else []
-                nhan_vien_list = [p for p in personnel_list if p not in dept_leads or p == "Nguyễn Thị Hạnh Tiên"]
+                
+                # Exceptions for those who can login as both Manager and Employee
+                exceptions = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Mai Văn Châu"]
+                nhan_vien_list = [p for p in personnel_list if p not in dept_leads or p in exceptions]
                 sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
                 if sel_login_user != "-- Chọn --":
                     if st.sidebar.button("Xác nhận Đăng nhập"):
