@@ -614,7 +614,7 @@ DEPT_LEADS = {
         "CBĐT": ["Hồ Văn Khoa"],
         "KT": [],
         "ĐBGT": ["Nguyễn Ngọc Tôn"],
-        "DA": ["Nguyễn Đình Thắng"],
+        "DA": [],
         "XN DTBD": [],
         "Sàn GDBĐS": []
     },
