@@ -126,11 +126,15 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 new_personnel["XN DTBD"].append("Trần Quốc Thể")
                 
         if comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
-            if "BLĐ" in new_personnel and "Thái Văn Thành" not in new_personnel["BLĐ"]:
-                new_personnel["BLĐ"].extend(["Thái Văn Thành", "Trần Văn Trọng"])
-            if "KT" in new_personnel and "Trần Văn Trọng" not in new_personnel["KT"]:
-                new_personnel["KT"].append("Trần Văn Trọng")
-                
+            comp_data["departments"] = ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
+            new_personnel = {
+                "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
+                "BCH CT": ["Nguyễn Phong Trung", "Lê Đồng", "Phạm Văn Long"],
+                "XN XMTB": ["Đặng Hiền"],
+                "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                "HCNS": ["Nguyễn Thị Mỹ Phương"]
+            }
         comp_data["personnel_by_department"] = new_personnel
 
 

@@ -385,8 +385,8 @@ def load_config():
                 "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
                 "personnel_by_department": {
                     "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                    "Ban Kỹ thuật": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
-                    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
+                    "Ban Kỹ thuật": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
+                    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đồng"],
                     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
                     "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
                     "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"]
@@ -619,12 +619,12 @@ DEPT_LEADS = {
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
-        "KT": ["Trần Văn Trọng", "Phạm Quang Nghĩa"],
-        "BCH CT": ["Nguyễn Phong Trung"],
-        "XN XMTB": ["Đặng Hiền"]
+        "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "HCNS": ["Nguyễn Thị Mỹ Phương"],
+        "TCKT": ["Nguyễn Thị Ngọc Hà"],
+        "KT": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "BCH CT": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "XN XMTB": ["Thái Văn Thành", "Trần Văn Trọng"]
     }
 }
 
