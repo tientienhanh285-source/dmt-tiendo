@@ -623,7 +623,7 @@ DEPT_LEADS = {
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],
-        "KT": ["Thái Văn Thành", "Trần Văn Trọng", "Phạm Quang Nghĩa"],
+        "KT": ["Thái Văn Thành", "Trần Văn Trọng"],
         "BCH CT": ["Thái Văn Thành", "Trần Văn Trọng"],
         "XN XMTB": ["Thái Văn Thành", "Trần Văn Trọng"]
     },
