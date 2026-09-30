@@ -164,7 +164,7 @@ with tab_master:
     if role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated'):
         mgr_dept = st.session_state.get("manager_dept")
         if mgr_dept in ["BLĐ", "HĐQT", "Tất cả"]:
-                        dept_opts = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
+            dept_opts = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
             if st.session_state.get('manager_user') == "Trần Văn Trọng":
                 dept_opts = [d for d in dept_opts if d not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
             sel_d = st.selectbox("Lọc Phòng ban (Master View)", dept_opts, key="master_dept")
