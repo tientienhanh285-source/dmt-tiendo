@@ -562,7 +562,7 @@ def load_bsc_config():
         return default_config
 
 
-config = load_config()
+config = load_config() # force reload 2
 
 DEPT_ABBR = {
     "Ban Lãnh đạo": "BLĐ",
@@ -609,10 +609,10 @@ DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên", "Đặng Ngọc Hoàng"],
-        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+        "TCKT": ["Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
-        "KT": ["Trần Quốc Thể"],
+        "KT": ["Nguyễn Văn Bồn"],
         "ĐBGT": ["Nguyễn Ngọc Tôn"],
         "DA": ["Nguyễn Đình Thắng"],
         "XN DTBD": ["Mai Văn Châu"],
