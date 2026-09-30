@@ -161,8 +161,15 @@ with tab_master:
     project_targets = load_project_targets()
     
     active_dept = None
-    if role_mode == "Quản lý" and st.session_state.is_manager_authenticated:
-        active_dept = st.session_state.get("manager_dept")
+    if role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated'):
+        mgr_dept = st.session_state.get("manager_dept")
+        if mgr_dept in ["BLĐ", "HĐQT", "Tất cả"]:
+            dept_opts = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
+            sel_d = st.selectbox("Lọc Phòng ban (Master View)", dept_opts, key="master_dept")
+            if sel_d != "Tất cả phòng ban":
+                active_dept = sel_d
+        else:
+            active_dept = mgr_dept
     elif role_mode == "Nhân viên" and st.session_state.get('is_personal_authenticated'):
         active_dept = st.session_state.get("auth_user_dept")
         
