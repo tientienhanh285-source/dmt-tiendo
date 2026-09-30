@@ -126,7 +126,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 new_personnel["XN DTBD"].append("Trần Quốc Thể")
                 
         if comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
-            comp_data["departments"] = ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"]
+            comp_data["departments"] = ["BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT"]
             new_personnel = {
                 "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
                 "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
