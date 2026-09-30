@@ -221,11 +221,16 @@ with tab_new:
         dept_personnel = get_personnel_for_company_dept(entry_company, task_dept, config)
         owner_options = list(dept_personnel) + ["✍️ Nhập tên người khác..."]
         
-        # Find default lead index if present in department personnel
-        dept_lead = DEPT_LEADS.get(entry_company, {}).get(task_dept, "")
+        # Default owner to logged-in user if manager, else fallback to dept lead
         default_lead_idx = 0
-        if dept_lead in dept_personnel:
-            default_lead_idx = dept_personnel.index(dept_lead)
+        if is_manager and st.session_state.get('manager_user') in dept_personnel:
+            default_lead_idx = dept_personnel.index(st.session_state.manager_user)
+        else:
+            dept_lead = DEPT_LEADS.get(entry_company, {}).get(task_dept, "")
+            if isinstance(dept_lead, list) and len(dept_lead) > 0:
+                dept_lead = dept_lead[0]
+            if dept_lead in dept_personnel:
+                default_lead_idx = dept_personnel.index(dept_lead)
         
         is_personal = (role_mode == "Nhân viên" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
         if is_personal:
