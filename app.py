@@ -605,6 +605,6 @@ st.session_state['is_local'] = is_local if 'is_local' in locals() else False
 pg = st.navigation(pages)
 
 if st.session_state.pop("just_logged_in", False):
-    st.switch_page("views/1_Tong_Quan.py")
+    st.switch_page(p_tong_quan)
 
 pg.run()
