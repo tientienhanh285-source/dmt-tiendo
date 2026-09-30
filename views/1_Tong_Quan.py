@@ -123,7 +123,7 @@ with col_f1:
 with col_f2:
     if st.session_state.get('role_mode') == "Quản lý" and st.session_state.get('manager_dept'):
         mgr_dept = st.session_state.manager_dept
-        if mgr_dept != "Tất cả":
+        if mgr_dept not in ["BLĐ", "HĐQT", "Tất cả"]:
             dept_options = [mgr_dept]
             sel_dept = st.selectbox("Lọc Phòng ban", dept_options, key="tv_dept", disabled=True)
         else:
