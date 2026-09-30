@@ -118,13 +118,15 @@ else:
             if role_mode == "Quản lý":
                 manager_dept = st.session_state.get("manager_dept", "Tất cả")
                 manager_user = st.session_state.get('manager_user', '')
-                bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"]
+                bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình"]
                 if manager_user in bld_members:
-                    if manager_dept == "BLĐ":
+                    if manager_dept in ["BLĐ", "HĐQT"]:
                         bld_hierarchy = {
                             "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
-                            "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
-                            "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"]
+                            "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
+                            "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"],
+                            "Thái Văn Thành": ["Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
+                            "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
                         }
                         if manager_user in bld_hierarchy:
                             all_truong_ban = bld_hierarchy[manager_user]
@@ -140,6 +142,10 @@ else:
                             nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'].isin(truong_ban_list)]
                 elif manager_dept != "Tất cả":
                     nghiemthu_df = nghiemthu_df[nghiemthu_df['PhongBan'] == manager_dept]
+                    
+            # Prevent managers from approving their own tasks
+            if 'manager_user' in locals() and manager_user:
+                nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'] != manager_user]
                     
             if nghiemthu_df.empty:
                 st.success("🎉 Hiện tại không có công việc nào chờ nghiệm thu!")
@@ -235,13 +241,15 @@ else:
                 mask = mask & (local_df['PhongBan'] == sel_phong)
             if role_mode == "Quản lý":
                 manager_user = st.session_state.get('manager_user', '')
-                bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"]
+                bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình"]
                 if manager_user in bld_members:
-                    if st.session_state.get("manager_dept") == "BLĐ":
+                    if st.session_state.get("manager_dept") in ["BLĐ", "HĐQT"]:
                         bld_hierarchy = {
                             "Trần Quốc Thể": ["Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"],
-                            "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
-                            "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"]
+                            "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
+                            "Đặng Ngọc Hoàng": ["Nguyễn Thị Hạnh Tiên"],
+                            "Thái Văn Thành": ["Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Lê Nho Tân"],
+                            "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền"]
                         }
                         if manager_user in bld_hierarchy:
                             all_truong_ban = bld_hierarchy[manager_user]
@@ -255,6 +263,10 @@ else:
                         truong_ban_list = [p for p in dept_leads if p not in bld_members]
                         if truong_ban_list:
                             mask = mask & local_df['NguoiChuTri'].isin(truong_ban_list)
+                
+            # Prevent managers from approving their own tasks
+            if 'manager_user' in locals() and manager_user:
+                mask = mask & (local_df['NguoiChuTri'] != manager_user)
                 
             filtered_df = local_df[mask].copy()
             
