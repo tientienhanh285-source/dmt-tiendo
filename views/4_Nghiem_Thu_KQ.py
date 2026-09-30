@@ -34,7 +34,7 @@ try:
 except:
     current_month = 9
 
-db_filters = {}
+db_filters = {'DonVi': selected_company}
 if 'role_mode' in st.session_state:
     if st.session_state['role_mode'] == "Nhân viên" and st.session_state.get('is_personal_authenticated') and st.session_state.get('personal_user'):
         db_filters['NguoiChuTri'] = st.session_state.personal_user
@@ -128,7 +128,7 @@ try:
 except:
     current_month = 9
 
-db_filters = {}
+db_filters = {'DonVi': selected_company}
 if 'role_mode' in st.session_state:
     if st.session_state['role_mode'] == "Nhân viên" and st.session_state.get('is_personal_authenticated') and st.session_state.get('personal_user'):
         db_filters['NguoiChuTri'] = st.session_state.personal_user
