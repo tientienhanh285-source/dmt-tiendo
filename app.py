@@ -119,15 +119,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 new_personnel["BLĐ"].remove("Đặng Ngọc Hoàng")
             if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" in new_personnel["HCNS"]:
                 new_personnel["HCNS"].remove("Đặng Ngọc Hoàng")
-            if "TCKT" in new_personnel and "Đoàn Thị Ngọc Nữ" not in new_personnel["TCKT"]:
-                new_personnel["TCKT"].append("Đoàn Thị Ngọc Nữ")
-            if "KHĐT" in new_personnel and "Trần Quốc Thể" not in new_personnel["KHĐT"]:
-                new_personnel["KHĐT"].append("Trần Quốc Thể")
-            if "CBĐT" in new_personnel and "Trần Quốc Thể" not in new_personnel["CBĐT"]:
-                new_personnel["CBĐT"].append("Trần Quốc Thể")
-            if "XN DTBD" in new_personnel and "Trần Quốc Thể" not in new_personnel["XN DTBD"]:
-                new_personnel["XN DTBD"].append("Trần Quốc Thể")
-                
+
         if comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
             comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT"]
             new_personnel = {
@@ -150,48 +142,6 @@ for comp_name, comp_data in config.get("companies", {}).items():
         comp_data["personnel_by_department"] = new_personnel
 
 
-# Default owners by department and company for autofill
-DEPT_ABBR = {
-    "Hội đồng quản trị": "HĐQT",
-    "Ban Lãnh đạo": "BLĐ",
-    "Ban Hành chính Nhân sự": "HCNS",
-    "Ban Tài chính Kế toán": "TCKT",
-    "Ban Kế hoạch Đầu tư": "KHĐT",
-    "Ban Chuẩn bị Đầu tư": "CBĐT",
-    "Ban Kỹ thuật": "KT",
-    "Ban Đền bù Giải tỏa": "ĐBGT",
-    "Ban Dự án": "DA",
-    "Xí nghiệp DTBD": "XN DTBD",
-    "Sàn GDBĐS": "Sàn GDBĐS",
-}
-
-DEPT_LEADS = {
-    "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Nguyễn Ngọc Tôn"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
-        "KHĐT": ["Nguyễn Trần Thức", "Trần Quốc Thể"],
-        "CBĐT": ["Hồ Văn Khoa", "Trần Quốc Thể"],
-        "KT": ["Trần Quốc Thể"],
-        "ĐBGT": [],
-        "DA": ["Nguyễn Đình Thắng"],
-        "XN DTBD": ["Mai Văn Châu", "Trần Quốc Thể"],
-        "Sàn GDBĐS": ["Ngô Thị Tâm"],
-    },
-    "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thị Lan Ngọc"],
-        "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
-        "HCNS": ["Nguyễn Thị Mỹ Phương"],
-        "TCKT": ["Nguyễn Thị Ngọc Hà"]
-    },
-    "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
-        "HĐQT": ["Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Cường"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Lê Thị Hải"]
-    }
-}
 
 
 
@@ -414,6 +364,14 @@ if role_mode == "Quản lý":
                 
                 valid_leads = dept_leads
                 
+                # Bức tường lửa cuối cùng: Ép buộc xóa tên khỏi các phòng ban không được phép
+                if sel_login_dept != "BLĐ" and "Trần Quốc Thể" in valid_leads:
+                    valid_leads = [x for x in valid_leads if x != "Trần Quốc Thể"]
+                if sel_login_dept == "TCKT" and "Đoàn Thị Ngọc Nữ" in valid_leads:
+                    valid_leads = [x for x in valid_leads if x != "Đoàn Thị Ngọc Nữ"]
+                if sel_login_dept in ["DA", "Ban Dự án"] and "Nguyễn Đình Thắng" in valid_leads:
+                    valid_leads = [x for x in valid_leads if x != "Nguyễn Đình Thắng"]
+                
                 if valid_leads:
                     sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + valid_leads, key="mgr_login_user")
                 else:
@@ -485,7 +443,7 @@ elif role_mode == "Nhân viên":
                     dept_leads = [dept_leads] if dept_leads else []
                 
                 # Exceptions for those who can login as both Manager and Employee
-                exceptions = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Mai Văn Châu", "Nguyễn Đình Thắng", "Nguyễn Văn Bồn"]
+                exceptions = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Mai Văn Châu", "Nguyễn Văn Bồn"]
                 nhan_vien_list = [p for p in personnel_list if p not in dept_leads or p in exceptions]
                 sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
                 if sel_login_user != "-- Chọn --":

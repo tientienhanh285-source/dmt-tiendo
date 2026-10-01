@@ -87,7 +87,7 @@ CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
 DEFAULT_PERSONNEL = {
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Đặng Ngọc Hoàng"],
-    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Đoàn Thị Ngọc Nữ"],
+    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Cao Thuỷ Tiên", "Trần Tin"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
     "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
@@ -157,6 +157,7 @@ def _cached_fetch_table_data(worksheet, filters_str):
     return res.data
 
 def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None, filters=None):
+    # Invalidate cache trick 1
     if fallback_df is None:
         import pandas as pd
         fallback_df = pd.DataFrame()
@@ -619,7 +620,7 @@ DEPT_LEADS = {
         "Sàn GDBĐS": []
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thanh Bình"],
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],
