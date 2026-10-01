@@ -178,7 +178,7 @@ else:
                     "LinkKetQua": st.column_config.LinkColumn("Minh Chứng", disabled=True),
                     "TrangThaiNghiemThu": st.column_config.SelectboxColumn(
                         "Trạng thái Duyệt",
-                        options=["Chờ duyệt", "✅ Duyệt (Hoàn thành)", "❌ Từ chối (Làm lại)"],
+                        options=["Chờ duyệt", "✅ Duyệt (Hoàn thành)"],
                         required=True
                     )
                 }
@@ -215,9 +215,6 @@ else:
                             new_val = row['TrangThaiNghiemThu']
                             if new_val == "✅ Duyệt (Hoàn thành)":
                                 update_task(task_id, {'TrangThai': 'Hoàn thành'})
-                                changed = True
-                            elif new_val == "❌ Từ chối (Làm lại)":
-                                update_task(task_id, {'TrangThai': 'Đang thực hiện', 'PhanTramHoanThanh': 0})
                                 changed = True
                         
                         if changed:
