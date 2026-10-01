@@ -337,7 +337,7 @@ else:
                 )
                 
                 # Trình tải file đính kèm
-                file_tasks_kq = disp_df[disp_df['LinkKetQua'].astype(str).str.contains("OUTPUT", na=False)]
+                file_tasks_kq = filtered_df[filtered_df['LinkKetQua'].astype(str).str.contains("OUTPUT", na=False)]
                 if not file_tasks_kq.empty:
                     st.markdown("### 📥 Xem / Tải File đính kèm (Giải trình Khách quan)")
                     sel_task_id_kq = st.selectbox("Chọn Mã CV để tải file:", ["-- Chọn --"] + file_tasks_kq['ID'].tolist(), key="dl_kq")
