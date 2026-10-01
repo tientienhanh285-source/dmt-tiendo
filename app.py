@@ -333,7 +333,17 @@ selected_company = st.sidebar.selectbox(
 )
 st.session_state['selected_company'] = selected_company
 
-role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", ["Nhân viên", "Quản lý", "HR"], index=0)
+if 'role_mode' not in st.session_state:
+    st.session_state['role_mode'] = "Nhân viên"
+
+# Tìm index hiện tại
+roles = ["Nhân viên", "Quản lý", "HR"]
+try:
+    current_index = roles.index(st.session_state['role_mode'])
+except ValueError:
+    current_index = 0
+
+role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", roles, index=current_index, key="role_mode_select")
 st.session_state['role_mode'] = role_mode
 
 
