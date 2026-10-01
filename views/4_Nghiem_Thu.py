@@ -188,6 +188,21 @@ else:
                     key="editor_nghiemthu"
                 )
                 
+                # Trình tải file đính kèm
+                file_tasks = disp_nt[disp_nt['LinkKetQua'].astype(str).str.contains("OUTPUT", na=False)]
+                if not file_tasks.empty:
+                    st.markdown("### 📥 Xem / Tải File đính kèm")
+                    sel_task_id = st.selectbox("Chọn Mã CV để tải file:", ["-- Chọn --"] + file_tasks['ID'].tolist())
+                    if sel_task_id != "-- Chọn --":
+                        file_path = file_tasks[file_tasks['ID'] == sel_task_id]['LinkKetQua'].values[0]
+                        import os
+                        if os.path.exists(file_path):
+                            with open(file_path, "rb") as f:
+                                st.download_button(f"Tải xuống ({os.path.basename(file_path)})", f, file_name=os.path.basename(file_path))
+                        else:
+                            st.error("File đính kèm không tồn tại trên máy chủ (có thể đã bị xóa)!")
+                
+                st.markdown("<br>", unsafe_allow_html=True)
                 if st.button("💾 Lưu kết quả Nghiệm thu", type="primary"):
                     with acquire_db_lock():
                         fresh_df = read_db()
@@ -321,6 +336,21 @@ else:
                     key=f"editor_approve_{sel_thang}_{sel_nam}"
                 )
                 
+                # Trình tải file đính kèm
+                file_tasks_kq = disp_df[disp_df['LinkKetQua'].astype(str).str.contains("OUTPUT", na=False)]
+                if not file_tasks_kq.empty:
+                    st.markdown("### 📥 Xem / Tải File đính kèm (Giải trình Khách quan)")
+                    sel_task_id_kq = st.selectbox("Chọn Mã CV để tải file:", ["-- Chọn --"] + file_tasks_kq['ID'].tolist(), key="dl_kq")
+                    if sel_task_id_kq != "-- Chọn --":
+                        file_path_kq = file_tasks_kq[file_tasks_kq['ID'] == sel_task_id_kq]['LinkKetQua'].values[0]
+                        import os
+                        if os.path.exists(file_path_kq):
+                            with open(file_path_kq, "rb") as f:
+                                st.download_button(f"Tải xuống ({os.path.basename(file_path_kq)})", f, file_name=os.path.basename(file_path_kq))
+                        else:
+                            st.error("File đính kèm không tồn tại trên máy chủ (có thể đã bị xóa)!")
+                
+                st.markdown("<br>", unsafe_allow_html=True)
                 if st.button("💾 Lưu tất cả thay đổi", type="primary"):
                     with acquire_db_lock():
                         

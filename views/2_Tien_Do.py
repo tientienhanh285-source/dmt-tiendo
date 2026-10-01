@@ -707,4 +707,20 @@ with tab_data:
             use_container_width=True,
             hide_index=True
         )
+        
+        # Trình tải file đính kèm
+        file_tasks_td = table_df[table_df['LinkKetQua'].astype(str).str.contains("OUTPUT", na=False)]
+        if not file_tasks_td.empty:
+            st.markdown("### 📥 Xem / Tải File đính kèm")
+            task_options = ["-- Chọn --"] + file_tasks_td.apply(lambda x: f"{x['ID']} - {str(x['TenCongViec'])[:60]}...", axis=1).tolist()
+            sel_task_td = st.selectbox("Chọn Mã CV (hoặc Tên CV) để tải file đính kèm tương ứng:", task_options, key="dl_td")
+            if sel_task_td != "-- Chọn --":
+                real_id = sel_task_td.split(" - ")[0]
+                file_path_td = file_tasks_td[file_tasks_td['ID'] == real_id]['LinkKetQua'].values[0]
+                import os
+                if os.path.exists(file_path_td):
+                    with open(file_path_td, "rb") as f:
+                        st.download_button(f"Tải xuống ({os.path.basename(file_path_td)})", f, file_name=os.path.basename(file_path_td))
+                else:
+                    st.error("File đính kèm không tồn tại trên máy chủ (có thể đã bị xóa)!")
 
