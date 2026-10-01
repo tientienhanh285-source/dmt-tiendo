@@ -143,39 +143,54 @@ with tab_nv:
     
 with tab_ql:
     st.success("""
-    **1️⃣ Xem xét và Đánh giá lý do Khách quan**
-    - 🖱️ Vào mục **✅ Duyệt việc Khách quan**.
+    **1️⃣ Xem xét và Duyệt việc hoàn thành**
+    - 🖱️ Vào mục **✅ Duyệt nghiệm thu**.
+    - Hệ thống liệt kê các công việc nhân viên đã đánh dấu hoàn thành cần quản lý nghiệm thu.
+    - Bạn xem xét kết quả/minh chứng, chọn kết quả **Đạt** hoặc **Không đạt**, hoặc để lại nhận xét.
+    - Nhấn **💾 Lưu toàn bộ phê duyệt** ở cuối danh sách.
+    """)
+
+    st.success("""
+    **2️⃣ Xem xét và Đánh giá lý do Khách quan**
+    - 🖱️ Vào mục **✅ Duyệt việc Khách quan** (nếu có công việc trễ hạn do nguyên nhân khách quan).
     - Hệ thống liệt kê các công việc nhân viên báo cáo trễ hạn với lý do **Khách quan**.
     - Bạn xem xét giải trình, click trực tiếp vào ô *Mức độ KPI ghi nhận* để chọn điểm phù hợp (Miễn trừ, 50%, 80%, 90%...).
     - Nhấn **💾 Lưu toàn bộ phê duyệt** ở cuối danh sách.
     """)
     
     st.info("""
-    **2️⃣ Xem Báo cáo Xếp loại KPI (Ngày 1-3 đầu tháng)**
+    **3️⃣ Xem Báo cáo Xếp loại KPI (Ngày 1-3 đầu tháng)**
     - 🕒 **Thời gian:** Từ ngày 1 đến ngày 3 hàng tháng.
     - 🎯 **Mục đích:** Xác nhận điểm số KPI của tháng trước để Phòng HCNS lưu kết quả.
     - Xem biểu đồ tổng quan và Bảng dữ liệu tự động Xếp loại cho từng nhân sự.
+    """)
+    
+    st.warning("""
+    **4️⃣ Báo cáo Đánh giá và Xếp loại KPI cuối quý**
+    - 🕒 **Thời gian:** Đầu quý sau (khi tổ chức họp KPI).
+    - 🎯 **Mục đích:** Xuất báo cáo tổng hợp các công việc đã thực hiện trong quý vừa qua để làm tài liệu cho cuộc họp đánh giá, xếp loại KPI đầu quý sau.
+    - Xem biểu đồ tổng quan, dữ liệu thống kê theo quý để đưa ra các quyết định khen thưởng hoặc cải thiện hiệu suất.
     """)
 
 with tab_tc:
     st.info("""
     **🌟 TIÊU CHÍ ĐÁNH GIÁ VÀ XẾP LOẠI KPI**
     
-    🧮 **1. Công thức tính điểm KPI Tổng:**
-    > :blue[**Điểm KPI**] = (:green[**Điểm trung bình công việc Định kỳ**] × **70%**) + (:orange[**Điểm trung bình công việc Giao ban**] × **30%**) + :red[**Điểm thưởng/phạt**]
+    🎯 **1. Điểm gốc:** 
+    > :blue[**100 điểm/người/tháng.**]
     
-    *(Lưu ý: Nếu không có công việc Giao ban, hệ thống sẽ tự động điều chỉnh 100% trọng số cho công việc Định kỳ).*
+    🧮 **2. Điểm công việc:** 
+    > :green[**100 điểm**] được chia đều trên tổng số nhiệm vụ phát sinh trong tháng.
     
-    📊 **2. Phân loại và Quy đổi Điểm Xếp loại:**
-    - Tổng điểm **> 100**: Xếp loại **A\*** (Xuất sắc - > 100 điểm): Đạt mức 110–120% lương, nhằm khích lệ tinh thần làm việc vượt trội.
-    - Tổng điểm **> 91**: Xếp loại **A** (Xuất sắc)
-    - Tổng điểm **> 81**: Xếp loại **B** (Tốt)
-    - Tổng điểm **> 71**: Xếp loại **C** (Khá)
-    - Tổng điểm **<= 71**: Xếp loại **D** (Kém)
+    📊 **3. Công thức tính điểm:**
+    > :orange[**Tổng điểm = 100 điểm - Điểm phạt + Điểm thưởng.**]
     
-    ⚖️ **3. Về Điểm Thưởng / Phạt:**
-    - **Cộng điểm (+):** Áp dụng cho các công việc hoàn thành xuất sắc vượt tiến độ, hoặc có sáng kiến mang lại hiệu quả cao.
-    - **Trừ điểm (-):** Áp dụng khi vi phạm nội quy, chậm trễ báo cáo, hoặc có sai sót nghiệp vụ gây ảnh hưởng.
-    - *Quản lý trực tiếp hoặc HCNS sẽ rà soát và cập nhật quỹ điểm Thưởng/Phạt này trước thời điểm chốt sổ cuối tháng.*
+    ⚠️ **4. Một số trường hợp trừ điểm theo quy chế:**
+    - Không cập nhật báo cáo KPI đúng hạn: trừ **3 điểm/lần**.
+    - Không hoàn thành tốt liên tục/bị cảnh cáo: trừ **10 điểm** theo quy chế.
+    - Các trường hợp vi phạm nội quy, đi trễ/về sớm, quên chấm công... thực hiện trừ điểm theo quy chế hiện hành.
+    
+    🎁 **5. Điểm thưởng:** 
+    - Áp dụng đối với trường hợp hoàn thành xuất sắc công việc trọng điểm theo đánh giá/đề xuất của Quản lý.
     """)
 
