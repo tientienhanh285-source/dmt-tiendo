@@ -116,14 +116,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 new_personnel["BLĐ"].append("Đặng Ngọc Hoàng")
             if "HCNS" in new_personnel and "Đặng Ngọc Hoàng" not in new_personnel["HCNS"]:
                 new_personnel["HCNS"].append("Đặng Ngọc Hoàng")
-            if "TCKT" in new_personnel and "Đoàn Thị Ngọc Nữ" not in new_personnel["TCKT"]:
-                new_personnel["TCKT"].append("Đoàn Thị Ngọc Nữ")
-            if "KHĐT" in new_personnel and "Trần Quốc Thể" not in new_personnel["KHĐT"]:
-                new_personnel["KHĐT"].append("Trần Quốc Thể")
-            if "CBĐT" in new_personnel and "Trần Quốc Thể" not in new_personnel["CBĐT"]:
-                new_personnel["CBĐT"].append("Trần Quốc Thể")
-            if "XN DTBD" in new_personnel and "Trần Quốc Thể" not in new_personnel["XN DTBD"]:
-                new_personnel["XN DTBD"].append("Trần Quốc Thể")
+
                 
         if comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
             comp_data["departments"] = ["BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT"]
@@ -157,17 +150,17 @@ DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên", "Đặng Ngọc Hoàng"],
-        "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
-        "KHĐT": ["Nguyễn Trần Thức", "Trần Quốc Thể"],
-        "CBĐT": ["Hồ Văn Khoa", "Trần Quốc Thể"],
-        "KT": ["Trần Quốc Thể"],
+        "TCKT": ["Đồng Thị Nguyệt Nga"],
+        "KHĐT": ["Nguyễn Trần Thức"],
+        "CBĐT": ["Hồ Văn Khoa"],
+        "KT": [],
         "ĐBGT": ["Nguyễn Ngọc Tôn"],
-        "DA": ["Nguyễn Đình Thắng"],
-        "XN DTBD": ["Mai Văn Châu", "Trần Quốc Thể"],
+        "DA": [],
+        "XN DTBD": ["Mai Văn Châu"],
         "Sàn GDBĐS": ["Ngô Thị Tâm"],
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thanh Bình"],
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],

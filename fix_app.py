@@ -1,13 +1,22 @@
-#
-# -*- coding: utf-8 -*-
-with open('app.py', 'r', encoding='utf-8') as f:
-    lines = f.readlines()
+import os
+import re
 
-for i, line in enumerate(lines):
-    if 'emp_to_export = st.selectbox' in line and 'emp_export' in line:
-        spaces = line[:len(line) - len(line.lstrip())]
-        lines.insert(i, spaces + 'st.info(f"Đang xuất dữ liệu của: **Tháng {selected_month}/{selected_year}** (Để xuất tháng khác, vui lòng đổi Tháng/Năm ở trên cùng).")\n')
-        break
+def fix_app():
+    filepath = 'app.py'
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # We will remove DEPT_ABBR and DEPT_LEADS from app.py
+    # They are from line 153 to 198 approx.
+    
+    pattern = re.compile(r'# Default owners by department and company for autofill\nDEPT_ABBR = \{.*?\n\}\n\nDEPT_LEADS = \{.*?\n\}\n', re.DOTALL)
+    
+    new_content, count = pattern.subn('', content)
+    if count > 0:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+        print(f"Removed DEPT_ABBR and DEPT_LEADS from app.py")
+    else:
+        print("Not found in app.py")
 
-with open('app.py', 'w', encoding='utf-8') as f:
-    f.writelines(lines)
+fix_app()

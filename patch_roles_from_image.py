@@ -28,7 +28,7 @@ app_content = re.sub(r'DEPT_ABBR = \{[\s\S]*?\}', new_dept_abbr, app_content)
 # Update DEPT_LEADS
 new_dept_leads = """DEPT_LEADS = {
     "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thanh Bình"],
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
@@ -57,7 +57,7 @@ new_default_personnel = """DEFAULT_PERSONNEL = {
     "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
-    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Đoàn Thị Ngọc Nữ"],
+    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Phan Thị Mỹ Hạnh", "Nguyễn Đức Lợi", "Trần Tin"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
     "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],

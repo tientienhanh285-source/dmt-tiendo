@@ -579,5 +579,3 @@ if st.session_state.pop("just_logged_in", False):
     st.switch_page(p_tong_quan)
 
 pg.run()
-#   f o r c e   r e l o a d  
- 

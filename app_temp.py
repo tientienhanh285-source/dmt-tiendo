@@ -142,7 +142,7 @@ DEPT_LEADS = {
         "Sàn GDBĐS": ["Ngô Thị Tâm"],
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thanh Bình"],
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
