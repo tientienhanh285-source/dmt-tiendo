@@ -1,0 +1,80 @@
+import json
+
+filepath = 'project_targets.json'
+
+with open(filepath, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+# The new tasks from the PDF
+dbgt_tasks = [
+    # KĐT Phước Lý
+    {"project_name": "KĐT Phước Lý", "target_name": "Xử lý dứt điểm việc bàn giao đất hộ bà Thủy", "deadline": "Tháng 10/2026"},
+    {"project_name": "KĐT Phước Lý", "target_name": "Phối hợp ban KTXD tiến hành trồng cây xanh.", "deadline": "Tháng 11/2026"},
+    # Khu TĐC Phước Lý 2
+    {"project_name": "Khu TĐC Phước Lý 2", "target_name": "Phối hợp TTPTQĐ, UBND Phường An Khê xác nhận hạ tầng theo hiện trạng làm cơ sở để nghiệm thu và bàn giao.", "deadline": "Tháng 10/2026"},
+    # Dự án KDC Bàu Mạc
+    {"project_name": "Dự án KDC Bàu Mạc", "target_name": "Rà soát phần diện tích còn lại của KDC Bàu Mạc (trên 1200 m2) căn cứ trên tổng diện tích đất cần thu hồi để lập hồ sơ, hoàn tất việc ban hành quyết định giao đất của dự án", "deadline": "Tháng 11/2026"},
+    {"project_name": "Dự án KDC Bàu Mạc", "target_name": "Liên hệ TTPTQĐ để bàn giao 8,3 m2 đất cho TTPTQĐ quản lý", "deadline": "Tháng 11/2026"},
+    {"project_name": "Dự án KDC Bàu Mạc", "target_name": "Phối hợp, TTPTQĐ, gia đình bà Xoa, phòng công chứng Ngọc Yến làm hồ sơ hoàn tất thủ tục chuyển nhượng quyền SDĐ để bố trí TĐC cho hộ bà Hồng Xoa (HS62)", "deadline": "Tháng 11/2026"},
+    {"project_name": "Dự án KDC Bàu Mạc", "target_name": "Phối hợp ban KHĐT thực hiện các thủ tục có liên quan đến lô đất hộ ông Tâm, lưu ý số tiền chuyển mục đích 28m2 từ đất mương sau nhà thành đất ở do ông Tâm chi trả.", "deadline": "Tháng 11/2026"},
+    {"project_name": "Dự án KDC Bàu Mạc", "target_name": "Liên quan đến HS 106 - Nguyễn Quỳnh Chi (phục vụ ĐCQH): tìm hồ sơ pháp lý, biên bản họp hộ bà Chi + bà Mỹ Phước về ý kiến giữ lại chỉnh trang, biên bản nhận tiền.", "deadline": "Tháng 11/2026"},
+    {"project_name": "Dự án KDC Bàu Mạc", "target_name": "Phối hợp với ban KHĐT lập hồ sơ điều chỉnh quy hoạch theo quy định.", "deadline": "Tháng 12/2026"},
+    {"project_name": "Dự án KDC Bàu Mạc", "target_name": "Liên hệ Trung tâm đo đạc tổ chức đo đạc thực tế tại hiện trường làm cơ sở hoàn thiện hồ sơ hoàn thiện việc giao đất đợt còn lại", "deadline": "Tháng 12/2026"},
+    # KĐT Phong Nam
+    {"project_name": "KĐT Phong Nam", "target_name": "Xác định rõ quy mô, diện tích ĐBGT, làm rõ diện tích thuộc phạm vi đã ĐBGT và phần diện tích còn lại, Phân diện tích còn lại chủ yếu đất do Nhà nước quản lý, do đó yêu cầu anh Tôn rà soát lại tính pháp lý, đơn giá đền bù để tính toán lại phương án ĐBGT.", "deadline": "Tháng 10/2026"},
+    {"project_name": "KĐT Phong Nam", "target_name": "Làm việc với TTPTQĐ, UBND Phường Hòa Xuân triển khai theo thông báo kết luận của Thành phố.", "deadline": "Tháng 12/2026"},
+    # KBT Sinh Thái Hòa Ninh
+    {"project_name": "KBT Sinh Thái Hòa Ninh", "target_name": "Đối với GCNQSDĐ 13.330 m2: theo dõi kết quả trả lời của phòng kinh tế xã Bà Nà về kết luận Thanh tra", "deadline": "Tháng 11/2026"},
+    {"project_name": "KBT Sinh Thái Hòa Ninh", "target_name": "Đối với GCNQSDĐ 4.388 m2: theo dõi kết quả trả lời của phòng kinh tế xã Bà Nà về hạn mức chuyển đổi từ đất thổ cư sang đất ở", "deadline": "Tháng 11/2026"},
+    {"project_name": "KBT Sinh Thái Hòa Ninh", "target_name": "Đối với 5 lô mặt tiền DT 602: phối hợp làm việc với cơ quan Thuế, kế toán để hoàn tất việc nộp thuế.", "deadline": "Tháng 10/2026"},
+    {"project_name": "KBT Sinh Thái Hòa Ninh", "target_name": "Thực hiện các công việc chăm sóc cây trồng vật nuôi tại dự án.", "deadline": "Hằng tháng"},
+    {"project_name": "KBT Sinh Thái Hòa Ninh", "target_name": "Cắm mốc, đề xuất phương án tường bảo vệ ranh giới dự án.", "deadline": "Tháng 10/2026"},
+    # Tuyến đường Lê Trọng Tấn – Hoàng Văn Thái
+    {"project_name": "Tuyến đường Lê Trọng Tấn – Hoàng Văn Thái", "target_name": "Tiếp tục phối hợp TTPTQĐ CN KV5 vận động các hộ BGMB và phối hợp đơn vị thi công triển khai thi công", "deadline": "Tháng 12/2026"},
+    {"project_name": "Tuyến đường Lê Trọng Tấn – Hoàng Văn Thái", "target_name": "Phối hợp TTPTQĐ xử lý việc số tiền đã chi trả đền bù để di dời mộ gia đình ông Mai Thanh và Nguyễn Đình Hùng", "deadline": "Tháng 12/2026"},
+    # Khu đất 5ha
+    {"project_name": "Khu đất 5ha (gần trạm bê tông nhựa)", "target_name": "Phối hợp quản lý hiện trạng.", "deadline": "Hằng tháng"},
+    {"project_name": "Khu đất 5ha (gần trạm bê tông nhựa)", "target_name": "Đưa ra phương án trồng keo.", "deadline": "Tháng 11/2026"},
+    # CÁC DỰ ÁN BT
+    {"project_name": "CÁC DỰ ÁN BT", "target_name": "Phối hợp xử lý theo các văn bản chỉ đạo của UBND TP", "deadline": "Tháng 12/2026"},
+    # Công tác Công đoàn
+    {"project_name": "Công tác Công đoàn", "target_name": "Phối hợp theo dõi, thực hiện các công tác chăm lo đời sống cho NLĐ", "deadline": "Hằng tháng"},
+    {"project_name": "Công tác Công đoàn", "target_name": "Hoàn thiện các thủ tục, hồ sơ khen thưởng", "deadline": "Hằng tháng"},
+    {"project_name": "Công tác Công đoàn", "target_name": "Quản lý, báo cáo công tác tài chính công đoàn.", "deadline": "Hằng tháng, BC cuối năm"},
+    # Công tác Đảng
+    {"project_name": "Công tác Đảng", "target_name": "Thực hiện các nội dung sinh hoạt chi bộ hằng tháng.", "deadline": "Hằng tháng"},
+    {"project_name": "Công tác Đảng", "target_name": "Tham gia các buổi họp, đào tạo các công tác Đảng.", "deadline": "Hằng tháng"}
+]
+
+# Tạo target cho ĐBGT và Tôn
+depts_to_apply = ["ĐBGT", "Tôn"]
+new_targets = []
+
+for dept in depts_to_apply:
+    for t in dbgt_tasks:
+        new_targets.append({
+            "project_name": t["project_name"],
+            "department": dept,
+            "target_name": t["target_name"],
+            "deadline": t["deadline"],
+            "status": "Chưa bắt đầu",
+            "approved": False,
+            "progress": 0,
+            "budget_2026": 0,
+            "disbursed_value": 0
+        })
+
+# Xóa KH cũ của ĐBGT và Tôn
+filtered_data = [x for x in data if not (x.get('department') in ["ĐBGT", "Tôn"])]
+
+# Append new
+final_list = filtered_data + new_targets
+
+# Đánh lại target_id
+for i, task in enumerate(final_list):
+    task['target_id'] = f"T{i+1:03d}"
+
+with open(filepath, 'w', encoding='utf-8') as f:
+    json.dump(final_list, f, ensure_ascii=False, indent=2)
+
+print("Đã cập nhật Kế hoạch mới cho Ban ĐBGT và a Tôn thành công!")
