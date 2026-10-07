@@ -2104,5 +2104,44 @@
     "progress": 0,
     "budget_2026": 0,
     "disbursed_value": 0
+  },
+  {
+    "target_id": "T393A7836",
+    "project_name": "Công tác Xe máy & Thiết bị",
+    "department": "XN XMTB",
+    "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT",
+    "target_name": "Điều động xe",
+    "deadline": "Quý IV/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0
+  },
+  {
+    "target_id": "T3AD29D13",
+    "project_name": "Công tác Xe máy & Thiết bị",
+    "department": "XN XMTB",
+    "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT",
+    "target_name": "Cung cấp vật tư cho DA",
+    "deadline": "Quý IV/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0
+  },
+  {
+    "target_id": "T52C88156",
+    "project_name": "Công tác Xe máy & Thiết bị",
+    "department": "XN XMTB",
+    "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT",
+    "target_name": "Đề xuất sửa xe",
+    "deadline": "Quý IV/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0
   }
 ]
