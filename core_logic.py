@@ -609,7 +609,7 @@ DEPT_ABBR = {
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên", "Đặng Ngọc Hoàng"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên", ],
         "TCKT": ["Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
