@@ -381,6 +381,8 @@ if role_mode == "Quản lý":
                     valid_leads = [x for x in valid_leads if x != "Đoàn Thị Ngọc Nữ"]
                 if sel_login_dept in ["DA", "Ban Dự án"] and "Nguyễn Đình Thắng" in valid_leads:
                     valid_leads = [x for x in valid_leads if x != "Nguyễn Đình Thắng"]
+                if sel_login_dept == "HCNS" and "Đặng Ngọc Hoàng" in valid_leads:
+                    valid_leads = [x for x in valid_leads if x != "Đặng Ngọc Hoàng"]
                 
                 if valid_leads:
                     sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + valid_leads, key="mgr_login_user")
