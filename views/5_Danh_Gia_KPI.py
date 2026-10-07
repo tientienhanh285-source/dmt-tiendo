@@ -697,8 +697,15 @@ if is_hr or is_manager:
                 for comp, comp_data in config.get("companies", {}).items():
                     all_p_list.extend(comp_data.get("personnel_by_department", {}).get(dept, []))
                 all_p_list.extend(config.get("personnel_by_department", {}).get(dept, []))
+                
+                if st.session_state.get('manager_user') == 'Nguyễn Ngọc Tôn':
+                    for comp, comp_data in config.get("companies", {}).items():
+                        all_p_list.extend(comp_data.get("personnel_by_department", {}).get('ĐBGT', []))
+                    all_p_list.extend(config.get("personnel_by_department", {}).get('ĐBGT', []))
             else:
                 all_p_list.extend(get_personnel_for_company_dept(selected_company, dept, config))
+                if st.session_state.get('manager_user') == 'Nguyễn Ngọc Tôn':
+                    all_p_list.extend(get_personnel_for_company_dept(selected_company, 'ĐBGT', config))
         else:
             if selected_company == "Tất cả đơn vị":
                 for comp, comp_data in config.get("companies", {}).items():
