@@ -185,6 +185,9 @@ with tab_master:
     elif role_mode == "Nhân viên" and st.session_state.get('is_personal_authenticated'):
         active_dept = st.session_state.get("auth_user_dept")
         
+    if selected_company:
+        project_targets = [t for t in project_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == selected_company]
+
     if active_dept:
         project_targets = [t for t in project_targets if t.get("department") == active_dept]
     elif role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_user') == "Trần Văn Trọng":

@@ -255,6 +255,8 @@ with tab_new:
         
         # 2. Project selection (Categorized dropdown or custom)
         project_targets = load_project_targets()
+        if selected_company:
+            project_targets = [t for t in project_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == selected_company]
         khdt_projects = []
         for t in project_targets:
             if t.get("department") == task_dept and t.get("project_name") not in khdt_projects:
