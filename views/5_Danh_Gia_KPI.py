@@ -701,6 +701,14 @@ if is_hr or is_manager:
                     all_p_list.extend(config.get("personnel_by_department", {}).get('ĐBGT', []))
                 else:
                     all_p_list.extend(get_personnel_for_company_dept(selected_company, 'ĐBGT', config))
+            elif st.session_state.get('manager_user') == 'Đoàn Thị Ngọc Nữ':
+                all_p_list = ["Đoàn Thị Ngọc Nữ"]
+                if selected_company == "Tất cả đơn vị":
+                    for comp, comp_data in config.get("companies", {}).items():
+                        all_p_list.extend(comp_data.get("personnel_by_department", {}).get('TCKT', []))
+                    all_p_list.extend(config.get("personnel_by_department", {}).get('TCKT', []))
+                else:
+                    all_p_list.extend(get_personnel_for_company_dept(selected_company, 'TCKT', config))
             else:
                 if selected_company == "Tất cả đơn vị":
                     for comp, comp_data in config.get("companies", {}).items():
