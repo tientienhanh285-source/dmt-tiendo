@@ -94,7 +94,7 @@ DEFAULT_PERSONNEL = {
     "Ban Đền bù Giải tỏa": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
     "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
-    "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+    "Ban Dự án": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "Xí nghiệp DTBD": ["Mai Văn Châu"],
     "XN DTBD": ["Mai Văn Châu"],
     "Sàn GDBĐS": ["Ngô Thị Tâm"],
