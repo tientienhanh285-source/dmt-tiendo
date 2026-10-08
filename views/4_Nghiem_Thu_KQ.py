@@ -61,11 +61,11 @@ if 'role_mode' in st.session_state:
                     for leads in DEPT_LEADS.get(selected_company, {}).values():
                         all_truong_ban.extend(leads)
                 
-                if st.session_state.manager_dept == "HĐQT":
-                    # HĐQT sees all companies, do not filter by DonVi or NguoiChuTri
+                if st.session_state.manager_dept in ["HĐQT", "BLĐ"]:
+                    # HĐQT and BLĐ see all companies, do not filter by DonVi
                     if 'DonVi' in db_filters:
                         del db_filters['DonVi']
-                else:
+                if st.session_state.manager_dept != "HĐQT":
                     db_filters['NguoiChuTri'] = list(set(all_truong_ban))
             else:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
@@ -76,6 +76,28 @@ if 'role_mode' in st.session_state:
                     db_filters['PhongBan'] = st.session_state.manager_dept
         else:
             db_filters['PhongBan'] = st.session_state.manager_dept
+
+
+        # --- GLOBAL OVERRIDES ---
+        _mgr = st.session_state.get('manager_user', '')
+        if _mgr == "Nguyễn Thị Hạnh Tiên":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Trần Cường":
+            db_filters['NguoiChuTri'] = ["Trần Cường", "Ngô Thị Tâm"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Đồng Thị Nguyệt Nga":
+            db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
+            if '4_Nghiem_Thu' in __file__ or '9_Lap_Duyet_KPI' in __file__ or '4_Nghiem_Thu_KQ' in __file__:
+                db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Nguyễn Thị Ngọc Hà":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
 
 if 'display_df' not in locals():
     try:
@@ -96,6 +118,28 @@ if 'merged_projs' not in locals():
     merged_projs = []
 if 'db_projs' not in locals():
     db_projs = []
+
+
+        # --- GLOBAL OVERRIDES ---
+        _mgr = st.session_state.get('manager_user', '')
+        if _mgr == "Nguyễn Thị Hạnh Tiên":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Trần Cường":
+            db_filters['NguoiChuTri'] = ["Trần Cường", "Ngô Thị Tâm"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Đồng Thị Nguyệt Nga":
+            db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
+            if '4_Nghiem_Thu' in __file__ or '9_Lap_Duyet_KPI' in __file__ or '4_Nghiem_Thu_KQ' in __file__:
+                db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Nguyễn Thị Ngọc Hà":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
 
 if 'display_df' not in locals():
     import pandas as pd
@@ -165,11 +209,11 @@ if 'role_mode' in st.session_state:
                     for leads in DEPT_LEADS.get(selected_company, {}).values():
                         all_truong_ban.extend(leads)
                 
-                if st.session_state.manager_dept == "HĐQT":
-                    # HĐQT sees all companies, do not filter by DonVi or NguoiChuTri
+                if st.session_state.manager_dept in ["HĐQT", "BLĐ"]:
+                    # HĐQT and BLĐ see all companies, do not filter by DonVi
                     if 'DonVi' in db_filters:
                         del db_filters['DonVi']
-                else:
+                if st.session_state.manager_dept != "HĐQT":
                     db_filters['NguoiChuTri'] = list(set(all_truong_ban))
             else:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
@@ -180,6 +224,28 @@ if 'role_mode' in st.session_state:
                     db_filters['PhongBan'] = st.session_state.manager_dept
         else:
             db_filters['PhongBan'] = st.session_state.manager_dept
+
+
+        # --- GLOBAL OVERRIDES ---
+        _mgr = st.session_state.get('manager_user', '')
+        if _mgr == "Nguyễn Thị Hạnh Tiên":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Trần Cường":
+            db_filters['NguoiChuTri'] = ["Trần Cường", "Ngô Thị Tâm"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Đồng Thị Nguyệt Nga":
+            db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
+            if '4_Nghiem_Thu' in __file__ or '9_Lap_Duyet_KPI' in __file__ or '4_Nghiem_Thu_KQ' in __file__:
+                db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Nguyễn Thị Ngọc Hà":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
 
 if 'display_df' not in locals():
     try:
@@ -201,12 +267,56 @@ if 'merged_projs' not in locals():
 if 'db_projs' not in locals():
     db_projs = []
 
+
+        # --- GLOBAL OVERRIDES ---
+        _mgr = st.session_state.get('manager_user', '')
+        if _mgr == "Nguyễn Thị Hạnh Tiên":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Trần Cường":
+            db_filters['NguoiChuTri'] = ["Trần Cường", "Ngô Thị Tâm"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Đồng Thị Nguyệt Nga":
+            db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
+            if '4_Nghiem_Thu' in __file__ or '9_Lap_Duyet_KPI' in __file__ or '4_Nghiem_Thu_KQ' in __file__:
+                db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Nguyễn Thị Ngọc Hà":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+
 if 'display_df' not in locals():
     import pandas as pd
     display_df = pd.DataFrame(columns=['TenDuAn', 'TrangThai', 'Deadline'])
 if 'df' not in locals():
     df = display_df.copy()
 
+
+
+        # --- GLOBAL OVERRIDES ---
+        _mgr = st.session_state.get('manager_user', '')
+        if _mgr == "Nguyễn Thị Hạnh Tiên":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Trần Cường":
+            db_filters['NguoiChuTri'] = ["Trần Cường", "Ngô Thị Tâm"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Đồng Thị Nguyệt Nga":
+            db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
+            if '4_Nghiem_Thu' in __file__ or '9_Lap_Duyet_KPI' in __file__ or '4_Nghiem_Thu_KQ' in __file__:
+                db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        elif _mgr == "Nguyễn Thị Ngọc Hà":
+            db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"]
+            if 'DonVi' in db_filters: del db_filters['DonVi']
+            if 'PhongBan' in db_filters: del db_filters['PhongBan']
 
 if 'display_df' not in locals():
     import pandas as pd
