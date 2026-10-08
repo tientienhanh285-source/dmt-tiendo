@@ -1,0 +1,75 @@
+app.py:173         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+app_backup.py:63     "Ban Tài chính Kế toán": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
+app_backup.py:192         "Ban Tài chính Kế toán": "Đồng Thị Nguyệt Nga",
+app_backup.py:250             return ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+app_backup_full_16_09.py:150     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+app_backup_full_16_09.py:632         "TCKT": "Đồng Thị Nguyệt Nga",
+app_fixed.py:160         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+app_monolithic_backup.py:150     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+app_monolithic_backup.py:632         "TCKT": "Đồng Thị Nguyệt Nga",
+app_temp.py:135         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+app_temp.py:148         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+core_logic.py:90     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+core_logic.py:612         "TCKT": ["Đồng Thị Nguyệt Nga"],
+fix_dept_leads.py:12         "TCKT": ["Đồng Thị Nguyệt Nga", "Đoàn Thị Ngọc Nữ"],
+fix_dept_leads.py:24         "TCKT": ["Đồng Thị Nguyệt Nga"]
+fix_dept_leads.py:29         "TCKT": ["Đồng Thị Nguyệt Nga"]
+fix_dept_leads2.py:11         "TCKT": "Đồng Thị Nguyệt Nga",
+fix_dept_leads2.py:27         "TCKT": ["Đồng Thị Nguyệt Nga", "Đoàn Thị Ngọc Nữ"],
+fix_dept_leads2.py:39         "TCKT": ["Đồng Thị Nguyệt Nga"]
+fix_dept_leads2.py:44         "TCKT": ["Đồng Thị Nguyệt Nga"]
+fix_dept_leads3.py:12         "TCKT": ["Đồng Thị Nguyệt Nga", "Đoàn Thị Ngọc Nữ"],
+fix_dept_leads3.py:25         "TCKT": ["Đồng Thị Nguyệt Nga"]
+fix_dept_leads3.py:30         "TCKT": ["Đồng Thị Nguyệt Nga"]
+fix_dept_leads_final.py:12         "TCKT": ["Đồng Thị Nguyệt Nga"],
+fix_dept_leads_final.py:26         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+fix_hierarchy.py:6                     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+fix_hierarchy.py:14                     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+fix_hierarchy.py:19                     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+fix_hierarchy.py:26                     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+fix_hierarchy_latest.py:6                     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+fix_hierarchy_latest.py:13                     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+fix_hierarchy_latest.py:18                     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+fix_hierarchy_latest.py:25                     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+fix_nu.py:9     old_str_1 = '"Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"]'
+fix_nu.py:10     new_str_1 = '"Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"]'
+fix_nu.py:14     old_str_2 = r'\"Ban Tài chính Kế toán\": [\"Đồng Thị Nguyệt Nga\", \"Huỳnh Thị Hoàng Hà\", \"Nguyễn Thị Nhật Sang\", \"Đoàn Thị Ngọc Nữ\"]'
+fix_nu.py:15     new_str_2 = r'\"Ban Tài chính Kế toán\": [\"Đồng Thị Nguyệt Nga\", \"Huỳnh Thị Hoàng Hà\", \"Nguyễn Thị Nhật Sang\"]'
+fix_nu2.py:9     old_str = '"Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"]'
+fix_nu2.py:10     new_str = '"Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"]'
+fix_regex.py:7     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+fix_regex.py:14     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+patch_bld_hierarchy.py:9     old_nu = '"Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],'
+patch_bld_hierarchy.py:10     new_nu_ton = '"Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],\n                    "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],'
+patch_bld_hierarchy.py:16     old_nu2 = '"Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"]'
+patch_cienco.py:11                     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
+patch_cienco.py:22                     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"],
+patch_core_logic_leads.py:12         "TCKT": ["Đồng Thị Nguyệt Nga"],
+patch_core_logic_leads.py:25         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+patch_dept_leads.py:10         "TCKT": "Đồng Thị Nguyệt Nga",
+patch_roles_from_image.py:34         "TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
+patch_roles_from_image.py:60     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+patch_roles_from_image.py:110 for user in ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"]:
+patch_tckt.py:6     content = content.replace('"TCKT": ["Đồng Thị Nguyệt Nga"]', '"TCKT": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"]')
+patch_views_2.py:10                     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_2.py:34                 "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:8                         "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:25                             "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:45                     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:63                             "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:83                     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:100                         "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:124                             "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+patch_views_3.py:141                                 "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"],
+temp_dmt_self_approve.py:15             old_str_2 = '"Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"]'
+temp_dmt_self_approve.py:16             new_str_2 = '"Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Nguyễn Thị Như Can"]'
+test_workflow.py:7         "TCKT": ["Đồng Thị Nguyệt Nga"],
+test_workflow.py:32     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+test_workflow.py:39     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+test_workflow_fixed.py:7         "TCKT": ["Đồng Thị Nguyệt Nga"],
+test_workflow_fixed.py:32     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+test_workflow_fixed.py:39     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+test_workflow_fixed2.py:7         "TCKT": ["Đồng Thị Nguyệt Nga"],
+test_workflow_fixed2.py:33     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+test_workflow_fixed2.py:64     "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+test_workflow_fixed2.py:71     "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]

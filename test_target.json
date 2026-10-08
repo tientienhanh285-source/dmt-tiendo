@@ -1,0 +1,26 @@
+[
+  {
+    "target_id": "T001",
+    "project_name": "KĐT Phước Lý",
+    "department": "ĐBGT",
+    "target_name": "Xử lý dứt điểm việc bàn giao đất hộ bà Thủy",
+    "deadline": "Tháng 10/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0
+  },
+  {
+    "target_id": "T002",
+    "project_name": "KĐT Phước Lý",
+    "department": "ĐBGT",
+    "target_name": "Phối hợp ban KTXD tiến hành trồng cây xanh",
+    "deadline": "Tháng 11/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0
+  }
+]

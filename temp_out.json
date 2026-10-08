@@ -1,0 +1,26 @@
+[
+  {
+    "target_id": "T001",
+    "project_name": "Khu TĐC Phước Lý 2",
+    "department": "CBĐT",
+    "target_name": "GPMB: Tiếp tục theo dõi các hồ sơ còn lại, lập kế hoạch khi có vốn",
+    "deadline": "2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 11.499799999999999,
+    "disbursed_value": 0
+  },
+  {
+    "target_id": "T002",
+    "project_name": "Khu Đô Thị Phước Lý",
+    "department": "CBĐT",
+    "target_name": "GPMB: Theo dõi, rà soát hồ sơ các hộ chưa nhận tiền",
+    "deadline": "2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0.0,
+    "disbursed_value": 0
+  }
+]
