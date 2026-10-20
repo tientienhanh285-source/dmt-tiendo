@@ -1411,6 +1411,11 @@ def read_db(filters=None):
         df['ID'] = df['ID'].astype(str).str.strip()
         df = df.drop_duplicates(subset=['ID'], keep='last').reset_index(drop=True)
     
+    # Tự động loại bỏ các bản ghi trùng lặp nội dung do click đúp nhanh (cùng người, tên việc, dự án, hạn chót)
+    core_cols = ['DonVi', 'PhongBan', 'NguoiChuTri', 'TenDuAn', 'TenCongViec', 'NgayBatDau', 'Deadline']
+    if all(c in df.columns for c in core_cols):
+        df = df.drop_duplicates(subset=core_cols, keep='first').reset_index(drop=True)
+    
     for idx, row in df.iterrows():
         is_comp = str(row['TrangThai']).strip() == "Hoàn thành"
         start_d = row['NgayBatDau']

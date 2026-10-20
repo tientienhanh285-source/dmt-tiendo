@@ -512,9 +512,19 @@ with tab_new:
                     has_error = True
                     
             if not has_error:
-                with acquire_db_lock():
-                    
-                    fresh_df = read_db()
+                import time
+                submission_sig = f"{task_owner}_{project_name}_{task_name}_{task_start}_{task_deadline}".strip()
+                now_ts = time.time()
+                last_sig = st.session_state.get("last_new_task_sig")
+                last_time = st.session_state.get("last_new_task_time", 0)
+                
+                if last_sig == submission_sig and (now_ts - last_time) < 8:
+                    st.warning("⚠️ Công việc này vừa được gửi lưu thành công. Hệ thống đang đồng bộ, vui lòng không bấm Lưu liên tục.")
+                else:
+                    st.session_state["last_new_task_sig"] = submission_sig
+                    st.session_state["last_new_task_time"] = now_ts
+                    with acquire_db_lock():
+                        fresh_df = read_db()
                     
                     # Kiểm tra trùng lặp để cảnh báo người dùng (tránh click đúp)
                     is_duplicate = False
