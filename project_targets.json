@@ -3183,5 +3183,44 @@
     "budget_2026": 0,
     "disbursed_value": 0,
     "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+  },
+  {
+    "target_id": "TF9ED1D73",
+    "project_name": "KĐT Phước Lý, PL Mở rộng, TĐC Phước Lý 2 & KDC Bàu Mạc",
+    "department": "Sàn GDBĐS",
+    "target_name": "Bàn giao đất thực địa cho khách hàng đúng hạn",
+    "deadline": "Quý IV/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0,
+    "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+  },
+  {
+    "target_id": "T5723831A",
+    "project_name": "Tòa nhà Văn phòng DMT",
+    "department": "Sàn GDBĐS",
+    "target_name": "Khai thác & Cho thuê diện tích sàn tầng 4, 5, 6 (Tổng sàn: 620 m²)",
+    "deadline": "Quý IV/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0,
+    "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+  },
+  {
+    "target_id": "T67BADE2B",
+    "project_name": "Công tác Điều hành & Chỉ đạo chung",
+    "department": "Sàn GDBĐS",
+    "target_name": "Hoàn thành các nhiệm vụ chỉ đạo đột xuất & Phối hợp liên phòng ban",
+    "deadline": "Quý IV/2026",
+    "status": "Chưa bắt đầu",
+    "approved": false,
+    "progress": 0,
+    "budget_2026": 0,
+    "disbursed_value": 0,
+    "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
   }
 ]

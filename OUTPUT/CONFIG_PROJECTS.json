@@ -6,7 +6,8 @@
             "KĐT Phước Lý & Phước Lý MR",
             "TĐC Phước Lý 2 & Hoà Liên 5",
             "Dự án Phong Nam",
-            "Khu BT ST Hoà Ninh"
+            "Khu BT ST Hoà Ninh",
+            "KĐT Phước Lý, PL Mở rộng, TĐC Phước Lý 2 & KDC Bàu Mạc"
         ],
         "HẠ TẦNG & GIAO THÔNG": [
             "Tuyến đường Lê Trọng Tấn",
@@ -20,7 +21,11 @@
         ],
         "THƯƠNG MẠI & KHÁCH SẠN": [
             "Khách sạn DMT-Group",
-            "Du thuyền Happy Yacht (DMT Marina)"
+            "Du thuyền Happy Yacht (DMT Marina)",
+            "Tòa nhà Văn phòng DMT"
+        ],
+        "CÔNG TÁC ĐIỀU HÀNH & CHỈ ĐẠO": [
+            "Công tác Điều hành & Chỉ đạo chung"
         ]
     },
     "departments": [
@@ -30,7 +35,8 @@
         "Ban Kế hoạch Đầu tư",
         "Ban Chuẩn bị Đầu tư",
         "Ban Kỹ thuật",
-        "Ban Đền bù Giải tỏa"
+        "Ban Đền bù Giải tỏa",
+        "Sàn GDBĐS"
     ],
     "personnel_by_department": {
         "Ban Lãnh đạo": [
