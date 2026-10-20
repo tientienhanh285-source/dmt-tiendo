@@ -38,6 +38,8 @@ try:
 except:
     current_month = 9
 
+require_authentication()
+
 db_filters = {'DonVi': selected_company}
 if 'role_mode' in st.session_state:
     if st.session_state['role_mode'] == "Nhân viên" and st.session_state.get('is_personal_authenticated') and st.session_state.get('personal_user'):

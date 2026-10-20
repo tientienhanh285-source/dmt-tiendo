@@ -66,6 +66,34 @@ def acquire_db_lock(timeout=10):
     # Supabase uses Postgres which has atomic upserts, no need for local locks that break in Cloud
     yield
 
+def is_user_authenticated():
+    return bool(
+        st.session_state.get('is_admin_authenticated', False) or 
+        st.session_state.get('is_manager_authenticated', False) or 
+        st.session_state.get('is_personal_authenticated', False)
+    )
+
+def require_authentication():
+    if not is_user_authenticated():
+        st.markdown("""
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); padding: 40px 25px; border-radius: 14px; color: white; text-align: center; margin: 30px 0; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4); border: 1.5px solid rgba(249, 115, 22, 0.3);">
+                <div style="font-size: 54px; margin-bottom: 15px;">🔒</div>
+                <h2 style="color: #f97316; margin-bottom: 12px; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">YÊU CẦU ĐĂNG NHẬP HỆ THỐNG</h2>
+                <p style="font-size: 16px; color: #cbd5e1; max-width: 680px; margin: 0 auto 25px auto; line-height: 1.6;">
+                    Để bảo mật dữ liệu <b>Kế hoạch (KH)</b>, <b>Chỉ tiêu Dự án</b> và <b>Tiến độ công việc nội bộ</b> của DMT Group, các thông tin chỉ được hiển thị sau khi bạn xác thực danh tính.
+                </p>
+                <div style="background: rgba(255, 255, 255, 0.06); border: 1px dashed rgba(249, 115, 22, 0.6); border-radius: 10px; padding: 20px 24px; max-width: 620px; margin: 0 auto; text-align: left;">
+                    <p style="color: #ffd700; font-weight: 700; margin-bottom: 10px; font-size: 16px;">👉 Vui lòng đăng nhập tại thanh Menu bên trái (Sidebar):</p>
+                    <ul style="color: #e2e8f0; font-size: 15px; margin: 0; padding-left: 20px; line-height: 1.9;">
+                        <li><b>Nhân viên:</b> Chọn <i>QUYỀN TRUY CẬP: Nhân viên</i> ➔ Chọn Phòng ban ➔ Chọn Tên của bạn ➔ Bấm <b>Xác nhận Đăng nhập</b>.</li>
+                        <li><b>Quản lý:</b> Chọn <i>QUYỀN TRUY CẬP: Quản lý</i> ➔ Chọn Phòng ban ➔ Chọn Tên Quản lý ➔ Nhập mật khẩu.</li>
+                        <li><b>HR / Ban Quản trị:</b> Chọn <i>QUYỀN TRUY CẬP: HR</i> ➔ Nhập mật khẩu quản trị HR.</li>
+                    </ul>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        st.stop()
+
 # Page config - Light Theme is handled natively by Streamlit's default settings
 
 
