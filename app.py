@@ -125,7 +125,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
             new_personnel = {
                 "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
                 "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
+                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
                 "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
                 "XN XMTB": ["Đặng Hiền"],
                 "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
@@ -357,6 +357,20 @@ if "is_personal_authenticated" not in st.session_state:
 if "personal_user" not in st.session_state:
     st.session_state.personal_user = None
 
+# Quick access / URL testing support for mobile demonstration
+if hasattr(st, "query_params"):
+    if "user" in st.query_params:
+        st.session_state.is_personal_authenticated = True
+        st.session_state.personal_user = st.query_params["user"]
+        st.session_state['role_mode'] = "Nhân viên"
+        if "dept" in st.query_params:
+            st.session_state.auth_user_dept = st.query_params["dept"]
+    elif "manager" in st.query_params:
+        st.session_state.is_manager_authenticated = True
+        st.session_state.manager_user = st.query_params["manager"]
+        st.session_state.manager_dept = st.query_params.get("dept", "BLĐ")
+        st.session_state['role_mode'] = "Quản lý"
+
 if role_mode == "Quản lý":
     st.session_state.is_personal_authenticated = False
     st.session_state.personal_user = None
@@ -456,7 +470,7 @@ elif role_mode == "Nhân viên":
                     dept_leads = [dept_leads] if dept_leads else []
                 
                 # Exceptions for those who can login as both Manager and Employee
-                exceptions = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Mai Văn Châu", "Nguyễn Văn Bồn"]
+                exceptions = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Mai Văn Châu", "Nguyễn Văn Bồn", "Nguyễn Phong Trung", "Đặng Hiền", "Đặng Hiển"]
                 nhan_vien_list = [p for p in personnel_list if p not in dept_leads or p in exceptions]
                 sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
                 if sel_login_user != "-- Chọn --":

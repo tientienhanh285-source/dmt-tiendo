@@ -428,7 +428,7 @@ def load_config():
                 "personnel_by_department": {
                     "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
                     "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                    "Ban Kỹ thuật": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
+                    "Ban Kỹ thuật": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
                     "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
                     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
                     "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
@@ -669,10 +669,15 @@ DEPT_LEADS = {
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
         "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
+        "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],
+        "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
         "KT": ["Phạm Quang Nghĩa"],
-        "BCH CT": ["Nguyễn Phong Trung"],
-        "XN XMTB": ["Đặng Hiền"]
+        "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
+        "BCH CT": ["Trần Văn Trọng"],
+        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
+        "XN XMTB": ["Trần Văn Trọng"],
+        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"]
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
         "HĐQT": ["Đặng Ngọc Hoàng"],

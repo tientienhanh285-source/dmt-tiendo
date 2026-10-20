@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ Tay Hướng Dẫn Sử Dụng Trên Điện Thoại — DMT Group</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-dark: #071527;
+            --navy-primary: #0a2540;
+            --navy-surface: #0f355c;
+            --navy-light: #1e4976;
+            --royal-blue: #0066ff;
+            --royal-light: #38bdf8;
+            --gold: #f59e0b;
+            --emerald: #10b981;
+            --rose: #f43f5e;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Header Bar */
+        .header-bar {
+            background: linear-gradient(135deg, #071527 0%, #0a2540 50%, #0f355c 100%);
+            color: #ffffff;
+            padding: 36px 20px 28px 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            position: relative;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 5px 16px;
+            border-radius: 9999px;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .header-bar h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .header-bar h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--royal-light);
+            margin-bottom: 14px;
+        }
+
+        .header-bar p {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .quick-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--royal-blue);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: #0052cc;
+            transform: translateY(-2px);
+        }
+
+        .btn-action.btn-gold {
+            background: #d97706;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+        .btn-action.btn-gold:hover {
+            background: #b45309;
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px 16px 80px 16px;
+        }
+
+        /* TOC Navigation */
+        .toc-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .toc-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--navy-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 10px;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            color: var(--navy-surface);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .toc-link:hover {
+            background: #e2e8f0;
+            color: var(--royal-blue);
+            padding-left: 16px;
+        }
+
+        /* Card Sections */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            scroll-margin-top: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .section-num {
+            background: var(--navy-primary);
+            color: #ffffff;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--navy-primary);
+        }
+
+        /* Phone mockup presentation */
+        .phone-mockup-wrapper {
+            margin: 22px 0;
+            text-align: center;
+        }
+
+        .phone-mockup-card {
+            display: inline-block;
+            background: #0f172a;
+            border-radius: 36px;
+            padding: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            border: 3px solid #334155;
+            max-width: 360px;
+            width: 100%;
+        }
+
+        .phone-screen {
+            border-radius: 26px;
+            overflow: hidden;
+            background: #ffffff;
+            line-height: 0;
+        }
+
+        .phone-screen img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .phone-caption {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--royal-blue);
+        }
+
+        /* Callout boxes */
+        .alert-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--royal-blue);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 18px 0;
+            font-size: 0.92rem;
+            color: #1e3a8a;
+        }
+
+        .alert-box.alert-gold {
+            background: #fffbeb;
+            border-color: #d97706;
+            color: #92400e;
+        }
+
+        .alert-box.alert-green {
+            background: #ecfdf5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        /* Steps */
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+            margin: 16px 0;
+        }
+
+        .step-item {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 44px;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+        }
+
+        .step-item::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 28px;
+            height: 28px;
+            background: #e0f2fe;
+            color: #0369a1;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Comparison table */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table.custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        table.custom-table th {
+            background: var(--navy-primary);
+            color: #ffffff;
+            font-weight: 700;
+            text-align: left;
+            padding: 12px 14px;
+        }
+
+        table.custom-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        table.custom-table tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        /* FAQ Accordion */
+        .faq-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+        }
+
+        .faq-q {
+            font-weight: 700;
+            color: var(--navy-primary);
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .faq-a {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            padding-left: 24px;
+            line-height: 1.55;
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        @media print {
+            .header-bar {
+                background: #0a2540 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .btn-action, .toc-card {
+                display: none !important;
+            }
+            .phone-mockup-card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                page-break-inside: avoid;
+            }
+            .section-card {
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header-bar">
+        <span class="header-badge">TẬP ĐOÀN DMT GROUP • BAN HÀNH CHÍNH NHÂN SỰ</span>
+        <h1>SỔ TAY HƯỚNG DẪN THAO TÁC TRÊN ĐIỆN THOẠI (SMARTPHONE)</h1>
+        <h2>HỆ THỐNG QUẢN LÝ TIẾN ĐỘ CÔNG VIỆC & ĐÁNH GIÁ KPI</h2>
+        <p>Cầm tay chỉ việc cho Toàn thể Cán bộ Nhân viên & Cấp Quản lý — Tiện lợi, Mọi lúc, Mọi nơi!</p>
+        
+        <div class="quick-actions">
+            <button class="btn-action" onclick="window.print()">🖨️ In / Lưu ra file PDF</button>
+            <a href="Huong_Dan_Su_Dung_Mobile_DMT.docx" class="btn-action btn-gold">📄 Tải File Word (.docx)</a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Mục lục nhanh -->
+        <div class="toc-card">
+            <div class="toc-title">📑 Danh Mục Hướng Dẫn Thao Tác Nhanh</div>
+            <div class="toc-grid">
+                <a href="#loi-mo-dau" class="toc-link">⚡ Mẹo Đưa Website Ra Màn Hình Chính</a>
+                <a href="#5-nguyen-tac" class="toc-link">🎯 5 Nguyên Tắc Vận Hành Cốt Lõi</a>
+                <a href="#dang-nhap" class="toc-link">📱 Phần 1: Đăng Nhập Trên Điện Thoại</a>
+                <a href="#dashboard" class="toc-link">📊 Phần 2: Dashboard & Tiến Độ Cá Nhân</a>
+                <a href="#danh-sach" class="toc-link">📋 Phần 3: Tra Cứu Danh Sách Công Việc</a>
+                <a href="#menu-dieu-huong" class="toc-link">🧭 Phần 4: Thanh Menu Điều Hướng</a>
+                <a href="#cap-nhat-viec" class="toc-link">✍️ Phần 5: Đăng Ký Việc & Cập Nhật Tiến Độ</a>
+                <a href="#quan-ly-duyet" class="toc-link">👥 Phần 6: Hướng Dẫn Dành Cho Quản Lý</a>
+                <a href="#faq" class="toc-link">❓ Phần 7: 6 Câu Hỏi Thường Gặp (FAQ)</a>
+            </div>
+        </div>
+
+        <!-- LỜI MỞ ĐẦU -->
+        <div class="section-card" id="loi-mo-dau">
+            <div class="section-header">
+                <div class="section-num">💡</div>
+                <div class="section-title">Mẹo Tuyệt Vời: Đưa Phần Mềm Ra Màn Hình Chính Điện Thoại</div>
+            </div>
+            <p>Để mở phần mềm nhanh như một ứng dụng (App) mà không cần mở trình duyệt và gõ lại link mỗi ngày, các anh chị làm theo mẹo 10 giây sau:</p>
+            
+            <div class="alert-box alert-green">
+                <strong>🍏 Đối với iPhone (Dùng trình duyệt Safari):</strong><br>
+                Mở link phần mềm ➔ Chạm vào nút <strong>Chia sẻ</strong> (biểu tượng hình vuông có mũi tên chỉ lên ở dưới đáy) ➔ Cuộn xuống chọn <strong>"Thêm vào MH chính" (Add to Home Screen)</strong> ➔ Bấm <strong>Thêm</strong>.
+            </div>
+
+            <div class="alert-box alert-green">
+                <strong>🤖 Đối với điện thoại Android (Samsung, Oppo, Xiaomi...):</strong><br>
+                Mở link trên Chrome ➔ Chạm vào dấu <strong>3 chấm góc trên bên phải</strong> ➔ Chọn <strong>"Cài đặt ứng dụng"</strong> hoặc <strong>"Thêm vào Màn hình chính"</strong>.
+            </div>
+            <p>✨ <em>Kết quả: Ngay lập tức trên màn hình điện thoại của bạn sẽ xuất hiện icon của phần mềm DMT Group. Mỗi lần cần làm việc chỉ cần chạm vào là mở ngay!</em></p>
+        </div>
+
+        <!-- 5 NGUYÊN TẮC -->
+        <div class="section-card" id="5-nguyen-tac">
+            <div class="section-header">
+                <div class="section-num">🎯</div>
+                <div class="section-title">5 Nguyên Tắc Vận Hành Cốt Lõi (Cũ vs Mới)</div>
+            </div>
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Nội dung</th>
+                            <th style="width: 37%; color: #fca5a5;">❌ Cách làm cũ (Thủ công / Zalo)</th>
+                            <th style="width: 38%; color: #86efac;">✅ Nguyên tắc mới trên phần mềm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Nguồn gốc việc</strong></td>
+                            <td>Tự nghĩ việc rời rạc, làm việc sự vụ không rõ phục vụ mục tiêu nào của Ban.</td>
+                            <td><strong style="color: #10b981;">Gắn liền Kế hoạch năm:</strong> Chọn Dự án ➔ Chọn Chỉ tiêu Ban ➔ Nhập tên việc cụ thể.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Trách nhiệm hai chiều</strong></td>
+                            <td>Coi báo cáo là việc của nhân viên; sếp giao việc miệng qua Zalo dễ quên, không theo dõi việc sếp.</td>
+                            <td><strong style="color: #10b981;">Trách nhiệm 2 chiều:</strong> Cả sếp và nhân viên đều làm việc; sếp phân rã chỉ tiêu và tự tạo việc của mình.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Cập nhật tiến độ</strong></td>
+                            <td>Dồn toa cuối tháng mới cuống cuồng nhớ lại; vướng mắc để dồn cuối kỳ mới vỡ lở.</td>
+                            <td><strong style="color: #10b981;">Cập nhật Real-time:</strong> Báo cáo ngay khi làm; có nguy cơ trễ hạn báo sớm để Ban hỗ trợ.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Nghiệm thu kết quả</strong></td>
+                            <td>Báo 'Đã xong' bằng miệng hoặc giấy tờ chung chung; sếp duyệt theo cảm tính.</td>
+                            <td><strong style="color: #10b981;">Minh chứng thực tế:</strong> Bắt buộc đính kèm File/Link minh chứng; nghiệm thu theo kết quả thực tế.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5. Cấp độ đánh giá</strong></td>
+                            <td>Ngộ nhận: Xong việc cá nhân là tưởng Chỉ tiêu Ban xong; dẫn đến số liệu ảo.</td>
+                            <td><strong style="color: #10b981;">Rạch ròi 2 cấp độ:</strong> Việc cá nhân xong KHÔNG mặc nhiên là xong Chỉ tiêu; Quản lý nghiệm thu Master View.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert-box alert-gold">
+                🌱 <strong>Cam kết vàng Quý IV/2026:</strong> Đây là giai đoạn chạy thử (Pilot) để mọi người làm quen tay, giải phóng áp lực làm báo cáo thủ công. <strong>Hoàn toàn không trừ lương, không xử phạt bất kỳ ai!</strong>
+            </div>
+        </div>
+
+        <!-- PHẦN 1: ĐĂNG NHẬP -->
+        <div class="section-card" id="dang-nhap">
+            <div class="section-header">
+                <div class="section-num">1</div>
+                <div class="section-title">Hướng Dẫn Đăng Nhập Trên Điện Thoại</div>
+            </div>
+            <p>Giao diện di động tự động thu gọn bảng điều khiển sang bên trái để tối ưu diện tích màn hình điện thoại:</p>
+            
+            <ul class="step-list">
+                <li class="step-item"><strong>Mở thanh Menu bên trái:</strong> Chạm vào biểu tượng mũi tên <strong>&gt;</strong> ở góc trên cùng bên trái màn hình.</li>
+                <li class="step-item"><strong>Chọn Đơn vị:</strong> Chạm chọn Công ty thành viên của bạn (Tập đoàn DMT, Cienco, v.v.).</li>
+                <li class="step-item"><strong>Chọn Phòng ban:</strong> Chạm chọn Ban/Phòng ban trực thuộc.</li>
+                <li class="step-item"><strong>Chọn Tên nhân viên:</strong> Chạm vào danh sách nhân sự và chọn đúng tên của bạn (Nhân viên không cần nhập mật khẩu).</li>
+                <li class="step-item"><strong>Nếu là Quản lý (Trưởng/Phó Ban):</strong> Chạm chọn vai trò <em>"Quản lý / Lãnh đạo"</em> và nhập mật khẩu: <code>quanly123</code>.</li>
+                <li class="step-item"><strong>Vào màn hình chính:</strong> Chạm vào dấu <strong>X</strong> hoặc chạm tay vào khoảng trống bên phải màn hình để đóng menu.</li>
+            </ul>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup-card">
+                    <div class="phone-screen">
+                        <img src="screenshots_mobile/mobile_01_dang_nhap.png" alt="Màn hình đăng nhập trên điện thoại">
+                    </div>
+                </div>
+                <div class="phone-caption">📱 Hình 1: Thao tác chọn phòng ban và tên nhân sự trong thanh trượt bên trái</div>
+            </div>
+        </div>
+
+        <!-- PHẦN 2: DASHBOARD -->
+        <div class="section-card" id="dashboard">
+            <div class="section-header">
+                <div class="section-num">2</div>
+                <div class="section-title">Màn Hình Tổng Quan (Dashboard Cá Nhân)</div>
+            </div>
+            <p>Sau khi chọn tên, trang chủ sẽ ngay lập tức tải bảng điều khiển tổng quan cá nhân của bạn:</p>
+
+            <ul class="step-list">
+                <li class="step-item"><strong>4 Thẻ Thống Kê Nhanh:</strong>
+                    <br>• <span style="color: #0284c7; font-weight:700;">Tổng công việc:</span> Số lượng việc trong tháng.
+                    <br>• <span style="color: #10b981; font-weight:700;">Đã hoàn thành:</span> Việc đã được duyệt xong.
+                    <br>• <span style="color: #f59e0b; font-weight:700;">Đang thực hiện:</span> Việc đang trong tiến trình làm.
+                    <br>• <span style="color: #f43f5e; font-weight:700;">Cảnh báo quá hạn:</span> Việc đã vượt mốc Deadline cần ưu tiên gấp!
+                </li>
+                <li class="step-item"><strong>Thanh Tiến Độ Tháng (%):</strong> Hiển thị tỷ lệ hoàn thành kế hoạch công việc thực tế trong tháng của bạn.</li>
+            </ul>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup-card">
+                    <div class="phone-screen">
+                        <img src="screenshots_mobile/mobile_02_dashboard_nhanvien.png" alt="Màn hình Dashboard cá nhân trên mobile">
+                    </div>
+                </div>
+                <div class="phone-caption">📱 Hình 2: 4 thẻ số liệu KPI và thanh đo tiến độ cá nhân trên điện thoại</div>
+            </div>
+        </div>
+
+        <!-- PHẦN 3: DANH SÁCH VIỆC -->
+        <div class="section-card" id="danh-sach">
+            <div class="section-header">
+                <div class="section-num">3</div>
+                <div class="section-title">Xem & Tra Cứu Danh Sách Công Việc</div>
+            </div>
+            <p>Cuộn màn hình điện thoại xuống để kiểm tra toàn bộ danh mục công việc được phân công:</p>
+
+            <ul class="step-list">
+                <li class="step-item"><strong>Thao tác vuốt ngang:</strong> Bảng công việc trên mobile hỗ trợ vuốt sang ngang bằng ngón tay để xem các cột: Hạn chót (Deadline), Người phối hợp, Ghi chú, Link đính kèm...</li>
+                <li class="step-item"><strong>Màu sắc trực quan:</strong> Nhận diện tiến độ cực nhanh:
+                    <br>🟢 Xanh lá: Đã xong
+                    <br>🔵 Xanh dương: Đang thực hiện
+                    <br>🟡 Vàng/Cam: Chờ duyệt hoặc Vướng mắc khách quan
+                    <br>🔴 Đỏ: Quá hạn
+                </li>
+            </ul>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup-card">
+                    <div class="phone-screen">
+                        <img src="screenshots_mobile/mobile_03_danh_sach_cong_viec.png" alt="Bảng danh sách công việc trên điện thoại">
+                    </div>
+                </div>
+                <div class="phone-caption">📱 Hình 3: Danh sách công việc cá nhân được tối ưu hiển thị vừa vặn màn hình di động</div>
+            </div>
+        </div>
+
+        <!-- PHẦN 4: THANH ĐIỀU HƯỚNG -->
+        <div class="section-card" id="menu-dieu-huong">
+            <div class="section-header">
+                <div class="section-num">4</div>
+                <div class="section-title">Chuyển Trang Qua Thanh Menu Điều Hướng</div>
+            </div>
+            <p>Bất kỳ lúc nào, chỉ cần chạm vào biểu tượng Menu góc trên bên trái để di chuyển giữa các chức năng:</p>
+
+            <ul class="step-list">
+                <li class="step-item"><strong>1. 📊 Tổng Quan:</strong> Xem bảng thống kê và biểu đồ tiến độ.</li>
+                <li class="step-item"><strong>2. 📋 Danh Sách Công Việc:</strong> Tra cứu, lọc và sắp xếp việc.</li>
+                <li class="step-item"><strong>3. ✍️ Cập Nhật Tiến Độ:</strong> Tạo việc mới & báo cáo kết quả hoàn thành.</li>
+                <li class="step-item"><strong>4. ⭐ Đánh Giá KPI:</strong> Xem bảng điểm tháng, điểm thưởng (+5đ) và xếp hạng A/B/C/D & thưởng A* (110%-120% lương).</li>
+                <li class="step-item"><strong>5. 👥 Quản Lý & Phê Duyệt:</strong> Dành cho Trưởng/Phó Ban duyệt việc và nghiệm thu chỉ tiêu.</li>
+            </ul>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup-card">
+                    <div class="phone-screen">
+                        <img src="screenshots_mobile/mobile_04_sidebar_menu.png" alt="Menu điều hướng trên điện thoại">
+                    </div>
+                </div>
+                <div class="phone-caption">📱 Hình 4: Menu điều hướng đầy đủ 5 phân hệ chức năng trên điện thoại</div>
+            </div>
+        </div>
+
+        <!-- PHẦN 5: TẠO VIỆC & CẬP NHẬT -->
+        <div class="section-card" id="cap-nhat-viec">
+            <div class="section-header">
+                <div class="section-num">5</div>
+                <div class="section-title">Đăng Ký Việc Mới & Cập Nhật Tiến Độ (Thao Tác Trọng Tâm)</div>
+            </div>
+
+            <h3 style="color: var(--navy-primary); margin-bottom: 10px;">5.1. Trình tự 3 bước tạo việc mới chuẩn:</h3>
+            <ul class="step-list">
+                <li class="step-item"><strong>Bước 1 — Chọn Dự Án:</strong> Chạm vào ô chọn Dự án (Ví dụ: Công tác Quản trị, Dự án A...).</li>
+                <li class="step-item"><strong>Bước 2 — Chọn Chỉ Tiêu:</strong> Chọn Mục tiêu Ban mà công việc này phục vụ.</li>
+                <li class="step-item"><strong>Bước 3 — Nhập Tên Việc:</strong> Gõ tên công việc cụ thể, có kết quả đo đếm được.</li>
+            </ul>
+
+            <div class="alert-box alert-gold">
+                🌟 <strong>ĐẶC BIỆT — TÍNH NĂNG "TÁI TẠO ĐỊNH KỲ" (1-CLICK):</strong><br>
+                Đối với 80% công việc lặp lại hàng tháng (Tính lương, báo cáo thuế, tuần tra công trường, bảo trì...): Đầu tháng bạn chỉ cần bấm đúng <strong>1 nút: "TÁI TẠO ĐỊNH KỲ"</strong>. Toàn bộ danh mục việc chuẩn của tháng trước sẽ tự động sinh ra cho tháng mới, tiết kiệm 90% thời gian nhập liệu!
+            </div>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup-card">
+                    <div class="phone-screen">
+                        <img src="screenshots_mobile/mobile_06_form_nhap_lieu.png" alt="Form nhập liệu công việc trên điện thoại">
+                    </div>
+                </div>
+                <div class="phone-caption">📱 Hình 5: Giao diện nhập thông tin công việc, chọn thời hạn và người phối hợp</div>
+            </div>
+
+            <h3 style="color: var(--navy-primary); margin: 20px 0 10px 0;">5.2. Báo cáo hoàn thành & Nút "Vướng mắc khách quan":</h3>
+            <ul class="step-list">
+                <li class="step-item"><strong>Báo Hoàn Thành:</strong> Chuyển trạng thái sang "Hoàn thành", ghi tóm tắt kết quả và dán đường Link minh chứng (Link Google Drive, OneDrive, Zalo docs...).</li>
+                <li class="step-item"><strong>Gặp Vướng Mắc Khách Quan:</strong> Nếu bị chậm do đối tác chậm nộp tài liệu, cơ quan nhà nước chưa trả lời, mưa bão công trường... 👉 <strong>Bấm chọn "Vướng mắc khách quan"</strong> và giải trình ngắn gọn. Quản lý sẽ thẩm định và duyệt bảo lưu điểm số, <span style="color: #10b981; font-weight:700;">bạn không bị trừ điểm oan!</span></li>
+            </ul>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup-card">
+                    <div class="phone-screen">
+                        <img src="screenshots_mobile/mobile_07_form_nut_luu.png" alt="Nút Lưu dữ liệu trên điện thoại">
+                    </div>
+                </div>
+                <div class="phone-caption">📱 Hình 6: Khung nhập minh chứng, ghi chú và nút Lưu dữ liệu</div>
+            </div>
+
+            <div class="alert-box alert-gold">
+                ⚠️ <strong>LƯU Ý KỸ THUẬT QUAN TRỌNG TRÊN MOBILE:</strong><br>
+                Khi bấm nút <strong>"LƯU CÔNG VIỆC"</strong>, bạn hãy chạm <strong>ĐÚNG 1 LẦN</strong> và chờ khoảng 1-2 giây cho hệ thống thông báo <em>"Cập nhật thành công!"</em>. Tránh chạm tay liên tiếp 2 lần để không bị tạo 2 công việc giống hệt nhau!
+            </div>
+        </div>
+
+        <!-- PHẦN 6: QUẢN LÝ -->
+        <div class="section-card" id="quan-ly-duyet">
+            <div class="section-header">
+                <div class="section-num">6</div>
+                <div class="section-title">Hướng Dẫn Dành Cho Cấp Quản Lý (Trưởng / Phó Ban)</div>
+            </div>
+            <p>Dành riêng cho các anh chị Lãnh đạo đơn vị và Trưởng/Phó Ban điều hành công việc trên điện thoại:</p>
+
+            <ul class="step-list">
+                <li class="step-item"><strong>Đăng nhập Quản lý:</strong> Chọn vai trò "Quản lý / Lãnh đạo", nhập mật khẩu <code>quanly123</code>.</li>
+                <li class="step-item"><strong>Giám sát toàn Ban:</strong> Nắm bắt tỷ lệ hoàn thành công việc của từng nhân viên ngay trên điện thoại khi đang ngồi họp hoặc đi công tác.</li>
+                <li class="step-item"><strong>Duyệt Công Việc (Approve Task — Cấp độ 1):</strong> Mở danh sách chờ duyệt, chạm vào link minh chứng để kiểm tra sản phẩm thực tế, sau đó bấm <strong>"Duyệt"</strong>.</li>
+                <li class="step-item"><strong>Duyệt Vướng Mắc Khách Quan:</strong> Xác nhận tỷ lệ hoàn thành thực tế (50%, 80%...) khi nhân viên gặp khó khăn ngoài tầm kiểm soát để bảo vệ điểm số cho nhân viên.</li>
+                <li class="step-item"><strong>Nghiệm Thu Chỉ Tiêu Ban (Master View — Cấp độ 2):</strong> Dù việc của nhân viên đạt 100%, Chỉ tiêu Ban vẫn không tự đóng. Trưởng ban là người chốt chặn chất lượng cuối cùng, trực tiếp bấm <strong>"Nghiệm thu Chỉ tiêu"</strong> để hoàn tất Kế hoạch năm của Ban.</li>
+            </ul>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup-card">
+                    <div class="phone-screen">
+                        <img src="screenshots_mobile/mobile_11_quan_ly_dashboard.png" alt="Màn hình quản lý trên điện thoại">
+                    </div>
+                </div>
+                <div class="phone-caption">📱 Hình 7: Màn hình kiểm soát tiến độ toàn phòng ban dành cho Cấp Quản lý</div>
+            </div>
+        </div>
+
+        <!-- PHẦN 7: FAQ -->
+        <div class="section-card" id="faq">
+            <div class="section-header">
+                <div class="section-num">7</div>
+                <div class="section-title">Giải Đáp 6 Câu Hỏi Thường Gặp (FAQ)</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">❓ Câu 1: Lỡ bấm nhầm hoặc tạo sai tên việc thì sửa thế nào trên điện thoại?</div>
+                <div class="faq-a">👉 Bạn chỉ cần vào trang <strong>"Cập nhật tiến độ"</strong>, chọn <strong>"Sửa công việc đã có"</strong>, chọn đúng tên việc và gõ lại nội dung. Quản lý cũng có quyền xóa các việc bị tạo trùng hoặc lỗi.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">❓ Câu 2: Không tải được file nặng trực tiếp từ điện thoại thì đính kèm thế nào?</div>
+                <div class="faq-a">👉 Rất dễ dàng! Bạn chỉ cần tải file lên Google Drive, OneDrive hoặc Zalo, sau đó sao chép (Copy) đường link và dán vào ô <strong>"Link minh chứng"</strong>. Thao tác này vừa nhanh vừa không tốn dung lượng bộ nhớ điện thoại.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">❓ Câu 3: Một công việc có 2 người cùng làm thì ai là người báo cáo?</div>
+                <div class="faq-a">👉 Người được phân công là <strong>"Người chủ trì"</strong> sẽ là người tạo việc và cập nhật kết quả. <strong>"Người phối hợp"</strong> vẫn được ghi nhận công sức và đánh giá tương ứng.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">❓ Câu 4: Quên mật khẩu đăng nhập của Quản lý thì liên hệ ai?</div>
+                <div class="faq-a">👉 Mật khẩu mặc định là <code>quanly123</code>. Nếu bạn cần đổi mật khẩu hoặc cấp lại, vui lòng nhắn trực tiếp cho Ban HCNS để được hỗ trợ trong 1 phút.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">❓ Câu 5: Đến cuối tháng mà việc chưa xong do lý do khách quan thì giải trình thế nào?</div>
+                <div class="faq-a">👉 Bạn hãy chọn trạng thái <strong>"Vướng mắc khách quan"</strong> và ghi rõ lý do. Quản lý sẽ thẩm định và bảo lưu điểm số KPI, bạn hoàn toàn không bị trừ điểm oan.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">❓ Câu 6: Trong Quý IV này nếu thao tác nhầm hoặc việc bị chậm thì có bị trừ lương không?</div>
+                <div class="faq-a">👉 <strong>HOÀN TOÀN KHÔNG!</strong> Ban Lãnh đạo và Ban HCNS khẳng định Quý IV/2026 là giai đoạn <strong>CHẠY THỬ (PILOT)</strong> để toàn thể cán bộ nhân viên làm quen tay. Tuyệt đối không phạt hay trừ lương của bất kỳ ai!</div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer-note">
+            <p><strong>TẬP ĐOÀN DMT GROUP — BAN HÀNH CHÍNH NHÂN SỰ</strong></p>
+            <p style="margin-top: 4px;">🤝 Đồng hành 24/7 cùng toàn thể Cán bộ Nhân viên — Hoàn thiện hệ thống vì người dùng!</p>
+            <p style="margin-top: 6px; color: var(--royal-blue); font-weight: 600;">Hotline / Kênh hỗ trợ Zalo: Ban Hành Chính Nhân Sự DMT Group</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
