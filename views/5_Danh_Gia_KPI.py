@@ -46,7 +46,7 @@ if 'role_mode' in st.session_state:
         db_filters['NguoiChuTri'] = st.session_state.personal_user
     elif st.session_state['role_mode'] == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_dept'):
         manager_user = st.session_state.get('manager_user', '')
-        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình"]
+        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
         if manager_user in bld_members:
             if st.session_state.manager_dept in ["BLĐ", "HĐQT"]:
                 bld_hierarchy = {
@@ -343,7 +343,7 @@ with kpi_tab1:
         if personnel_kpi:
             kpi_month_df = pd.DataFrame(personnel_kpi)
             manager_user = st.session_state.get('manager_user', '')
-            bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình"]
+            bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
             if manager_user in bld_members:
                 if selected_dept_m == "BLĐ":
                     bld_hierarchy = {
@@ -683,7 +683,7 @@ if 'kpi_tab2' in locals():
                 if yearly_data:
                     yearly_df = pd.DataFrame(yearly_data)
                     manager_user = st.session_state.get('manager_user', '')
-                    bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình"]
+                    bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
                     if manager_user in bld_members:
                         if selected_dept_y == "BLĐ":
                             bld_hierarchy = {

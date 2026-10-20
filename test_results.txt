@@ -1,0 +1,4 @@
+Hoàng Hà exists in DMT TCKT: True
+Thức exists in DMT KHĐT: True
+Targets for TCKT: 56
+Targets for KHĐT: 42

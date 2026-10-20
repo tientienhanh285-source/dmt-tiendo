@@ -124,7 +124,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
             comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT"]
             new_personnel = {
                 "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-                "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
+                "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
                 "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
                 "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
                 "XN XMTB": ["Đặng Hiền"],

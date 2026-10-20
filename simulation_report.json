@@ -1,0 +1,240 @@
+{
+  "total_simulations": 100,
+  "passed": 97,
+  "failed": 3,
+  "warnings": [],
+  "errors": [
+    "calculate_time_progress expected 50.0, got 99.0",
+    "calculate_time_progress expected 50.0, got 99.0",
+    "calculate_time_progress expected 50.0, got 99.0"
+  ],
+  "performance_timings": [],
+  "department_audit": {},
+  "personnel_audit": [
+    {
+      "name": "Cao Thuỷ Tiên",
+      "dept": "CBĐT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Huỳnh Thị Hoàng Hà",
+      "dept": "TCKT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Hồ Văn Khoa",
+      "dept": "CBĐT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Lê Ngọc Tú Uyên",
+      "dept": "HCNS",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Lê Thị Hải",
+      "dept": "TCKT",
+      "company": "CTY CP DMT - MARINA (Du thuyền Happy Yacht)"
+    },
+    {
+      "name": "Lê Đông",
+      "dept": "BCH CT",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Lê Đông",
+      "dept": "BCH CT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Mai Văn Châu",
+      "dept": "XN DTBD",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Băng Trinh",
+      "dept": "HCNS",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Ngọc Tôn",
+      "dept": "BLĐ",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Phong Trung",
+      "dept": "BCH CT",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Nguyễn Phong Trung",
+      "dept": "BCH CT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Quốc Vinh",
+      "dept": "DA",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Thị Hạnh Tiên",
+      "dept": "HCNS",
+      "company": "CTY CP DMT - MARINA (Du thuyền Happy Yacht)"
+    },
+    {
+      "name": "Nguyễn Thị Hạnh Tiên",
+      "dept": "HCNS",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Thị Mỹ Phương",
+      "dept": "HCNS",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Nguyễn Thị Ngọc Hà",
+      "dept": "TCKT",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Nguyễn Thị Như Can",
+      "dept": "TCKT",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Nguyễn Thị Nhật Sang",
+      "dept": "TCKT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Trần Thức",
+      "dept": "KHĐT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Văn Bồn",
+      "dept": "KT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Đình Hiếu",
+      "dept": "DA",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Đình Thắng",
+      "dept": "DA",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Nguyễn Đức Lợi",
+      "dept": "KHĐT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Ngô Thị Tâm",
+      "dept": "Sàn GDBĐS",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Phan Thị Kim Cúc",
+      "dept": "KHĐT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Phan Thị Mỹ Hạnh",
+      "dept": "CBĐT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Phạm Quang Nghĩa",
+      "dept": "KT",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Phạm Văn Long",
+      "dept": "BCH CT",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Phạm Văn Long",
+      "dept": "BCH CT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Thái Văn Thành",
+      "dept": "BLĐ",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Trần Cường",
+      "dept": "BLĐ",
+      "company": "CTY CP DMT - MARINA (Du thuyền Happy Yacht)"
+    },
+    {
+      "name": "Trần Quốc Thể",
+      "dept": "BLĐ",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Trần Tin",
+      "dept": "KHĐT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Trần Văn Trọng",
+      "dept": "BLĐ",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Trần Văn Trọng",
+      "dept": "KT",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Đoàn Thị Ngọc Nữ",
+      "dept": "BLĐ",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Đặng Công Nhựt",
+      "dept": "ĐBGT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Đặng Hiền",
+      "dept": "XN XMTB",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Đặng Hiền",
+      "dept": "XN XMTB",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Đặng Ngọc Hoàng",
+      "dept": "BLĐ",
+      "company": "CTY CP DMT - MARINA (Du thuyền Happy Yacht)"
+    },
+    {
+      "name": "Đặng Thanh Quang",
+      "dept": "ĐBGT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Đặng Thị Lan Ngọc",
+      "dept": "BLĐ",
+      "company": "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+    },
+    {
+      "name": "Đặng Thị Mỹ Hạnh",
+      "dept": "ĐBGT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    },
+    {
+      "name": "Đồng Thị Nguyệt Nga",
+      "dept": "TCKT",
+      "company": "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"
+    }
+  ]
+}
