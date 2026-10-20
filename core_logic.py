@@ -119,7 +119,10 @@ COMPANIES = {
 CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
 
 DEFAULT_PERSONNEL = {
+    "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+    "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
+    "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Phan Thị Kim Cúc"],
@@ -404,25 +407,27 @@ def load_config():
                     "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
                     "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group"]
                 },
-                "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
+                "departments": ["HĐQT", "Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
                 "personnel_by_department": DEFAULT_PERSONNEL.copy()
             },
             "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
                 "projects_by_category": {
                     "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
                 },
-                "departments": ["Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "departments": ["HĐQT", "Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
                 "personnel_by_department": {
+                    "HĐQT": ["Đặng Ngọc Hoàng"],
                     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
                     "Ban Tài chính Kế toán": ["Lê Thị Hải"],
-                    "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
+                    "Ban Lãnh đạo": ["Trần Cường"]
                 }
             },
             "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
                 "projects_by_category": {},
-                "departments": ["Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "departments": ["HĐQT", "Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
                 "personnel_by_department": {
-                    "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                    "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+                    "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng"],
                     "Ban Kỹ thuật": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
                     "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
                     "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
@@ -644,28 +649,36 @@ DEPT_ABBR = {
 
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
+        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên", ],
+        "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đồng Thị Nguyệt Nga"],
         "KHĐT": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
-        "KT": [],
-        "ĐBGT": [],
+        "KT": ["Nguyễn Văn Bồn"],
+        "ĐBGT": ["Đặng Công Nhựt"],
         "DA": ["Nguyễn Quốc Vinh"],
-        "XN DTBD": [],
-        "Sàn GDBĐS": []
+        "XN DTBD": ["Mai Văn Châu"],
+        "Sàn GDBĐS": ["Ngô Thị Tâm"]
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thanh Bình"],
+        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng"],
+        "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],
-        "KT": [],
-        "BCH CT": [],
-        "XN XMTB": []
+        "KT": ["Phạm Quang Nghĩa"],
+        "BCH CT": ["Nguyễn Phong Trung"],
+        "XN XMTB": ["Đặng Hiền"]
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
-        "BLĐ": ["Trần Cường"]
+        "HĐQT": ["Đặng Ngọc Hoàng"],
+        "Hội đồng quản trị": ["Đặng Ngọc Hoàng"],
+        "BLĐ": ["Trần Cường"],
+        "Ban Lãnh đạo": ["Trần Cường"]
     }
 }
 
