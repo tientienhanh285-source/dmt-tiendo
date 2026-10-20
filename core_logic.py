@@ -187,6 +187,9 @@ def _cached_fetch_table_data(worksheet, filters_str):
         filters = json.loads(filters_str)
         if filters.get('DonVi') == "Tất cả đơn vị":
             del filters['DonVi']
+        elif filters.get('DonVi') in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
+            filters['DonVi'] = ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]
+            
         for k, v in filters.items():
             if isinstance(v, list):
                 query = query.in_(k, v)
@@ -607,20 +610,33 @@ def load_bsc_config():
 config = load_config() # force reload 2
 
 DEPT_ABBR = {
+    "Hội đồng quản trị": "HĐQT",
+    "HĐQT": "HĐQT",
     "Ban Lãnh đạo": "BLĐ",
     "Lãnh đạo": "BLĐ",
+    "BLĐ": "BLĐ",
     "Ban Hành chính Nhân sự": "HCNS",
+    "HCNS": "HCNS",
     "Ban Tài chính Kế toán": "TCKT",
+    "TCKT": "TCKT",
     "Ban Kế hoạch Đầu tư": "KHĐT",
+    "KHĐT": "KHĐT",
     "Ban Chuẩn bị Đầu tư": "CBĐT",
+    "CBĐT": "CBĐT",
     "Ban Kỹ thuật": "KT",
+    "KT": "KT",
     "Ban Đền bù Giải tỏa": "ĐBGT",
+    "ĐBGT": "ĐBGT",
     "Ban Dự án": "DA",
+    "DA": "DA",
     "Xí nghiệp DTBD": "XN DTBD",
+    "XN DTBD": "XN DTBD",
     "Sàn GDBĐS": "Sàn GDBĐS",
     "Ban chỉ huy Công trường": "BCH CT",
+    "BCH CT": "BCH CT",
     "Xí nghiệp xe máy thiết bị": "XN XMTB",
-    "Xí nghiệp xe thiết bị": "XN XMTB"
+    "Xí nghiệp xe thiết bị": "XN XMTB",
+    "XN XMTB": "XN XMTB"
 }
 
 for comp_name, comp_data in config.get("companies", {}).items():
@@ -631,21 +647,6 @@ for comp_name, comp_data in config.get("companies", {}).items():
         for d, p in comp_data["personnel_by_department"].items():
             new_personnel[DEPT_ABBR.get(d, d)] = p
         comp_data["personnel_by_department"] = new_personnel
-
-
-# Default owners by department and company for autofill
-DEPT_ABBR = {
-    "Ban Lãnh đạo": "BLĐ",
-    "Ban Hành chính Nhân sự": "HCNS",
-    "Ban Tài chính Kế toán": "TCKT",
-    "Ban Kế hoạch Đầu tư": "KHĐT",
-    "Ban Chuẩn bị Đầu tư": "CBĐT",
-    "Ban Kỹ thuật": "KT",
-    "Ban Đền bù Giải tỏa": "ĐBGT",
-    "Ban Dự án": "DA",
-    "Xí nghiệp DTBD": "XN DTBD",
-    "Sàn GDBĐS": "Sàn GDBĐS",
-}
 
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
@@ -679,6 +680,22 @@ DEPT_LEADS = {
         "XN XMTB": ["Trần Văn Trọng"],
         "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"]
     },
+    "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
+        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+        "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+        "HCNS": ["Nguyễn Thị Mỹ Phương"],
+        "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"],
+        "TCKT": ["Nguyễn Thị Ngọc Hà"],
+        "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
+        "KT": ["Phạm Quang Nghĩa"],
+        "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
+        "BCH CT": ["Trần Văn Trọng"],
+        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
+        "XN XMTB": ["Trần Văn Trọng"],
+        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"]
+    },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
         "HĐQT": ["Đặng Ngọc Hoàng"],
         "Hội đồng quản trị": ["Đặng Ngọc Hoàng"],
@@ -686,6 +703,7 @@ DEPT_LEADS = {
         "Ban Lãnh đạo": ["Trần Cường"]
     }
 }
+
 
 def get_personnel_for_company_dept(company, dept, config):
     companies = config.get("companies", {})
@@ -1318,11 +1336,22 @@ def read_db(filters=None):
     if filters:
         if filters.get('DonVi') == "Tất cả đơn vị":
             del filters['DonVi']
+        elif filters.get('DonVi') in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
+            filters['DonVi'] = ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]
+            
         if 'PhongBan' in filters:
             pb_filter = filters['PhongBan']
             if isinstance(pb_filter, str):
                 short_name = DEPT_ABBR.get(pb_filter, pb_filter)
-                filters['PhongBan'] = list(set([pb_filter, short_name]))
+                long_names = [k for k, v in DEPT_ABBR.items() if v == short_name or k == pb_filter]
+                filters['PhongBan'] = list(set([pb_filter, short_name] + long_names))
+            elif isinstance(pb_filter, list):
+                expanded_pb = []
+                for p in pb_filter:
+                    short_name = DEPT_ABBR.get(p, p)
+                    long_names = [k for k, v in DEPT_ABBR.items() if v == short_name or k == p]
+                    expanded_pb.extend([p, short_name] + long_names)
+                filters['PhongBan'] = list(set(expanded_pb))
             
     try:
         df = safe_gsheets_read(conn, worksheet="Sheet1", ttl=15, filters=filters)

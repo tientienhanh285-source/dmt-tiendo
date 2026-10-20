@@ -48,14 +48,14 @@ if 'role_mode' in st.session_state:
         manager_user = st.session_state.get('manager_user', '')
         bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
         if manager_user in bld_members:
-            if st.session_state.manager_dept in ["BLĐ", "HĐQT"]:
+            if st.session_state.manager_dept in ["BLĐ", "HĐQT", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
                 bld_hierarchy = {
                         "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu", "Nguyễn Văn Bồn"],
                         "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
                         "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
                         "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
-                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
-                        "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
+                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
+                        "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
                         "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
                         "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"],
                         "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
@@ -67,11 +67,11 @@ if 'role_mode' in st.session_state:
                     for leads in DEPT_LEADS.get(selected_company, {}).values():
                         all_truong_ban.extend(leads)
                 
-                if st.session_state.manager_dept in ["HĐQT", "BLĐ"]:
+                if st.session_state.manager_dept in ["HĐQT", "BLĐ", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
                     # HĐQT and BLĐ see all companies, do not filter by DonVi
                     if 'DonVi' in db_filters:
                         del db_filters['DonVi']
-                if st.session_state.manager_dept != "HĐQT":
+                if st.session_state.manager_dept not in ["HĐQT", "Hội đồng quản trị"]:
                     db_filters['NguoiChuTri'] = list(set(all_truong_ban))
             else:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
@@ -82,6 +82,7 @@ if 'role_mode' in st.session_state:
                     db_filters['PhongBan'] = st.session_state.manager_dept
         else:
             db_filters['PhongBan'] = st.session_state.manager_dept
+
 
 
 # --- GLOBAL OVERRIDES ---
@@ -176,14 +177,14 @@ else:
                 manager_user = st.session_state.get('manager_user', '')
                 bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
                 if manager_user in bld_members:
-                    if manager_dept in ["BLĐ", "HĐQT"]:
+                    if manager_dept in ["BLĐ", "HĐQT", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
                         bld_hierarchy = {
                         "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu", "Nguyễn Văn Bồn"],
                         "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
                         "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
                         "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
-                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
-                        "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
+                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
+                        "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
                         "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
                         "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"],
                         "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
@@ -200,6 +201,7 @@ else:
                         truong_ban_list = [p for p in dept_leads if p not in bld_members]
                         if truong_ban_list:
                             nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'].isin(truong_ban_list)]
+
                 elif manager_dept != "Tất cả":
                     nghiemthu_df = nghiemthu_df[nghiemthu_df['PhongBan'] == manager_dept]
                     
@@ -274,8 +276,8 @@ else:
             if role_mode == "Quản lý":
                 col_thang, col_nam = st.columns(2)
                 with col_thang:
-                    thang_opts = list(range(1, 13))
-                    sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month - 1)
+                    thang_opts = ["Tất cả"] + list(range(1, 13))
+                    sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month)
                 with col_nam:
                     nam_opts = [today.year - 1, today.year, today.year + 1]
                     sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
@@ -283,8 +285,8 @@ else:
             else:
                 col_thang, col_nam, col_phong = st.columns(3)
                 with col_thang:
-                    thang_opts = list(range(1, 13))
-                    sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month - 1)
+                    thang_opts = ["Tất cả"] + list(range(1, 13))
+                    sel_thang = st.selectbox("Chọn Tháng", thang_opts, index=today.month)
                 with col_nam:
                     nam_opts = [today.year - 1, today.year, today.year + 1]
                     sel_nam = st.selectbox("Chọn Năm", nam_opts, index=1)
@@ -298,6 +300,7 @@ else:
             # Filter logic
             def is_in_selected_month(d_str):
                 if not d_str: return False
+                if sel_thang == "Tất cả": return True
                 try:
                     d = pd.to_datetime(d_str)
                     return d.month == sel_thang and d.year == sel_nam
@@ -307,22 +310,26 @@ else:
             local_df = display_df.copy()        
             local_df['is_in_month'] = local_df['Deadline'].apply(is_in_selected_month)
             
-            # Condition: Deadline in month, objective reason
-            mask = local_df['is_in_month'] & local_df['PhanLoaiTreHan'].astype(str).str.lower().str.contains("khách quan")
+            # Condition: Deadline in month, objective reason OR issue OR has explanation
+            is_obj = local_df['PhanLoaiTreHan'].astype(str).str.lower().str.contains("khách quan")
+            is_issue = local_df['TrangThai'] == 'Có vướng mắc'
+            has_explain = (local_df['GiaiTrinhDeXuat'].astype(str).str.strip() != "") & (local_df['TrangThai'].isin(['Quá hạn', 'Đang thực hiện', 'Có vướng mắc']))
+
+            mask = local_df['is_in_month'] & (is_obj | is_issue | has_explain)
             if sel_phong != "Tất cả":
                 mask = mask & (local_df['PhongBan'] == sel_phong)
             if role_mode == "Quản lý":
                 manager_user = st.session_state.get('manager_user', '')
                 bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
                 if manager_user in bld_members:
-                    if st.session_state.get("manager_dept") in ["BLĐ", "HĐQT"]:
+                    if st.session_state.get("manager_dept") in ["BLĐ", "HĐQT", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
                         bld_hierarchy = {
                         "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu", "Nguyễn Văn Bồn"],
                         "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga"],
                         "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
                         "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
-                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
-                        "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
+                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
+                        "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
                         "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
                         "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"],
                         "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
@@ -347,9 +354,10 @@ else:
             filtered_df = local_df[mask].copy()
             
             if filtered_df.empty:
-                st.success(f"🎉 Không có công việc nào báo cáo Khách quan trong tháng {sel_thang}/{sel_nam}!")
+                st.success(f"🎉 Không có công việc nào báo cáo Khách quan / Vướng mắc cần duyệt!")
             else:
-                st.info(f"Đang hiển thị **{len(filtered_df)}** công việc báo cáo lý do Khách quan.")
+                st.info(f"Đang hiển thị **{len(filtered_df)}** công việc báo cáo lý do Khách quan / Vướng mắc.")
+
                 
                 # Setup Editor
                 # Compute dynamic state for UI

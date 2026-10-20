@@ -48,14 +48,14 @@ if 'role_mode' in st.session_state:
         manager_user = st.session_state.get('manager_user', '')
         bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
         if manager_user in bld_members:
-            if st.session_state.manager_dept in ["BLĐ", "HĐQT"]:
+            if st.session_state.manager_dept in ["BLĐ", "HĐQT", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
                 bld_hierarchy = {
                         "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên", "Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Phan Thị Kim Cúc", "Mai Văn Châu", "Nguyễn Văn Bồn"],
                         "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
                         "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
                         "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
-                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
-                        "Trần Văn Trọng": ["Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
+                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
+                        "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
                         "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
                         "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"],
                         "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
@@ -67,11 +67,11 @@ if 'role_mode' in st.session_state:
                     for leads in DEPT_LEADS.get(selected_company, {}).values():
                         all_truong_ban.extend(leads)
                 
-                if st.session_state.manager_dept in ["HĐQT", "BLĐ"]:
+                if st.session_state.manager_dept in ["HĐQT", "BLĐ", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
                     # HĐQT and BLĐ see all companies, do not filter by DonVi
                     if 'DonVi' in db_filters:
                         del db_filters['DonVi']
-                if st.session_state.manager_dept != "HĐQT":
+                if st.session_state.manager_dept not in ["HĐQT", "Hội đồng quản trị"]:
                     db_filters['NguoiChuTri'] = list(set(all_truong_ban))
             else:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
@@ -828,7 +828,8 @@ with tab_update:
                     # Calculate status and progress automatically
                     if u_is_completed:
                         auto_approve_users = ['Thái Văn Thành', 'Trần Quốc Thể', 'Đoàn Thị Ngọc Nữ', 'Nguyễn Ngọc Tôn', 'Đặng Ngọc Hoàng', 'Đặng Thanh Bình', 'Đặng Thị Lan Ngọc', 'Trần Cường']
-                        if row['NguoiChuTri'] in auto_approve_users:
+                        target_pic = u_owner.strip() if ('u_owner' in locals() and u_owner) else task_data['NguoiChuTri']
+                        if target_pic in auto_approve_users:
                             if u_deadline < today:
                                 u_status = "Hoàn thành (Trễ hạn)"
                             else:
@@ -900,10 +901,10 @@ with tab_update:
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'GiaiTrinhDeXuat'] = u_explain.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NgayCapNhat'] = (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'ChuKyTheoDoi'] = u_cycle
-                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ"
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhanLoaiTreHan'] = u_late_cause if (u_is_late or u_has_issue) else "🟢 Không trễ hạn / Đúng tiến độ"
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TyTrongKPI'] = str(u_weight)
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NguonGiaoViec'] = u_nguon
-                            if u_is_late:
+                            if u_is_late or u_has_issue:
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = u_chamchuoc
                             else:
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
@@ -920,11 +921,12 @@ with tab_update:
                                 'GiaiTrinhDeXuat': u_explain.strip(),
                                 'NgayCapNhat': (datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'),
                                 'ChuKyTheoDoi': u_cycle,
-                                'PhanLoaiTreHan': u_late_cause if u_is_late else "🟢 Không trễ hạn / Đúng tiến độ",
+                                'PhanLoaiTreHan': u_late_cause if (u_is_late or u_has_issue) else "🟢 Không trễ hạn / Đúng tiến độ",
                                 'TyTrongKPI': str(u_weight),
                                 'NguonGiaoViec': u_nguon,
-                                'MucDoGhiNhan': u_chamchuoc if u_is_late else '0% (Không ghi nhận)'
+                                'MucDoGhiNhan': u_chamchuoc if (u_is_late or u_has_issue) else '0% (Không ghi nhận)'
                             }
+
                             if update_task(selected_id, update_dict):
                                 try:
                                     conn = get_gsheets_conn()

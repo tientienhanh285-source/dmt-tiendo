@@ -368,7 +368,9 @@ if hasattr(st, "query_params"):
     elif "manager" in st.query_params:
         st.session_state.is_manager_authenticated = True
         st.session_state.manager_user = st.query_params["manager"]
-        st.session_state.manager_dept = st.query_params.get("dept", "BLĐ")
+        st.session_state.manager_dept = DEPT_ABBR.get(st.query_params.get("dept", "BLĐ"), "BLĐ")
+        if st.session_state.manager_user in ["Thái Văn Thành", "Trần Văn Trọng"]:
+            st.session_state['selected_company'] = "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
         st.session_state['role_mode'] = "Quản lý"
 
 if role_mode == "Quản lý":
@@ -382,8 +384,18 @@ if role_mode == "Quản lý":
         
         if sel_login_dept != "-- Chọn --":
             personnel_list = get_personnel_for_company_dept(selected_company, sel_login_dept, config)
-            if personnel_list:
-                dept_leads = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, [])
+            if personnel_list or selected_company == "Tất cả đơn vị":
+                if selected_company == "Tất cả đơn vị":
+                    dept_leads = []
+                    for comp_leads in DEPT_LEADS.values():
+                        dept_leads.extend(comp_leads.get(sel_login_dept, []))
+                        dept_leads.extend(comp_leads.get(DEPT_ABBR.get(sel_login_dept, sel_login_dept), []))
+                    dept_leads = list(dict.fromkeys(dept_leads))
+                else:
+                    dept_leads = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, [])
+                    if not dept_leads:
+                        dept_leads = DEPT_LEADS.get(selected_company, {}).get(DEPT_ABBR.get(sel_login_dept, sel_login_dept), [])
+                
                 if isinstance(dept_leads, str):
                     dept_leads = [dept_leads] if dept_leads else []
                 
@@ -409,14 +421,17 @@ if role_mode == "Quản lý":
                     if st.sidebar.button("Xác nhận Đăng nhập"):
                         if mgr_pwd == "quanly123":
                             st.session_state.is_manager_authenticated = True
-                            st.session_state.manager_dept = sel_login_dept
+                            st.session_state.manager_dept = DEPT_ABBR.get(sel_login_dept, sel_login_dept)
                             st.session_state.manager_user = sel_login_user
+                            if sel_login_user in ["Thái Văn Thành", "Trần Văn Trọng"]:
+                                st.session_state['selected_company'] = "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
                             st.session_state.just_logged_in = True
                             st.rerun()
                         else:
                             st.sidebar.error("Mật khẩu không đúng!")
             else:
                 st.sidebar.warning("Phòng ban này chưa có dữ liệu nhân sự.")
+
     
     if st.session_state.is_manager_authenticated:
         st.sidebar.success(f"👋 Xin chào Quản lý, {st.session_state.get('manager_user', '')}!")
