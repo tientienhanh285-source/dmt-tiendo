@@ -809,16 +809,16 @@ DEPT_LEADS = {
         "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
         "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa"],
-        "KT": ["Nguyễn Văn Bồn"],
-        "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
+        "KT": ["Trần Quốc Thể"],
+        "Ban Kỹ thuật": ["Trần Quốc Thể"],
         "ĐBGT": ["Nguyễn Ngọc Tôn"],
         "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn"],
         "DA": ["Nguyễn Đình Thắng"],
         "Ban Dự án": ["Nguyễn Đình Thắng"],
-        "XN DTBD": ["Mai Văn Châu"],
-        "Xí nghiệp DTBD": ["Mai Văn Châu"],
-        "SÀN": ["Ngô Thị Tâm"],
-        "Sàn GDBĐS": ["Ngô Thị Tâm"]
+        "XN DTBD": ["Trần Quốc Thể"],
+        "Xí nghiệp DTBD": ["Trần Quốc Thể"],
+        "SÀN": ["Đặng Ngọc Hoàng"],
+        "Sàn GDBĐS": ["Đặng Ngọc Hoàng"]
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
@@ -831,12 +831,12 @@ DEPT_LEADS = {
         "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
         "KT": ["Phạm Quang Nghĩa"],
         "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
-        "BCH CT": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
-        "Ban chỉ huy Công trường": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
-        "XN XMTB": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
-        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
-        "Mỏ": ["Lê Nho Tân"],
-        "Ban Quản lý Mỏ": ["Lê Nho Tân"]
+        "BCH CT": ["Trần Văn Trọng"],
+        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
+        "XN XMTB": ["Trần Văn Trọng"],
+        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"],
+        "Mỏ": ["Trần Văn Trọng"],
+        "Ban Quản lý Mỏ": ["Trần Văn Trọng"]
     },
     "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
@@ -849,12 +849,12 @@ DEPT_LEADS = {
         "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
         "KT": ["Phạm Quang Nghĩa"],
         "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
-        "BCH CT": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
-        "Ban chỉ huy Công trường": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
-        "XN XMTB": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
-        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
-        "Mỏ": ["Lê Nho Tân"],
-        "Ban Quản lý Mỏ": ["Lê Nho Tân"]
+        "BCH CT": ["Trần Văn Trọng"],
+        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
+        "XN XMTB": ["Trần Văn Trọng"],
+        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"],
+        "Mỏ": ["Trần Văn Trọng"],
+        "Ban Quản lý Mỏ": ["Trần Văn Trọng"]
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
         "HĐQT": ["Đặng Ngọc Hoàng"],
@@ -864,8 +864,8 @@ DEPT_LEADS = {
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên"],
         "HCTH": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Lê Thị Hải"],
-        "Ban Tài chính Kế toán": ["Lê Thị Hải"]
+        "TCKT": ["Trần Cường"],
+        "Ban Tài chính Kế toán": ["Trần Cường"]
     },
     "CÔNG TY CỔ PHẦN DMT-MARINA": {
         "HĐQT": ["Đặng Ngọc Hoàng"],
@@ -875,8 +875,8 @@ DEPT_LEADS = {
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
         "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên"],
         "HCTH": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Lê Thị Hải"],
-        "Ban Tài chính Kế toán": ["Lê Thị Hải"]
+        "TCKT": ["Trần Cường"],
+        "Ban Tài chính Kế toán": ["Trần Cường"]
     }
 }
 DEPT_LEADS["CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
@@ -914,15 +914,9 @@ HIERARCHY_MARINA_3 = {
     "Nguyễn Trần Thức": ["Nguyễn Đức Lợi", "Cao Thuỷ Tiên", "Trần Tin"], # GĐ Ban KHĐT
     "Phạm Quang Nghĩa": ["Mai Văn Châu"], # Phó GĐ Ban Kỹ thuật Cienco (quản lý Mai Văn Châu)
 
-    # 3. Các phòng ban đơn lẻ / phụ trách trực tiếp
-    "Nguyễn Đình Thắng": ["Nguyễn Đình Hiếu"], # Ban Dự án
-    "Nguyễn Văn Bồn": ["Nguyễn Văn Bồn"], # Ban Kỹ thuật Cty Mẹ
-    "Nguyễn Thị Mỹ Phương": ["Nguyễn Thị Mỹ Phương"], # Ban HCNS Cienco
-    "Lê Nho Tân": ["Lê Nho Tân"], # Giám đốc mỏ
-    "Mai Văn Châu": ["Mai Văn Châu"], # XN DTBD
-    "Ngô Thị Tâm": ["Ngô Thị Tâm"], # Thư ký Sàn
-    "Lê Thị Hải": ["Lê Thị Hải"], # Ban TCKT Marina
-    "Đặng Hiền": ["Đặng Hiền"] # XN XMTB
+    # 3. Lãnh đạo các đơn vị trực thuộc
+    "Nguyễn Đình Thắng": ["Nguyễn Quốc Vinh", "Nguyễn Đình Hiếu"], # Ban Dự án
+    "Nguyễn Thị Mỹ Phương": ["Nguyễn Hoài Trung"] # Ban HCNS Cienco
 }
 
 def get_subordinates_for_manager(manager_user):

@@ -439,7 +439,7 @@ if role_mode == "Quản lý":
                 valid_leads = dept_leads
                 
                 # Bức tường lửa cuối cùng: Ép buộc xóa tên khỏi các phòng ban không được phép
-                if sel_login_dept != "BLĐ" and "Trần Quốc Thể" in valid_leads:
+                if sel_login_dept not in ["BLĐ", "KT", "Ban Kỹ thuật", "XN DTBD", "Xí nghiệp DTBD"] and "Trần Quốc Thể" in valid_leads:
                     valid_leads = [x for x in valid_leads if x != "Trần Quốc Thể"]
                 if sel_login_dept == "TCKT" and "Đoàn Thị Ngọc Nữ" in valid_leads:
                     valid_leads = [x for x in valid_leads if x != "Đoàn Thị Ngọc Nữ"]
@@ -528,9 +528,8 @@ elif role_mode == "Nhân viên":
                 # Quản lý/Trưởng Ban đăng nhập ở quyền "Quản lý", không xuất hiện ở danh sách "Nhân viên"
                 nhan_vien_list = [p for p in personnel_list if p not in dept_leads]
                 
-                # Nếu phòng ban đặc thù chỉ có duy nhất 1 nhân sự (vừa quản lý vừa làm chuyên môn như Ban KT, XN DTBD, Sàn GDBĐS, Mỏ,...)
-                # thì cho phép hiển thị để tự tạo và theo dõi công việc cá nhân
-                if not nhan_vien_list and personnel_list:
+                # Riêng BLĐ và HĐQT cho phép đăng nhập để tự tạo và theo dõi công việc cá nhân
+                if sel_login_dept in ["BLĐ", "Ban Lãnh đạo", "HĐQT", "Hội đồng quản trị"] and personnel_list:
                     nhan_vien_list = personnel_list.copy()
                 
                 sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
