@@ -50,8 +50,13 @@ if 'role_mode' in st.session_state:
         db_filters = setup_manager_db_filters(db_filters, manager_user, manager_dept, selected_company)
 
 if 'display_df' not in locals():
-    import pandas as pd
-    display_df = pd.DataFrame(columns=['TenDuAn', 'TrangThai', 'Deadline'])
+    try:
+        display_df = read_db(filters=db_filters if db_filters else None)
+    except Exception as e:
+        import traceback
+        st.error(f"Lỗi khi gọi read_db(): {e}")
+        st.code(traceback.format_exc())
+        display_df = pd.DataFrame()
 if 'df' not in locals():
     df = display_df.copy()
 

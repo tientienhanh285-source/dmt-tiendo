@@ -345,8 +345,24 @@ except ValueError:
     current_index = 0
 
 role_mode = st.sidebar.selectbox("QUYỀN TRUY CẬP", roles, index=current_index, key="role_mode_select")
-st.session_state['role_mode'] = role_mode
-
+if st.session_state.get('_prev_role_mode') != role_mode:
+    st.session_state['_prev_role_mode'] = role_mode
+    st.session_state['role_mode'] = role_mode
+    # Reset authentication states when switching roles to avoid leftover data
+    st.session_state.is_admin_authenticated = False
+    st.session_state.is_manager_authenticated = False
+    st.session_state.is_personal_authenticated = False
+    st.session_state.personal_user = None
+    st.session_state.manager_user = None
+    st.session_state.manager_dept = None
+    st.session_state.auth_user_dept = None
+    st.session_state.auth_user_company = None
+    st.session_state.pop("login_user", None)
+    st.session_state.pop("login_dept", None)
+    st.session_state.pop("mgr_login_user", None)
+    st.session_state.pop("mgr_login_dept", None)
+else:
+    st.session_state['role_mode'] = role_mode
 
 if "is_admin_authenticated" not in st.session_state:
     st.session_state.is_admin_authenticated = False
@@ -423,6 +439,7 @@ if role_mode == "Quản lý":
                             st.session_state.is_manager_authenticated = True
                             st.session_state.manager_dept = DEPT_ABBR.get(sel_login_dept, sel_login_dept)
                             st.session_state.manager_user = sel_login_user
+                            st.session_state.manager_company = selected_company
                             if sel_login_user in ["Thái Văn Thành", "Trần Văn Trọng"]:
                                 st.session_state['selected_company'] = "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
                             st.session_state.just_logged_in = True
@@ -440,6 +457,9 @@ if role_mode == "Quản lý":
             st.session_state.is_manager_authenticated = False
             st.session_state.manager_dept = None
             st.session_state.manager_user = None
+            st.session_state.manager_company = None
+            st.session_state.pop("mgr_login_dept", None)
+            st.session_state.pop("mgr_login_user", None)
             st.rerun()
         
         # We no longer allow changing department dynamically for Manager
@@ -493,6 +513,7 @@ elif role_mode == "Nhân viên":
                         st.session_state.is_personal_authenticated = True
                         st.session_state.personal_user = sel_login_user
                         st.session_state.auth_user_dept = sel_login_dept  # Preserve dept since widget disappears
+                        st.session_state.auth_user_company = selected_company
                         st.rerun()
             else:
                 st.sidebar.warning("Phòng ban này chưa có dữ liệu nhân sự.")
@@ -501,6 +522,10 @@ elif role_mode == "Nhân viên":
         if st.sidebar.button("Đăng xuất"):
             st.session_state.is_personal_authenticated = False
             st.session_state.personal_user = None
+            st.session_state.auth_user_dept = None
+            st.session_state.auth_user_company = None
+            st.session_state.pop("login_dept", None)
+            st.session_state.pop("login_user", None)
             st.rerun()
 else:
     st.session_state.is_admin_authenticated = False

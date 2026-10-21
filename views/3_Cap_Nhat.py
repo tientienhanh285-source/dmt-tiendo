@@ -170,7 +170,10 @@ with tab_new:
         # 1. Company selection
         company_list = list(COMPANIES.keys())
         default_company_idx = 0
-        if selected_company in company_list:
+        preferred_company = st.session_state.get('auth_user_company', selected_company)
+        if preferred_company in company_list:
+            default_company_idx = company_list.index(preferred_company)
+        elif selected_company in company_list:
             default_company_idx = company_list.index(selected_company)
         entry_company = st.selectbox(
             "Đơn vị / Công ty thành viên", 
