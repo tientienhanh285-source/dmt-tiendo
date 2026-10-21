@@ -158,18 +158,48 @@ def is_gsheets_configured():
         pass
     return False
 
+import threading
+import time
+
+_SUPABASE_CLIENT_INSTANCE = None
+_CLIENT_LOCK = threading.Lock()
+_INSERT_TASK_LOCK = threading.RLock()
+
+def execute_with_retry(query_func, max_retries=3, initial_delay=0.25):
+    """Thực thi thao tác Supabase với cơ chế retry tự động theo cấp số nhân khi mạng lag / nghẽn kết nối"""
+    last_err = None
+    for attempt in range(max_retries):
+        try:
+            return query_func()
+        except Exception as e:
+            last_err = e
+            if attempt < max_retries - 1:
+                time.sleep(initial_delay * (2 ** attempt))
+            else:
+                raise e
+
 def get_gsheets_conn():
-    from supabase import create_client
-    SUPABASE_URL = 'https://xlfnxyerpcebqxgmfngd.supabase.co'
-    SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsZm54eWVycGNlYnF4Z21mbmdkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjYwNTAzNSwiZXhwIjoyMTAyMTgxMDM1fQ.qZsoZu8HaFpbvsG6siw76M5QXmX5bwipLV1qWeGG89s'
-    try:
-        return create_client(SUPABASE_URL, SUPABASE_KEY)
-    except Exception as e:
-        import streamlit as st
-
-
-        st.warning(f"Chưa cấu hình Supabase Connection: {e}")
-        return None
+    global _SUPABASE_CLIENT_INSTANCE
+    if _SUPABASE_CLIENT_INSTANCE is not None:
+        return _SUPABASE_CLIENT_INSTANCE
+    with _CLIENT_LOCK:
+        if _SUPABASE_CLIENT_INSTANCE is not None:
+            return _SUPABASE_CLIENT_INSTANCE
+        from supabase import create_client, ClientOptions
+        SUPABASE_URL = 'https://xlfnxyerpcebqxgmfngd.supabase.co'
+        SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsZm54eWVycGNlYnF4Z21mbmdkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjYwNTAzNSwiZXhwIjoyMTAyMTgxMDM1fQ.qZsoZu8HaFpbvsG6siw76M5QXmX5bwipLV1qWeGG89s'
+        try:
+            options = ClientOptions(postgrest_client_timeout=15)
+            _SUPABASE_CLIENT_INSTANCE = create_client(SUPABASE_URL, SUPABASE_KEY, options=options)
+            return _SUPABASE_CLIENT_INSTANCE
+        except Exception as e:
+            try:
+                _SUPABASE_CLIENT_INSTANCE = create_client(SUPABASE_URL, SUPABASE_KEY)
+                return _SUPABASE_CLIENT_INSTANCE
+            except Exception as e2:
+                import streamlit as st
+                st.warning(f"Chưa cấu hình Supabase Connection: {e2}")
+                return None
 
 def _get_table_name(worksheet):
     mapping = {
@@ -189,7 +219,7 @@ import json
 import pandas as pd
 import numpy as np
 
-@st.cache_data(ttl=15, show_spinner=False)
+@st.cache_data(ttl=5, show_spinner=False)
 def _cached_fetch_table_data(worksheet, filters_str):
     conn = get_gsheets_conn()
     if not conn: return None
@@ -207,7 +237,7 @@ def _cached_fetch_table_data(worksheet, filters_str):
                 query = query.in_(k, v)
             else:
                 query = query.eq(k, v)
-    res = query.execute()
+    res = execute_with_retry(lambda: query.execute())
     return res.data
 
 def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None, filters=None):
@@ -1703,63 +1733,65 @@ def delete_db_record(worksheet, id_col, id_val):
 def insert_task(new_row_dict):
     conn = get_gsheets_conn()
     if conn is None: return False
-    try:
-        table_name = _get_table_name("Sheet1")
-        import uuid
-        import math
-        from datetime import date, datetime, timedelta
-        import pandas as pd
-        
-        # --- ATOMIC DEDUPLICATION SHIELD ---
-        # Kiểm tra trực tiếp trong Supabase để chặn hoàn toàn click đúp / gửi lặp
-        p_owner = str(new_row_dict.get('NguoiChuTri', '')).strip()
-        p_name = str(new_row_dict.get('TenCongViec', '')).strip()
-        p_proj = str(new_row_dict.get('TenDuAn', '')).strip()
-        p_dl = str(new_row_dict.get('Deadline', ''))[:10]
-        
-        if p_owner and p_name:
-            try:
-                recent_res = conn.table(table_name).select('ID, TenCongViec, NguoiChuTri, TenDuAn, Deadline, NgayCapNhat')\
-                    .eq('NguoiChuTri', p_owner)\
-                    .eq('TenCongViec', p_name)\
-                    .execute()
-                if recent_res and recent_res.data:
-                    for existing in recent_res.data:
-                        ex_dl = str(existing.get('Deadline', ''))[:10]
-                        ex_proj = str(existing.get('TenDuAn', '')).strip()
-                        if ex_dl == p_dl and ex_proj == p_proj:
-                            ex_time_str = str(existing.get('NgayCapNhat', ''))
-                            try:
-                                ex_time = datetime.strptime(ex_time_str[:19], '%Y-%m-%d %H:%M:%S')
-                                if (datetime.now() - ex_time).total_seconds() < 25:
+    
+    with _INSERT_TASK_LOCK:
+        try:
+            table_name = _get_table_name("Sheet1")
+            import uuid
+            import math
+            from datetime import date, datetime, timedelta
+            import pandas as pd
+            
+            # --- ATOMIC DEDUPLICATION SHIELD ---
+            # Kiểm tra trực tiếp trong Supabase để chặn hoàn toàn click đúp / gửi lặp
+            p_owner = str(new_row_dict.get('NguoiChuTri', '')).strip()
+            p_name = str(new_row_dict.get('TenCongViec', '')).strip()
+            p_proj = str(new_row_dict.get('TenDuAn', '')).strip()
+            p_dl = str(new_row_dict.get('Deadline', ''))[:10]
+            
+            if p_owner and p_name:
+                try:
+                    recent_res = execute_with_retry(lambda: conn.table(table_name).select('ID, TenCongViec, NguoiChuTri, TenDuAn, Deadline, NgayCapNhat')\
+                        .eq('NguoiChuTri', p_owner)\
+                        .eq('TenCongViec', p_name)\
+                        .execute())
+                    if recent_res and recent_res.data:
+                        for existing in recent_res.data:
+                            ex_dl = str(existing.get('Deadline', ''))[:10]
+                            ex_proj = str(existing.get('TenDuAn', '')).strip()
+                            if ex_dl == p_dl and ex_proj == p_proj:
+                                ex_time_str = str(existing.get('NgayCapNhat', ''))
+                                try:
+                                    ex_time = datetime.strptime(ex_time_str[:19], '%Y-%m-%d %H:%M:%S')
+                                    if (datetime.now() - ex_time).total_seconds() < 25:
+                                        return existing['ID']
+                                except:
                                     return existing['ID']
-                            except:
-                                return existing['ID']
-            except:
-                pass
-        
-        # generate ID automatically to avoid collision
-        new_row_dict['ID'] = f"TSK-{uuid.uuid4().hex[:8].upper()}"
-        
-        # clean datetimes
-        for k, v in list(new_row_dict.items()):
-            if isinstance(v, (date, datetime)):
-                new_row_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
-            elif isinstance(v, float):
-                if math.isnan(v): new_row_dict[k] = None
-                elif v.is_integer(): new_row_dict[k] = int(v)
-            elif pd.isna(v):
-                new_row_dict[k] = None
-                
-        conn.table(table_name).insert(new_row_dict).execute()
-        
-        if hasattr(read_db, "clear"): read_db.clear()
-        _cached_fetch_table_data.clear()
-        return new_row_dict['ID']
-    except Exception as e:
-        import streamlit as st
-        st.error(f"Lỗi insert Supabase: {e}")
-        return False
+                except:
+                    pass
+            
+            # generate ID automatically to avoid collision
+            new_row_dict['ID'] = f"TSK-{uuid.uuid4().hex[:8].upper()}"
+            
+            # clean datetimes
+            for k, v in list(new_row_dict.items()):
+                if isinstance(v, (date, datetime)):
+                    new_row_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
+                elif isinstance(v, float):
+                    if math.isnan(v): new_row_dict[k] = None
+                    elif v.is_integer(): new_row_dict[k] = int(v)
+                elif pd.isna(v):
+                    new_row_dict[k] = None
+                    
+            execute_with_retry(lambda: conn.table(table_name).insert(new_row_dict).execute())
+            
+            if hasattr(read_db, "clear"): read_db.clear()
+            _cached_fetch_table_data.clear()
+            return new_row_dict['ID']
+        except Exception as e:
+            import streamlit as st
+            st.error(f"Lỗi insert Supabase: {e}")
+            return False
 
 def update_task(task_id, update_dict):
     conn = get_gsheets_conn()
@@ -1779,7 +1811,7 @@ def update_task(task_id, update_dict):
             elif pd.isna(v):
                 update_dict[k] = None
                 
-        conn.table(table_name).update(update_dict).eq('ID', task_id).execute()
+        execute_with_retry(lambda: conn.table(table_name).update(update_dict).eq('ID', task_id).execute())
         
         if hasattr(read_db, "clear"): read_db.clear()
         _cached_fetch_table_data.clear()
@@ -1795,7 +1827,7 @@ def delete_task(task_id):
     if conn is None: return False
     try:
         table_name = _get_table_name("Sheet1")
-        conn.table(table_name).delete().eq('ID', task_id).execute()
+        execute_with_retry(lambda: conn.table(table_name).delete().eq('ID', task_id).execute())
         
         if hasattr(read_db, "clear"): read_db.clear()
         _cached_fetch_table_data.clear()

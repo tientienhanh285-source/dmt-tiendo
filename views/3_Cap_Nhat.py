@@ -142,8 +142,8 @@ with tab_new:
                             
                             for _, row in tasks_to_copy.iterrows():
                                 new_row = row.copy()
-                                new_row['ID'] = f"TSK-{next_id:03d}"
-                                next_id += 1
+                                import uuid
+                                new_row['ID'] = f"TSK-{uuid.uuid4().hex[:8].upper()}"
                                 
                                 # Reset trạng thái
                                 new_row['NgayBatDau'] = new_start
@@ -451,7 +451,7 @@ with tab_new:
                     st.session_state["last_new_task_sig"] = submission_sig
                     st.session_state["last_new_task_time"] = now_ts
                     with acquire_db_lock():
-                        fresh_df = read_db()
+                        fresh_df = read_db(filters={'NguoiChuTri': task_owner.strip()})
                     
                     # Kiểm tra trùng lặp để cảnh báo người dùng (tránh click đúp)
                     is_duplicate = False
@@ -469,14 +469,9 @@ with tab_new:
                     if is_duplicate:
                         st.error("⚠️ Công việc này đã tồn tại (trùng Tên công việc, Người thực hiện, Dự án và Thời gian)! Để tránh trùng lặp do bấm nhầm, hệ thống đã chặn lại. Nếu bạn thực sự muốn tạo 1 công việc giống hệt, vui lòng sửa lại Tên công việc (ví dụ: thêm số 2 vào cuối).")
                     else:
-                        # Auto ID generator
-                        next_id = 1
-                        if not fresh_df.empty:
-                            ids = fresh_df['ID'].tolist()
-                            nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
-                            if nums:
-                                next_id = max(nums) + 1
-                        task_id = f"TSK-{next_id:03d}"
+                        # Auto ID generator sử dụng UUID chống hoàn toàn va chạm khi nhiều người tạo cùng lúc
+                        import uuid
+                        task_id = f"TSK-{uuid.uuid4().hex[:8].upper()}"
                         
                         saved_result = ""
                         
