@@ -43,7 +43,7 @@ require_authentication()
 db_filters = {'DonVi': selected_company}
 if 'role_mode' in st.session_state:
     if st.session_state['role_mode'] == "Nhân viên" and st.session_state.get('is_personal_authenticated') and st.session_state.get('personal_user'):
-        db_filters['NguoiChuTri'] = st.session_state.personal_user
+        db_filters = {'NguoiChuTri': st.session_state.personal_user}
     elif st.session_state['role_mode'] == "Quản lý" and st.session_state.get('is_manager_authenticated'):
         manager_user = st.session_state.get('manager_user', '')
         manager_dept = st.session_state.get('manager_dept', '')

@@ -43,7 +43,7 @@ require_authentication()
 db_filters = {'DonVi': selected_company}
 if 'role_mode' in st.session_state:
     if st.session_state['role_mode'] == "Nhân viên" and st.session_state.get('is_personal_authenticated') and st.session_state.get('personal_user'):
-        db_filters['NguoiChuTri'] = st.session_state.personal_user
+        db_filters = {'NguoiChuTri': st.session_state.personal_user}
     elif st.session_state['role_mode'] == "Quản lý" and st.session_state.get('is_manager_authenticated'):
         manager_user = st.session_state.get('manager_user', '')
         manager_dept = st.session_state.get('manager_dept', '')
@@ -281,7 +281,7 @@ with tab_new:
             task_giai_ngan = 0.0
         
         # 3. Task details
-        task_name = st.text_input("Tên công việc (tự nhập tự do)", value="")
+        task_name = st.text_input("Tên công việc (tự nhập tự do)", value="", key="create_task_name")
         
         task_weight = 0
             
@@ -521,6 +521,8 @@ with tab_new:
                         new_id = insert_task(new_row)
                         if new_id:
                             st.session_state["success_msg"] = f"🎉 Đã khởi tạo thành công công việc mã: {new_id}!"
+                            st.session_state.pop("create_task_name", None)
+                            st.session_state.pop("new_status_choice", None)
                             st.rerun()
 
 

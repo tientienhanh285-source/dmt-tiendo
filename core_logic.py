@@ -121,17 +121,29 @@ CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
 DEFAULT_PERSONNEL = {
     "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
     "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
-    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn", "Đặng Thị Lan Ngọc"],
-    "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn", "Đặng Thị Lan Ngọc"],
-    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
-    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
-    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Phan Thị Kim Cúc"],
-    "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
-    "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
-    "Ban Đền bù Giải tỏa": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
-    "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
+    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn", "Thái Văn Thành", "Trần Văn Trọng", "Trần Cường", "Đặng Thị Lan Ngọc"],
+    "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn", "Thái Văn Thành", "Trần Văn Trọng", "Trần Cường", "Đặng Thị Lan Ngọc"],
+    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Thị Mỹ Phương", "Nguyễn Hoài Trung"],
+    "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Thị Mỹ Phương", "Nguyễn Hoài Trung"],
+    "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Hoài Trung"],
+    "HCTH": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Hoài Trung"],
+    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
+    "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
+    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
+    "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
+    "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
+    "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
+    "Ban Kỹ thuật": ["Nguyễn Văn Bồn", "Trần Văn Trọng", "Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
+    "KT": ["Nguyễn Văn Bồn", "Trần Văn Trọng", "Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
+    "Mỏ": ["Lê Nho Tân"],
+    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+    "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông", "Lê Văn Thành", "Ngô Văn Hoàng"],
+    "BCH CT": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông", "Lê Văn Thành", "Ngô Văn Hoàng"],
+    "Xí nghiệp xe máy thiết bị": ["Đặng Hiền", "Nguyễn Phước Trị", "Trần Văn Lê", "Nguyễn Hữu Thanh", "Nguyễn Văn Minh", "Nguyễn Văn Phước", "Đỗ Văn Khương", "Lê Đức Đạt", "Ngô Tấn Thịnh", "Hoàng Việt Hùng"],
+    "XN XMTB": ["Đặng Hiền", "Nguyễn Phước Trị", "Trần Văn Lê", "Nguyễn Hữu Thanh", "Nguyễn Văn Minh", "Nguyễn Văn Phước", "Đỗ Văn Khương", "Lê Đức Đạt", "Ngô Tấn Thịnh", "Hoàng Việt Hùng"],
     "Ban Dự án": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+    "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "Xí nghiệp DTBD": ["Mai Văn Châu"],
     "XN DTBD": ["Mai Văn Châu"],
     "Sàn GDBĐS": ["Ngô Thị Tâm"],
@@ -843,26 +855,52 @@ def setup_manager_db_filters(db_filters, manager_user, manager_dept, selected_co
 def get_personnel_for_company_dept(company, dept, config):
     companies = config.get("companies", {})
     personnel_list = []
-    if company in companies:
-        personnel_list = companies[company].get("personnel_by_department", {}).get(dept, [])
-    else:
-        # Fallback to global config if any, or empty list
-        personnel_list = config.get("personnel_by_department", {}).get(dept, [])
+    
+    abbr_dept = DEPT_ABBR.get(dept, dept)
+    
+    comp_data = companies.get(company, {})
+    p_by_dept = comp_data.get("personnel_by_department", {})
+    
+    personnel_list = p_by_dept.get(dept, [])
+    if not personnel_list:
+        personnel_list = p_by_dept.get(abbr_dept, [])
+    if not personnel_list:
+        for k, v in DEPT_ABBR.items():
+            if v == dept or v == abbr_dept or k == dept or k == abbr_dept:
+                if k in p_by_dept and p_by_dept[k]:
+                    personnel_list = p_by_dept[k]
+                    break
+                    
+    if not personnel_list:
+        g_p_by_dept = config.get("personnel_by_department", {})
+        personnel_list = (
+            g_p_by_dept.get(dept, []) or 
+            g_p_by_dept.get(abbr_dept, []) or 
+            DEFAULT_PERSONNEL.get(dept, []) or 
+            DEFAULT_PERSONNEL.get(abbr_dept, [])
+        )
         
-    return personnel_list
+    return list(dict.fromkeys(personnel_list)) if personnel_list else []
 
 def get_departments_for_company(company, config):
     companies = config.get("companies", {})
+    depts = []
     if company in companies:
-        return companies[company].get("departments", [])
-    
-    # Aggregate all departments from all companies
-    all_depts = set()
-    for comp_data in companies.values():
-        all_depts.update(comp_data.get("departments", []))
-    global_depts = config.get("departments", [])
-    all_depts.update(global_depts)
-    return sorted(list(all_depts))
+        depts = companies[company].get("departments", [])
+    if not depts:
+        all_depts = set()
+        for comp_data in companies.values():
+            all_depts.update(comp_data.get("departments", []))
+        global_depts = config.get("departments", [])
+        all_depts.update(global_depts)
+        depts = sorted(list(all_depts))
+        
+    depts = list(depts)
+    if "MARINA" in str(company).upper() and "HCTH" not in depts:
+        depts.append("HCTH")
+    if "GIAO THÔNG" in str(company).upper() and "Mỏ" not in depts:
+        depts.append("Mỏ")
+    return depts
 
 
 def get_filtered_projects(company_name, config, db_projs, department=None):
@@ -1669,8 +1707,36 @@ def insert_task(new_row_dict):
         table_name = _get_table_name("Sheet1")
         import uuid
         import math
-        from datetime import date, datetime
+        from datetime import date, datetime, timedelta
         import pandas as pd
+        
+        # --- ATOMIC DEDUPLICATION SHIELD ---
+        # Kiểm tra trực tiếp trong Supabase để chặn hoàn toàn click đúp / gửi lặp
+        p_owner = str(new_row_dict.get('NguoiChuTri', '')).strip()
+        p_name = str(new_row_dict.get('TenCongViec', '')).strip()
+        p_proj = str(new_row_dict.get('TenDuAn', '')).strip()
+        p_dl = str(new_row_dict.get('Deadline', ''))[:10]
+        
+        if p_owner and p_name:
+            try:
+                recent_res = conn.table(table_name).select('ID, TenCongViec, NguoiChuTri, TenDuAn, Deadline, NgayCapNhat')\
+                    .eq('NguoiChuTri', p_owner)\
+                    .eq('TenCongViec', p_name)\
+                    .execute()
+                if recent_res and recent_res.data:
+                    for existing in recent_res.data:
+                        ex_dl = str(existing.get('Deadline', ''))[:10]
+                        ex_proj = str(existing.get('TenDuAn', '')).strip()
+                        if ex_dl == p_dl and ex_proj == p_proj:
+                            ex_time_str = str(existing.get('NgayCapNhat', ''))
+                            try:
+                                ex_time = datetime.strptime(ex_time_str[:19], '%Y-%m-%d %H:%M:%S')
+                                if (datetime.now() - ex_time).total_seconds() < 25:
+                                    return existing['ID']
+                            except:
+                                return existing['ID']
+            except:
+                pass
         
         # generate ID automatically to avoid collision
         new_row_dict['ID'] = f"TSK-{uuid.uuid4().hex[:8].upper()}"
