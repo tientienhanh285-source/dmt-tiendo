@@ -443,8 +443,6 @@ if role_mode == "Quản lý":
                     valid_leads = [x for x in valid_leads if x != "Trần Quốc Thể"]
                 if sel_login_dept == "TCKT" and "Đoàn Thị Ngọc Nữ" in valid_leads:
                     valid_leads = [x for x in valid_leads if x != "Đoàn Thị Ngọc Nữ"]
-                if sel_login_dept in ["DA", "Ban Dự án"] and "Nguyễn Đình Thắng" in valid_leads:
-                    valid_leads = [x for x in valid_leads if x != "Nguyễn Đình Thắng"]
                 if sel_login_dept == "HCNS" and "Đặng Ngọc Hoàng" in valid_leads:
                     valid_leads = [x for x in valid_leads if x != "Đặng Ngọc Hoàng"]
                 

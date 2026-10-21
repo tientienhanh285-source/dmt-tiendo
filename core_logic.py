@@ -879,6 +879,9 @@ DEPT_LEADS = {
         "Ban Tài chính Kế toán": ["Lê Thị Hải"]
     }
 }
+DEPT_LEADS["CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
+DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
+DEPT_LEADS["CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
 
 # ==============================================================================
 # HIERARCHY CHUẨN XÁC THEO SHEET 'MARINA (3)' TRONG FILE 'Phân quyền.xls'
@@ -911,15 +914,15 @@ HIERARCHY_MARINA_3 = {
     "Nguyễn Trần Thức": ["Nguyễn Đức Lợi", "Cao Thuỷ Tiên", "Trần Tin"], # GĐ Ban KHĐT
     "Phạm Quang Nghĩa": ["Mai Văn Châu"], # Phó GĐ Ban Kỹ thuật Cienco (quản lý Mai Văn Châu)
 
-    # 3. Các cấp phó / cán bộ phụ trách (hỗ trợ điều hành)
-    "Huỳnh Thị Hoàng Hà": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can", "Lê Thị Hải"], # PGĐ Ban TCKT Đầu Tư
-    "Phan Thị Mỹ Hạnh": ["Phan Thị Kim Cúc"], # PGĐ Ban CBĐT
-    "Nguyễn Đức Lợi": ["Cao Thuỷ Tiên", "Trần Tin"], # PGĐ Ban KHĐT
-    "Nguyễn Thị Mỹ Phương": ["Nguyễn Thị Mỹ Phương"], # PGĐ Ban HCNS Cienco
+    # 3. Các phòng ban đơn lẻ / phụ trách trực tiếp
+    "Nguyễn Đình Thắng": ["Nguyễn Đình Hiếu"], # Ban Dự án
+    "Nguyễn Văn Bồn": ["Nguyễn Văn Bồn"], # Ban Kỹ thuật Cty Mẹ
+    "Nguyễn Thị Mỹ Phương": ["Nguyễn Thị Mỹ Phương"], # Ban HCNS Cienco
     "Lê Nho Tân": ["Lê Nho Tân"], # Giám đốc mỏ
     "Mai Văn Châu": ["Mai Văn Châu"], # XN DTBD
     "Ngô Thị Tâm": ["Ngô Thị Tâm"], # Thư ký Sàn
-    "Lê Thị Hải": ["Lê Thị Hải"] # Phó Ban TCKT Marina
+    "Lê Thị Hải": ["Lê Thị Hải"], # Ban TCKT Marina
+    "Đặng Hiền": ["Đặng Hiền"] # XN XMTB
 }
 
 def get_subordinates_for_manager(manager_user):
