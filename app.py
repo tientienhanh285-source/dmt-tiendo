@@ -522,12 +522,21 @@ elif role_mode == "Nhân viên":
             personnel_list = get_personnel_for_company_dept(selected_company, sel_login_dept, config)
             if personnel_list:
                 dept_leads = DEPT_LEADS.get(selected_company, {}).get(sel_login_dept, [])
+                if not dept_leads:
+                    dept_leads = DEPT_LEADS.get(selected_company, {}).get(DEPT_ABBR.get(sel_login_dept, sel_login_dept), [])
                 if isinstance(dept_leads, str):
                     dept_leads = [dept_leads] if dept_leads else []
                 
-                # Exceptions for those who can login as both Manager and Employee
-                exceptions = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Mai Văn Châu", "Nguyễn Văn Bồn", "Nguyễn Phong Trung", "Đặng Hiền", "Đặng Hiển", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
-                nhan_vien_list = [p for p in personnel_list if p not in dept_leads or p in exceptions]
+                # Quản lý/Trưởng Ban đăng nhập ở quyền "Quản lý", không xuất hiện ở danh sách "Nhân viên"
+                # Phó ban / cán bộ phụ trách có thể vừa làm chuyên môn vừa quản lý
+                dual_roles = ["Huỳnh Thị Hoàng Hà", "Nguyễn Phong Trung", "Nguyễn Đức Lợi", "Phan Thị Mỹ Hạnh"]
+                nhan_vien_list = [p for p in personnel_list if (p not in dept_leads or p in dual_roles)]
+                
+                # Nếu phòng ban đặc thù chỉ có duy nhất 1 nhân sự (vừa quản lý vừa làm chuyên môn như Ban KT, XN DTBD, Sàn GDBĐS, Mỏ,...)
+                # thì cho phép hiển thị để tự tạo và theo dõi công việc cá nhân
+                if not nhan_vien_list and personnel_list:
+                    nhan_vien_list = personnel_list.copy()
+                
                 sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
                 if sel_login_user != "-- Chọn --":
                     if st.sidebar.button("Xác nhận Đăng nhập"):
