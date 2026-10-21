@@ -528,9 +528,7 @@ elif role_mode == "Nhân viên":
                     dept_leads = [dept_leads] if dept_leads else []
                 
                 # Quản lý/Trưởng Ban đăng nhập ở quyền "Quản lý", không xuất hiện ở danh sách "Nhân viên"
-                # Phó ban / cán bộ phụ trách có thể vừa làm chuyên môn vừa quản lý
-                dual_roles = ["Huỳnh Thị Hoàng Hà", "Nguyễn Phong Trung", "Nguyễn Đức Lợi", "Phan Thị Mỹ Hạnh"]
-                nhan_vien_list = [p for p in personnel_list if (p not in dept_leads or p in dual_roles)]
+                nhan_vien_list = [p for p in personnel_list if p not in dept_leads]
                 
                 # Nếu phòng ban đặc thù chỉ có duy nhất 1 nhân sự (vừa quản lý vừa làm chuyên môn như Ban KT, XN DTBD, Sàn GDBĐS, Mỏ,...)
                 # thì cho phép hiển thị để tự tạo và theo dõi công việc cá nhân
