@@ -115,33 +115,49 @@ COMPANIES = {
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {}
 }
 
-# Configuration JSON logic for dynamic Projects and Departments
-CONFIG_FILE = os.path.join("OUTPUT", "CONFIG_PROJECTS.json")
+# Department abbreviations mapping
+DEPT_ABBR = {
+    "Hội đồng quản trị": "HĐQT",
+    "Ban Lãnh đạo": "BLĐ",
+    "Ban Hành chính Nhân sự": "HCNS",
+    "Ban Tài chính Kế toán": "TCKT",
+    "Ban Kế hoạch Đầu tư": "KHĐT",
+    "Ban Chuẩn bị Đầu tư": "CBĐT",
+    "Ban Kỹ thuật": "KT",
+    "Ban Đền bù Giải tỏa": "ĐBGT",
+    "Ban Dự án": "DA",
+    "Xí nghiệp DTBD": "XN DTBD",
+    "Sàn GDBĐS": "Sàn GDBĐS",
+    "Ban chỉ huy Công trường": "BCH CT",
+    "Xí nghiệp xe máy thiết bị": "XN XMTB",
+    "Ban TCKT": "TCKT",
+    "Ban HCNS": "HCNS",
+    "Ban KHĐT": "KHĐT",
+    "Ban CBĐT": "CBĐT",
+    "Ban KT": "KT",
+    "Ban ĐBGT": "ĐBGT",
+    "Ban DA": "DA",
+    "BCH Công trường": "BCH CT",
+    "XN Xe máy thiết bị": "XN XMTB",
+}
 
 DEFAULT_PERSONNEL = {
     "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
     "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
-    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn", "Thái Văn Thành", "Trần Văn Trọng", "Trần Cường", "Đặng Thị Lan Ngọc"],
-    "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn", "Thái Văn Thành", "Trần Văn Trọng", "Trần Cường", "Đặng Thị Lan Ngọc"],
-    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Thị Mỹ Phương", "Nguyễn Hoài Trung"],
-    "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Thị Mỹ Phương", "Nguyễn Hoài Trung"],
-    "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Hoài Trung"],
-    "HCTH": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên", "Nguyễn Hoài Trung"],
-    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
-    "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
+    "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
+    "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
+    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
+    "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
+    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+    "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
     "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
     "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
-    "Ban Kỹ thuật": ["Nguyễn Văn Bồn", "Trần Văn Trọng", "Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
-    "KT": ["Nguyễn Văn Bồn", "Trần Văn Trọng", "Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
-    "Mỏ": ["Lê Nho Tân"],
+    "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
+    "KT": ["Nguyễn Văn Bồn"],
     "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
     "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông", "Lê Văn Thành", "Ngô Văn Hoàng"],
-    "BCH CT": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông", "Lê Văn Thành", "Ngô Văn Hoàng"],
-    "Xí nghiệp xe máy thiết bị": ["Đặng Hiền", "Nguyễn Phước Trị", "Trần Văn Lê", "Nguyễn Hữu Thanh", "Nguyễn Văn Minh", "Nguyễn Văn Phước", "Đỗ Văn Khương", "Lê Đức Đạt", "Ngô Tấn Thịnh", "Hoàng Việt Hùng"],
-    "XN XMTB": ["Đặng Hiền", "Nguyễn Phước Trị", "Trần Văn Lê", "Nguyễn Hữu Thanh", "Nguyễn Văn Minh", "Nguyễn Văn Phước", "Đỗ Văn Khương", "Lê Đức Đạt", "Ngô Tấn Thịnh", "Hoàng Việt Hùng"],
     "Ban Dự án": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "Xí nghiệp DTBD": ["Mai Văn Châu"],
@@ -678,7 +694,16 @@ DEPT_ABBR = {
     "BCH CT": "BCH CT",
     "Xí nghiệp xe máy thiết bị": "XN XMTB",
     "Xí nghiệp xe thiết bị": "XN XMTB",
-    "XN XMTB": "XN XMTB"
+    "XN XMTB": "XN XMTB",
+    "Ban TCKT": "TCKT",
+    "Ban HCNS": "HCNS",
+    "Ban KHĐT": "KHĐT",
+    "Ban CBĐT": "CBĐT",
+    "Ban KT": "KT",
+    "Ban ĐBGT": "ĐBGT",
+    "Ban DA": "DA",
+    "BCH Công trường": "BCH CT",
+    "XN Xe máy thiết bị": "XN XMTB"
 }
 
 for comp_name, comp_data in config.get("companies", {}).items():
