@@ -142,21 +142,22 @@ DEPT_ABBR = {
 }
 
 DEFAULT_PERSONNEL = {
-    "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-    "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+    "Hội đồng quản trị": ["Đặng Thanh Bình"],
+    "HĐQT": ["Đặng Thanh Bình"],
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
     "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
     "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
-    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+    "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"],
+    "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"],
     "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
     "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
     "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
     "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
     "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
     "KT": ["Nguyễn Văn Bồn"],
-    "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-    "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+    "Ban Đền bù Giải tỏa": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+    "ĐBGT": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
     "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "Xí nghiệp DTBD": ["Mai Văn Châu"],
@@ -472,27 +473,25 @@ def load_config():
             },
             "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
                 "projects_by_category": {
-                    "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht", "HCNS", "TCKT"]
+                    "THƯƠNG MẠI & KHÁCH SẠN": ["Du thuyền Happy Yacht (DMT Marina)", "Du thuyền Happy Yacht"]
                 },
-                "departments": ["HĐQT", "Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "departments": ["BLĐ"],
                 "personnel_by_department": {
-                    "HĐQT": ["Đặng Ngọc Hoàng"],
-                    "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
-                    "Ban Tài chính Kế toán": ["Lê Thị Hải"],
-                    "Ban Lãnh đạo": ["Trần Cường"]
+                    "BLĐ": ["Trần Cường"]
                 }
             },
             "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
                 "projects_by_category": {},
-                "departments": ["HĐQT", "Ban Lãnh đạo", "Ban Kỹ thuật", "Ban chỉ huy Công trường", "Xí nghiệp xe máy thiết bị", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán"],
+                "departments": ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT", "Mỏ"],
                 "personnel_by_department": {
-                    "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
-                    "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                    "Ban Kỹ thuật": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
-                    "Ban chỉ huy Công trường": ["Nguyễn Phong Trung", "Phạm Văn Long", "Lê Đông"],
-                    "Xí nghiệp xe máy thiết bị": ["Đặng Hiền"],
-                    "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
-                    "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"]
+                    "HĐQT": ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"],
+                    "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                    "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
+                    "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
+                    "XN XMTB": ["Đặng Hiền"],
+                    "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                    "HCNS": ["Nguyễn Thị Mỹ Phương"],
+                    "Mỏ": ["Lê Nho Tân"]
                 }
             }
         },
@@ -593,14 +592,14 @@ def load_config():
                 if comp_name in ["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG", "CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG MIỀN TRUNG", "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"]:
                     comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"]
                     new_personnel = {
-                        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+                        "HĐQT": ["Đặng Thanh Bình"],
                         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
-                        "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+                        "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"],
                         "KT": ["Nguyễn Văn Bồn"],
                         "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
                         "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
                         "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
-                        "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+                        "ĐBGT": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
                         "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
                         "XN DTBD": ["Mai Văn Châu"],
                         "Sàn GDBĐS": ["Ngô Thị Tâm"]
@@ -609,9 +608,9 @@ def load_config():
                 elif comp_name in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
                     comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT", "Mỏ"]
                     new_personnel = {
-                        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+                        "HĐQT": ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"],
                         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                        "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
+                        "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
                         "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
                         "XN XMTB": ["Đặng Hiền"],
                         "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
@@ -620,13 +619,9 @@ def load_config():
                     }
                     
                 elif comp_name in ["CTY CP DMT - MARINA (Du thuyền Happy Yacht)", "CÔNG TY CỔ PHẦN DMT-MARINA"]:
-                    comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "HCTH"]
+                    comp_data["departments"] = ["BLĐ"]
                     new_personnel = {
-                        "HĐQT": ["Đặng Ngọc Hoàng"],
-                        "BLĐ": ["Trần Cường"],
-                        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-                        "HCTH": ["Nguyễn Thị Hạnh Tiên"],
-                        "TCKT": ["Lê Thị Hải"]
+                        "BLĐ": ["Trần Cường"]
                     }
 
                 comp_data["personnel_by_department"] = new_personnel
@@ -756,14 +751,14 @@ for comp_name, comp_data in config.get("companies", {}).items():
         if comp_name in ["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG", "CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG MIỀN TRUNG", "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"]:
             comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"]
             new_personnel = {
-                "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+                "HĐQT": ["Đặng Thanh Bình"],
                 "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
-                "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+                "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"],
                 "KT": ["Nguyễn Văn Bồn"],
                 "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
                 "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
                 "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
-                "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+                "ĐBGT": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
                 "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
                 "XN DTBD": ["Mai Văn Châu"],
                 "Sàn GDBĐS": ["Ngô Thị Tâm"]
@@ -772,9 +767,9 @@ for comp_name, comp_data in config.get("companies", {}).items():
         elif comp_name in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
             comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT", "Mỏ"]
             new_personnel = {
-                "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+                "HĐQT": ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"],
                 "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
+                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
                 "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
                 "XN XMTB": ["Đặng Hiền"],
                 "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
@@ -783,21 +778,17 @@ for comp_name, comp_data in config.get("companies", {}).items():
             }
             
         elif comp_name in ["CTY CP DMT - MARINA (Du thuyền Happy Yacht)", "CÔNG TY CỔ PHẦN DMT-MARINA"]:
-            comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "HCTH"]
+            comp_data["departments"] = ["BLĐ"]
             new_personnel = {
-                "HĐQT": ["Đặng Ngọc Hoàng"],
-                "BLĐ": ["Trần Cường"],
-                "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-                "HCTH": ["Nguyễn Thị Hạnh Tiên"],
-                "TCKT": ["Lê Thị Hải"]
+                "BLĐ": ["Trần Cường"]
             }
 
         comp_data["personnel_by_department"] = new_personnel
 
 DEPT_LEADS = {
     "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thanh Bình"],
+        "Hội đồng quản trị": ["Đặng Thanh Bình"],
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
         "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
@@ -808,16 +799,16 @@ DEPT_LEADS = {
         "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
         "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa"],
-        "KT": ["Trần Quốc Thể"],
-        "Ban Kỹ thuật": ["Trần Quốc Thể"],
-        "ĐBGT": ["Nguyễn Ngọc Tôn"],
-        "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn"],
-        "DA": ["Nguyễn Đình Thắng"],
-        "Ban Dự án": ["Nguyễn Đình Thắng"],
-        "XN DTBD": ["Trần Quốc Thể"],
-        "Xí nghiệp DTBD": ["Trần Quốc Thể"],
-        "SÀN": ["Đặng Ngọc Hoàng"],
-        "Sàn GDBĐS": ["Đặng Ngọc Hoàng"]
+        "KT": [],
+        "Ban Kỹ thuật": [],
+        "ĐBGT": [],
+        "Ban Đền bù Giải tỏa": [],
+        "DA": [],
+        "Ban Dự án": [],
+        "XN DTBD": [],
+        "Xí nghiệp DTBD": [],
+        "SÀN": [],
+        "Sàn GDBĐS": []
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
@@ -828,14 +819,14 @@ DEPT_LEADS = {
         "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],
         "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
-        "KT": ["Phạm Quang Nghĩa"],
-        "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
-        "BCH CT": ["Trần Văn Trọng"],
-        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
-        "XN XMTB": ["Trần Văn Trọng"],
-        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"],
-        "Mỏ": ["Trần Văn Trọng"],
-        "Ban Quản lý Mỏ": ["Trần Văn Trọng"]
+        "KT": [],
+        "Ban Kỹ thuật": [],
+        "BCH CT": [],
+        "Ban chỉ huy Công trường": [],
+        "XN XMTB": [],
+        "Xí nghiệp xe máy thiết bị": [],
+        "Mỏ": [],
+        "Ban Quản lý Mỏ": []
     },
     "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
         "HĐQT": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
@@ -846,36 +837,22 @@ DEPT_LEADS = {
         "Ban Hành chính Nhân sự": ["Nguyễn Thị Mỹ Phương"],
         "TCKT": ["Nguyễn Thị Ngọc Hà"],
         "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
-        "KT": ["Phạm Quang Nghĩa"],
-        "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
-        "BCH CT": ["Trần Văn Trọng"],
-        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
-        "XN XMTB": ["Trần Văn Trọng"],
-        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"],
-        "Mỏ": ["Trần Văn Trọng"],
-        "Ban Quản lý Mỏ": ["Trần Văn Trọng"]
+        "KT": [],
+        "Ban Kỹ thuật": [],
+        "BCH CT": [],
+        "Ban chỉ huy Công trường": [],
+        "XN XMTB": [],
+        "Xí nghiệp xe máy thiết bị": [],
+        "Mỏ": [],
+        "Ban Quản lý Mỏ": []
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
-        "HĐQT": ["Đặng Ngọc Hoàng"],
-        "Hội đồng quản trị": ["Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],
-        "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên"],
-        "HCTH": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Trần Cường"],
-        "Ban Tài chính Kế toán": ["Trần Cường"]
+        "BLĐ": ["Trần Cường"],
+        "Ban Lãnh đạo": ["Trần Cường"]
     },
     "CÔNG TY CỔ PHẦN DMT-MARINA": {
-        "HĐQT": ["Đặng Ngọc Hoàng"],
-        "Hội đồng quản trị": ["Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],
-        "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
-        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên"],
-        "HCTH": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Trần Cường"],
-        "Ban Tài chính Kế toán": ["Trần Cường"]
+        "BLĐ": ["Trần Cường"],
+        "Ban Lãnh đạo": ["Trần Cường"]
     }
 }
 DEPT_LEADS["CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
@@ -894,30 +871,26 @@ HIERARCHY_MARINA_3 = {
     "Đặng Thị Lan Ngọc": None,  # CT HĐQT Cienco -> Toàn quyền xem và duyệt toàn hệ thống
     "Đặng Ngọc Hoàng": ["Trần Cường", "Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm"], # PCT HĐQT Đầu Tư, CT HĐQT Marina (quản lý Trần Cường, Hạnh Tiên, Ngô Thị Tâm)
     "Trần Quốc Thể": ["Nguyễn Văn Bồn", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"], # TGĐ Đầu Tư (hiện tại chưa ai quản lý)
-    "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"], # PTGĐ Đầu Tư phụ trách TCKT (hiện tại chưa ai quản lý)
+    "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"], # PTGĐ Đầu Tư phụ trách TCKT (chị Ngọc Hà ở Cienco do anh Thái Văn Thành duyệt)
     "Nguyễn Ngọc Tôn": ["Đặng Công Nhựt", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"], # PTGĐ Đầu Tư phụ trách ĐBGT (hiện tại chưa ai quản lý)
-    "Thái Văn Thành": [ # TGĐ Cienco
-        "Nguyễn Văn Bồn", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng",
+    "Thái Văn Thành": [ # TGĐ Cienco (Nguyễn Văn Bồn do anh Thể duyệt; Đặng Hiền do anh Trọng duyệt)
+        "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng",
         "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", 
-        "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"
+        "Lê Văn Thành", "Ngô Văn Hoàng"
     ],
     "Trần Văn Trọng": [ # PTGĐ Cienco
         "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", 
         "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"
     ],
-    "Trần Cường": ["Nguyễn Thị Hạnh Tiên", "Lê Thị Hải"], # Giám đốc Marina (quản lý Hạnh Tiên, Lê Thị Hải)
+    "Trần Cường": [], # Giám đốc Marina (nhân sự duy nhất tại Marina, do anh Đặng Ngọc Hoàng quản lý)
 
     # 2. Lãnh đạo Phòng/Ban & Đơn vị theo sheet MARINA (3)
     "Nguyễn Thị Hạnh Tiên": ["Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"], # Trưởng Ban HCNS (Đầu Tư) / Trưởng Ban HCTH (Marina)
-    "Đồng Thị Nguyệt Nga": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"], # GĐ Ban TCKT Đầu Tư
-    "Nguyễn Thị Ngọc Hà": ["Lê Thị Hải", "Nguyễn Thị Như Can"], # PGĐ Ban TCKT Cienco
+    "Đồng Thị Nguyệt Nga": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"], # GĐ Ban TCKT Đầu Tư (chỉ có chị Nga duyệt Hoàng Hà, Nhật Sang, Lê Thị Hải)
+    "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Như Can"], # PGĐ Ban TCKT Cienco (duyệt Như Can; Lê Thị Hải do Đồng Thị Nguyệt Nga duyệt)
     "Hồ Văn Khoa": ["Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"], # GĐ Ban CBĐT
     "Nguyễn Trần Thức": ["Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"], # GĐ Ban KHĐT
-    "Phạm Quang Nghĩa": ["Mai Văn Châu", "Lê Văn Thành", "Ngô Văn Hoàng"], # Phó GĐ Ban Kỹ thuật Cienco
-
-    # 3. Lãnh đạo các đơn vị trực thuộc
-    "Nguyễn Đình Thắng": ["Nguyễn Đình Hiếu"], # Ban Dự án
-    "Nguyễn Thị Mỹ Phương": ["Nguyễn Hoài Trung"] # Ban HCNS Cienco
+    "Nguyễn Thị Mỹ Phương": [] # PGĐ Ban HCNS Cienco (chế độ Quản lý, không duyệt công việc)
 }
 
 def get_subordinates_for_manager(manager_user):

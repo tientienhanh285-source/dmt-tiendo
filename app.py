@@ -122,18 +122,18 @@ for comp_name, comp_data in config.get("companies", {}).items():
         for d, p in comp_data["personnel_by_department"].items():
             new_personnel[DEPT_ABBR.get(d, d)] = p
         
-        if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
+        if comp_name in ["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG", "CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG MIỀN TRUNG", "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"]:
             comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"]
             new_personnel = {
-                "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+                "HĐQT": ["Đặng Thanh Bình"],
                 "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
-                "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+                "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"],
                 "KT": ["Nguyễn Văn Bồn"],
                 "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
-                "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
-                "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
-                "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-                "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+                "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
+                "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
+                "ĐBGT": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+                "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
                 "XN DTBD": ["Mai Văn Châu"],
                 "Sàn GDBĐS": ["Ngô Thị Tâm"]
             }
@@ -141,9 +141,9 @@ for comp_name, comp_data in config.get("companies", {}).items():
         elif comp_name in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
             comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT", "Mỏ"]
             new_personnel = {
-                "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+                "HĐQT": ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"],
                 "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
-                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
+                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng"],
                 "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
                 "XN XMTB": ["Đặng Hiền"],
                 "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
@@ -152,13 +152,9 @@ for comp_name, comp_data in config.get("companies", {}).items():
             }
             
         elif comp_name in ["CTY CP DMT - MARINA (Du thuyền Happy Yacht)", "CÔNG TY CỔ PHẦN DMT-MARINA"]:
-            comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "HCTH"]
+            comp_data["departments"] = ["BLĐ"]
             new_personnel = {
-                "HĐQT": ["Đặng Ngọc Hoàng"],
-                "BLĐ": ["Trần Cường"],
-                "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-                "HCTH": ["Nguyễn Thị Hạnh Tiên"],
-                "TCKT": ["Lê Thị Hải"]
+                "BLĐ": ["Trần Cường"]
             }
 
         comp_data["personnel_by_department"] = new_personnel
@@ -438,18 +434,16 @@ if role_mode == "Quản lý":
                 
                 valid_leads = dept_leads
                 
-                # Bức tường lửa cuối cùng: Ép buộc xóa tên khỏi các phòng ban không được phép
-                if sel_login_dept not in ["BLĐ", "KT", "Ban Kỹ thuật", "XN DTBD", "Xí nghiệp DTBD"] and "Trần Quốc Thể" in valid_leads:
-                    valid_leads = [x for x in valid_leads if x != "Trần Quốc Thể"]
-                if sel_login_dept == "TCKT" and "Đoàn Thị Ngọc Nữ" in valid_leads:
-                    valid_leads = [x for x in valid_leads if x != "Đoàn Thị Ngọc Nữ"]
-                if sel_login_dept == "HCNS" and "Đặng Ngọc Hoàng" in valid_leads:
-                    valid_leads = [x for x in valid_leads if x != "Đặng Ngọc Hoàng"]
+                # Bức tường lửa: Quản lý thuộc BLĐ chỉ nằm duy nhất ở mục Quản lý của BLĐ
+                bld_only_managers = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn", "Thái Văn Thành", "Trần Văn Trọng"]
+                if sel_login_dept not in ["BLĐ", "Ban Lãnh đạo"]:
+                    valid_leads = [x for x in valid_leads if x not in bld_only_managers]
                 
                 if valid_leads:
                     sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + valid_leads, key="mgr_login_user")
                 else:
-                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"], key="mgr_login_user")
+                    st.sidebar.info("Phòng ban này tạm thời chưa có quản lý.")
+                    sel_login_user = "-- Chọn --"
                 
                 if sel_login_user != "-- Chọn --":
                     mgr_pwd = st.sidebar.text_input("3. Nhập Mật khẩu Quản lý", type="password")
@@ -526,13 +520,22 @@ elif role_mode == "Nhân viên":
                     dept_leads = [dept_leads] if dept_leads else []
                 
                 # Quản lý/Trưởng Ban đăng nhập ở quyền "Quản lý", không xuất hiện ở danh sách "Nhân viên"
-                nhan_vien_list = [p for p in personnel_list if p not in dept_leads]
+                # Quản lý thuộc BLĐ chỉ nằm ở mục Quản lý của BLĐ, không nằm ở mục Nhân viên
+                bld_all_leads = []
+                for comp_leads in DEPT_LEADS.values():
+                    bld_all_leads.extend(comp_leads.get("BLĐ", []))
+                    bld_all_leads.extend(comp_leads.get("Ban Lãnh đạo", []))
+                    bld_all_leads.extend(comp_leads.get("HĐQT", []))
+                    bld_all_leads.extend(comp_leads.get("Hội đồng quản trị", []))
+                bld_all_leads = list(dict.fromkeys(bld_all_leads))
                 
-                # Riêng BLĐ và HĐQT cho phép đăng nhập để tự tạo và theo dõi công việc cá nhân
-                if sel_login_dept in ["BLĐ", "Ban Lãnh đạo", "HĐQT", "Hội đồng quản trị"] and personnel_list:
-                    nhan_vien_list = personnel_list.copy()
+                nhan_vien_list = [p for p in personnel_list if p not in dept_leads and p not in bld_all_leads]
                 
-                sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
+                if nhan_vien_list:
+                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên của bạn", ["-- Chọn --"] + nhan_vien_list, key="login_user")
+                else:
+                    st.sidebar.info("Phòng ban này không có nhân viên trực thuộc (các Quản lý/Lãnh đạo vui lòng chọn quyền 'Quản lý' để đăng nhập).")
+                    sel_login_user = "-- Chọn --"
                 if sel_login_user != "-- Chọn --":
                     if st.sidebar.button("Xác nhận Đăng nhập"):
                         st.session_state.is_personal_authenticated = True
