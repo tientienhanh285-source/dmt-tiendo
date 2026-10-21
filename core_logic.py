@@ -655,18 +655,27 @@ DEPT_LEADS = {
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
         "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên"],
         "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
-        "KHĐT": ["Nguyễn Trần Thức"],
-        "CBĐT": ["Hồ Văn Khoa"],
+        "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
+        "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi"],
+        "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi"],
+        "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh"],
+        "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh"],
         "KT": ["Nguyễn Văn Bồn"],
-        "ĐBGT": ["Đặng Công Nhựt"],
-        "DA": ["Nguyễn Quốc Vinh"],
+        "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
+        "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Công Nhật"],
+        "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Công Nhật"],
+        "DA": ["Nguyễn Đình Thắng"],
+        "Ban Dự án": ["Nguyễn Đình Thắng"],
         "XN DTBD": ["Mai Văn Châu"],
+        "Xí nghiệp DTBD": ["Mai Văn Châu"],
+        "SÀN": ["Ngô Thị Tâm"],
         "Sàn GDBĐS": ["Ngô Thị Tâm"]
     },
     "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
+        "Hội đồng quản trị": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
         "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
@@ -675,14 +684,16 @@ DEPT_LEADS = {
         "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
         "KT": ["Phạm Quang Nghĩa"],
         "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
-        "BCH CT": ["Trần Văn Trọng"],
-        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
-        "XN XMTB": ["Trần Văn Trọng"],
-        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"]
+        "BCH CT": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
+        "Ban chỉ huy Công trường": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
+        "XN XMTB": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
+        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
+        "Mỏ": ["Lê Nho Tân"],
+        "Ban Quản lý Mỏ": ["Lê Nho Tân"]
     },
     "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT": {
-        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
-        "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+        "HĐQT": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
+        "Hội đồng quản trị": ["Đặng Thị Lan Ngọc", "Đặng Thanh Bình"],
         "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
         "Ban Lãnh đạo": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
         "HCNS": ["Nguyễn Thị Mỹ Phương"],
@@ -691,18 +702,142 @@ DEPT_LEADS = {
         "Ban Tài chính Kế toán": ["Nguyễn Thị Ngọc Hà"],
         "KT": ["Phạm Quang Nghĩa"],
         "Ban Kỹ thuật": ["Phạm Quang Nghĩa"],
-        "BCH CT": ["Trần Văn Trọng"],
-        "Ban chỉ huy Công trường": ["Trần Văn Trọng"],
-        "XN XMTB": ["Trần Văn Trọng"],
-        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng"]
+        "BCH CT": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
+        "Ban chỉ huy Công trường": ["Trần Văn Trọng", "Nguyễn Phong Trung"],
+        "XN XMTB": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
+        "Xí nghiệp xe máy thiết bị": ["Trần Văn Trọng", "Đặng Hiền", "Đặng Hiển"],
+        "Mỏ": ["Lê Nho Tân"],
+        "Ban Quản lý Mỏ": ["Lê Nho Tân"]
     },
     "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
         "HĐQT": ["Đặng Ngọc Hoàng"],
         "Hội đồng quản trị": ["Đặng Ngọc Hoàng"],
-        "BLĐ": ["Trần Cường"],
-        "Ban Lãnh đạo": ["Trần Cường"]
+        "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],
+        "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên"],
+        "HCTH": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Lê Thị Hải"],
+        "Ban Tài chính Kế toán": ["Lê Thị Hải"]
+    },
+    "CÔNG TY CỔ PHẦN DMT-MARINA": {
+        "HĐQT": ["Đặng Ngọc Hoàng"],
+        "Hội đồng quản trị": ["Đặng Ngọc Hoàng"],
+        "BLĐ": ["Trần Cường", "Đặng Ngọc Hoàng"],
+        "Ban Lãnh đạo": ["Trần Cường", "Đặng Ngọc Hoàng"],
+        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+        "Ban Hành chính Tổng hợp": ["Nguyễn Thị Hạnh Tiên"],
+        "HCTH": ["Nguyễn Thị Hạnh Tiên"],
+        "TCKT": ["Lê Thị Hải"],
+        "Ban Tài chính Kế toán": ["Lê Thị Hải"]
     }
 }
+
+# ==============================================================================
+# HIERARCHY CHUẨN XÁC THEO SHEET 'MARINA (3)' TRONG FILE 'Phân quyền.xls'
+# ĐÂY LÀ SINGLE SOURCE OF TRUTH CHO TOÀN BỘ HỆ THỐNG
+# ==============================================================================
+HIERARCHY_MARINA_3 = {
+    # 1. HĐQT & Ban Lãnh đạo cấp cao
+    "Đặng Thanh Bình": None,   # CT HĐQT Đầu Tư -> Toàn quyền xem và duyệt toàn hệ thống
+    "Đặng Thị Lan Ngọc": None,  # CT HĐQT Cienco -> Toàn quyền xem và duyệt toàn hệ thống
+    "Đặng Ngọc Hoàng": ["Ngô Thị Tâm", "Trần Cường"], # PCT HĐQT Đầu Tư, CT HĐQT Marina
+    "Trần Quốc Thể": ["Nguyễn Văn Bồn", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"], # TGĐ Đầu Tư
+    "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"], # PTGĐ Đầu Tư phụ trách TCKT
+    "Nguyễn Ngọc Tôn": ["Đặng Công Nhựt", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"], # PTGĐ Đầu Tư phụ trách ĐBGT
+    "Thái Văn Thành": [ # TGĐ Cienco
+        "Nguyễn Văn Bồn", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng",
+        "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", 
+        "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"
+    ],
+    "Trần Văn Trọng": [ # PTGĐ Cienco
+        "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", 
+        "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"
+    ],
+    "Trần Cường": ["Nguyễn Thị Hạnh Tiên", "Lê Thị Hải"], # Giám đốc Marina
+
+    # 2. Lãnh đạo Phòng/Ban & Đơn vị theo sheet MARINA (3)
+    "Nguyễn Thị Hạnh Tiên": ["Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"], # Trưởng Ban HCNS (Đầu Tư) / Trưởng Ban HCTH (Marina)
+    "Đồng Thị Nguyệt Nga": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"], # GĐ Ban TCKT Đầu Tư
+    "Nguyễn Thị Ngọc Hà": ["Huỳnh Thị Hoàng Hà", "Lê Thị Hải", "Nguyễn Thị Như Can"], # PGĐ Ban TCKT Cienco
+    "Hồ Văn Khoa": ["Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"], # GĐ Ban CBĐT
+    "Nguyễn Trần Thức": ["Nguyễn Đức Lợi", "Cao Thuỷ Tiên", "Trần Tin"], # GĐ Ban KHĐT
+    "Phạm Quang Nghĩa": ["Mai Văn Châu"], # Phó GĐ Ban Kỹ thuật Cienco (quản lý Mai Văn Châu)
+
+    # 3. Các cấp phó / cán bộ phụ trách (hỗ trợ điều hành)
+    "Huỳnh Thị Hoàng Hà": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can", "Lê Thị Hải"], # PGĐ Ban TCKT Đầu Tư
+    "Phan Thị Mỹ Hạnh": ["Phan Thị Kim Cúc"], # PGĐ Ban CBĐT
+    "Nguyễn Đức Lợi": ["Cao Thuỷ Tiên", "Trần Tin"], # PGĐ Ban KHĐT
+    "Nguyễn Thị Mỹ Phương": ["Nguyễn Thị Mỹ Phương"], # PGĐ Ban HCNS Cienco
+    "Lê Nho Tân": ["Lê Nho Tân"], # Giám đốc mỏ
+    "Mai Văn Châu": ["Mai Văn Châu"], # XN DTBD
+    "Ngô Thị Tâm": ["Ngô Thị Tâm"], # Thư ký Sàn
+    "Lê Thị Hải": ["Lê Thị Hải"] # Phó Ban TCKT Marina
+}
+
+def get_subordinates_for_manager(manager_user):
+    """
+    Trả về danh sách cấp dưới trực tiếp cần duyệt/nghiệm thu theo sheet MARINA (3).
+    - Trả về None nếu là HĐQT (toàn quyền, duyệt mọi công việc).
+    - Trả về list tên cấp dưới nếu có.
+    - Trả về [] nếu không quản lý ai.
+    """
+    if not manager_user:
+        return []
+    if manager_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+        return None
+    subs = HIERARCHY_MARINA_3.get(manager_user)
+    if subs is None and manager_user in HIERARCHY_MARINA_3:
+        return None
+    return list(dict.fromkeys(subs)) if subs else []
+
+def get_allowed_personnel_for_manager(manager_user, include_self=True):
+    """
+    Trả về danh sách nhân sự mà Quản lý được xem tiến độ / KPI:
+    Bao gồm chính mình + toàn bộ cấp dưới thuộc quyền theo sheet MARINA (3).
+    - Trả về None nếu là HĐQT (toàn quyền, xem mọi nhân sự).
+    """
+    if not manager_user:
+        return []
+    if manager_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+        return None
+    subs = HIERARCHY_MARINA_3.get(manager_user)
+    if subs is None and manager_user in HIERARCHY_MARINA_3:
+        return None
+    res = list(subs) if subs else []
+    if include_self and manager_user not in res:
+        res.insert(0, manager_user)
+    return list(dict.fromkeys(res))
+
+def setup_manager_db_filters(db_filters, manager_user, manager_dept, selected_company):
+    """
+    Cấu hình bộ lọc db_filters chuẩn hóa cho Quản lý theo sheet MARINA (3):
+    1. Nếu là HĐQT / BLĐ toàn quyền: Xem mọi công ty, phòng ban.
+    2. Nếu nằm trong HIERARCHY_MARINA_3:
+       - Lọc NguoiChuTri trong danh sách nhân sự được phép (chính mình + cấp dưới).
+       - BỎ lọc 'DonVi' và 'PhongBan' vì cấp dưới có thể làm ở công ty/phòng ban khác (cross-company).
+    3. Fallback: Nếu chưa có trong bảng phân quyền thì lọc theo phòng ban của Quản lý.
+    """
+    if not manager_user:
+        return db_filters
+        
+    if manager_dept in ["HĐQT", "Hội đồng quản trị"] or manager_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+        if 'DonVi' in db_filters: del db_filters['DonVi']
+        if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        if 'NguoiChuTri' in db_filters: del db_filters['NguoiChuTri']
+        return db_filters
+        
+    allowed = get_allowed_personnel_for_manager(manager_user, include_self=True)
+    if allowed is not None and len(allowed) > 0:
+        if 'DonVi' in db_filters: del db_filters['DonVi']
+        if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        db_filters['NguoiChuTri'] = allowed
+    else:
+        if manager_dept and manager_dept != "Tất cả":
+            db_filters['PhongBan'] = manager_dept
+            
+    return db_filters
+
 
 
 def get_personnel_for_company_dept(company, dept, config):

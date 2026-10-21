@@ -44,69 +44,10 @@ db_filters = {'DonVi': selected_company}
 if 'role_mode' in st.session_state:
     if st.session_state['role_mode'] == "Nhân viên" and st.session_state.get('is_personal_authenticated') and st.session_state.get('personal_user'):
         db_filters['NguoiChuTri'] = st.session_state.personal_user
-    elif st.session_state['role_mode'] == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_dept'):
+    elif st.session_state['role_mode'] == "Quản lý" and st.session_state.get('is_manager_authenticated'):
         manager_user = st.session_state.get('manager_user', '')
-        bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
-        if manager_user in bld_members:
-            if st.session_state.manager_dept in ["BLĐ", "HĐQT", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
-                bld_hierarchy = {
-                        "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên", "Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Phan Thị Kim Cúc", "Mai Văn Châu", "Nguyễn Văn Bồn"],
-                        "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
-                        "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-                        "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
-                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
-                        "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
-                        "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
-                        "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
-                        "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
-                        "Huỳnh Thị Hoàng Hà": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
-                    }
-                if manager_user in bld_hierarchy:
-                    all_truong_ban = bld_hierarchy[manager_user]
-                else:
-                    all_truong_ban = []
-                    for leads in DEPT_LEADS.get(selected_company, {}).values():
-                        all_truong_ban.extend(leads)
-                
-                if st.session_state.manager_dept in ["HĐQT", "BLĐ", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
-                    # HĐQT and BLĐ see all companies, do not filter by DonVi
-                    if 'DonVi' in db_filters:
-                        del db_filters['DonVi']
-                if st.session_state.manager_dept not in ["HĐQT", "Hội đồng quản trị"]:
-                    db_filters['NguoiChuTri'] = list(set(all_truong_ban))
-            else:
-                dept_leads = DEPT_LEADS.get(selected_company, {}).get(st.session_state.manager_dept, [])
-                truong_ban_list = [p for p in dept_leads if p not in bld_members]
-                if truong_ban_list:
-                    db_filters['NguoiChuTri'] = truong_ban_list
-                else:
-                    db_filters['PhongBan'] = st.session_state.manager_dept
-        else:
-            db_filters['PhongBan'] = st.session_state.manager_dept
-
-
-# --- GLOBAL OVERRIDES ---
-_mgr = st.session_state.get('manager_user', '')
-if _mgr == "Nguyễn Thị Hạnh Tiên":
-    db_filters['NguoiChuTri'] = ["Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"]
-    if 'DonVi' in db_filters: del db_filters['DonVi']
-    if 'PhongBan' in db_filters: del db_filters['PhongBan']
-elif _mgr == "Trần Cường":
-    db_filters['NguoiChuTri'] = ["Trần Cường", "Ngô Thị Tâm"]
-    if 'DonVi' in db_filters: del db_filters['DonVi']
-    if 'PhongBan' in db_filters: del db_filters['PhongBan']
-elif _mgr == "Đồng Thị Nguyệt Nga":
-    db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
-    if 'DonVi' in db_filters: del db_filters['DonVi']
-    if 'PhongBan' in db_filters: del db_filters['PhongBan']
-elif _mgr == "Huỳnh Thị Hoàng Hà":
-    db_filters['NguoiChuTri'] = ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
-    if 'DonVi' in db_filters: del db_filters['DonVi']
-    if 'PhongBan' in db_filters: del db_filters['PhongBan']
-elif _mgr == "Nguyễn Thị Ngọc Hà":
-    db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"]
-    if 'DonVi' in db_filters: del db_filters['DonVi']
-    if 'PhongBan' in db_filters: del db_filters['PhongBan']
+        manager_dept = st.session_state.get('manager_dept', '')
+        db_filters = setup_manager_db_filters(db_filters, manager_user, manager_dept, selected_company)
 
 if 'display_df' not in locals():
     try:
@@ -347,38 +288,11 @@ with kpi_tab1:
             
         if personnel_kpi:
             kpi_month_df = pd.DataFrame(personnel_kpi)
-            manager_user = st.session_state.get('manager_user', '')
-            bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
-            if manager_user in bld_members:
-                if selected_dept_m == "BLĐ":
-                    bld_hierarchy = {
-                        "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên", "Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Phan Thị Kim Cúc", "Mai Văn Châu", "Nguyễn Văn Bồn"],
-                        "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
-                        "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-                        "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
-                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
-                        "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
-                        "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
-                        "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
-                        "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
-                        "Huỳnh Thị Hoàng Hà": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
-                    }
-                    if manager_user in bld_hierarchy:
-                        all_truong_ban = bld_hierarchy[manager_user]
-                    else:
-                        all_truong_ban = []
-                        for leads in DEPT_LEADS.get(selected_company, {}).values():
-                            all_truong_ban.extend(leads)
-                    kpi_month_df = kpi_month_df[kpi_month_df["Người thực hiện"].isin(all_truong_ban)]
-                elif selected_dept_m != "Tất cả phòng ban":
-                    dept_leads = DEPT_LEADS.get(selected_company, {}).get(selected_dept_m, [])
-                    truong_ban_list = [p for p in dept_leads if p not in bld_members]
-                    if truong_ban_list:
-                        kpi_month_df = kpi_month_df[kpi_month_df["Người thực hiện"].isin(truong_ban_list)]
-                    else:
-                        kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_m, selected_dept_m)]
-            elif selected_dept_m == "BLĐ":
-                kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == "BLĐ"]
+            if role_mode == "Quản lý":
+                manager_user = st.session_state.get('manager_user', '')
+                allowed = get_allowed_personnel_for_manager(manager_user, include_self=True)
+                if allowed is not None:
+                    kpi_month_df = kpi_month_df[kpi_month_df["Người thực hiện"].isin(allowed)]
             elif selected_dept_m != "Tất cả phòng ban":
                 kpi_month_df = kpi_month_df[kpi_month_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_m, selected_dept_m)]
             st.dataframe(
@@ -688,38 +602,11 @@ if 'kpi_tab2' in locals():
                 
                 if yearly_data:
                     yearly_df = pd.DataFrame(yearly_data)
-                    manager_user = st.session_state.get('manager_user', '')
-                    bld_members = ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Thái Văn Thành", "Trần Văn Trọng", "Nguyễn Ngọc Tôn", "Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]
-                    if manager_user in bld_members:
-                        if selected_dept_y == "BLĐ":
-                            bld_hierarchy = {
-                        "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên", "Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Phan Thị Kim Cúc", "Mai Văn Châu", "Nguyễn Văn Bồn"],
-                        "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
-                        "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-                        "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
-                        "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
-                        "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
-                        "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
-                        "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
-                        "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
-                        "Huỳnh Thị Hoàng Hà": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
-                    }
-                            if manager_user in bld_hierarchy:
-                                all_truong_ban = bld_hierarchy[manager_user]
-                            else:
-                                all_truong_ban = []
-                                for leads in DEPT_LEADS.get(selected_company, {}).values():
-                                    all_truong_ban.extend(leads)
-                            yearly_df = yearly_df[yearly_df["Người thực hiện"].isin(all_truong_ban)]
-                        elif selected_dept_y != "Tất cả phòng ban":
-                            dept_leads = DEPT_LEADS.get(selected_company, {}).get(selected_dept_y, [])
-                            truong_ban_list = [p for p in dept_leads if p not in bld_members]
-                            if truong_ban_list:
-                                yearly_df = yearly_df[yearly_df["Người thực hiện"].isin(truong_ban_list)]
-                            else:
-                                yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
-                    elif selected_dept_y == "BLĐ":
-                        yearly_df = yearly_df[yearly_df["Phòng ban"] == "BLĐ"]
+                    if role_mode == "Quản lý":
+                        manager_user = st.session_state.get('manager_user', '')
+                        allowed = get_allowed_personnel_for_manager(manager_user, include_self=True)
+                        if allowed is not None:
+                            yearly_df = yearly_df[yearly_df["Người thực hiện"].isin(allowed)]
                     elif selected_dept_y != "Tất cả phòng ban":
                         yearly_df = yearly_df[yearly_df["Phòng ban"] == DEPT_ABBR.get(selected_dept_y, selected_dept_y)]
                     st.dataframe(yearly_df, use_container_width=True, hide_index=True)
