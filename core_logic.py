@@ -738,13 +738,13 @@ DEPT_LEADS = {
 # ĐÂY LÀ SINGLE SOURCE OF TRUTH CHO TOÀN BỘ HỆ THỐNG
 # ==============================================================================
 HIERARCHY_MARINA_3 = {
-    # 1. HĐQT & Ban Lãnh đạo cấp cao
+    # 1. HĐQT & Ban Lãnh đạo cấp cao (Thể, Nữ, Tôn hiện tại chưa ai quản lý)
     "Đặng Thanh Bình": None,   # CT HĐQT Đầu Tư -> Toàn quyền xem và duyệt toàn hệ thống
     "Đặng Thị Lan Ngọc": None,  # CT HĐQT Cienco -> Toàn quyền xem và duyệt toàn hệ thống
-    "Đặng Ngọc Hoàng": ["Ngô Thị Tâm", "Trần Cường"], # PCT HĐQT Đầu Tư, CT HĐQT Marina
-    "Trần Quốc Thể": ["Nguyễn Văn Bồn", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"], # TGĐ Đầu Tư
-    "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"], # PTGĐ Đầu Tư phụ trách TCKT
-    "Nguyễn Ngọc Tôn": ["Đặng Công Nhựt", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"], # PTGĐ Đầu Tư phụ trách ĐBGT
+    "Đặng Ngọc Hoàng": ["Trần Cường", "Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm"], # PCT HĐQT Đầu Tư, CT HĐQT Marina (quản lý Trần Cường, Hạnh Tiên, Ngô Thị Tâm)
+    "Trần Quốc Thể": ["Nguyễn Văn Bồn", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"], # TGĐ Đầu Tư (hiện tại chưa ai quản lý)
+    "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"], # PTGĐ Đầu Tư phụ trách TCKT (hiện tại chưa ai quản lý)
+    "Nguyễn Ngọc Tôn": ["Đặng Công Nhựt", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"], # PTGĐ Đầu Tư phụ trách ĐBGT (hiện tại chưa ai quản lý)
     "Thái Văn Thành": [ # TGĐ Cienco
         "Nguyễn Văn Bồn", "Trần Văn Trọng", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng",
         "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", 
@@ -754,7 +754,7 @@ HIERARCHY_MARINA_3 = {
         "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", 
         "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"
     ],
-    "Trần Cường": ["Nguyễn Thị Hạnh Tiên", "Lê Thị Hải"], # Giám đốc Marina
+    "Trần Cường": ["Lê Thị Hải"], # Giám đốc Marina (quản lý Lê Thị Hải)
 
     # 2. Lãnh đạo Phòng/Ban & Đơn vị theo sheet MARINA (3)
     "Nguyễn Thị Hạnh Tiên": ["Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"], # Trưởng Ban HCNS (Đầu Tư) / Trưởng Ban HCTH (Marina)

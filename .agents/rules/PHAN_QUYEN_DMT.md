@@ -15,9 +15,14 @@ Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về
 ## II. BẢNG PHÂN QUYỀN QUẢN LÝ (MANAGER -> SUBORDINATES)
 
 ### 1. Ban Lãnh đạo Tập đoàn & HĐQT
+- **Đặng Thanh Bình** & **Đặng Thị Lan Ngọc** (Cấp HĐQT):
+  - Toàn quyền xem và duyệt toàn hệ thống tất cả các đơn vị.
+- **Trần Quốc Thể** (Tổng Giám đốc Tập đoàn), **Đoàn Thị Ngọc Nữ** (Phó TGĐ), **Nguyễn Ngọc Tôn** (Phó TGĐ):
+  - *Hiện tại chưa ai quản lý / đánh giá (Cấp điều hành cao nhất).*
 - **Đặng Ngọc Hoàng** (Phó CT HĐQT Tập đoàn, CT HĐQT Marina):
   - Quản lý / Đánh giá trực tiếp:
     + `Trần Cường` (Giám đốc Marina)
+    + `Nguyễn Thị Hạnh Tiên` (Trưởng Ban HCTH Marina / Trưởng Ban HCNS)
     + `Ngô Thị Tâm` (Thư ký Sàn BĐS)
 - **Trần Quốc Thể** (Tổng Giám đốc Tập đoàn):
   - Quản lý trực tiếp:
@@ -63,8 +68,7 @@ Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về
 ### 3. Công ty CP DMT-Marina (Du thuyền Happy Yacht) & Sàn GDBĐS
 - **Trần Cường** (Giám đốc Marina):
   - Quản lý trực tiếp:
-    + `Nguyễn Thị Hạnh Tiên` (Trưởng Ban HCTH)
-    + `Lê Thị Hải` (Phó Ban TCKT)
+    + `Lê Thị Hải` (Phó Ban TCKT Marina)
 - **Nguyễn Thị Hạnh Tiên** (Trưởng Ban HCTH):
   - Quản lý trực tiếp:
     + `Nguyễn Băng Trinh`

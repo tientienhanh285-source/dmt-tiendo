@@ -16,14 +16,23 @@ print("=== STARTING COMPREHENSIVE VERIFICATION OF SHEET MARINA (3) ===")
 dnh_subs = get_subordinates_for_manager("Đặng Ngọc Hoàng")
 assert "Ngô Thị Tâm" in dnh_subs, f"Đặng Ngọc Hoàng must evaluate Ngô Thị Tâm! Got: {dnh_subs}"
 assert "Trần Cường" in dnh_subs, f"Đặng Ngọc Hoàng must evaluate Trần Cường! Got: {dnh_subs}"
-print("[PASS] Test 1: Đặng Ngọc Hoàng -> Ngô Thị Tâm & Trần Cường")
+assert "Nguyễn Thị Hạnh Tiên" in dnh_subs, f"Đặng Ngọc Hoàng must evaluate Nguyễn Thị Hạnh Tiên! Got: {dnh_subs}"
+print("[PASS] Test 1: Đặng Ngọc Hoàng -> Trần Cường, Nguyễn Thị Hạnh Tiên, Ngô Thị Tâm")
 
 # Test 2: Trần Cường
 tc_subs = get_subordinates_for_manager("Trần Cường")
-assert "Nguyễn Thị Hạnh Tiên" in tc_subs, f"Trần Cường must evaluate Nguyễn Thị Hạnh Tiên! Got: {tc_subs}"
 assert "Lê Thị Hải" in tc_subs, f"Trần Cường must evaluate Lê Thị Hải! Got: {tc_subs}"
-assert "Ngô Thị Tâm" not in tc_subs, f"Trần Cường must NOT evaluate Ngô Thị Tâm in MARINA (3)! Got: {tc_subs}"
-print("[PASS] Test 2: Trần Cường -> Nguyễn Thị Hạnh Tiên & Lê Thị Hải")
+print("[PASS] Test 2: Trần Cường -> Lê Thị Hải")
+
+# Test 2b: Thể, Nữ, Tôn hiện tại chưa ai quản lý
+all_managed = set()
+for m, subs in HIERARCHY_MARINA_3.items():
+    if subs:
+        all_managed.update(subs)
+assert "Trần Quốc Thể" not in all_managed, "Trần Quốc Thể must NOT have anyone managing him!"
+assert "Đoàn Thị Ngọc Nữ" not in all_managed, "Đoàn Thị Ngọc Nữ must NOT have anyone managing her!"
+assert "Nguyễn Ngọc Tôn" not in all_managed, "Nguyễn Ngọc Tôn must NOT have anyone managing him!"
+print("[PASS] Test 2b: Thể, Nữ, Tôn hiện tại chưa ai quản lý")
 
 # Test 3: Nguyễn Thị Hạnh Tiên
 ntht_subs = get_subordinates_for_manager("Nguyễn Thị Hạnh Tiên")
