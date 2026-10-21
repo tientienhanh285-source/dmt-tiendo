@@ -149,17 +149,16 @@ DEFAULT_PERSONNEL = {
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
     "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
     "Ban Tài chính Kế toán": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
-    "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
-    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
-    "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
-    "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
-    "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
+    "Ban Kế hoạch Đầu tư": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
+    "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
+    "Ban Chuẩn bị Đầu tư": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
+    "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
     "Ban Kỹ thuật": ["Nguyễn Văn Bồn"],
     "KT": ["Nguyễn Văn Bồn"],
     "Ban Đền bù Giải tỏa": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
     "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-    "Ban Dự án": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
-    "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+    "Ban Dự án": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+    "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
     "Xí nghiệp DTBD": ["Mai Văn Châu"],
     "XN DTBD": ["Mai Văn Châu"],
     "Sàn GDBĐS": ["Ngô Thị Tâm"],
@@ -591,7 +590,7 @@ def load_config():
                 for d, p in comp_data["personnel_by_department"].items():
                     new_personnel[abbr_map.get(d, d)] = p
                 
-                if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
+                if comp_name in ["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG", "CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG MIỀN TRUNG", "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"]:
                     comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"]
                     new_personnel = {
                         "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
@@ -599,10 +598,10 @@ def load_config():
                         "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
                         "KT": ["Nguyễn Văn Bồn"],
                         "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
-                        "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
-                        "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
+                        "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
+                        "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
                         "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-                        "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+                        "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
                         "XN DTBD": ["Mai Văn Châu"],
                         "Sàn GDBĐS": ["Ngô Thị Tâm"]
                     }
@@ -754,7 +753,7 @@ for comp_name, comp_data in config.get("companies", {}).items():
         for d, p in comp_data["personnel_by_department"].items():
             new_personnel[DEPT_ABBR.get(d, d)] = p
         
-        if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
+        if comp_name in ["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG", "CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG MIỀN TRUNG", "CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"]:
             comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"]
             new_personnel = {
                 "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
@@ -762,10 +761,10 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
                 "KT": ["Nguyễn Văn Bồn"],
                 "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
-                "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
-                "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
+                "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
+                "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
                 "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
-                "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+                "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
                 "XN DTBD": ["Mai Văn Châu"],
                 "Sàn GDBĐS": ["Ngô Thị Tâm"]
             }
@@ -882,6 +881,8 @@ DEPT_LEADS = {
 DEPT_LEADS["CTY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
 DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
 DEPT_LEADS["CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
+DEPT_LEADS["CÔNG TY CỔ PHẦN ĐẦU TƯ ĐÀ NẴNG MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG"]
+DEPT_LEADS["CÔNG TY CỔ PHẦN XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐÀ NẴNG - MIỀN TRUNG"] = DEPT_LEADS["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]
 
 # ==============================================================================
 # HIERARCHY CHUẨN XÁC THEO SHEET 'MARINA (3)' TRONG FILE 'Phân quyền.xls'
@@ -904,18 +905,18 @@ HIERARCHY_MARINA_3 = {
         "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", 
         "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"
     ],
-    "Trần Cường": ["Lê Thị Hải"], # Giám đốc Marina (quản lý Lê Thị Hải)
+    "Trần Cường": ["Nguyễn Thị Hạnh Tiên", "Lê Thị Hải"], # Giám đốc Marina (quản lý Hạnh Tiên, Lê Thị Hải)
 
     # 2. Lãnh đạo Phòng/Ban & Đơn vị theo sheet MARINA (3)
     "Nguyễn Thị Hạnh Tiên": ["Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"], # Trưởng Ban HCNS (Đầu Tư) / Trưởng Ban HCTH (Marina)
     "Đồng Thị Nguyệt Nga": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"], # GĐ Ban TCKT Đầu Tư
-    "Nguyễn Thị Ngọc Hà": ["Huỳnh Thị Hoàng Hà", "Lê Thị Hải", "Nguyễn Thị Như Can"], # PGĐ Ban TCKT Cienco
-    "Hồ Văn Khoa": ["Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"], # GĐ Ban CBĐT
-    "Nguyễn Trần Thức": ["Nguyễn Đức Lợi", "Cao Thuỷ Tiên", "Trần Tin"], # GĐ Ban KHĐT
-    "Phạm Quang Nghĩa": ["Mai Văn Châu"], # Phó GĐ Ban Kỹ thuật Cienco (quản lý Mai Văn Châu)
+    "Nguyễn Thị Ngọc Hà": ["Lê Thị Hải", "Nguyễn Thị Như Can"], # PGĐ Ban TCKT Cienco
+    "Hồ Văn Khoa": ["Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"], # GĐ Ban CBĐT
+    "Nguyễn Trần Thức": ["Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"], # GĐ Ban KHĐT
+    "Phạm Quang Nghĩa": ["Mai Văn Châu", "Lê Văn Thành", "Ngô Văn Hoàng"], # Phó GĐ Ban Kỹ thuật Cienco
 
     # 3. Lãnh đạo các đơn vị trực thuộc
-    "Nguyễn Đình Thắng": ["Nguyễn Quốc Vinh", "Nguyễn Đình Hiếu"], # Ban Dự án
+    "Nguyễn Đình Thắng": ["Nguyễn Đình Hiếu"], # Ban Dự án
     "Nguyễn Thị Mỹ Phương": ["Nguyễn Hoài Trung"] # Ban HCNS Cienco
 }
 

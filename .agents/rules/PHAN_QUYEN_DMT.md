@@ -1,6 +1,6 @@
 # QUY CHUẨN PHÂN QUYỀN & CÂY QUẢN LÝ DMT GROUP (SHEET MARINA 3)
 
-Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về phân quyền duyệt công việc, nghiệm thu và đánh giá KPI của Tập đoàn DMT Group, được trích xuất chính thức từ file `Phân quyền.xls` (Sheet `MARINA (3)`).
+Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về phân quyền duyệt công việc, nghiệm thu và đánh giá KPI của Tập đoàn DMT Group, được trích xuất chính thức từ file `Phân quyền mới nhất.xls` (Sheet `MARINA (3)`).
 
 ## I. NGUYÊN TẮC VẬN HÀNH
 1. **Duyệt nghiệm thu (Tab 1) & Khách quan (Tab 2):**
@@ -82,16 +82,20 @@ Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về
     + `Huỳnh Thị Hoàng Hà` (Phó Giám đốc Ban)
     + `Nguyễn Thị Nhật Sang` (Nhân viên)
     + `Lê Thị Hải` (Phó Ban TCKT Marina)
-- **Huỳnh Thị Hoàng Hà** (Phó Giám đốc Ban TCKT):
-  - Quản lý cấp dưới:
-    + `Nguyễn Thị Nhật Sang`
-    + `Nguyễn Thị Như Can`
 - **Hồ Văn Khoa** (Giám đốc Ban CBĐT):
   - Quản lý:
     + `Phan Thị Mỹ Hạnh` (Phó Giám đốc Ban)
-    + `Phan Thị Kim Cúc` (Nhân viên)
+    + `Cao Thuỷ Tiên` (Nhân viên)
 - **Nguyễn Trần Thức** (Giám đốc Ban KHĐT):
   - Quản lý:
     + `Nguyễn Đức Lợi` (Phó Giám đốc Ban)
-    + `Cao Thuỷ Tiên` (Nhân viên)
+    + `Phan Thị Kim Cúc` (Nhân viên)
     + `Trần Tin` (Nhân viên)
+- **Trần Cường** (Giám đốc Marina):
+  - Quản lý:
+    + `Nguyễn Thị Hạnh Tiên` (Trưởng Ban HCTH)
+    + `Lê Thị Hải` (Phó Ban TCKT)
+- **Nguyễn Thị Ngọc Hà** (PGĐ Ban TCKT Cienco):
+  - Quản lý:
+    + `Lê Thị Hải` (Phó Ban TCKT Marina)
+    + `Nguyễn Thị Như Can` (Nhân viên Ban TCKT Cienco)
