@@ -609,38 +609,19 @@ if is_hr or is_manager:
         st.markdown("#### ⚖️ Điều chỉnh Điểm Thưởng / Phạt")
         all_p_list = []
         
-        if is_manager and st.session_state.get('manager_dept'):
-            dept = st.session_state.manager_dept
-            if st.session_state.get('manager_user') == 'Nguyễn Ngọc Tôn':
-                all_p_list = ["Nguyễn Ngọc Tôn"]
-                if selected_company == "Tất cả đơn vị":
-                    for comp, comp_data in config.get("companies", {}).items():
-                        all_p_list.extend(comp_data.get("personnel_by_department", {}).get('ĐBGT', []))
-                    all_p_list.extend(config.get("personnel_by_department", {}).get('ĐBGT', []))
-                else:
-                    all_p_list.extend(get_personnel_for_company_dept(selected_company, 'ĐBGT', config))
-            elif st.session_state.get('manager_user') == 'Đoàn Thị Ngọc Nữ':
-                all_p_list = ["Đoàn Thị Ngọc Nữ"]
-                if selected_company == "Tất cả đơn vị":
-                    for comp, comp_data in config.get("companies", {}).items():
-                        all_p_list.extend(comp_data.get("personnel_by_department", {}).get('TCKT', []))
-                    all_p_list.extend(config.get("personnel_by_department", {}).get('TCKT', []))
-                else:
-                    all_p_list.extend(get_personnel_for_company_dept(selected_company, 'TCKT', config))
+        if is_manager and st.session_state.get('manager_user'):
+            mgr = st.session_state.get('manager_user')
+            allowed = get_allowed_personnel_for_manager(mgr, include_self=True)
+            if allowed:
+                all_p_list = allowed
             else:
-                if selected_company == "Tất cả đơn vị":
-                    for comp, comp_data in config.get("companies", {}).items():
-                        all_p_list.extend(comp_data.get("personnel_by_department", {}).get(dept, []))
-                    all_p_list.extend(config.get("personnel_by_department", {}).get(dept, []))
-                else:
-                    all_p_list.extend(get_personnel_for_company_dept(selected_company, dept, config))
+                dept = st.session_state.get('manager_dept', '')
+                all_p_list = get_personnel_for_company_dept(selected_company, dept, config)
         else:
             if selected_company == "Tất cả đơn vị":
                 for comp, comp_data in config.get("companies", {}).items():
                     for dept, persons in comp_data.get("personnel_by_department", {}).items():
                         all_p_list.extend(persons)
-                for dept, persons in config.get("personnel_by_department", {}).items():
-                    all_p_list.extend(persons)
             else:
                 valid_depts = get_departments_for_company(selected_company, config)
                 for dept in valid_depts:

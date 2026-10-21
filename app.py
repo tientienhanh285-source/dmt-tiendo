@@ -138,8 +138,8 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 "Sàn GDBĐS": ["Ngô Thị Tâm"]
             }
 
-        elif comp_name == "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT":
-            comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT"]
+        elif comp_name in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
+            comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT", "Mỏ"]
             new_personnel = {
                 "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
                 "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
@@ -147,15 +147,17 @@ for comp_name, comp_data in config.get("companies", {}).items():
                 "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
                 "XN XMTB": ["Đặng Hiền"],
                 "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
-                "HCNS": ["Nguyễn Thị Mỹ Phương"]
+                "HCNS": ["Nguyễn Thị Mỹ Phương"],
+                "Mỏ": ["Lê Nho Tân"]
             }
             
-        elif comp_name == "CTY CP DMT - MARINA (Du thuyền Happy Yacht)":
-            comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT"]
+        elif comp_name in ["CTY CP DMT - MARINA (Du thuyền Happy Yacht)", "CÔNG TY CỔ PHẦN DMT-MARINA"]:
+            comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "HCTH"]
             new_personnel = {
                 "HĐQT": ["Đặng Ngọc Hoàng"],
                 "BLĐ": ["Trần Cường"],
                 "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+                "HCTH": ["Nguyễn Thị Hạnh Tiên"],
                 "TCKT": ["Lê Thị Hải"]
             }
 

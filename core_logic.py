@@ -142,8 +142,8 @@ DEPT_ABBR = {
 }
 
 DEFAULT_PERSONNEL = {
-    "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
-    "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+    "Hội đồng quản trị": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+    "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
     "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
     "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
     "Ban Hành chính Nhân sự": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
@@ -590,6 +590,46 @@ def load_config():
                 new_personnel = {}
                 for d, p in comp_data["personnel_by_department"].items():
                     new_personnel[abbr_map.get(d, d)] = p
+                
+                if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
+                    comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"]
+                    new_personnel = {
+                        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+                        "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
+                        "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+                        "KT": ["Nguyễn Văn Bồn"],
+                        "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
+                        "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
+                        "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
+                        "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+                        "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+                        "XN DTBD": ["Mai Văn Châu"],
+                        "Sàn GDBĐS": ["Ngô Thị Tâm"]
+                    }
+
+                elif comp_name in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
+                    comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT", "Mỏ"]
+                    new_personnel = {
+                        "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+                        "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                        "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
+                        "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
+                        "XN XMTB": ["Đặng Hiền"],
+                        "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                        "HCNS": ["Nguyễn Thị Mỹ Phương"],
+                        "Mỏ": ["Lê Nho Tân"]
+                    }
+                    
+                elif comp_name in ["CTY CP DMT - MARINA (Du thuyền Happy Yacht)", "CÔNG TY CỔ PHẦN DMT-MARINA"]:
+                    comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "HCTH"]
+                    new_personnel = {
+                        "HĐQT": ["Đặng Ngọc Hoàng"],
+                        "BLĐ": ["Trần Cường"],
+                        "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+                        "HCTH": ["Nguyễn Thị Hạnh Tiên"],
+                        "TCKT": ["Lê Thị Hải"]
+                    }
+
                 comp_data["personnel_by_department"] = new_personnel
                 
         return data
@@ -713,6 +753,46 @@ for comp_name, comp_data in config.get("companies", {}).items():
         new_personnel = {}
         for d, p in comp_data["personnel_by_department"].items():
             new_personnel[DEPT_ABBR.get(d, d)] = p
+        
+        if comp_name == "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG":
+            comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"]
+            new_personnel = {
+                "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng"],
+                "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
+                "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang"],
+                "KT": ["Nguyễn Văn Bồn"],
+                "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
+                "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Cao Thuỷ Tiên"],
+                "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Phan Thị Kim Cúc"],
+                "ĐBGT": ["Nguyễn Ngọc Tôn", "Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+                "DA": ["Nguyễn Quốc Vinh", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+                "XN DTBD": ["Mai Văn Châu"],
+                "Sàn GDBĐS": ["Ngô Thị Tâm"]
+            }
+
+        elif comp_name in ["CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT", "CTY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"]:
+            comp_data["departments"] = ["HĐQT", "BLĐ", "KT", "BCH CT", "XN XMTB", "HCNS", "TCKT", "Mỏ"]
+            new_personnel = {
+                "HĐQT": ["Đặng Thanh Bình", "Đặng Ngọc Hoàng", "Đặng Thị Lan Ngọc"],
+                "BLĐ": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc"],
+                "KT": ["Phạm Quang Nghĩa", "Lê Văn Thành", "Ngô Văn Hoàng", "Lê Nho Tân"],
+                "BCH CT": ["Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long"],
+                "XN XMTB": ["Đặng Hiền"],
+                "TCKT": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                "HCNS": ["Nguyễn Thị Mỹ Phương"],
+                "Mỏ": ["Lê Nho Tân"]
+            }
+            
+        elif comp_name in ["CTY CP DMT - MARINA (Du thuyền Happy Yacht)", "CÔNG TY CỔ PHẦN DMT-MARINA"]:
+            comp_data["departments"] = ["HĐQT", "BLĐ", "HCNS", "TCKT", "HCTH"]
+            new_personnel = {
+                "HĐQT": ["Đặng Ngọc Hoàng"],
+                "BLĐ": ["Trần Cường"],
+                "HCNS": ["Nguyễn Thị Hạnh Tiên"],
+                "HCTH": ["Nguyễn Thị Hạnh Tiên"],
+                "TCKT": ["Lê Thị Hải"]
+            }
+
         comp_data["personnel_by_department"] = new_personnel
 
 DEPT_LEADS = {
