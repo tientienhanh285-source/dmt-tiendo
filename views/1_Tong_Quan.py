@@ -51,14 +51,15 @@ if 'role_mode' in st.session_state:
             if st.session_state.manager_dept in ["BLĐ", "HĐQT", "Ban Lãnh đạo", "Hội đồng quản trị", "Lãnh đạo"]:
                 bld_hierarchy = {
                         "Trần Quốc Thể": ["Trần Quốc Thể", "Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên", "Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Trần Tin", "Phan Thị Kim Cúc", "Mai Văn Châu", "Nguyễn Văn Bồn"],
-                        "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+                        "Đoàn Thị Ngọc Nữ": ["Đoàn Thị Ngọc Nữ", "Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Lê Thị Hải"],
                         "Nguyễn Ngọc Tôn": ["Nguyễn Ngọc Tôn", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
                         "Đặng Ngọc Hoàng": ["Đặng Ngọc Hoàng", "Nguyễn Thị Hạnh Tiên", "Trần Cường", "Ngô Thị Tâm"],
                         "Thái Văn Thành": ["Thái Văn Thành", "Trần Văn Trọng", "Đặng Thị Lan Ngọc", "Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can", "Nguyễn Thị Mỹ Phương", "Nguyễn Thị Mỹ Phụng", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển", "Lê Nho Tân", "Nguyễn Văn Bồn"],
                         "Trần Văn Trọng": ["Trần Văn Trọng", "Lê Nho Tân", "Phạm Quang Nghĩa", "Nguyễn Phong Trung", "Lê Đông", "Phạm Văn Long", "Lê Văn Thành", "Ngô Văn Hoàng", "Đặng Hiền", "Đặng Hiển"],
                         "Trần Cường": ["Trần Cường", "Ngô Thị Tâm"],
-                        "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"],
-                        "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+                        "Nguyễn Thị Ngọc Hà": ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"],
+                        "Đồng Thị Nguyệt Nga": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"],
+                        "Huỳnh Thị Hoàng Hà": ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
                     }
                 if manager_user in bld_hierarchy:
                     all_truong_ban = bld_hierarchy[manager_user]
@@ -96,12 +97,14 @@ elif _mgr == "Trần Cường":
     if 'PhongBan' in db_filters: del db_filters['PhongBan']
 elif _mgr == "Đồng Thị Nguyệt Nga":
     db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
-    if '4_Nghiem_Thu' in __file__ or '9_Lap_Duyet_KPI' in __file__ or '4_Nghiem_Thu_KQ' in __file__:
-        db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+    if 'DonVi' in db_filters: del db_filters['DonVi']
+    if 'PhongBan' in db_filters: del db_filters['PhongBan']
+elif _mgr == "Huỳnh Thị Hoàng Hà":
+    db_filters['NguoiChuTri'] = ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
     if 'DonVi' in db_filters: del db_filters['DonVi']
     if 'PhongBan' in db_filters: del db_filters['PhongBan']
 elif _mgr == "Nguyễn Thị Ngọc Hà":
-    db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"]
+    db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"]
     if 'DonVi' in db_filters: del db_filters['DonVi']
     if 'PhongBan' in db_filters: del db_filters['PhongBan']
 
@@ -141,12 +144,14 @@ elif _mgr == "Trần Cường":
     if 'PhongBan' in db_filters: del db_filters['PhongBan']
 elif _mgr == "Đồng Thị Nguyệt Nga":
     db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
-    if '4_Nghiem_Thu' in __file__ or '9_Lap_Duyet_KPI' in __file__ or '4_Nghiem_Thu_KQ' in __file__:
-        db_filters['NguoiChuTri'] = ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"]
+    if 'DonVi' in db_filters: del db_filters['DonVi']
+    if 'PhongBan' in db_filters: del db_filters['PhongBan']
+elif _mgr == "Huỳnh Thị Hoàng Hà":
+    db_filters['NguoiChuTri'] = ["Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Nguyễn Thị Như Can"]
     if 'DonVi' in db_filters: del db_filters['DonVi']
     if 'PhongBan' in db_filters: del db_filters['PhongBan']
 elif _mgr == "Nguyễn Thị Ngọc Hà":
-    db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Huỳnh Thị Hoàng Hà"]
+    db_filters['NguoiChuTri'] = ["Nguyễn Thị Ngọc Hà", "Nguyễn Thị Như Can"]
     if 'DonVi' in db_filters: del db_filters['DonVi']
     if 'PhongBan' in db_filters: del db_filters['PhongBan']
 

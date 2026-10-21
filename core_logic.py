@@ -655,7 +655,7 @@ DEPT_LEADS = {
         "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
         "Ban Lãnh đạo": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
         "HCNS": ["Nguyễn Thị Hạnh Tiên"],
-        "TCKT": ["Đồng Thị Nguyệt Nga"],
+        "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà"],
         "KHĐT": ["Nguyễn Trần Thức"],
         "CBĐT": ["Hồ Văn Khoa"],
         "KT": ["Nguyễn Văn Bồn"],
