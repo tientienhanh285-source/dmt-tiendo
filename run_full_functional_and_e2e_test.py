@@ -70,8 +70,8 @@ def run_tests():
 
     # 1.5 Quản lý Trần Quốc Thể (TGĐ DMT)
     filters_the = core_logic.setup_manager_db_filters({'DonVi': 'CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG', 'PhongBan': 'BLĐ'}, "Trần Quốc Thể", "BLĐ", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG")
-    assert_test("Nguyễn Văn Bồn" in filters_the.get('NguoiChuTri', []) and "Hồ Văn Khoa" in filters_the.get('NguoiChuTri', []) and "Nguyễn Trần Thức" in filters_the.get('NguoiChuTri', []),
-                "Trần Quốc Thể nhận việc của Nguyễn Văn Bồn (Ban KT), Hồ Văn Khoa (CBĐT), Nguyễn Trần Thức (KHĐT)")
+    assert_test("Nguyễn Văn Bồn" in filters_the.get('NguoiChuTri', []) and "Hồ Văn Khoa" in filters_the.get('NguoiChuTri', []) and "Nguyễn Trần Thức" in filters_the.get('NguoiChuTri', []) and "Nguyễn Đình Thắng" in filters_the.get('NguoiChuTri', []) and "Nguyễn Đình Hiếu" in filters_the.get('NguoiChuTri', []),
+                "Trần Quốc Thể nhận việc của Nguyễn Văn Bồn (Ban KT), Hồ Văn Khoa (CBĐT), Nguyễn Trần Thức (KHĐT), Mai Văn Châu, và Ban DA (Nguyễn Đình Thắng, Nguyễn Đình Hiếu)")
 
     # 1.6 Quản lý Nguyễn Ngọc Tôn (BLĐ)
     filters_ton = core_logic.setup_manager_db_filters({'DonVi': 'CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG', 'PhongBan': 'BLĐ'}, "Nguyễn Ngọc Tôn", "BLĐ", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG")

@@ -882,7 +882,7 @@ HIERARCHY_MARINA_3 = {
     "Đặng Thanh Bình": None,   # CT HĐQT Đầu Tư -> Toàn quyền xem và duyệt toàn hệ thống
     "Đặng Thị Lan Ngọc": None,  # CT HĐQT Cienco -> Toàn quyền xem và duyệt toàn hệ thống
     "Đặng Ngọc Hoàng": ["Trần Cường", "Nguyễn Thị Hạnh Tiên", "Ngô Thị Tâm"], # PCT HĐQT Đầu Tư, CT HĐQT Marina (quản lý Trần Cường, Hạnh Tiên, Ngô Thị Tâm)
-    "Trần Quốc Thể": ["Nguyễn Văn Bồn", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu"], # TGĐ Đầu Tư (hiện tại chưa ai quản lý)
+    "Trần Quốc Thể": ["Nguyễn Văn Bồn", "Hồ Văn Khoa", "Nguyễn Trần Thức", "Mai Văn Châu", "Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"], # TGĐ Đầu Tư (quản lý Bồn, Khoa, Thức, Châu, Thắng, Hiếu)
     "Đoàn Thị Ngọc Nữ": ["Đồng Thị Nguyệt Nga"], # PTGĐ Đầu Tư phụ trách TCKT (chị Ngọc Hà ở Cienco do anh Thái Văn Thành duyệt)
     "Nguyễn Ngọc Tôn": ["Đặng Công Nhựt", "Đặng Công Nhật", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"], # PTGĐ Đầu Tư phụ trách ĐBGT (hiện tại chưa ai quản lý)
     "Thái Văn Thành": [ # TGĐ Cienco (Nguyễn Văn Bồn do anh Thể duyệt; Đặng Hiền do anh Trọng duyệt)

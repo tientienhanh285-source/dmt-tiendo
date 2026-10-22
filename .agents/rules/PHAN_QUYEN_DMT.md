@@ -36,6 +36,7 @@ Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về
     + `Hồ Văn Khoa` (Giám đốc Ban CBĐT)
     + `Nguyễn Trần Thức` (Giám đốc Ban KHĐT)
     + `Mai Văn Châu` (Nhân viên XNDTBD - chỉ duy nhất TGĐ Trần Quốc Thể duyệt)
+    + Ban Dự án: `Nguyễn Đình Thắng`, `Nguyễn Đình Hiếu` (TGĐ Trần Quốc Thể quản lý & duyệt việc)
 - **Đoàn Thị Ngọc Nữ** (Phó TGĐ phụ trách Tài chính - Kế toán):
   - Quản lý & Duyệt trực tiếp:
     + `Đồng Thị Nguyệt Nga` (Giám đốc Ban TCKT DMT)
@@ -97,4 +98,4 @@ Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về
     + `Phan Thị Kim Cúc` (Nhân viên)
     + `Trần Tin` (Nhân viên)
 - **Ban Dự án (DA):**
-  - Cả `Nguyễn Đình Thắng` và `Nguyễn Đình Hiếu` đều là **Nhân viên**, tạm thời chưa có quản lý.
+  - Cả `Nguyễn Đình Thắng` và `Nguyễn Đình Hiếu` đều là **Nhân viên**, do TGĐ `Trần Quốc Thể` trực tiếp quản lý và duyệt công việc.

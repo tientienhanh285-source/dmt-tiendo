@@ -78,7 +78,9 @@ assert "Nguyễn Văn Bồn" in tqt_subs, f"Trần Quốc Thể must evaluate Ng
 assert "Hồ Văn Khoa" in tqt_subs, f"Trần Quốc Thể must evaluate Hồ Văn Khoa! Got: {tqt_subs}"
 assert "Nguyễn Trần Thức" in tqt_subs, f"Trần Quốc Thể must evaluate Nguyễn Trần Thức! Got: {tqt_subs}"
 assert "Mai Văn Châu" in tqt_subs, f"Trần Quốc Thể must evaluate Mai Văn Châu! Got: {tqt_subs}"
-print("[PASS] Test 8: Trần Quốc Thể -> Nguyễn Văn Bồn, Hồ Văn Khoa, Nguyễn Trần Thức, Mai Văn Châu")
+assert "Nguyễn Đình Thắng" in tqt_subs, f"Trần Quốc Thể must evaluate Nguyễn Đình Thắng! Got: {tqt_subs}"
+assert "Nguyễn Đình Hiếu" in tqt_subs, f"Trần Quốc Thể must evaluate Nguyễn Đình Hiếu! Got: {tqt_subs}"
+print("[PASS] Test 8: Trần Quốc Thể -> Nguyễn Văn Bồn, Hồ Văn Khoa, Nguyễn Trần Thức, Mai Văn Châu, Nguyễn Đình Thắng, Nguyễn Đình Hiếu")
 
 # Test 9: Phạm Quang Nghĩa & Nguyễn Thị Mỹ Phương
 pqn_subs = get_subordinates_for_manager("Phạm Quang Nghĩa")

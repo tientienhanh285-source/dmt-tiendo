@@ -28,7 +28,8 @@ Chi tiết quy chuẩn phân quyền được lưu trữ tại:
    - `Hồ Văn Khoa`: Quản lý `Phan Thị Mỹ Hạnh`, `Cao Thuỷ Tiên`.
    - `Nguyễn Trần Thức`: Quản lý `Nguyễn Đức Lợi`, `Phan Thị Kim Cúc`, `Trần Tin`.
    - `Nguyễn Ngọc Tôn`: Nằm duy nhất ở vai trò Quản lý của **BLĐ DMT** (không để anh Tôn là quản lý chỗ ĐBGT dù anh Tôn duyệt việc của các nhân sự Ban ĐBGT: `Đặng Công Nhựt`, `Đặng Thị Mỹ Hạnh`, `Đặng Thanh Quang`).
-   - **Ban Dự án (DA):** Cả `Nguyễn Đình Thắng` và `Nguyễn Đình Hiếu` đều là **Nhân viên**, tạm thời chưa có quản lý.
+   - `Trần Quốc Thể`: Quản lý & Duyệt trực tiếp cho `Nguyễn Văn Bồn` (Ban KT), `Hồ Văn Khoa` (CBĐT), `Nguyễn Trần Thức` (KHĐT), `Mai Văn Châu` (XN DTBD), và Ban Dự án gồm `Nguyễn Đình Thắng`, `Nguyễn Đình Hiếu`.
+   - **Ban Dự án (DA):** Cả `Nguyễn Đình Thắng` và `Nguyễn Đình Hiếu` đều là **Nhân viên**, do TGĐ `Trần Quốc Thể` trực tiếp quản lý và duyệt công việc.
 5. **Quy tắc vàng về Quản lý thuộc Ban Lãnh đạo (BLĐ):**
    - Các Lãnh đạo thuộc BLĐ (`Trần Quốc Thể`, `Đoàn Thị Ngọc Nữ`, `Đặng Ngọc Hoàng`, `Nguyễn Ngọc Tôn`, `Thái Văn Thành`, `Trần Văn Trọng`):
      + **CHỈ** nằm ở dropdown Quản lý của **BLĐ** (`Đặng Ngọc Hoàng` thuộc BLĐ, không nằm trong HĐQT).
