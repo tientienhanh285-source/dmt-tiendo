@@ -258,14 +258,19 @@ with tab_new:
             project_name = clean_proj_name(default_proj_opt)
             
         # 2.1 Target (Chỉ tiêu) selection - Luôn hiển thị và ánh xạ thông minh
-        matched_target_objs = match_project_targets(project_name, task_dept=task_dept, company=entry_company)
+        is_bld = is_bld_user(
+            user=st.session_state.get('personal_user') or st.session_state.get('manager_user'),
+            dept=st.session_state.get('auth_user_dept') or st.session_state.get('manager_dept'),
+            is_admin=st.session_state.get('is_admin_authenticated', False)
+        )
+        matched_target_objs = match_project_targets(project_name, task_dept=task_dept, company=entry_company, is_bld=is_bld)
         
         target_display_options = []
         target_obj_map = {}
         for t in matched_target_objs:
             t_dept = t.get("department", "")
             t_name = t.get("target_name", "")
-            if task_dept and t_dept == task_dept:
+            if not is_bld or (task_dept and t_dept == task_dept):
                 label = t_name
             else:
                 label = f"[{t_dept}] {t_name}" if t_dept else t_name

@@ -155,8 +155,28 @@ else:
         else:
             q_month = st.selectbox("Tháng cần duyệt", list(range(1, 13)), index=current_month-1, key='mgr_kpi_month')
             
+            mgr_user = st.session_state.get('manager_user', '')
+            mgr_dept = st.session_state.get('manager_dept', '')
+            is_bld = is_bld_user(user=mgr_user, dept=mgr_dept, is_admin=is_hr)
+
+            allowed_subordinates = None
+            if not is_bld:
+                # Quản lý cấp phòng ban: Chỉ thấy nhân viên thuộc quyền quản lý trực tiếp theo sheet MARINA (3)
+                allowed_subordinates = get_subordinates_for_manager(mgr_user)
+                if not allowed_subordinates:
+                    allowed_subordinates = get_personnel_for_company_dept(selected_company, mgr_dept, config)
+            else:
+                subs = get_subordinates_for_manager(mgr_user)
+                if subs:
+                    view_scope = st.radio("Phạm vi hiển thị:", ["Nhân sự trực tiếp quản lý", "Toàn bộ công ty"], horizontal=True, key="kpi_view_scope")
+                    if view_scope == "Nhân sự trực tiếp quản lý":
+                        allowed_subordinates = subs
+
             st.markdown("#### Đang chờ duyệt")
             pending_plans = plans_df[(plans_df['Month']==q_month) & (plans_df['Status']=='pending')]
+            if allowed_subordinates is not None:
+                pending_plans = pending_plans[pending_plans['User'].isin(allowed_subordinates)]
+
             if pending_plans.empty:
                 st.info("Không có kế hoạch chờ duyệt.")
             else:
@@ -179,6 +199,9 @@ else:
                             
             st.markdown("#### Chấm điểm Kế hoạch đã duyệt")
             approved_plans = plans_df[(plans_df['Month']==q_month) & (plans_df['Status']=='approved')]
+            if allowed_subordinates is not None:
+                approved_plans = approved_plans[approved_plans['User'].isin(allowed_subordinates)]
+
             if approved_plans.empty:
                 st.info("Chưa có kế hoạch nào được duyệt để chấm điểm.")
             else:

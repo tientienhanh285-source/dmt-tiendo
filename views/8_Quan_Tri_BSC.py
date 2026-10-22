@@ -75,6 +75,17 @@ else:
         
     bsc_data = st.session_state.bsc_data
     
+    is_hr = st.session_state.is_admin_authenticated
+    mgr_user = st.session_state.get('manager_user', '')
+    mgr_dept = st.session_state.get('manager_dept', '')
+    is_bld = is_bld_user(user=mgr_user, dept=mgr_dept, is_admin=is_hr)
+
+    all_company_depts = get_departments_for_company(selected_company, config)
+    if not is_bld and mgr_dept:
+        allowed_bsc_depts = [mgr_dept]
+    else:
+        allowed_bsc_depts = all_company_depts
+
     tab1, tab2, tab3, tab4 = st.tabs(["1. Kế hoạch Năm", "2. Mục tiêu Tháng", "3. Giao việc", "4. Nghiệm thu Chỉ tiêu"])
     
     with tab1:
@@ -85,7 +96,7 @@ else:
             col1, col2 = st.columns(2)
             with col1:
                 target_year = st.selectbox("Năm", ["2025", "2026", "2027"])
-                dept = st.selectbox("Phòng ban", get_departments_for_company(selected_company, config))
+                dept = st.selectbox("Phòng ban", allowed_bsc_depts, disabled=not is_bld)
             with col2:
                 goal_name = st.text_input("Tên Mục tiêu Kế hoạch Năm")
                 quarter = st.selectbox("Phân bổ vào Quý", ["Q1", "Q2", "Q3", "Q4", "Cả năm"])
@@ -124,7 +135,7 @@ else:
             with col1:
                 m_year = st.selectbox("Năm ", ["2025", "2026", "2027"])
                 m_month = st.selectbox("Tháng", [str(i) for i in range(1, 13)])
-                m_dept = st.selectbox("Phòng ban ", get_departments_for_company(selected_company, config))
+                m_dept = st.selectbox("Phòng ban ", allowed_bsc_depts, disabled=not is_bld)
             with col2:
                 m_goal_name = st.text_input("Tên Mục tiêu Tháng (Key Result)")
                 m_weight = st.number_input("Tỷ trọng dự kiến của mục tiêu này (%)", min_value=0, max_value=100, value=20)
@@ -161,11 +172,10 @@ else:
         t3_year = st.selectbox("Năm  ", ["2025", "2026", "2027"])
         t3_month = st.selectbox("Tháng ", [str(i) for i in range(1, 13)])
         
-        # Use a selectbox so HR or Manager can change the department
-        default_t3 = get_departments_for_company(selected_company, config)[0]
-        if st.session_state.get('manager_dept') in get_departments_for_company(selected_company, config):
+        default_t3 = allowed_bsc_depts[0]
+        if st.session_state.get('manager_dept') in allowed_bsc_depts:
             default_t3 = st.session_state.manager_dept
-        t3_dept = st.selectbox("Phòng ban", get_departments_for_company(selected_company, config), index=get_departments_for_company(selected_company, config).index(default_t3) if default_t3 in get_departments_for_company(selected_company, config) else 0)
+        t3_dept = st.selectbox("Phòng ban", allowed_bsc_depts, index=allowed_bsc_depts.index(default_t3) if default_t3 in allowed_bsc_depts else 0, disabled=not is_bld)
     
         
         t3_month_key = f"{t3_dept}_{t3_year}_{t3_month}"
@@ -228,7 +238,7 @@ else:
         
         t4_year = st.selectbox("Năm", ["2025", "2026", "2027"], key="t4_year")
         t4_month = st.selectbox("Tháng", [str(i) for i in range(1, 13)], key="t4_month")
-        t4_dept = st.selectbox("Phòng ban", get_departments_for_company(selected_company, config), key="t4_dept")
+        t4_dept = st.selectbox("Phòng ban", allowed_bsc_depts, key="t4_dept", disabled=not is_bld)
         
         month_key = f"{t4_dept}_{t4_year}_{t4_month}"
         

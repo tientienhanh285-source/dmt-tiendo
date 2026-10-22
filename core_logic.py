@@ -1628,10 +1628,32 @@ def normalize_proj_key(s):
     s = re.sub(r'\s+', ' ', s).strip()
     return s
 
-def match_project_targets(project_name, task_dept=None, company=None):
+def is_bld_user(user=None, dept=None, is_admin=False):
+    """
+    Kiểm tra xem người dùng có thuộc Ban Lãnh đạo cấp cao (BLĐ / HĐQT / HR) hay không:
+    - Admin / HR toàn quyền: True
+    - Thuộc phòng ban BLĐ / HĐQT: True
+    - Tên thuộc danh sách Lãnh đạo cấp cao (HĐQT & Ban TGĐ): True
+    """
+    if is_admin:
+        return True
+    if dept in ["BLĐ", "HĐQT", "Ban Lãnh đạo", "Hội đồng quản trị"]:
+        return True
+    bld_names = [
+        "Đặng Thanh Bình", "Đặng Thị Lan Ngọc", 
+        "Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn",
+        "Thái Văn Thành", "Trần Văn Trọng"
+    ]
+    if user in bld_names:
+        return True
+    return False
+
+
+def match_project_targets(project_name, task_dept=None, company=None, is_bld=False):
     """
     Tìm kiếm và ánh xạ các Chỉ tiêu (targets) từ project_targets.json tương ứng với dự án được chọn.
-    Hỗ trợ chuẩn hóa tiếng Việt, tìm theo từ khóa, lọc công ty an toàn và sắp xếp ưu tiên phòng ban.
+    - Nếu không phải BLĐ và có task_dept: CHỈ TRẢ VỀ các chỉ tiêu thuộc phòng ban task_dept. Tuyệt đối không hiển thị chỉ tiêu của ban khác!
+    - Nếu là BLĐ: Trả về đầy đủ (ưu tiên task_dept lên đầu).
     """
     all_targets = load_project_targets()
     if not all_targets:
@@ -1642,6 +1664,13 @@ def match_project_targets(project_name, task_dept=None, company=None):
         comp_targets = [t for t in all_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == company]
         if comp_targets:
             all_targets = comp_targets
+
+    # Chuẩn hóa task_dept
+    abbr_task_dept = DEPT_ABBR.get(task_dept, task_dept) if task_dept else None
+
+    # Nếu không phải BLĐ, chỉ được phép xem chỉ tiêu thuộc ban của mình
+    if not is_bld and abbr_task_dept:
+        all_targets = [t for t in all_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) == abbr_task_dept]
 
     if not project_name:
         return all_targets
@@ -1675,10 +1704,16 @@ def match_project_targets(project_name, task_dept=None, company=None):
             seen.add(tid)
             unique_matched.append(t)
 
-    # Sắp xếp: Ưu tiên phòng ban của người dùng lên trước
-    if task_dept:
-        same_dept = [t for t in unique_matched if t.get("department") == task_dept]
-        other_dept = [t for t in unique_matched if t.get("department") != task_dept]
+    if not is_bld:
+        # Cách ly tuyệt đối: Chỉ trả về chỉ tiêu thuộc phòng ban người dùng
+        if abbr_task_dept:
+            return [t for t in unique_matched if DEPT_ABBR.get(t.get("department"), t.get("department")) == abbr_task_dept]
+        return []
+
+    # Sắp xếp: Ưu tiên phòng ban của người dùng lên trước (dành riêng cho BLĐ)
+    if abbr_task_dept:
+        same_dept = [t for t in unique_matched if DEPT_ABBR.get(t.get("department"), t.get("department")) == abbr_task_dept]
+        other_dept = [t for t in unique_matched if DEPT_ABBR.get(t.get("department"), t.get("department")) != abbr_task_dept]
         return same_dept + other_dept
 
     return unique_matched

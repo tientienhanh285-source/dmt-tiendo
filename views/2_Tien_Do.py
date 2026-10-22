@@ -132,53 +132,71 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-tab_master, tab_report, tab_giaoban, tab_data = st.tabs(["🌟 MASTER VIEW", "📊 CÔNG VIỆC TỚI HẠN", "📢 BÁO CÁO GIAO BAN", "📋 BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC"])
+is_bld = is_bld_user(
+    user=st.session_state.get('personal_user') or st.session_state.get('manager_user'),
+    dept=st.session_state.get('auth_user_dept') or st.session_state.get('manager_dept'),
+    is_admin=st.session_state.get('is_admin_authenticated', False)
+)
+
+user_dept = None
+if role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated'):
+    raw_dept = st.session_state.get("manager_dept")
+    user_dept = DEPT_ABBR.get(raw_dept, raw_dept) if raw_dept else None
+elif role_mode == "Nhân viên" and st.session_state.get('is_personal_authenticated'):
+    raw_dept = st.session_state.get("auth_user_dept")
+    user_dept = DEPT_ABBR.get(raw_dept, raw_dept) if raw_dept else None
+
+master_tab_label = "🌟 MASTER VIEW" if is_bld else f"🎯 KẾ HOẠCH / CHỈ TIÊU ({user_dept if user_dept else 'PHÒNG BAN'})"
+
+tab_master, tab_report, tab_giaoban, tab_data = st.tabs([
+    master_tab_label, 
+    "📊 CÔNG VIỆC TỚI HẠN", 
+    "📢 BÁO CÁO GIAO BAN", 
+    "📋 BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC"
+])
 
 with tab_master:
-    st.markdown("### 🌟 BẢNG THEO DÕI TIẾN ĐỘ CHỈ TIÊU (MASTER VIEW)")
-    st.info("Bảng tổng hợp tiến độ Kế hoạch của các Dự án dựa trên đánh giá và nghiệm thu của Lãnh đạo Ban.")
-    
     project_targets = load_project_targets()
     
-    active_dept = None
-    if role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated'):
-        mgr_dept = st.session_state.get("manager_dept")
-        if mgr_dept in ["BLĐ", "HĐQT", "Tất cả"]:
-            dept_opts = ["Tất cả phòng ban"] + get_departments_for_company(selected_company, config)
-            if st.session_state.get('manager_user') == "Trần Văn Trọng":
-                dept_opts = [d for d in dept_opts if d not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
-            sel_d = st.selectbox("Lọc Phòng ban (Master View)", dept_opts, key="master_dept")
-            if sel_d != "Tất cả phòng ban":
-                active_dept = sel_d
-        else:
-            active_dept = mgr_dept
-    elif role_mode == "Nhân viên" and st.session_state.get('is_personal_authenticated'):
-        raw_dept = st.session_state.get("auth_user_dept")
-        active_dept = DEPT_ABBR.get(raw_dept, raw_dept) if raw_dept else None
-        
     company_targets = project_targets
     if selected_company and selected_company != "Tất cả đơn vị":
         comp_targets = [t for t in project_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == selected_company]
         if comp_targets:
             company_targets = comp_targets
 
-    # Checkbox cho phép Nhân viên xem toàn bộ Chỉ tiêu Công ty
-    show_all_company_targets = False
-    if role_mode == "Nhân viên" and active_dept:
-        show_all_company_targets = st.checkbox("🌐 Xem toàn bộ Chỉ tiêu của Công ty (Không chỉ riêng Ban mình)", value=False, key="emp_toggle_all_targets")
-
-    if active_dept and not show_all_company_targets:
-        dept_targets = [t for t in company_targets if t.get("department") == active_dept]
-        if dept_targets:
+    if not is_bld:
+        # Cách ly tuyệt đối: Chỉ hiển thị Kế hoạch / Chỉ tiêu của ban mình
+        st.markdown(f"### 🎯 BẢNG TIẾN ĐỘ CHỈ TIÊU — BAN {user_dept}")
+        st.info(f"Theo dõi tiến độ thực hiện Kế hoạch năm và Chỉ tiêu dự án của **Ban {user_dept}**.")
+        
+        if user_dept:
+            dept_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) == user_dept]
             project_targets = dept_targets
         else:
-            # Fallback nếu phòng ban chưa có chỉ tiêu riêng
-            st.info(f"💡 Ban **{active_dept}** hiện chưa có Chỉ tiêu riêng được giao. Đang hiển thị toàn bộ Chỉ tiêu dự án của **{selected_company}**:")
-            project_targets = company_targets
-    elif role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_user') == "Trần Văn Trọng":
-        project_targets = [t for t in company_targets if t.get("department") not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
+            project_targets = []
+            
+        if not project_targets:
+            st.info(f"💡 Ban **{user_dept if user_dept else 'của bạn'}** hiện chưa có Kế hoạch / Chỉ tiêu năm nào được thiết lập.")
     else:
-        project_targets = company_targets
+        # Master View toàn hệ thống: Chỉ dành riêng cho BLĐ / HĐQT / HR
+        st.markdown("### 🌟 BẢNG THEO DÕI TIẾN ĐỘ CHỈ TIÊU (MASTER VIEW)")
+        st.info("Bảng tổng hợp tiến độ Kế hoạch của các Dự án dựa trên đánh giá và nghiệm thu của Lãnh đạo Ban.")
+        
+        mgr_user = st.session_state.get('manager_user', '')
+        all_depts = get_departments_for_company(selected_company, config)
+        dept_opts = ["Tất cả phòng ban"] + all_depts
+        if mgr_user == "Trần Văn Trọng":
+            dept_opts = [d for d in dept_opts if d not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
+            
+        sel_d = st.selectbox("Lọc Phòng ban (Master View)", dept_opts, key="master_dept")
+        if sel_d != "Tất cả phòng ban":
+            active_abbr = DEPT_ABBR.get(sel_d, sel_d)
+            project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) == active_abbr]
+        else:
+            if mgr_user == "Trần Văn Trọng":
+                project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) not in ["TCKT", "HCNS"]]
+            else:
+                project_targets = company_targets
         
     if not project_targets:
         st.warning(f"Chưa có Chỉ tiêu nào được thiết lập cho {selected_company}.")
