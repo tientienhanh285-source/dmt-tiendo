@@ -468,8 +468,20 @@ def load_config():
                     "HẠ TẦNG & GIAO THÔNG": ["Tuyến đường Lê Trọng Tấn", "Tuyến đường Lê Trọng Tấn - Hoà Nhơn", "Tuyến đường Trần Hưng Đạo (BT)", "Trục I Tây Bắc", "Khu TĐC Hoà Vang"],
                     "THƯƠNG MẠI & KHÁCH SẠN": ["Khách sạn DMT-Group"]
                 },
-                "departments": ["HĐQT", "Ban Lãnh đạo", "Ban Hành chính Nhân sự", "Ban Tài chính Kế toán", "Ban Kế hoạch Đầu tư", "Ban Chuẩn bị Đầu tư", "Ban Kỹ thuật", "Ban Đền bù Giải tỏa", "Tổ KPI", "Ban Dự án", "Xí nghiệp DTBD", "Sàn GDBĐS"],
-                "personnel_by_department": DEFAULT_PERSONNEL.copy()
+                "departments": ["HĐQT", "BLĐ", "HCNS", "TCKT", "KHĐT", "CBĐT", "KT", "ĐBGT", "DA", "XN DTBD", "Sàn GDBĐS"],
+                "personnel_by_department": {
+                    "HĐQT": ["Đặng Thanh Bình"],
+                    "BLĐ": ["Trần Quốc Thể", "Đoàn Thị Ngọc Nữ", "Đặng Ngọc Hoàng", "Nguyễn Ngọc Tôn"],
+                    "TCKT": ["Đồng Thị Nguyệt Nga", "Huỳnh Thị Hoàng Hà", "Nguyễn Thị Nhật Sang", "Lê Thị Hải"],
+                    "KT": ["Nguyễn Văn Bồn"],
+                    "HCNS": ["Nguyễn Thị Hạnh Tiên", "Nguyễn Băng Trinh", "Lê Ngọc Tú Uyên"],
+                    "KHĐT": ["Nguyễn Trần Thức", "Nguyễn Đức Lợi", "Phan Thị Kim Cúc", "Trần Tin"],
+                    "CBĐT": ["Hồ Văn Khoa", "Phan Thị Mỹ Hạnh", "Cao Thuỷ Tiên"],
+                    "ĐBGT": ["Đặng Công Nhựt", "Đặng Thị Mỹ Hạnh", "Đặng Thanh Quang"],
+                    "DA": ["Nguyễn Đình Thắng", "Nguyễn Đình Hiếu"],
+                    "XN DTBD": ["Mai Văn Châu"],
+                    "Sàn GDBĐS": ["Ngô Thị Tâm"]
+                }
             },
             "CTY CP DMT - MARINA (Du thuyền Happy Yacht)": {
                 "projects_by_category": {
@@ -1237,13 +1249,16 @@ def save_kpi_tasks(df):
 
 def auto_scale_tasks(tasks_df, user, month, year):
     # Auto scale existing tasks if a new task pushes total weight over 100
+    if tasks_df is None or tasks_df.empty:
+        return tasks_df
+    tasks_df['Weight'] = pd.to_numeric(tasks_df['Weight'], errors='coerce').fillna(0.0).astype(float)
     user_tasks = tasks_df[(tasks_df['User']==user) & (tasks_df['Month']==month) & (tasks_df['Year']==year)]
     total_w = user_tasks['Weight'].sum()
     if total_w > 100:
         # Scale down proportionally
         ratio = 100.0 / total_w
         for idx in user_tasks.index:
-            tasks_df.at[idx, 'Weight'] = round(tasks_df.at[idx, 'Weight'] * ratio, 2)
+            tasks_df.at[idx, 'Weight'] = round(float(tasks_df.at[idx, 'Weight']) * ratio, 2)
     return tasks_df
 
 def read_sqlite_table(table_name):

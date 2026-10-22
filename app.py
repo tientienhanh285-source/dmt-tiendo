@@ -1,4 +1,7 @@
 import streamlit as st
+import importlib
+import core_logic
+importlib.reload(core_logic)
 from core_logic import *
 
 # Force calendar header visible to fix caching issues
