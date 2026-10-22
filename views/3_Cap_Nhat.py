@@ -140,7 +140,23 @@ with tab_new:
                             new_start = date(today.year, today.month, 1)
                             new_deadline = date(today.year, today.month, last_day)
                             
+                            # Lọc bỏ những việc đã có trong tháng hiện tại để tránh trùng lặp hoặc tái sinh việc cũ
+                            existing_sigs = set()
+                            for _, c_row in fresh_df.iterrows():
+                                c_d = c_row.get('Deadline')
+                                try:
+                                    if pd.notna(c_d) and pd.to_datetime(c_d).month == today.month and pd.to_datetime(c_d).year == today.year:
+                                        sig = f"{str(c_row.get('NguoiChuTri', '')).strip()}|||{str(c_row.get('TenCongViec', '')).strip()}"
+                                        existing_sigs.add(sig)
+                                except:
+                                    pass
+
                             for _, row in tasks_to_copy.iterrows():
+                                t_owner = str(row.get('NguoiChuTri', '')).strip()
+                                t_name = str(row.get('TenCongViec', '')).strip()
+                                if f"{t_owner}|||{t_name}" in existing_sigs:
+                                    continue
+                                    
                                 new_row = row.copy()
                                 import uuid
                                 new_row['ID'] = f"TSK-{uuid.uuid4().hex[:8].upper()}"
@@ -156,11 +172,14 @@ with tab_new:
                                 
                                 new_rows.append(new_row)
                                 
-                            for r in new_rows:
-                                r_dict = r.to_dict()
-                                insert_task(r_dict)
-                            st.success(f"🎉 Đã nhân bản thành công {len(new_rows)} công việc sang tháng {today.month}/{today.year}!")
-                            st.rerun()
+                            if not new_rows:
+                                st.info("Tất cả công việc từ tháng trước đã có trong tháng này, không có công việc mới nào cần sao chép!")
+                            else:
+                                for r in new_rows:
+                                    r_dict = r.to_dict()
+                                    insert_task(r_dict)
+                                st.success(f"🎉 Đã nhân bản thành công {len(new_rows)} công việc sang tháng {today.month}/{today.year}!")
+                                st.rerun()
 
     st.markdown("#### Thêm mới công việc tự do")
     
@@ -954,14 +973,8 @@ with tab_update:
                         
                         fresh_df = read_db()
                         
-                        next_id = 1
-                        if not fresh_df.empty:
-                            ids = fresh_df['ID'].tolist()
-                            import re
-                            nums = [int(m[0]) for idx in ids for m in [re.findall(r'\d+', str(idx))] if m]
-                            if nums:
-                                next_id = max(nums) + 1
-                        new_id = f"TSK-{next_id:03d}"
+                        import uuid
+                        new_id = f"TSK-{uuid.uuid4().hex[:8].upper()}"
                         
                         new_row = {
                             "ID": new_id,

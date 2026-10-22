@@ -180,8 +180,10 @@ import time
 _SUPABASE_CLIENT_INSTANCE = None
 _CLIENT_LOCK = threading.Lock()
 _INSERT_TASK_LOCK = threading.RLock()
+_TARGETS_FILE_LOCK = threading.RLock()
+_LAST_KNOWN_TARGETS = []
 
-def execute_with_retry(query_func, max_retries=3, initial_delay=0.25):
+def execute_with_retry(query_func, max_retries=4, initial_delay=0.4):
     """Thực thi thao tác Supabase với cơ chế retry tự động theo cấp số nhân khi mạng lag / nghẽn kết nối"""
     last_err = None
     for attempt in range(max_retries):
@@ -190,7 +192,7 @@ def execute_with_retry(query_func, max_retries=3, initial_delay=0.25):
         except Exception as e:
             last_err = e
             if attempt < max_retries - 1:
-                time.sleep(initial_delay * (2 ** attempt))
+                time.sleep(initial_delay * (1.8 ** attempt))
             else:
                 raise e
 
@@ -205,7 +207,7 @@ def get_gsheets_conn():
         SUPABASE_URL = 'https://xlfnxyerpcebqxgmfngd.supabase.co'
         SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsZm54eWVycGNlYnF4Z21mbmdkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjYwNTAzNSwiZXhwIjoyMTAyMTgxMDM1fQ.qZsoZu8HaFpbvsG6siw76M5QXmX5bwipLV1qWeGG89s'
         try:
-            options = ClientOptions(postgrest_client_timeout=15)
+            options = ClientOptions(postgrest_client_timeout=30)
             _SUPABASE_CLIENT_INSTANCE = create_client(SUPABASE_URL, SUPABASE_KEY, options=options)
             return _SUPABASE_CLIENT_INSTANCE
         except Exception as e:
@@ -235,7 +237,7 @@ import json
 import pandas as pd
 import numpy as np
 
-@st.cache_data(ttl=5, show_spinner=False)
+@st.cache_data(ttl=20, show_spinner=False)
 def _cached_fetch_table_data(worksheet, filters_str):
     conn = get_gsheets_conn()
     if not conn: return None
@@ -267,7 +269,7 @@ def safe_gsheets_read(conn, worksheet, ttl=15, fallback_df=None, filters=None):
     import numpy as np
             
     try:
-        filters_str = json.dumps(filters) if filters else ""
+        filters_str = json.dumps(filters, sort_keys=True) if filters else ""
         data = _cached_fetch_table_data(worksheet, filters_str)
         if not data:
             return fallback_df
@@ -375,26 +377,11 @@ def safe_gsheets_update(conn, worksheet, data):
                     r[k] = None
                     
         if records:
-            conn.table(table_name).upsert(records).execute()
+            execute_with_retry(lambda: conn.table(table_name).upsert(records).execute())
             _cached_fetch_table_data.clear()
-            
-            if pk in df.columns:
-                current_ids = [str(x) for x in df[pk].tolist()]
-                if len(current_ids) > 0:
-                    res = conn.table(table_name).select(pk).execute()
-                    db_ids = [(row[pk], str(row[pk])) for row in res.data]
-                    ids_to_delete = [orig for orig, string_val in db_ids if string_val not in current_ids]
-                    if ids_to_delete:
-                        for i in range(0, len(ids_to_delete), 100):
-                            batch_del = ids_to_delete[i:i+100]
-                            conn.table(table_name).delete().in_(pk, batch_del).execute()
 
         st.session_state[cache_key] = data.copy()
         st.session_state[cache_key + "_time"] = time.time()
-        
-        global_state = get_global_state()
-        global_state[cache_key] = data.copy()
-        global_state[cache_key + "_time"] = time.time()
         
         if worksheet == "Sheet1":
             if hasattr(read_db, "clear"): read_db.clear()
@@ -1056,6 +1043,96 @@ def get_departments_for_company(company, config):
         depts.append("Mỏ")
     return depts
 
+@st.cache_data(ttl=30, show_spinner=False)
+def load_project_targets():
+    """
+    Tải danh sách Chỉ tiêu từ project_targets.json với cơ chế Thread-safe, 
+    tự động Retry chống xung đột file trên Windows và Fallback bộ nhớ để KHÔNG BAO GIỜ bị mất dữ liệu.
+    """
+    global _LAST_KNOWN_TARGETS
+    target_file = 'project_targets.json'
+    if not os.path.exists(target_file):
+        return _LAST_KNOWN_TARGETS.copy() if _LAST_KNOWN_TARGETS else []
+    
+    for attempt in range(5):
+        try:
+            with _TARGETS_FILE_LOCK:
+                with open(target_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if isinstance(data, list) and len(data) > 0:
+                        _LAST_KNOWN_TARGETS = data.copy()
+                        return data
+                    elif isinstance(data, list):
+                        return data
+        except Exception:
+            if attempt < 4:
+                time.sleep(0.08 * (attempt + 1))
+            else:
+                if _LAST_KNOWN_TARGETS:
+                    return _LAST_KNOWN_TARGETS.copy()
+                return []
+    return _LAST_KNOWN_TARGETS.copy() if _LAST_KNOWN_TARGETS else []
+
+def update_project_target_status(target_id, approved=True, progress=100):
+    """
+    Cập nhật trạng thái nghiệm thu / tiến độ của Chỉ tiêu một cách AN TOÀN TUYỆT ĐỐI:
+    - Luôn tải TOÀN BỘ file project_targets.json (không dùng danh sách đã filter của người dùng).
+    - Cập nhật đúng target_id.
+    - Ghi ra file tạm và atomic replace để chống hỏng file khi nhiều người cùng thao tác.
+    - Xóa cache Streamlit để mọi người dùng đều thấy dữ liệu mới nhất.
+    """
+    global _LAST_KNOWN_TARGETS
+    target_file = 'project_targets.json'
+    temp_file = 'project_targets.json.tmp'
+    
+    with _TARGETS_FILE_LOCK:
+        try:
+            all_targets = []
+            if os.path.exists(target_file):
+                for attempt in range(5):
+                    try:
+                        with open(target_file, 'r', encoding='utf-8') as f:
+                            all_targets = json.load(f)
+                            break
+                    except Exception:
+                        time.sleep(0.08 * (attempt + 1))
+            
+            if not all_targets and _LAST_KNOWN_TARGETS:
+                all_targets = _LAST_KNOWN_TARGETS.copy()
+                
+            if not all_targets:
+                return False
+                
+            found = False
+            for t in all_targets:
+                if t.get("target_id") == target_id:
+                    t["approved"] = approved
+                    t["progress"] = progress
+                    found = True
+                    break
+                    
+            if not found:
+                return False
+                
+            with open(temp_file, 'w', encoding='utf-8') as f:
+                json.dump(all_targets, f, ensure_ascii=False, indent=2)
+                
+            if os.path.exists(target_file):
+                os.replace(temp_file, target_file)
+            else:
+                os.rename(temp_file, target_file)
+                
+            _LAST_KNOWN_TARGETS = all_targets.copy()
+            if hasattr(load_project_targets, "clear"):
+                load_project_targets.clear()
+            return True
+        except Exception as e:
+            if os.path.exists(temp_file):
+                try: os.remove(temp_file)
+                except: pass
+            import streamlit as st
+            st.error(f"Lỗi cập nhật Chỉ tiêu: {e}")
+            return False
 
 def get_filtered_projects(company_name, config, db_projs, department=None, manager_user=None):
     dept_projs = set()
@@ -1063,12 +1140,8 @@ def get_filtered_projects(company_name, config, db_projs, department=None, manag
     bld_depts = get_bld_managed_departments(manager_user) if (manager_user and is_leader) else None
     
     try:
-        import json
-        import os
-        if os.path.exists('project_targets.json'):
-            with open('project_targets.json', 'r', encoding='utf-8') as f:
-                targets = json.load(f)
-                for t in targets:
+        targets = load_project_targets()
+        for t in targets:
                     t_comp = t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG")
                     t_dept = DEPT_ABBR.get(t.get("department"), t.get("department"))
                     
@@ -1655,18 +1728,6 @@ def save_incoming_docs_db(df):
         st.error(f'Lỗi lưu Google Sheets: {e}')
         return False
 
-
-def load_project_targets():
-    import json
-    import os
-    target_file = 'project_targets.json'
-    if os.path.exists(target_file):
-        try:
-            with open(target_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except:
-            return []
-    return []
 
 def normalize_proj_key(s):
     if not s:

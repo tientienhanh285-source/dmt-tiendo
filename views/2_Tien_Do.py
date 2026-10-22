@@ -297,17 +297,11 @@ with tab_master:
                     with col3:
                         if role_mode in ["Quản lý", "Admin"] and not t_approved:
                             if st.button(f"✅ Nghiệm thu", key=f"approve_{t_id}"):
-                                # Update JSON
-                                import json
-                                for pt in project_targets:
-                                    if pt["target_id"] == t_id:
-                                        pt["approved"] = True
-                                        pt["progress"] = 100
-                                        break
-                                with open('project_targets.json', 'w', encoding='utf-8') as f:
-                                    json.dump(project_targets, f, ensure_ascii=False, indent=2)
-                                st.success("Đã nghiệm thu!")
-                                st.rerun()
+                                if update_project_target_status(t_id, approved=True, progress=100):
+                                    st.success("Đã nghiệm thu!")
+                                    st.rerun()
+                                else:
+                                    st.error("Lỗi khi cập nhật trạng thái nghiệm thu Chỉ tiêu.")
                         elif t_approved:
                             st.markdown("<span style='color:green;font-weight:bold;'>Đã Nghiệm Thu</span>", unsafe_allow_html=True)
 
