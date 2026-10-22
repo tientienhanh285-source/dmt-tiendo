@@ -153,21 +153,35 @@ with tab_master:
         else:
             active_dept = mgr_dept
     elif role_mode == "Nhân viên" and st.session_state.get('is_personal_authenticated'):
-        active_dept = st.session_state.get("auth_user_dept")
+        raw_dept = st.session_state.get("auth_user_dept")
+        active_dept = DEPT_ABBR.get(raw_dept, raw_dept) if raw_dept else None
         
-    if selected_company:
-        project_targets = [t for t in project_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == selected_company]
+    company_targets = project_targets
+    if selected_company and selected_company != "Tất cả đơn vị":
+        comp_targets = [t for t in project_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == selected_company]
+        if comp_targets:
+            company_targets = comp_targets
 
-    if active_dept:
-        project_targets = [t for t in project_targets if t.get("department") == active_dept]
+    # Checkbox cho phép Nhân viên xem toàn bộ Chỉ tiêu Công ty
+    show_all_company_targets = False
+    if role_mode == "Nhân viên" and active_dept:
+        show_all_company_targets = st.checkbox("🌐 Xem toàn bộ Chỉ tiêu của Công ty (Không chỉ riêng Ban mình)", value=False, key="emp_toggle_all_targets")
+
+    if active_dept and not show_all_company_targets:
+        dept_targets = [t for t in company_targets if t.get("department") == active_dept]
+        if dept_targets:
+            project_targets = dept_targets
+        else:
+            # Fallback nếu phòng ban chưa có chỉ tiêu riêng
+            st.info(f"💡 Ban **{active_dept}** hiện chưa có Chỉ tiêu riêng được giao. Đang hiển thị toàn bộ Chỉ tiêu dự án của **{selected_company}**:")
+            project_targets = company_targets
     elif role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_user') == "Trần Văn Trọng":
-        project_targets = [t for t in project_targets if t.get("department") not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
+        project_targets = [t for t in company_targets if t.get("department") not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
+    else:
+        project_targets = company_targets
         
     if not project_targets:
-        if active_dept:
-            st.warning(f"Ban {active_dept} chưa có Dự án/Chỉ tiêu nào được thiết lập.")
-        else:
-            st.warning("Chưa có Chỉ tiêu nào được thiết lập. Vui lòng thiết lập trong file project_targets.json")
+        st.warning(f"Chưa có Chỉ tiêu nào được thiết lập cho {selected_company}.")
     else:
         # Group targets by Project
         projects_dict = {}

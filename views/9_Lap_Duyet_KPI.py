@@ -75,14 +75,14 @@ is_manager = role_mode == "Quản lý" and st.session_state.get('is_manager_auth
 is_hr = role_mode == "HR" and st.session_state.get('is_admin_authenticated', False)
 
 if role_mode == "Nhân viên":
-    cu = st.session_state.get('selected_nhan_vien', '')
+    cu = st.session_state.get('personal_user') or st.session_state.get('selected_nhan_vien', '')
 elif is_manager:
-    cu = st.session_state.get('manager_dept', 'QuanLy') # Simplified for demo
+    cu = st.session_state.get('manager_user') or st.session_state.get('manager_dept', 'QuanLy')
 else:
     cu = 'HR'
     
 if not cu and role_mode == "Nhân viên":
-    st.warning("Vui lòng nhập Tên Nhân viên ở thanh bên trái!")
+    st.warning("Vui lòng đăng nhập với quyền Nhân viên ở thanh bên trái!")
 else:
     tab1, tab2 = st.tabs(["👤 KPI Của Tôi (Nhân viên)", "👔 Duyệt & Chấm điểm (Quản lý)"])
     

@@ -1616,6 +1616,74 @@ def load_project_targets():
             return []
     return []
 
+def normalize_proj_key(s):
+    if not s:
+        return ""
+    import unicodedata, re
+    s = unicodedata.normalize('NFC', str(s).lower())
+    s = s.replace('oà', 'òa').replace('oá', 'óa').replace('oả', 'ỏa').replace('oã', 'õa').replace('oạ', 'ọa')
+    s = s.replace('uỳ', 'ùy').replace('uý', 'úy').replace('uỷ', 'ủy').replace('uỹ', 'ũy').replace('uỵ', 'ụy')
+    for token in ['[dự án]', '[hạng mục]', 'dự án', 'kđt', 'khu đô thị', 'kdc', 'khu dân cư', 'htkt', 'tđc', 'khu tđc', 'tái định cư', 'kbt', 'sinh thái', 'st', 'tuyến đường', 'đường']:
+        s = s.replace(token, ' ')
+    s = re.sub(r'\s+', ' ', s).strip()
+    return s
+
+def match_project_targets(project_name, task_dept=None, company=None):
+    """
+    Tìm kiếm và ánh xạ các Chỉ tiêu (targets) từ project_targets.json tương ứng với dự án được chọn.
+    Hỗ trợ chuẩn hóa tiếng Việt, tìm theo từ khóa, lọc công ty an toàn và sắp xếp ưu tiên phòng ban.
+    """
+    all_targets = load_project_targets()
+    if not all_targets:
+        return []
+    
+    # 1. Lọc theo Công ty nếu có (trừ "Tất cả đơn vị")
+    if company and company != "Tất cả đơn vị":
+        comp_targets = [t for t in all_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == company]
+        if comp_targets:
+            all_targets = comp_targets
+
+    if not project_name:
+        return all_targets
+
+    clean_p = project_name.replace("[Dự án] ", "").replace("[Hạng mục] ", "").strip()
+    norm_p = normalize_proj_key(clean_p)
+    keywords = [w.strip() for w in norm_p.split('&') if len(w.strip()) >= 3]
+    if not keywords and norm_p:
+        keywords = [norm_p]
+
+    matched = []
+    for t in all_targets:
+        t_proj = t.get("project_name", "")
+        if t_proj == clean_p:
+            matched.append(t)
+            continue
+        norm_t = normalize_proj_key(t_proj)
+        if norm_p and (norm_p in norm_t or norm_t in norm_p):
+            matched.append(t)
+            continue
+        if any(kw in norm_t for kw in keywords):
+            matched.append(t)
+            continue
+
+    # Khử trùng lặp
+    seen = set()
+    unique_matched = []
+    for t in matched:
+        tid = t.get("target_id") or t.get("target_name")
+        if tid not in seen:
+            seen.add(tid)
+            unique_matched.append(t)
+
+    # Sắp xếp: Ưu tiên phòng ban của người dùng lên trước
+    if task_dept:
+        same_dept = [t for t in unique_matched if t.get("department") == task_dept]
+        other_dept = [t for t in unique_matched if t.get("department") != task_dept]
+        return same_dept + other_dept
+
+    return unique_matched
+
+
 def read_db(filters=None):
     # Force cache clear for new progress calculation rules
     required_cols = [

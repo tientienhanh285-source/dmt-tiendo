@@ -228,8 +228,11 @@ with tab_new:
         
         # 2. Project selection (Categorized dropdown or custom)
         project_targets = load_project_targets()
-        if selected_company:
-            project_targets = [t for t in project_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == selected_company]
+        if entry_company and entry_company != "Tất cả đơn vị":
+            comp_targets = [t for t in project_targets if t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG") == entry_company]
+            if comp_targets:
+                project_targets = comp_targets
+                
         khdt_projects = []
         for t in project_targets:
             if t.get("department") == task_dept and t.get("project_name") not in khdt_projects:
@@ -254,30 +257,40 @@ with tab_new:
         else:
             project_name = clean_proj_name(default_proj_opt)
             
-        # 2.1 Target (Chỉ tiêu) selection
-        clean_p = project_name.replace("[Dự án] ", "").replace("[Hạng mục] ", "").strip()
-        associated_targets = [t["target_name"] for t in project_targets if t.get("project_name") == clean_p and t.get("department") == task_dept]
+        # 2.1 Target (Chỉ tiêu) selection - Luôn hiển thị và ánh xạ thông minh
+        matched_target_objs = match_project_targets(project_name, task_dept=task_dept, company=entry_company)
+        
+        target_display_options = []
+        target_obj_map = {}
+        for t in matched_target_objs:
+            t_dept = t.get("department", "")
+            t_name = t.get("target_name", "")
+            if task_dept and t_dept == task_dept:
+                label = t_name
+            else:
+                label = f"[{t_dept}] {t_name}" if t_dept else t_name
+            target_display_options.append(label)
+            target_obj_map[label] = t
+            
+        target_options = target_display_options + ["Tự do / Không thuộc Chỉ tiêu nào"]
+        
+        st.markdown("<p style='font-size: 1rem; font-weight: 600; color: #d97706; margin-bottom: 5px; margin-top: 15px;'>🎯 Thuộc Chỉ tiêu (Kế hoạch năm)</p>", unsafe_allow_html=True)
+        selected_target_label = st.selectbox("Chọn Chỉ tiêu", target_options, label_visibility="collapsed", key="create_task_target_select")
         
         selected_target = ""
         selected_budget = 0
-        if associated_targets:
-            st.markdown("<p style='font-size: 1rem; font-weight: 600; color: #d97706; margin-bottom: 5px; margin-top: 15px;'>🎯 Thuộc Chỉ tiêu (Kế hoạch năm)</p>", unsafe_allow_html=True)
-            target_options = associated_targets + ["Tự do / Không thuộc Chỉ tiêu nào"]
-            selected_target = st.selectbox("Chọn Chỉ tiêu", target_options, label_visibility="collapsed")
-            
-            # Check if selected target has budget
-            for t in project_targets:
-                if t.get("target_name") == selected_target and t.get("budget_2026", 0) > 0:
-                    selected_budget = t.get("budget_2026")
-                    break
-                    
-            if selected_budget > 0:
-                st.info(f"💡 Chỉ tiêu này có Kế hoạch giải ngân 2026 là **{selected_budget} Tỷ VNĐ**.")
-                task_giai_ngan = st.number_input("💰 Giá trị giải ngân đợt này (Tỷ VNĐ)", min_value=0.0, step=0.1, value=0.0)
-            else:
-                task_giai_ngan = 0.0
+        if selected_target_label in target_obj_map:
+            chosen_obj = target_obj_map[selected_target_label]
+            selected_target = chosen_obj.get("target_name", "")
+            selected_budget = chosen_obj.get("budget_2026", 0)
         else:
             selected_target = "Tự do / Không thuộc Chỉ tiêu nào"
+            selected_budget = 0
+            
+        if selected_budget > 0:
+            st.info(f"💡 Chỉ tiêu này có Kế hoạch giải ngân 2026 là **{selected_budget} Tỷ VNĐ**.")
+            task_giai_ngan = st.number_input("💰 Giá trị giải ngân đợt này (Tỷ VNĐ)", min_value=0.0, step=0.1, value=0.0)
+        else:
             task_giai_ngan = 0.0
         
         # 3. Task details

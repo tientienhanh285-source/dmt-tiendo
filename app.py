@@ -346,10 +346,16 @@ if "gsheet_url" not in st.session_state:
     st.session_state["gsheet_url"] = load_settings().get("gsheet_url", "")
 
 company_options = ["Tất cả đơn vị"] + list(COMPANIES.keys())
+current_comp = st.session_state.get('selected_company', company_options[1])
+try:
+    comp_idx = company_options.index(current_comp)
+except ValueError:
+    comp_idx = 1
+
 selected_company = st.sidebar.selectbox(
     "CHỌN CÔNG TY / THÀNH VIÊN", 
     company_options, 
-    index=1,
+    index=comp_idx,
     format_func=lambda x: str(x).replace("CTY CP", "CÔNG TY CP")
 )
 st.session_state['selected_company'] = selected_company
@@ -543,8 +549,9 @@ elif role_mode == "Nhân viên":
                     if st.sidebar.button("Xác nhận Đăng nhập"):
                         st.session_state.is_personal_authenticated = True
                         st.session_state.personal_user = sel_login_user
-                        st.session_state.auth_user_dept = sel_login_dept  # Preserve dept since widget disappears
+                        st.session_state.auth_user_dept = DEPT_ABBR.get(sel_login_dept, sel_login_dept)
                         st.session_state.auth_user_company = selected_company
+                        st.session_state['selected_company'] = selected_company
                         st.rerun()
             else:
                 st.sidebar.warning("Phòng ban này chưa có dữ liệu nhân sự.")
@@ -641,19 +648,19 @@ p_nhat_ky = st.Page('views/11_Nhat_Ky_He_Thong.py', title='Nhật ký Hệ thố
 if st.session_state.is_admin_authenticated:
     pages = {
         'CÔNG VIỆC & TIẾN ĐỘ': [p_tong_quan, p_tien_do, p_cap_nhat, p_nghiem_thu],
-        'ĐÁNH GIÁ & KPI': [p_danh_gia],
+        'ĐÁNH GIÁ & KPI': [p_danh_gia, p_lap_duyet],
         'QUẢN TRỊ & HỆ THỐNG': [p_quan_ly_jd, p_cau_hinh, p_nhat_ky, p_so_tay]
     }
 elif st.session_state.get('is_manager_authenticated', False):
     pages = {
         'CÔNG VIỆC & TIẾN ĐỘ': [p_tong_quan, p_tien_do, p_cap_nhat, p_nghiem_thu],
-        'ĐÁNH GIÁ & KPI': [p_danh_gia],
+        'ĐÁNH GIÁ & KPI': [p_danh_gia, p_lap_duyet],
         'QUẢN TRỊ & HỆ THỐNG': [p_so_tay]
     }
 else:
     # Nhân viên chưa đăng nhập hoặc đã đăng nhập
     pages = {
-        'PHÂN HỆ CHỨC NĂNG': [p_tien_do, p_cap_nhat, p_so_tay]
+        'PHÂN HỆ CHỨC NĂNG': [p_tien_do, p_cap_nhat, p_lap_duyet, p_so_tay]
     }
 
 
