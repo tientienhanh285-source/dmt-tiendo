@@ -248,6 +248,9 @@ with tab_new:
             if p not in merged_projs:
                 merged_projs.append(p)
                 
+        if "Các nhiệm vụ khác" not in merged_projs:
+            merged_projs.append("Các nhiệm vụ khác")
+                
         proj_options_with_custom = merged_projs + ["✍️ Tự nhập Dự án / Hạng mục khác..."]
             
         default_proj_opt = st.selectbox("Dự án / Hạng mục", proj_options_with_custom)

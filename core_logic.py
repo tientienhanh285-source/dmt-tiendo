@@ -1681,10 +1681,15 @@ def match_project_targets(project_name, task_dept=None, company=None, is_bld=Fal
     if not keywords and norm_p:
         keywords = [norm_p]
 
+    is_adhoc = any(k in clean_p.lower() for k in ["nhiệm vụ khác", "phát sinh", "ngoài kế hoạch", "đột xuất"])
+
     matched = []
     for t in all_targets:
         t_proj = t.get("project_name", "")
         if t_proj == clean_p:
+            matched.append(t)
+            continue
+        if is_adhoc and ("nhiệm vụ khác" in t_proj.lower() or "phát sinh" in t_proj.lower()):
             matched.append(t)
             continue
         norm_t = normalize_proj_key(t_proj)

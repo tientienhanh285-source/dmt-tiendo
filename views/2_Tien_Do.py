@@ -228,7 +228,13 @@ with tab_master:
                     
                     if not t_approved:
                         if "SanPhamBanGiao" in df_tasks.columns:
-                            associated_tasks = df_tasks[df_tasks["SanPhamBanGiao"] == t_name]
+                            if t_name in ["Tiếp tục thực hiện các nhiệm vụ, chức năng theo phân công và chỉ đạo của Ban Lãnh đạo Công ty.", "Phối hợp với các phòng, ban, đơn vị trong quá trình thực hiện công việc.", "Các công việc phát sinh khác ngoài kế hoạch"]:
+                                associated_tasks = df_tasks[
+                                    (df_tasks["SanPhamBanGiao"] == t_name) | 
+                                    (df_tasks["TenDuAn"].str.contains("nhiệm vụ khác|phát sinh", case=False, na=False) & (df_tasks["SanPhamBanGiao"].isin(["", "Tự do / Không thuộc Chỉ tiêu nào", t_name])))
+                                ]
+                            else:
+                                associated_tasks = df_tasks[df_tasks["SanPhamBanGiao"] == t_name]
                         
                         if len(associated_tasks) > 0:
                             import re
@@ -244,13 +250,17 @@ with tab_master:
                             if budget_2026 > 0:
                                 progress = min(int((disbursed / budget_2026) * 100), 99)
                             else:
-                                total_tasks = len(associated_tasks)
-                                if total_tasks >= 1 and total_tasks <= 5:
-                                    progress = 30
-                                elif total_tasks >= 6 and total_tasks <= 10:
-                                    progress = 50
-                                elif total_tasks > 10:
-                                    progress = 80
+                                if t_name in ["Tiếp tục thực hiện các nhiệm vụ, chức năng theo phân công và chỉ đạo của Ban Lãnh đạo Công ty.", "Phối hợp với các phòng, ban, đơn vị trong quá trình thực hiện công việc.", "Các công việc phát sinh khác ngoài kế hoạch"]:
+                                    avg_p = pd.to_numeric(associated_tasks['PhanTramHoanThanh'], errors='coerce').fillna(0).mean()
+                                    progress = min(int(avg_p), 99)
+                                else:
+                                    total_tasks = len(associated_tasks)
+                                    if total_tasks >= 1 and total_tasks <= 5:
+                                        progress = 30
+                                    elif total_tasks >= 6 and total_tasks <= 10:
+                                        progress = 50
+                                    elif total_tasks > 10:
+                                        progress = 80
                             
                     color = "green" if progress == 100 else ("orange" if progress > 0 else "gray")
                     
