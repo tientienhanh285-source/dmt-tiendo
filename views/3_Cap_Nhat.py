@@ -234,13 +234,16 @@ with tab_new:
                 project_targets = comp_targets
                 
         khdt_projects = []
+        is_leader_dept = task_dept in ["BLĐ", "HĐQT"]
         for t in project_targets:
-            if t.get("department") == task_dept and t.get("project_name") not in khdt_projects:
-                khdt_projects.append(t.get("project_name"))
+            if is_leader_dept or t.get("department") == task_dept:
+                p_name = t.get("project_name")
+                if p_name and p_name not in khdt_projects:
+                    khdt_projects.append(p_name)
                 
         db_projs = []
         if not display_df.empty:
-            dept_tasks = display_df[display_df["PhongBan"] == task_dept]
+            dept_tasks = display_df if is_leader_dept else display_df[display_df["PhongBan"] == task_dept]
             db_projs = list(dept_tasks["TenDuAn"].dropna().unique())
         merged_projs = get_filtered_projects(entry_company, config, db_projs, department=task_dept)
         

@@ -1023,6 +1023,7 @@ def get_departments_for_company(company, config):
 
 def get_filtered_projects(company_name, config, db_projs, department=None):
     dept_projs = set()
+    is_leader = department in ["BLĐ", "HĐQT"]
     try:
         import json
         import os
@@ -1030,20 +1031,25 @@ def get_filtered_projects(company_name, config, db_projs, department=None):
             with open('project_targets.json', 'r', encoding='utf-8') as f:
                 targets = json.load(f)
                 for t in targets:
-                    if department:
+                    t_comp = t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG")
+                    if is_leader:
+                        if not company_name or company_name == "Tất cả đơn vị" or t_comp == company_name:
+                            dept_projs.add(t.get("project_name"))
+                    elif department:
                         if t.get("department") == department:
                             dept_projs.add(t.get("project_name"))
                     else:
-                        dept_projs.add(t.get("project_name"))
+                        if not company_name or company_name == "Tất cả đơn vị" or t_comp == company_name:
+                            dept_projs.add(t.get("project_name"))
     except:
         pass
         
-    if department and len(dept_projs) > 0:
-        # If department is provided and has projects in project_targets.json, strictly use those + db_projs
+    if department and not is_leader and len(dept_projs) > 0:
+        # If standard department is provided and has projects in project_targets.json, strictly use those + db_projs
         merged = list(set(list(dept_projs) + db_projs))
         return sorted(merged)
         
-    # Fallback to config.json
+    # Fallback to config.json (and for BLĐ / HĐQT to include all company projects)
     companies = config.get("companies", {})
     projs_by_cat = {}
     if company_name in companies:
