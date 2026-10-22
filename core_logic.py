@@ -905,6 +905,31 @@ HIERARCHY_MARINA_3 = {
     "Nguyễn Thị Mỹ Phương": [] # PGĐ Ban HCNS Cienco (chế độ Quản lý, không duyệt công việc)
 }
 
+# ==============================================================================
+# PHÂN CÔNG PHÒNG BAN PHỤ TRÁCH CHO THÀNH VIÊN BAN LÃNH ĐẠO (BLĐ)
+# ==============================================================================
+BLD_MANAGED_DEPTS = {
+    "Trần Quốc Thể": ["CBĐT", "KHĐT"],
+    "Nguyễn Ngọc Tôn": ["ĐBGT"],
+    "Đoàn Thị Ngọc Nữ": ["TCKT"],
+    "Đặng Ngọc Hoàng": ["Sàn GDBĐS", "HCNS", "BLĐ"],
+    "Thái Văn Thành": ["KT", "BCH CT", "XN XMTB", "Mỏ", "TCKT", "HCNS"],
+    "Trần Văn Trọng": ["KT", "BCH CT", "XN XMTB", "Mỏ"]
+}
+
+def get_bld_managed_departments(user_name):
+    """
+    Trả về danh sách phòng ban mà thành viên BLĐ phụ trách.
+    - Trả về None nếu là HĐQT (toàn quyền xem mọi ban).
+    - Trả về list tên viết tắt các ban nếu là BLĐ.
+    - Trả về None nếu không thuộc BLĐ.
+    """
+    if not user_name:
+        return None
+    if user_name in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+        return None
+    return BLD_MANAGED_DEPTS.get(user_name)
+
 def get_subordinates_for_manager(manager_user):
     """
     Trả về danh sách cấp dưới trực tiếp cần duyệt/nghiệm thu theo sheet MARINA (3).
@@ -942,11 +967,9 @@ def get_allowed_personnel_for_manager(manager_user, include_self=True):
 def setup_manager_db_filters(db_filters, manager_user, manager_dept, selected_company):
     """
     Cấu hình bộ lọc db_filters chuẩn hóa cho Quản lý theo sheet MARINA (3):
-    1. Nếu là HĐQT / BLĐ toàn quyền: Xem mọi công ty, phòng ban.
-    2. Nếu nằm trong HIERARCHY_MARINA_3:
-       - Lọc NguoiChuTri trong danh sách nhân sự được phép (chính mình + cấp dưới).
-       - BỎ lọc 'DonVi' và 'PhongBan' vì cấp dưới có thể làm ở công ty/phòng ban khác (cross-company).
-    3. Fallback: Nếu chưa có trong bảng phân quyền thì lọc theo phòng ban của Quản lý.
+    1. Nếu là HĐQT: Xem toàn bộ mọi công ty, phòng ban.
+    2. Nếu là BLĐ: Chỉ thấy công việc của các phòng ban mình phụ trách + công việc của chính mình.
+    3. Nếu là Quản lý các phòng ban khác: Lọc theo danh sách cấp dưới + chính mình.
     """
     if not manager_user:
         return db_filters
@@ -956,7 +979,20 @@ def setup_manager_db_filters(db_filters, manager_user, manager_dept, selected_co
         if 'PhongBan' in db_filters: del db_filters['PhongBan']
         if 'NguoiChuTri' in db_filters: del db_filters['NguoiChuTri']
         return db_filters
+
+    # 1. Kiểm tra nếu là thành viên BLĐ
+    bld_depts = get_bld_managed_departments(manager_user)
+    if bld_depts is not None:
+        if 'DonVi' in db_filters: del db_filters['DonVi']
+        expanded_depts = []
+        for d in bld_depts + ["BLĐ"]:
+            short_name = DEPT_ABBR.get(d, d)
+            expanded_depts.extend([k for k, v in DEPT_ABBR.items() if v == short_name or k == d] + [d, short_name])
+        db_filters['PhongBan'] = list(set(expanded_depts))
+        if 'NguoiChuTri' in db_filters: del db_filters['NguoiChuTri']
+        return db_filters
         
+    # 2. Quản lý phòng ban bình thường
     allowed = get_allowed_personnel_for_manager(manager_user, include_self=True)
     if allowed is not None and len(allowed) > 0:
         if 'DonVi' in db_filters: del db_filters['DonVi']
@@ -1021,9 +1057,11 @@ def get_departments_for_company(company, config):
     return depts
 
 
-def get_filtered_projects(company_name, config, db_projs, department=None):
+def get_filtered_projects(company_name, config, db_projs, department=None, manager_user=None):
     dept_projs = set()
     is_leader = department in ["BLĐ", "HĐQT"]
+    bld_depts = get_bld_managed_departments(manager_user) if (manager_user and is_leader) else None
+    
     try:
         import json
         import os
@@ -1032,11 +1070,20 @@ def get_filtered_projects(company_name, config, db_projs, department=None):
                 targets = json.load(f)
                 for t in targets:
                     t_comp = t.get("company", "CÔNG TY CP ĐẦU TƯ ĐÀ NẴNG")
+                    t_dept = DEPT_ABBR.get(t.get("department"), t.get("department"))
+                    
                     if is_leader:
-                        if not company_name or company_name == "Tất cả đơn vị" or t_comp == company_name:
-                            dept_projs.add(t.get("project_name"))
+                        if bld_depts is not None:
+                            # Thành viên BLĐ chỉ thấy dự án thuộc ban mình phụ trách
+                            if t_dept in bld_depts or t_dept == "BLĐ":
+                                if not company_name or company_name == "Tất cả đơn vị" or t_comp == company_name:
+                                    dept_projs.add(t.get("project_name"))
+                        else:
+                            # HĐQT xem toàn bộ dự án của công ty
+                            if not company_name or company_name == "Tất cả đơn vị" or t_comp == company_name:
+                                dept_projs.add(t.get("project_name"))
                     elif department:
-                        if t.get("department") == department:
+                        if t_dept == department:
                             dept_projs.add(t.get("project_name"))
                     else:
                         if not company_name or company_name == "Tất cả đơn vị" or t_comp == company_name:
@@ -1044,12 +1091,11 @@ def get_filtered_projects(company_name, config, db_projs, department=None):
     except:
         pass
         
-    if department and not is_leader and len(dept_projs) > 0:
-        # If standard department is provided and has projects in project_targets.json, strictly use those + db_projs
+    if department and not (is_leader and bld_depts is None) and len(dept_projs) > 0:
         merged = list(set(list(dept_projs) + db_projs))
         return sorted(merged)
         
-    # Fallback to config.json (and for BLĐ / HĐQT to include all company projects)
+    # Fallback to config.json (and for HĐQT)
     companies = config.get("companies", {})
     projs_by_cat = {}
     if company_name in companies:

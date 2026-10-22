@@ -235,17 +235,32 @@ with tab_new:
                 
         khdt_projects = []
         is_leader_dept = task_dept in ["BLĐ", "HĐQT"]
+        mgr_user = st.session_state.get('manager_user', '')
+        bld_depts = get_bld_managed_departments(mgr_user) if is_leader_dept else None
+        
         for t in project_targets:
-            if is_leader_dept or t.get("department") == task_dept:
-                p_name = t.get("project_name")
-                if p_name and p_name not in khdt_projects:
-                    khdt_projects.append(p_name)
+            t_dept = DEPT_ABBR.get(t.get("department"), t.get("department"))
+            if is_leader_dept:
+                if bld_depts is not None:
+                    if t_dept in bld_depts or t_dept == "BLĐ":
+                        p_name = t.get("project_name")
+                        if p_name and p_name not in khdt_projects:
+                            khdt_projects.append(p_name)
+                else:
+                    p_name = t.get("project_name")
+                    if p_name and p_name not in khdt_projects:
+                        khdt_projects.append(p_name)
+            else:
+                if t_dept == task_dept:
+                    p_name = t.get("project_name")
+                    if p_name and p_name not in khdt_projects:
+                        khdt_projects.append(p_name)
                 
         db_projs = []
         if not display_df.empty:
             dept_tasks = display_df if is_leader_dept else display_df[display_df["PhongBan"] == task_dept]
             db_projs = list(dept_tasks["TenDuAn"].dropna().unique())
-        merged_projs = get_filtered_projects(entry_company, config, db_projs, department=task_dept)
+        merged_projs = get_filtered_projects(entry_company, config, db_projs, department=task_dept, manager_user=mgr_user)
         
         for p in khdt_projects:
             if p not in merged_projs:

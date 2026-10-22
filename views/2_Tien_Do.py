@@ -178,25 +178,45 @@ with tab_master:
         if not project_targets:
             st.info(f"💡 Ban **{user_dept if user_dept else 'của bạn'}** hiện chưa có Kế hoạch / Chỉ tiêu năm nào được thiết lập.")
     else:
-        # Master View toàn hệ thống: Chỉ dành riêng cho BLĐ / HĐQT / HR
-        st.markdown("### 🌟 BẢNG THEO DÕI TIẾN ĐỘ CHỈ TIÊU (MASTER VIEW)")
-        st.info("Bảng tổng hợp tiến độ Kế hoạch của các Dự án dựa trên đánh giá và nghiệm thu của Lãnh đạo Ban.")
-        
         mgr_user = st.session_state.get('manager_user', '')
-        all_depts = get_departments_for_company(selected_company, config)
-        dept_opts = ["Tất cả phòng ban"] + all_depts
-        if mgr_user == "Trần Văn Trọng":
-            dept_opts = [d for d in dept_opts if d not in ["TCKT", "Ban Tài chính Kế toán", "HCNS", "Ban Hành chính Nhân sự"]]
+        is_top_hdqt = (mgr_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]) or (st.session_state.get('auth_user_dept') in ["HĐQT", "Hội đồng quản trị"]) or st.session_state.get('is_admin_authenticated', False)
+        bld_depts = get_bld_managed_departments(mgr_user)
+        
+        if is_top_hdqt or bld_depts is None:
+            # Master View toàn hệ thống: Chỉ dành riêng cho HĐQT / HR
+            st.markdown("### 🌟 BẢNG THEO DÕI TIẾN ĐỘ CHỈ TIÊU (MASTER VIEW)")
+            st.info("Bảng tổng hợp tiến độ Kế hoạch của các Dự án dựa trên đánh giá và nghiệm thu của Lãnh đạo Ban.")
             
-        sel_d = st.selectbox("Lọc Phòng ban (Master View)", dept_opts, key="master_dept")
-        if sel_d != "Tất cả phòng ban":
-            active_abbr = DEPT_ABBR.get(sel_d, sel_d)
-            project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) == active_abbr]
-        else:
-            if mgr_user == "Trần Văn Trọng":
-                project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) not in ["TCKT", "HCNS"]]
+            all_depts = get_departments_for_company(selected_company, config)
+            dept_opts = ["Tất cả phòng ban"] + all_depts
+            sel_d = st.selectbox("Lọc Phòng ban (Master View)", dept_opts, key="master_dept")
+            if sel_d != "Tất cả phòng ban":
+                active_abbr = DEPT_ABBR.get(sel_d, sel_d)
+                project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) == active_abbr]
             else:
                 project_targets = company_targets
+        else:
+            # Thành viên Ban Lãnh đạo chỉ thấy Kế hoạch / Chỉ tiêu của các ban mình phụ trách
+            managed_str = " & ".join([f"Ban {d}" for d in bld_depts])
+            st.markdown(f"### 🎯 BẢNG TIẾN ĐỘ CHỈ TIÊU — KHỐI PHỤ TRÁCH ({managed_str})")
+            st.info(f"Theo dõi tiến độ thực hiện Kế hoạch năm và Chỉ tiêu dự án của **{managed_str}**.")
+            
+            all_company_depts = get_departments_for_company(selected_company, config)
+            avail_depts = [d for d in all_company_depts if (DEPT_ABBR.get(d, d) in bld_depts or d in bld_depts)]
+            
+            if len(avail_depts) > 1:
+                dept_opts = ["Tất cả ban phụ trách"] + avail_depts
+                sel_d = st.selectbox("Lọc Ban phụ trách", dept_opts, key="bld_dept_filter")
+                if sel_d != "Tất cả ban phụ trách":
+                    active_abbr = DEPT_ABBR.get(sel_d, sel_d)
+                    project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) == active_abbr]
+                else:
+                    project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) in bld_depts]
+            elif len(avail_depts) == 1:
+                single_abbr = DEPT_ABBR.get(avail_depts[0], avail_depts[0])
+                project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) == single_abbr]
+            else:
+                project_targets = [t for t in company_targets if DEPT_ABBR.get(t.get("department"), t.get("department")) in bld_depts]
         
     if not project_targets:
         st.warning(f"Chưa có Chỉ tiêu nào được thiết lập cho {selected_company}.")
