@@ -179,7 +179,7 @@ with tab_master:
             st.info(f"💡 Ban **{user_dept if user_dept else 'của bạn'}** hiện chưa có Kế hoạch / Chỉ tiêu năm nào được thiết lập.")
     else:
         mgr_user = st.session_state.get('manager_user', '')
-        is_top_hdqt = (mgr_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]) or (st.session_state.get('auth_user_dept') in ["HĐQT", "Hội đồng quản trị"]) or st.session_state.get('is_admin_authenticated', False)
+        is_top_hdqt = is_hr_equivalent_leader(mgr_user) or (st.session_state.get('auth_user_dept') in ["HĐQT", "Hội đồng quản trị"])
         bld_depts = get_bld_managed_departments(mgr_user)
         
         if is_top_hdqt or bld_depts is None:
@@ -534,9 +534,28 @@ with tab_data:
     
     if is_personal:
         col_filter1, col_filter3 = st.columns(2)
+        sel_dept_filter = "Tất cả phòng ban"
         sel_owner_filter = "Tất cả"
     else:
-        col_filter1, col_filter2, col_filter3 = st.columns(3)
+        col_filter_dept, col_filter1, col_filter2, col_filter3 = st.columns(4)
+        with col_filter_dept:
+            depts_in_df = sorted(list(display_df['PhongBan'].dropna().astype(str).unique())) if not display_df.empty else []
+            for d_cfg in get_departments_for_company(selected_company, config):
+                abbr_d = DEPT_ABBR.get(d_cfg, d_cfg)
+                if abbr_d not in depts_in_df:
+                    depts_in_df.append(abbr_d)
+            if is_hr_equivalent_leader(st.session_state.get('manager_user')):
+                dept_filter_opts = ["Tất cả phòng ban"] + depts_in_df
+            elif st.session_state.get('role_mode') == "Quản lý":
+                bld_d = get_bld_managed_departments(st.session_state.get('manager_user'))
+                if bld_d:
+                    dept_filter_opts = ["Tất cả phòng ban"] + [d for d in depts_in_df if d in bld_d or d == "BLĐ"]
+                else:
+                    mgr_d = st.session_state.get('manager_dept', '')
+                    dept_filter_opts = ["Tất cả phòng ban"] + ([mgr_d] if mgr_d else depts_in_df)
+            else:
+                dept_filter_opts = ["Tất cả phòng ban"] + depts_in_df
+            sel_dept_filter = st.selectbox("Lọc theo Phòng ban", dept_filter_opts, key="td_dept_filter")
 
     with col_filter1:
         db_projs = list(display_df["TenDuAn"].dropna().unique()) if not display_df.empty else []
@@ -546,7 +565,8 @@ with tab_data:
     
     if not is_personal:
         with col_filter2:
-            owners = ["Tất cả"] + sorted(list(display_df['NguoiChuTri'].dropna().astype(str).unique())) if not display_df.empty else ["Tất cả"]
+            owner_source_df = display_df[display_df['PhongBan'] == sel_dept_filter] if (sel_dept_filter != "Tất cả phòng ban" and not display_df.empty) else display_df
+            owners = ["Tất cả"] + sorted(list(owner_source_df['NguoiChuTri'].dropna().astype(str).unique())) if not owner_source_df.empty else ["Tất cả"]
             sel_owner_filter = st.selectbox("Lọc theo Người phụ trách", owners)
         
     with col_filter3:
@@ -562,6 +582,8 @@ with tab_data:
     
     # Apply filters
     table_df = display_df.copy()
+    if sel_dept_filter != "Tất cả phòng ban":
+        table_df = table_df[table_df['PhongBan'] == sel_dept_filter]
     if sel_proj_filter != "Tất cả dự án":
         clean_proj = clean_proj_name(sel_proj_filter)
         table_df = table_df[table_df['TenDuAn'].str.contains(clean_proj, case=False, na=False)]

@@ -895,11 +895,24 @@ HIERARCHY_MARINA_3 = {
 # ==============================================================================
 # PHÂN CÔNG PHÒNG BAN PHỤ TRÁCH CHO THÀNH VIÊN BAN LÃNH ĐẠO (BLĐ)
 # ==============================================================================
+HR_EQUIVALENT_LEADERS = ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc", "Đặng Ngọc Hoàng"]
+
+def is_hr_equivalent_leader(user_name=None):
+    """
+    Kiểm tra xem người dùng có quyền tương đương HR (xem/tạo/cập nhật việc tất cả các Ban & nhân sự):
+    - Tài khoản HR (is_admin_authenticated)
+    - Đặng Thanh Bình, Đặng Thị Lan Ngọc, Đặng Ngọc Hoàng
+    """
+    if st.session_state.get("is_admin_authenticated", False):
+        return True
+    if not user_name:
+        user_name = st.session_state.get("manager_user") or st.session_state.get("personal_user") or ""
+    return user_name in HR_EQUIVALENT_LEADERS
+
 BLD_MANAGED_DEPTS = {
     "Trần Quốc Thể": ["CBĐT", "KHĐT"],
     "Nguyễn Ngọc Tôn": ["ĐBGT"],
     "Đoàn Thị Ngọc Nữ": ["TCKT"],
-    "Đặng Ngọc Hoàng": ["Sàn GDBĐS", "HCNS", "BLĐ"],
     "Thái Văn Thành": ["KT", "BCH CT", "XN XMTB", "Mỏ", "TCKT", "HCNS"],
     "Trần Văn Trọng": ["KT", "BCH CT", "XN XMTB", "Mỏ"]
 }
@@ -907,26 +920,26 @@ BLD_MANAGED_DEPTS = {
 def get_bld_managed_departments(user_name):
     """
     Trả về danh sách phòng ban mà thành viên BLĐ phụ trách.
-    - Trả về None nếu là HĐQT (toàn quyền xem mọi ban).
+    - Trả về None nếu là HĐQT / Lãnh đạo quyền tương đương HR (toàn quyền xem mọi ban).
     - Trả về list tên viết tắt các ban nếu là BLĐ.
     - Trả về None nếu không thuộc BLĐ.
     """
     if not user_name:
         return None
-    if user_name in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+    if user_name in HR_EQUIVALENT_LEADERS:
         return None
     return BLD_MANAGED_DEPTS.get(user_name)
 
 def get_subordinates_for_manager(manager_user):
     """
     Trả về danh sách cấp dưới trực tiếp cần duyệt/nghiệm thu theo sheet MARINA (3).
-    - Trả về None nếu là HĐQT (toàn quyền, duyệt mọi công việc).
+    - Trả về None nếu là HĐQT / Lãnh đạo quyền tương đương HR (toàn quyền, duyệt mọi công việc).
     - Trả về list tên cấp dưới nếu có.
     - Trả về [] nếu không quản lý ai.
     """
     if not manager_user:
         return []
-    if manager_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+    if manager_user in HR_EQUIVALENT_LEADERS:
         return None
     subs = HIERARCHY_MARINA_3.get(manager_user)
     if subs is None and manager_user in HIERARCHY_MARINA_3:
@@ -937,11 +950,11 @@ def get_allowed_personnel_for_manager(manager_user, include_self=True):
     """
     Trả về danh sách nhân sự mà Quản lý được xem tiến độ / KPI:
     Bao gồm chính mình + toàn bộ cấp dưới thuộc quyền theo sheet MARINA (3).
-    - Trả về None nếu là HĐQT (toàn quyền, xem mọi nhân sự).
+    - Trả về None nếu là HĐQT / Lãnh đạo quyền tương đương HR (toàn quyền, xem mọi nhân sự).
     """
     if not manager_user:
         return []
-    if manager_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+    if manager_user in HR_EQUIVALENT_LEADERS:
         return None
     subs = HIERARCHY_MARINA_3.get(manager_user)
     if subs is None and manager_user in HIERARCHY_MARINA_3:
@@ -954,14 +967,14 @@ def get_allowed_personnel_for_manager(manager_user, include_self=True):
 def setup_manager_db_filters(db_filters, manager_user, manager_dept, selected_company):
     """
     Cấu hình bộ lọc db_filters chuẩn hóa cho Quản lý theo sheet MARINA (3):
-    1. Nếu là HĐQT: Xem toàn bộ mọi công ty, phòng ban.
+    1. Nếu là HĐQT hoặc Đặng Thanh Bình, Đặng Thị Lan Ngọc, Đặng Ngọc Hoàng: Xem toàn bộ mọi công ty, phòng ban như quyền HR.
     2. Nếu là BLĐ: Chỉ thấy công việc của các phòng ban mình phụ trách + công việc của chính mình.
     3. Nếu là Quản lý các phòng ban khác: Lọc theo danh sách cấp dưới + chính mình.
     """
     if not manager_user:
         return db_filters
         
-    if manager_dept in ["HĐQT", "Hội đồng quản trị"] or manager_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+    if manager_dept in ["HĐQT", "Hội đồng quản trị"] or manager_user in HR_EQUIVALENT_LEADERS:
         if 'DonVi' in db_filters: del db_filters['DonVi']
         if 'PhongBan' in db_filters: del db_filters['PhongBan']
         if 'NguoiChuTri' in db_filters: del db_filters['NguoiChuTri']

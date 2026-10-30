@@ -85,8 +85,10 @@ if "success_msg" in st.session_state:
     st.success(st.session_state["success_msg"])
     del st.session_state["success_msg"]
 
-is_hr_view = role_mode == "HR" and st.session_state.get("is_admin_authenticated", False)
-is_manager_view = role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False)
+is_hr_view = (role_mode == "HR" and st.session_state.get("is_admin_authenticated", False)) or (
+    role_mode == "Quản lý" and st.session_state.get("is_manager_authenticated", False) and is_hr_equivalent_leader(st.session_state.get("manager_user"))
+)
+is_manager_view = (role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated', False)) and not is_hr_view
 
 if is_hr_view:
     kpi_tab1, kpi_tab_quy, kpi_tab2, kpi_tab3, kpi_tab4 = st.tabs(["📅 Đánh giá theo Tháng", "📊 Tổng kết Quý", "🏅 Tổng kết Năm", "⚖️ Thưởng / Phạt Điểm", "📈 Phân tích & Xuất Báo cáo"])

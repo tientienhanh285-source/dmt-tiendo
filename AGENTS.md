@@ -7,7 +7,8 @@ Chi tiết quy chuẩn phân quyền được lưu trữ tại:
 👉 [.agents/rules/PHAN_QUYEN_DMT.md](file:///.agents/rules/PHAN_QUYEN_DMT.md)
 
 ### Các nguyên tắc cốt lõi:
-1. **Ban Lãnh đạo cao nhất:**
+1. **Ban Lãnh đạo cao nhất & Quyền tương đương HR:**
+   - `Đặng Thanh Bình`, `Đặng Thị Lan Ngọc`, `Đặng Ngọc Hoàng` (`HR_EQUIVALENT_LEADERS`): Có quyền xem, lọc, khởi tạo công việc và cập nhật công việc tương đương quyền **HR** (xem tất cả các Ban, tất cả người tạo việc/phụ trách và cập nhật công việc trên toàn hệ thống).
    - `Đặng Thanh Bình`, `Đặng Thị Lan Ngọc`: HĐQT toàn quyền xem và duyệt toàn bộ hệ thống.
    - `Trần Quốc Thể`, `Đoàn Thị Ngọc Nữ`, `Nguyễn Ngọc Tôn`: Cấp điều hành cao nhất, hiện tại chưa ai quản lý.
    - `Đoàn Thị Ngọc Nữ`: Chỉ duyệt cho `Đồng Thị Nguyệt Nga` (không duyệt `Nguyễn Thị Ngọc Hà` vì chị Hà ở Cienco do TGĐ `Thái Văn Thành` duyệt).

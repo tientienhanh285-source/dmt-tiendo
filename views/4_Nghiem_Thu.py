@@ -78,7 +78,7 @@ else:
             st.info("Chưa có dữ liệu công việc.")
         else:
             nghiemthu_df = display_df[display_df['TrangThai'].isin(['Chờ nghiệm thu', 'Chờ nghiệm thu (Trễ hạn)'])].copy()
-            if role_mode == "Quản lý":
+            if role_mode == "Quản lý" and not is_hr_equivalent_leader(st.session_state.get("manager_user")):
                 manager_user = st.session_state.get('manager_user', '')
                 subs = get_subordinates_for_manager(manager_user)
                 if subs is None:
@@ -90,7 +90,7 @@ else:
                     nghiemthu_df = nghiemthu_df.iloc[0:0]
                     
             # Prevent managers from approving their own tasks (except HĐQT)
-            if 'manager_user' in locals() and manager_user and manager_user not in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+            if 'manager_user' in locals() and manager_user and not is_hr_equivalent_leader(manager_user):
                 nghiemthu_df = nghiemthu_df[nghiemthu_df['NguoiChuTri'] != manager_user]
                     
             if nghiemthu_df.empty:
@@ -213,7 +213,7 @@ else:
                     mask = mask & (local_df['NguoiChuTri'] == '___NONE___')
                 
             # Prevent managers from approving their own tasks (except HĐQT)
-            if 'manager_user' in locals() and manager_user and manager_user not in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
+            if 'manager_user' in locals() and manager_user and not is_hr_equivalent_leader(manager_user):
                 mask = mask & (local_df['NguoiChuTri'] != manager_user)
                 
             filtered_df = local_df[mask].copy()

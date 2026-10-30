@@ -21,6 +21,8 @@ Tài liệu này là **Nguồn dữ liệu gốc (Single Source of Truth)** về
 ## II. BẢNG PHÂN QUYỀN QUẢN LÝ (MANAGER -> SUBORDINATES)
 
 ### 1. Ban Lãnh đạo Tập đoàn & HĐQT
+- **Đặng Thanh Bình**, **Đặng Thị Lan Ngọc** & **Đặng Ngọc Hoàng** (`HR_EQUIVALENT_LEADERS`):
+  - Có quyền tương đương **HR** đối với việc xem dữ liệu tất cả các Ban, chọn bất kỳ Phòng ban / Người tạo việc nào khi khởi tạo công việc mới, và lọc / cập nhật tiến độ công việc của tất cả các Ban trên toàn hệ thống.
 - **Đặng Thanh Bình** & **Đặng Thị Lan Ngọc** (Cấp HĐQT):
   - Toàn quyền xem và duyệt toàn hệ thống tất cả các đơn vị.
 - **Trần Quốc Thể** (Tổng Giám đốc Tập đoàn), **Đoàn Thị Ngọc Nữ** (Phó TGĐ), **Nguyễn Ngọc Tôn** (Phó TGĐ):

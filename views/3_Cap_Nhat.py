@@ -205,6 +205,7 @@ with tab_new:
         allowed_depts = get_departments_for_company(entry_company, config)
         is_personal = (role_mode == "Nhân viên" and st.session_state.is_personal_authenticated and st.session_state.personal_user)
         is_manager = (role_mode == "Quản lý" and st.session_state.get('is_manager_authenticated') and st.session_state.get('manager_dept'))
+        is_hr_equiv = is_hr_equivalent_leader(st.session_state.get('manager_user'))
         
         if is_personal:
             # First try auth_user_dept, fallback to mode, then fallback to first dept
@@ -214,8 +215,19 @@ with tab_new:
                 user_dept_mode = display_df['PhongBan'].mode()
                 user_dept = user_dept_mode[0] if not user_dept_mode.empty else allowed_depts[0]
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", [user_dept], index=0, disabled=True)
+        elif is_hr_equiv:
+            # Quyền HR & Đặng Thanh Bình, Đặng Thị Lan Ngọc, Đặng Ngọc Hoàng: Chọn được tất cả các Ban
+            task_dept = st.selectbox("Phòng ban chịu trách nhiệm", allowed_depts)
         elif is_manager:
-            task_dept = st.selectbox("Phòng ban chịu trách nhiệm", [st.session_state.manager_dept], index=0, disabled=True)
+            mgr_user_cur = st.session_state.get('manager_user', '')
+            bld_managed = get_bld_managed_departments(mgr_user_cur)
+            if bld_managed:
+                mgr_depts_opts = [d for d in allowed_depts if DEPT_ABBR.get(d, d) in bld_managed or d in bld_managed or DEPT_ABBR.get(d, d) == "BLĐ"]
+                if not mgr_depts_opts:
+                    mgr_depts_opts = [st.session_state.manager_dept] + bld_managed
+                task_dept = st.selectbox("Phòng ban chịu trách nhiệm", mgr_depts_opts)
+            else:
+                task_dept = st.selectbox("Phòng ban chịu trách nhiệm", [st.session_state.manager_dept], index=0, disabled=True)
         else:
             task_dept = st.selectbox("Phòng ban chịu trách nhiệm", allowed_depts)
         
@@ -596,10 +608,24 @@ with tab_update:
     else:
         col_f1, col_f2, col_f3, col_f4 = st.columns(4)
         with col_f1:
-            departments = ["Tất cả"] + sorted(list(avail_update_df['PhongBan'].dropna().astype(str).unique()))
+            dept_set = set(avail_update_df['PhongBan'].dropna().astype(str).unique())
+            if is_hr_equivalent_leader(st.session_state.get('manager_user')):
+                for d_cfg in get_departments_for_company(selected_company, config):
+                    dept_set.add(DEPT_ABBR.get(d_cfg, d_cfg))
+            departments = ["Tất cả"] + sorted(list(dept_set))
             filter_dept = st.selectbox("Lọc theo Phòng ban", departments, key="filter_dept_update")
         with col_f2:
-            owners = ["Tất cả"] + sorted(list(avail_update_df['NguoiChuTri'].dropna().astype(str).unique()))
+            owner_df_src = avail_update_df[avail_update_df['PhongBan'] == filter_dept] if filter_dept != "Tất cả" else avail_update_df
+            owner_set = set(owner_df_src['NguoiChuTri'].dropna().astype(str).unique())
+            if is_hr_equivalent_leader(st.session_state.get('manager_user')):
+                if filter_dept != "Tất cả":
+                    for p_cfg in get_personnel_for_company_dept(selected_company, filter_dept, config):
+                        owner_set.add(p_cfg)
+                else:
+                    for d_cfg in get_departments_for_company(selected_company, config):
+                        for p_cfg in get_personnel_for_company_dept(selected_company, d_cfg, config):
+                            owner_set.add(p_cfg)
+            owners = ["Tất cả"] + sorted(list(owner_set))
             filter_owner = st.selectbox("Lọc theo Người phụ trách", owners, key="filter_owner_update")
             
     with col_f3:
@@ -648,7 +674,16 @@ with tab_update:
             with col_u1:
                 st.markdown(f"**Mã Hạng mục:** `{task_data['ID']}`")
                 st.markdown(f"**Đơn vị:** {task_data['DonVi']}")
-                st.markdown(f"**Phòng ban phụ trách:** {task_data['PhongBan']}")
+                if is_hr_equivalent_leader(st.session_state.get('manager_user')):
+                    u_allowed_depts = get_departments_for_company(task_data['DonVi'], config)
+                    cur_pb = str(task_data['PhongBan']).strip()
+                    if cur_pb and cur_pb not in u_allowed_depts:
+                        u_allowed_depts = [cur_pb] + list(u_allowed_depts)
+                    u_dept_idx = u_allowed_depts.index(cur_pb) if cur_pb in u_allowed_depts else 0
+                    u_dept = st.selectbox("Phòng ban phụ trách", u_allowed_depts, index=u_dept_idx, key=f"u_dept_{task_data['ID']}")
+                else:
+                    st.markdown(f"**Phòng ban phụ trách:** {task_data['PhongBan']}")
+                    u_dept = task_data['PhongBan']
                 
                 u_proj = st.text_input("Dự án / Hạng mục", value=task_data['TenDuAn'], key=f"u_proj_{task_data['ID']}")
                 u_name = st.text_input("Tên công việc", value=task_data['TenCongViec'], key=f"u_name_{task_data['ID']}")
@@ -659,7 +694,6 @@ with tab_update:
                 st.caption("💡 **Định kỳ:** Đăng ký đầu tháng. **Giao ban:** Phát sinh sau khi họp giao ban.")
                 
                 # Owner selection based on configuration
-                u_dept = task_data['PhongBan']
                 u_dept_personnel = get_personnel_for_company_dept(task_data['DonVi'], u_dept, config)
                 u_owner_options = list(u_dept_personnel) + ["✍️ Nhập tên người khác..."]
                 
@@ -793,7 +827,7 @@ with tab_update:
                 save_click = st.button("💾 LƯU CẬP NHẬT TIẾN ĐỘ", type="primary", key=f"btn_save_update_{task_data['ID']}")
             with btn_del:
                 del_click = False
-                if st.session_state.is_admin_authenticated:
+                if is_hr_equivalent_leader(st.session_state.get('manager_user')):
                     confirm_del = st.checkbox("Xác nhận xóa dữ liệu này", key=f"confirm_del_{task_data['ID']}")
                     if confirm_del:
                         del_click = st.button("🗑️ XÓA CÔNG VIỆC CHỌN", type="secondary", key=f"btn_del_update_{task_data['ID']}")
@@ -872,6 +906,7 @@ with tab_update:
                         with acquire_db_lock():
                             
                             fresh_df = read_db()
+                            fresh_df.loc[fresh_df['ID'] == selected_id, 'PhongBan'] = u_dept
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TenDuAn'] = u_proj.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'TenCongViec'] = u_name.strip()
                             fresh_df.loc[fresh_df['ID'] == selected_id, 'NguoiChuTri'] = u_owner.strip()
@@ -892,6 +927,7 @@ with tab_update:
                                 fresh_df.loc[fresh_df['ID'] == selected_id, 'MucDoGhiNhan'] = '0% (Không ghi nhận)'
 
                             update_dict = {
+                                'PhongBan': u_dept,
                                 'TenDuAn': u_proj.strip(),
                                 'TenCongViec': u_name.strip(),
                                 'NguoiChuTri': u_owner.strip(),

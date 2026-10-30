@@ -360,6 +360,27 @@ selected_company = st.sidebar.selectbox(
 )
 st.session_state['selected_company'] = selected_company
 
+# Quick access / URL testing support for mobile demonstration & guide screenshots
+if hasattr(st, "query_params"):
+    if "user" in st.query_params:
+        st.session_state.is_personal_authenticated = True
+        st.session_state.personal_user = st.query_params["user"]
+        st.session_state['role_mode'] = "Nhân viên"
+        st.session_state['_prev_role_mode'] = "Nhân viên"
+        if "dept" in st.query_params:
+            st.session_state.auth_user_dept = st.query_params["dept"]
+    elif "manager" in st.query_params:
+        st.session_state.is_manager_authenticated = True
+        st.session_state.manager_user = st.query_params["manager"]
+        st.session_state.manager_dept = DEPT_ABBR.get(st.query_params.get("dept", "BLĐ"), "BLĐ")
+        if st.session_state.manager_user in ["Thái Văn Thành", "Trần Văn Trọng"]:
+            st.session_state['selected_company'] = "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
+        st.session_state['role_mode'] = "Quản lý"
+        st.session_state['_prev_role_mode'] = "Quản lý"
+    elif "role" in st.query_params:
+        st.session_state['role_mode'] = st.query_params["role"]
+        st.session_state['_prev_role_mode'] = st.query_params["role"]
+
 if 'role_mode' not in st.session_state:
     st.session_state['role_mode'] = "Nhân viên"
 
@@ -399,22 +420,6 @@ if "is_personal_authenticated" not in st.session_state:
 if "personal_user" not in st.session_state:
     st.session_state.personal_user = None
 
-# Quick access / URL testing support for mobile demonstration
-if hasattr(st, "query_params"):
-    if "user" in st.query_params:
-        st.session_state.is_personal_authenticated = True
-        st.session_state.personal_user = st.query_params["user"]
-        st.session_state['role_mode'] = "Nhân viên"
-        if "dept" in st.query_params:
-            st.session_state.auth_user_dept = st.query_params["dept"]
-    elif "manager" in st.query_params:
-        st.session_state.is_manager_authenticated = True
-        st.session_state.manager_user = st.query_params["manager"]
-        st.session_state.manager_dept = DEPT_ABBR.get(st.query_params.get("dept", "BLĐ"), "BLĐ")
-        if st.session_state.manager_user in ["Thái Văn Thành", "Trần Văn Trọng"]:
-            st.session_state['selected_company'] = "CÔNG TY CP XÂY DỰNG CÔNG TRÌNH GIAO THÔNG ĐN-MT"
-        st.session_state['role_mode'] = "Quản lý"
-
 if role_mode == "Quản lý":
     st.session_state.is_personal_authenticated = False
     st.session_state.personal_user = None
@@ -422,7 +427,10 @@ if role_mode == "Quản lý":
     if not st.session_state.is_manager_authenticated:
         st.sidebar.markdown("### 🏢 Xác thực Quản lý")
         valid_depts = get_departments_for_company(selected_company, config)
-        sel_login_dept = st.sidebar.selectbox("1. Chọn Phòng ban", ["-- Chọn --"] + valid_depts, key="mgr_login_dept")
+        dept_idx = 0
+        if "login_dept" in st.query_params and st.query_params["login_dept"] in valid_depts:
+            dept_idx = valid_depts.index(st.query_params["login_dept"]) + 1
+        sel_login_dept = st.sidebar.selectbox("1. Chọn Phòng ban", ["-- Chọn --"] + valid_depts, index=dept_idx, key="mgr_login_dept")
         
         if sel_login_dept != "-- Chọn --":
             personnel_list = get_personnel_for_company_dept(selected_company, sel_login_dept, config)
@@ -449,7 +457,10 @@ if role_mode == "Quản lý":
                     valid_leads = [x for x in valid_leads if x not in bld_only_managers]
                 
                 if valid_leads:
-                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + valid_leads, key="mgr_login_user")
+                    user_idx = 0
+                    if "login_user" in st.query_params and st.query_params["login_user"] in valid_leads:
+                        user_idx = valid_leads.index(st.query_params["login_user"]) + 1
+                    sel_login_user = st.sidebar.selectbox("2. Chọn Tên Quản lý", ["-- Chọn --"] + valid_leads, index=user_idx, key="mgr_login_user")
                 else:
                     st.sidebar.info("Phòng ban này tạm thời chưa có quản lý.")
                     sel_login_user = "-- Chọn --"
@@ -484,8 +495,11 @@ if role_mode == "Quản lý":
             st.session_state.pop("mgr_login_user", None)
             st.rerun()
         
-        # We no longer allow changing department dynamically for Manager
-        st.sidebar.markdown(f"**Phòng/Ban phụ trách:** {st.session_state.get('manager_dept', '')}")
+        # Hiển thị phạm vi quản lý
+        if is_hr_equivalent_leader(st.session_state.get('manager_user')):
+            st.sidebar.markdown("**Phòng/Ban phụ trách:** Toàn bộ các Ban (Quyền HR)")
+        else:
+            st.sidebar.markdown(f"**Phòng/Ban phụ trách:** {st.session_state.get('manager_dept', '')}")
 
 elif role_mode == "HR":
     st.session_state.is_personal_authenticated = False
