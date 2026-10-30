@@ -157,7 +157,7 @@ else:
         if display_df.empty:
             st.info("Chưa có dữ liệu công việc.")
         else:
-            if role_mode == "Quản lý":
+            if role_mode == "Quản lý" and not is_hr_equivalent_leader(st.session_state.get("manager_user")):
                 col_thang, col_nam = st.columns(2)
                 with col_thang:
                     thang_opts = ["Tất cả"] + list(range(1, 13))
@@ -202,7 +202,7 @@ else:
             mask = local_df['is_in_month'] & (is_obj | is_issue | has_explain)
             if sel_phong != "Tất cả":
                 mask = mask & (local_df['PhongBan'] == sel_phong)
-            if role_mode == "Quản lý":
+            if role_mode == "Quản lý" and not is_hr_equivalent_leader(st.session_state.get("manager_user")):
                 manager_user = st.session_state.get('manager_user', '')
                 subs = get_subordinates_for_manager(manager_user)
                 if subs is None:
