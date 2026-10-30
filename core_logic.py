@@ -933,13 +933,13 @@ def get_bld_managed_departments(user_name):
 def get_subordinates_for_manager(manager_user):
     """
     Trả về danh sách cấp dưới trực tiếp cần duyệt/nghiệm thu theo sheet MARINA (3).
-    - Trả về None nếu là HĐQT / Lãnh đạo quyền tương đương HR (toàn quyền, duyệt mọi công việc).
-    - Trả về list tên cấp dưới nếu có.
+    - Trả về None nếu là HĐQT (Đặng Thanh Bình, Đặng Thị Lan Ngọc - toàn quyền duyệt mọi công việc).
+    - Trả về list tên cấp dưới trực tiếp nếu có (VD: Đặng Ngọc Hoàng -> Trần Cường, Nguyễn Thị Hạnh Tiên, Ngô Thị Tâm).
     - Trả về [] nếu không quản lý ai.
     """
     if not manager_user:
         return []
-    if manager_user in HR_EQUIVALENT_LEADERS:
+    if manager_user in ["Đặng Thanh Bình", "Đặng Thị Lan Ngọc"]:
         return None
     subs = HIERARCHY_MARINA_3.get(manager_user)
     if subs is None and manager_user in HIERARCHY_MARINA_3:
